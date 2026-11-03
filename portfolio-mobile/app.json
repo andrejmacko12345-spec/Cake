@@ -11,6 +11,7 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.anonymous.portfoliomobile",
       "adaptiveIcon": {
         "backgroundColor": "#f2e3da",
         "foregroundImage": "./assets/android-icon-foreground.png"

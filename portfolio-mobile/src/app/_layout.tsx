@@ -67,7 +67,13 @@ function AppTabs() {
             tabBarIcon: ({ color, size }) => <Bookmark color={color} size={size} />,
           }}
         />
-        <Tabs.Screen name="analytics" options={{ href: null }} />
+        <Tabs.Screen
+          name="analytics"
+          options={{
+            title: t('Analytika'),
+            tabBarItemStyle: { display: 'none' },
+          }}
+        />
         <Tabs.Screen
           name="compare"
           options={{

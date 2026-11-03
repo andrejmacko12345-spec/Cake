@@ -342,7 +342,7 @@ function InvestmentTimeline({
 
   return (
     <View style={styles.chartCard}>
-      <View style={styles.chartHeader}>
+      <View style={[styles.chartHeader, { opacity: selectedPoint ? 1 : 0 }]}>
         <View>
           <Text style={styles.chartTitle}>{t('Hodnota portfólia')}</Text>
           <Text style={styles.chartSubtitle}>

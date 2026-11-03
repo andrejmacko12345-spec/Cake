@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { YAHOO_USER_AGENT, yahooQuoteSummary } from './fundamentals';
 
 type Raw = { raw?: number } | undefined;
@@ -42,6 +43,8 @@ export type QuarterResult = {
   revenue: number | null;
   revenueYoY: number | null;
   revenueQoQ: number | null;
+  revenueEstimate: number | null;
+  revenueSurprisePct: number | null;
 };
 
 export type NewsItem = { title: string; publisher: string; link: string; time: number };
@@ -183,9 +186,30 @@ function buildQuarters(
       revenue,
       revenueYoY: growth(revenue, nearest(series.revenue, periodEnd - 365 * DAY, 20)?.value),
       revenueQoQ: growth(revenue, nearest(series.revenue, periodEnd - 91 * DAY, 20)?.value),
+      revenueEstimate: null,
+      revenueSurprisePct: null,
     };
   });
   return quarters.reverse();
+}
+
+type SavedEstimate = { date: number; estimate: number };
+
+// Yahoo nedáva odhad tržieb pre už zverejnené štvrťroky, preto si odhad pamätáme z obdobia pred reportom.
+async function syncRevenueEstimates(symbol: string, upcoming: { date: number; estimate: number | null } | null) {
+  const key = `revenue-estimates:${symbol}`;
+  let saved: SavedEstimate[] = [];
+  try {
+    saved = JSON.parse((await AsyncStorage.getItem(key)) ?? '[]') as SavedEstimate[];
+  } catch {
+    saved = [];
+  }
+  if (upcoming && upcoming.estimate !== null) {
+    const next = { date: upcoming.date, estimate: upcoming.estimate };
+    saved = [...saved.filter((item) => Math.abs(item.date - next.date) > 20 * DAY), next].slice(-6);
+    await AsyncStorage.setItem(key, JSON.stringify(saved)).catch(() => undefined);
+  }
+  return saved;
 }
 
 export async function fetchCompanyEvents(symbol: string, force = false): Promise<CompanyEvents> {
@@ -216,6 +240,23 @@ export async function fetchCompanyEvents(symbol: string, force = false): Promise
   const latestPeriod = quarters[0] ? Date.parse(`${quarters[0].periodEnd}T00:00:00Z`) / 1000 : 0;
   const reportCandidates = [callDate, upcoming ? null : nextDate]
     .filter((value): value is number => value !== null && value > latestPeriod && value <= now);
+
+  const savedEstimates = await syncRevenueEstimates(
+    symbol,
+    upcoming ? { date: nextDate as number, estimate: num(earnings?.revenueAverage) } : null,
+  );
+  const reportedAt = reportCandidates.length ? Math.max(...reportCandidates) : null;
+  if (quarters[0] && reportedAt !== null) {
+    const match = savedEstimates
+      .filter((item) => item.date > latestPeriod && item.date <= reportedAt + 5 * DAY)
+      .sort((a, b) => Math.abs(a.date - reportedAt) - Math.abs(b.date - reportedAt))[0];
+    if (match) {
+      quarters[0].revenueEstimate = match.estimate;
+      if (quarters[0].revenue !== null && match.estimate > 0) {
+        quarters[0].revenueSurprisePct = ((quarters[0].revenue - match.estimate) / match.estimate) * 100;
+      }
+    }
+  }
 
   const value: CompanyEvents = {
     symbol,

@@ -168,6 +168,11 @@ export default function EventsScreen() {
         if (quarter.epsActual !== null) {
           lines.push(`EPS ${fmtNum(quarter.epsActual)} ${sk ? 'vs odhad' : 'vs est.'} ${fmtNum(quarter.epsEstimate)}`);
         }
+        if (quarter.revenueSurprisePct !== null) {
+          lines.push(
+            `${sk ? 'Tržby' : 'Revenue'} ${quarter.revenueSurprisePct >= 0 ? (sk ? 'prekonané' : 'beat') : sk ? 'nedosiahnuté' : 'missed'} ${fmtPct(quarter.revenueSurprisePct)}`,
+          );
+        }
         if (quarter.epsSurprisePct !== null) {
           lines.push(
             `${quarter.epsSurprisePct >= 0 ? (sk ? 'Prekonané' : 'Beat') : sk ? 'Nedosiahnuté' : 'Missed'} ${fmtPct(quarter.epsSurprisePct)}`,
@@ -181,7 +186,9 @@ export default function EventsScreen() {
           title: `${sk ? 'Výsledky' : 'Earnings'} ${quarter.label}`,
           lines,
           company,
-          color: quarter.epsSurprisePct === null ? colors.muted : quarter.epsSurprisePct < 0 ? colors.red : colors.green,
+          color: quarter.epsSurprisePct === null && quarter.revenueSurprisePct === null
+            ? colors.muted
+            : (quarter.epsSurprisePct ?? 0) < 0 || (quarter.revenueSurprisePct ?? 0) < 0 ? colors.red : colors.green,
         });
       });
       const dividendLine = company.dividendAmount !== null
@@ -390,6 +397,8 @@ function QuarterCard({ quarter, first, sk }: { quarter: QuarterResult; first: bo
       <Row label={sk ? 'Tržby r/r' : 'Revenue YoY'} value={fmtPct(quarter.revenueYoY)} color={pctColor(quarter.revenueYoY)} />
       <Row label="EPS" value={fmtNum(quarter.epsActual)} />
       <Row label={sk ? 'EPS r/r' : 'EPS YoY'} value={fmtPct(quarter.epsYoY)} color={pctColor(quarter.epsYoY)} />
+      <Row label={sk ? 'Odhad analytikov (tržby)' : 'Analyst estimate (revenue)'} value={fmtRevenue(quarter.revenueEstimate, sk)} />
+      <Row label={sk ? 'Tržby: prekonanie / nedosiahnutie' : 'Revenue beat / miss'} value={fmtPct(quarter.revenueSurprisePct)} color={pctColor(quarter.revenueSurprisePct)} />
       <Row label={sk ? 'Odhad analytikov (EPS)' : 'Analyst estimate (EPS)'} value={fmtNum(quarter.epsEstimate)} />
       <Row
         label={sk ? 'Prekonanie / nedosiahnutie' : 'Beat / miss'}

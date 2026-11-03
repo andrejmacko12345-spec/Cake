@@ -378,9 +378,13 @@ export function PositionRow({
 }) {
   const marketValue = positionValueEUR(position);
   const cost = positionCostEUR(position);
-  const result = performance?.gainEUR ?? marketValue - cost + position.realizedProfitEUR;
+  const unrealized = marketValue - cost;
+  const result = performance?.gainEUR ??
+    (position.shares > 0 ? unrealized : marketValue - cost + position.realizedProfitEUR);
   const returnPercent = performance?.returnPercent ??
-    (position.totalInvestedEUR > 0 ? (result / position.totalInvestedEUR) * 100 : 0);
+    (position.shares > 0
+      ? (cost > 0 ? (unrealized / cost) * 100 : 0)
+      : position.totalInvestedEUR > 0 ? (result / position.totalInvestedEUR) * 100 : 0);
   const money = (value: number) => (hideAmounts ? '•••••' : formatMoney(value));
   return (
     <Pressable

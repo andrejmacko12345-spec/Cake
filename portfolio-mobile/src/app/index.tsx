@@ -644,7 +644,7 @@ export default function PortfolioScreen() {
               key={position.id}
               position={position}
               hideAmounts={hideAmounts}
-              performance={periodReturns[position.symbol]}
+              performance={range === 'Všetko' ? undefined : periodReturns[position.symbol]}
               onPress={() => openPositionDetails(position.symbol)}
             />
           ))}

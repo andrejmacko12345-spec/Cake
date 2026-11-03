@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
-import { Bookmark, Check, Plus, RefreshCw, Search, X } from 'lucide-react-native';
+import { Check, Plus, Search, X } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { Header, Page, SortControl, Surface } from '../components/finapp';
 import { Asset, availableAssets, colors } from '../data/portfolio';
@@ -320,26 +320,6 @@ export default function WatchlistScreen() {
         <View>
           <Text style={styles.summaryLabel}>{t('Sleduješ')}</Text>
           <Text style={styles.summaryValue}>{assets.length} {t('titulov')}</Text>
-        </View>
-        <View style={styles.summaryActions}>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Obnoviť ceny watchlistu"
-            onPress={() => {
-              void loadWatchData().catch((error: unknown) => {
-                Alert.alert(
-                  'Obnovenie zlyhalo',
-                  error instanceof Error ? error.message : String(error),
-                );
-              });
-            }}
-            style={styles.refreshButton}
-          >
-            <RefreshCw size={15} color={colors.green} />
-          </Pressable>
-          <View style={styles.summaryIcon}>
-            <Bookmark size={18} color={colors.green} />
-          </View>
         </View>
       </View>
 

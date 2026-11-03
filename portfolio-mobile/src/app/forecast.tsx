@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Info, Sparkles } from 'lucide-react-native';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import {
@@ -9,7 +9,7 @@ import {
   Surface,
 } from '../components/finapp';
 import { colors, formatMoney, formatPercent } from '../data/portfolio';
-import { weightedAnnualReturn } from '../data/performance';
+import { ReturnBasis, returnBasisYears, weightedAnnualReturn, windowedAnnualReturn } from '../data/performance';
 import { positionValueEUR, usePositions } from '../hooks/use-positions';
 import { useLocale } from '../context/locale';
 
@@ -35,7 +35,25 @@ export default function ForecastScreen() {
   const [scenarioKey, setScenarioKey] = useState<ScenarioKey>('zakladny');
   const [selectedChartIndex, setSelectedChartIndex] = useState<number | null>(null);
   const portfolioValue = positions.reduce((sum, position) => sum + positionValueEUR(position), 0);
-  const calculatedAnnualReturn = weightedAnnualReturn(transactions, portfolioValue);
+  const [basis, setBasis] = useState<ReturnBasis>('all');
+  const [windowReturn, setWindowReturn] = useState<{ key: string; value: number | null } | null>(null);
+  const [basisLoading, setBasisLoading] = useState(false);
+  const allReturn = weightedAnnualReturn(transactions, portfolioValue);
+  const windowKey = `${basis}|${transactions.length}|${Math.round(portfolioValue)}`;
+  useEffect(() => {
+    if (basis === 'all' || portfolioValue <= 0) return;
+    let active = true;
+    setBasisLoading(true);
+    windowedAnnualReturn(transactions, portfolioValue, returnBasisYears[basis])
+      .then((value) => { if (active) setWindowReturn({ key: windowKey, value }); })
+      .catch(() => { if (active) setWindowReturn({ key: windowKey, value: null }); })
+      .finally(() => { if (active) setBasisLoading(false); });
+    return () => { active = false; };
+  }, [basis, windowKey]);
+  const windowUnavailable = basis !== 'all' && !basisLoading && windowReturn?.key === windowKey && windowReturn.value === null;
+  const calculatedAnnualReturn = basis === 'all'
+    ? allReturn
+    : windowReturn?.key === windowKey && windowReturn.value !== null ? windowReturn.value : allReturn;
   const realizedAnnualReturn = calculatedAnnualReturn ?? 0;
   const isNegativeReturn = realizedAnnualReturn < 0;
   const scenarios = scenarioDefinitions.map((item) => ({
@@ -125,6 +143,35 @@ export default function ForecastScreen() {
           );
         })}
       </View>
+
+      <SectionTitle title={t('Základ výnosu')} />
+      <View style={styles.selectorRow}>
+        {([
+          { key: 'all', label: t('Celé obdobie') },
+          { key: '1Y', label: '1Y' },
+          { key: '3Y', label: '3Y' },
+          { key: '5Y', label: '5Y' },
+        ] as const).map((option) => {
+          const selected = basis === option.key;
+          return (
+            <Pressable
+              key={option.key}
+              onPress={() => setBasis(option.key)}
+              accessibilityRole="button"
+              accessibilityState={{ selected }}
+              style={[styles.selectorButton, selected && styles.selectorButtonSelected]}
+            >
+              <Text style={[styles.selectorText, selected && styles.selectorTextSelected]}>{option.label}</Text>
+            </Pressable>
+          );
+        })}
+      </View>
+      {basisLoading ? <Text style={styles.scenarioHint}>{t('Počítam výnos…')}</Text> : null}
+      {windowUnavailable ? (
+        <Text style={styles.scenarioHint}>
+          {t('Na toto obdobie nemáš dosť histórie, použitý je výnos za celé obdobie.')}
+        </Text>
+      ) : null}
 
       <SectionTitle title={t('Scenár ročného výnosu')} />
       <Text style={styles.scenarioHint}>

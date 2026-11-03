@@ -18,7 +18,7 @@ import { positionCostEUR, positionValueEUR, usePositions } from '../hooks/use-po
 import { AssetLogo } from './asset-logo';
 import { useLocale } from '../context/locale';
 
-export function Page({ children, scrollRef }: { children: ReactNode; scrollRef?: RefObject<ComponentRef<typeof ScrollView> | null> }) {
+export function Page({ children, scrollRef, floating }: { children: ReactNode; scrollRef?: RefObject<ComponentRef<typeof ScrollView> | null>; floating?: ReactNode }) {
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle={getTheme() === 'light' ? 'dark-content' : 'light-content'} />
@@ -30,6 +30,7 @@ export function Page({ children, scrollRef }: { children: ReactNode; scrollRef?:
       >
         {children}
       </ScrollView>
+      {floating ? <View pointerEvents="box-none" style={styles.floating}>{floating}</View> : null}
     </SafeAreaView>
   );
 }
@@ -382,6 +383,13 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  floating: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 14,
+    alignItems: 'center',
   },
   page: {
     paddingHorizontal: 12,

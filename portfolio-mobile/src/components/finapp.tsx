@@ -370,7 +370,7 @@ export function PositionRow({
         <Text style={styles.assetSymbol}>{position.symbol}</Text>
         <Text style={styles.assetName} numberOfLines={1}>
           {position.shares > 0
-            ? `${hideAmounts ? '•••' : position.shares.toLocaleString('sk-SK')} ks · ${position.currentPrice.toFixed(2)} ${position.currency}`
+            ? `${hideAmounts ? '•••' : position.shares.toLocaleString('sk-SK')} ks`
             : `Predaná · ${position.transactions.length} pohybov`}
         </Text>
       </View>
@@ -383,6 +383,11 @@ export function PositionRow({
         <View style={[styles.rowPill, { backgroundColor: tone }]}>
           <Text style={styles.rowPillText}>{formatPercent(returnPercent)}</Text>
         </View>
+        {position.shares > 0 || performance ? (
+          <Text style={[styles.rowGain, { color: tone }]}>
+            {hideAmounts ? '•••' : `${result >= 0 ? '+' : ''}${formatMoney(result)}`}
+          </Text>
+        ) : null}
         <Text style={styles.rowValue}>
           {position.shares > 0
             ? money(marketValue)
@@ -396,7 +401,8 @@ const styles = StyleSheet.create({
   rowSpark: { width: 56, height: 28, marginHorizontal: 8 },
   rowPill: { borderRadius: 7, paddingHorizontal: 8, paddingVertical: 3, minWidth: 78, alignItems: 'center' },
   rowPillText: { color: colors.background, fontSize: 14, fontWeight: '800', fontVariant: ['tabular-nums'] },
-  rowValue: { color: colors.text, fontSize: 12, fontWeight: '600', marginTop: 4, fontVariant: ['tabular-nums'] },
+  rowGain: { fontSize: 13, fontWeight: '800', marginTop: 4, fontVariant: ['tabular-nums'] },
+  rowValue: { color: colors.muted, fontSize: 11, fontWeight: '600', marginTop: 1, fontVariant: ['tabular-nums'] },
   safeArea: {
     flex: 1,
     backgroundColor: colors.background,

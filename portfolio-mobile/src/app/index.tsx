@@ -183,11 +183,14 @@ function createPortfolioHistory(
   });
 }
 
+type ChartLatest = { range: ChartRange; value: number; gainEUR: number; returnPercent: number };
+
 function InvestmentTimeline({
   transactions,
   range,
   onRangeChange,
   onPositionReturnsChange,
+  onLatestChange,
   currentValue,
   hideAmounts,
 }: {
@@ -195,6 +198,7 @@ function InvestmentTimeline({
   range: ChartRange;
   onRangeChange: (value: ChartRange) => void;
   onPositionReturnsChange: (returns: Record<string, { gainEUR: number; returnPercent: number }>) => void;
+  onLatestChange: (latest: ChartLatest | null) => void;
   currentValue: number;
   hideAmounts: boolean;
 }) {
@@ -316,6 +320,12 @@ function InvestmentTimeline({
   useEffect(() => {
     onPositionReturnsChange(selectedPoint?.positionReturns ?? {});
   }, [onPositionReturnsChange, selectedPoint]);
+  const latestPoint = history[history.length - 1];
+  useEffect(() => {
+    onLatestChange(latestPoint
+      ? { range, value: latestPoint.value, gainEUR: latestPoint.gainEUR, returnPercent: latestPoint.returnPercent }
+      : null);
+  }, [onLatestChange, latestPoint, range]);
   const updateSelectedPoint = (locationX: number) => {
     if (!history.length || chartWidth <= 0) return;
     const normalized = Math.min(1, Math.max(0, locationX / chartWidth));
@@ -438,7 +448,8 @@ export default function PortfolioScreen() {
   } = usePositions();
   const [formVisible, setFormVisible] = useState(false);
   const [initialType, setInitialType] = useState<'BUY' | 'SELL'>('BUY');
-  const [range, setRange] = useState<ChartRange>('3M');
+  const [range, setRange] = useState<ChartRange>('1D');
+  const [chartLatest, setChartLatest] = useState<ChartLatest | null>(null);
   const [positionSort, setPositionSort] = useState<'value' | 'alphabetical'>('value');
   const [closedExpanded, setClosedExpanded] = useState(false);
   const [periodReturns, setPeriodReturns] = useState<Record<string, { gainEUR: number; returnPercent: number }>>({});
@@ -500,8 +511,10 @@ export default function PortfolioScreen() {
     .map((position) => position.updatedAt)
     .sort()
     .at(-1);
-  const headlineGain = latestQuote ? dailyGain : totalReturn;
-  const headlinePercent = latestQuote ? dailyPercent : returnPercent;
+  const chartDaily = range === '1D' && chartLatest?.range === '1D' ? chartLatest : null;
+  const headlineGain = chartDaily ? chartDaily.gainEUR : latestQuote ? dailyGain : totalReturn;
+  const headlinePercent = chartDaily ? chartDaily.returnPercent : latestQuote ? dailyPercent : returnPercent;
+  const headlineValue = chartDaily ? chartDaily.value : totals.value;
 
   const openNewTransaction = (type: 'BUY' | 'SELL' = 'BUY') => {
     setInitialType(type);
@@ -543,9 +556,9 @@ export default function PortfolioScreen() {
       />
       <Surface style={styles.balanceCard}>
         <Text style={styles.balanceLabel}>{t('Trhová hodnota')}</Text>
-        <Text style={styles.balanceValue}>{money(totals.value)}</Text>
+        <Text style={styles.balanceValue}>{money(headlineValue)}</Text>
         <View style={styles.returnRow}>
-          <Text style={styles.headlineHint}>{latestQuote ? t('Denná zmena') : t('Celkový výnos')}</Text>
+          <Text style={styles.headlineHint}>{latestQuote || chartDaily ? t('Denná zmena') : t('Celkový výnos')}</Text>
           <View style={styles.returnIndicator}>
             {headlineGain >= 0 ? <TrendingUp size={16} color={colors.green} /> : null}
             <Text style={[styles.returnPercent, { color: headlineGain >= 0 ? colors.green : colors.red }]}>
@@ -596,6 +609,7 @@ export default function PortfolioScreen() {
         range={range}
         onRangeChange={setRange}
         onPositionReturnsChange={setPeriodReturns}
+        onLatestChange={setChartLatest}
         currentValue={totals.value}
         hideAmounts={hideAmounts}
       />

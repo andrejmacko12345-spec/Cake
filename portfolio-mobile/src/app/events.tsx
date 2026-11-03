@@ -148,30 +148,36 @@ export default function EventsScreen() {
         });
       }
       const latest = company.quarters[0];
-      const reportedMs = company.lastReportDate
-        ? company.lastReportDate * 1000
-        : latest ? new Date(latest.periodEnd).getTime() + 30 * DAY : 0;
-      if (latest && reportedMs && now - reportedMs < 100 * DAY && reportedMs <= now) {
+      // Presný dátum starších výsledkov Yahoo nedáva; odvodíme ho z oneskorenia posledného reportu.
+      let lag = company.lastReportDate && latest
+        ? company.lastReportDate * 1000 - new Date(latest.periodEnd).getTime()
+        : 30 * DAY;
+      if (!(lag > 0 && lag < 75 * DAY)) lag = 30 * DAY;
+      company.quarters.forEach((quarter, index) => {
+        const reportedMs = index === 0 && company.lastReportDate
+          ? company.lastReportDate * 1000
+          : new Date(quarter.periodEnd).getTime() + lag;
+        if (!reportedMs || reportedMs > now) return;
         const lines: string[] = [];
-        if (latest.epsActual !== null) {
-          lines.push(`EPS ${fmtNum(latest.epsActual)} ${sk ? 'vs odhad' : 'vs est.'} ${fmtNum(latest.epsEstimate)}`);
+        if (quarter.epsActual !== null) {
+          lines.push(`EPS ${fmtNum(quarter.epsActual)} ${sk ? 'vs odhad' : 'vs est.'} ${fmtNum(quarter.epsEstimate)}`);
         }
-        if (latest.epsSurprisePct !== null) {
+        if (quarter.epsSurprisePct !== null) {
           lines.push(
-            `${latest.epsSurprisePct >= 0 ? (sk ? 'Prekonané' : 'Beat') : sk ? 'Nedosiahnuté' : 'Missed'} ${fmtPct(latest.epsSurprisePct)}`,
+            `${quarter.epsSurprisePct >= 0 ? (sk ? 'Prekonané' : 'Beat') : sk ? 'Nedosiahnuté' : 'Missed'} ${fmtPct(quarter.epsSurprisePct)}`,
           );
         }
         list.push({
-          key: `${symbol}-last`,
+          key: `${symbol}-q-${quarter.label}`,
           symbol,
           category: 'Výsledky',
           date: reportedMs,
-          title: `${sk ? 'Výsledky' : 'Earnings'} ${latest.label}`,
+          title: `${sk ? 'Výsledky' : 'Earnings'} ${quarter.label}`,
           lines,
           company,
-          color: latest.epsSurprisePct !== null && latest.epsSurprisePct < 0 ? colors.red : colors.green,
+          color: quarter.epsSurprisePct !== null && quarter.epsSurprisePct < 0 ? colors.red : colors.green,
         });
-      }
+      });
       const dividendLine = company.dividendAmount !== null
         ? [`${sk ? 'Dividenda' : 'Dividend'}: ${fmtNum(company.dividendAmount, 3)} ${company.currency}`]
         : [];
@@ -181,7 +187,7 @@ export default function EventsScreen() {
       ] as const) {
         if (field === null) continue;
         const ms = field * 1000;
-        if (ms < now - 30 * DAY) continue;
+        if (ms < now - 90 * DAY) continue;
         list.push({
           key: `${symbol}-div-${label}`,
           symbol,
@@ -324,11 +330,11 @@ function Row({ label, value, color }: { label: string; value: string; color?: st
 function UpcomingCard({ company, sk }: { company: CompanyEvents; sk: boolean }) {
   const next = company.nextEarnings;
   if (!next) return null;
-  const last = company.quarters[0];
+  const last = company.quarters[3];
   const growth = (estimate: number | null, base: number | null | undefined) =>
     estimate !== null && base ? ((estimate - base) / Math.abs(base)) * 100 : null;
-  const epsQoQ = growth(next.epsEstimate, last?.epsActual);
-  const revQoQ = growth(next.revenueEstimate, last?.revenue);
+  const epsYoY = growth(next.epsEstimate, last?.epsActual);
+  const revYoY = growth(next.revenueEstimate, last?.revenue);
   const ms = next.date * 1000;
   const time = earningsTime(ms, sk);
   return (
@@ -341,10 +347,10 @@ function UpcomingCard({ company, sk }: { company: CompanyEvents; sk: boolean }) 
         value={`${new Date(ms).toLocaleDateString(sk ? 'sk-SK' : 'en-US')}${next.estimate ? (sk ? ' (orientačne)' : ' (est.)') : ''}`}
       />
       {time ? <Row label={sk ? 'Čas' : 'Time'} value={time} /> : null}
-      <Row label={sk ? 'Očakávané tržby' : 'Expected revenue'} value={fmtRevenue(next.revenueEstimate, sk)} />
-      <Row label={sk ? 'Očakávané tržby q/q' : 'Expected revenue QoQ'} value={fmtPct(revQoQ)} color={pctColor(revQoQ)} />
-      <Row label={sk ? 'Očakávané EPS' : 'Expected EPS'} value={fmtNum(next.epsEstimate)} />
-      <Row label={sk ? 'Očakávané EPS q/q' : 'Expected EPS QoQ'} value={fmtPct(epsQoQ)} color={pctColor(epsQoQ)} />
+      <Row label={sk ? 'Tržby (odhad)' : 'Revenue (est.)'} value={fmtRevenue(next.revenueEstimate, sk)} />
+      <Row label={sk ? 'Tržby r/r (odhad)' : 'Revenue YoY (est.)'} value={fmtPct(revYoY)} color={pctColor(revYoY)} />
+      <Row label={sk ? 'EPS (odhad)' : 'EPS (est.)'} value={fmtNum(next.epsEstimate)} />
+      <Row label={sk ? 'EPS r/r (odhad)' : 'EPS YoY (est.)'} value={fmtPct(epsYoY)} color={pctColor(epsYoY)} />
     </Surface>
   );
 }
@@ -356,7 +362,6 @@ function QuarterCard({ quarter, first, sk }: { quarter: QuarterResult; first: bo
       <Text style={styles.quarterTitle}>{quarter.label}</Text>
       <Row label={sk ? 'Tržby' : 'Revenue'} value={fmtRevenue(quarter.revenue, sk)} />
       <Row label={sk ? 'Tržby r/r' : 'Revenue YoY'} value={fmtPct(quarter.revenueYoY)} color={pctColor(quarter.revenueYoY)} />
-      <Row label={sk ? 'Tržby q/q' : 'Revenue QoQ'} value={fmtPct(quarter.revenueQoQ)} color={pctColor(quarter.revenueQoQ)} />
       <Row label="EPS" value={fmtNum(quarter.epsActual)} />
       <Row label={sk ? 'EPS r/r' : 'EPS YoY'} value={fmtPct(quarter.epsYoY)} color={pctColor(quarter.epsYoY)} />
       <Row label={sk ? 'Odhad analytikov (EPS)' : 'Analyst estimate (EPS)'} value={fmtNum(quarter.epsEstimate)} />

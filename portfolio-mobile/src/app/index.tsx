@@ -513,8 +513,11 @@ export default function PortfolioScreen() {
     .sort()
     .at(-1);
   const chartPeriod = chartLatest?.range === range ? chartLatest : null;
-  const headlineGain = chartPeriod ? chartPeriod.gainEUR : latestQuote ? dailyGain : totalReturn;
-  const headlinePercent = chartPeriod ? chartPeriod.returnPercent : latestQuote ? dailyPercent : returnPercent;
+  const openOnlyAll = range === 'Všetko' && !chartPeriod?.label;
+  const headlineGain = openOnlyAll ? unrealized : chartPeriod ? chartPeriod.gainEUR : latestQuote ? dailyGain : totalReturn;
+  const headlinePercent = openOnlyAll
+    ? (totals.openCost > 0 ? unrealized / totals.openCost * 100 : 0)
+    : chartPeriod ? chartPeriod.returnPercent : latestQuote ? dailyPercent : returnPercent;
   const headlineValue = chartPeriod ? chartPeriod.value : totals.value;
   const rangeText = range === 'Všetko' ? t('Všetko') : range === '1T' && language === 'en' ? '1W' : range;
 

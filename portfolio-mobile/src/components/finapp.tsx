@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { ReactNode } from 'react';
+import type { ComponentRef, ReactNode, RefObject } from 'react';
 import {
   Pressable,
   ScrollView,
@@ -18,11 +18,12 @@ import { positionCostEUR, positionValueEUR, usePositions } from '../hooks/use-po
 import { AssetLogo } from './asset-logo';
 import { useLocale } from '../context/locale';
 
-export function Page({ children }: { children: ReactNode }) {
+export function Page({ children, scrollRef }: { children: ReactNode; scrollRef?: RefObject<ComponentRef<typeof ScrollView> | null> }) {
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle={getTheme() === 'light' ? 'dark-content' : 'light-content'} />
       <ScrollView
+        ref={scrollRef}
         contentContainerStyle={styles.page}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"

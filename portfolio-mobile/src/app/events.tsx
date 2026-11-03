@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import type { ComponentRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Linking, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Bell, ChevronRight, Clock3, Newspaper, X } from 'lucide-react-native';
 import { Header, Page, SectionTitle, Surface } from '../components/finapp';
@@ -217,8 +218,19 @@ export default function EventsScreen() {
   }, [data, filter, sk]);
 
   const now = Date.now();
-  const upcoming = items.filter((item) => item.date >= now && item.category !== 'Správy').sort((a, b) => a.date - b.date);
-  const recent = items.filter((item) => item.date < now || item.category === 'Správy').sort((a, b) => b.date - a.date);
+  const timelinePast = items.filter((item) => item.date < now || item.category === 'Správy').sort((a, b) => a.date - b.date);
+  const timelineFuture = items.filter((item) => item.date >= now && item.category !== 'Správy').sort((a, b) => a.date - b.date);
+  const scrollRef = useRef<ComponentRef<typeof ScrollView> | null>(null);
+  const todayY = useRef(0);
+  const scrolledToToday = useRef(false);
+  useEffect(() => {
+    if (scrolledToToday.current || !items.length) return;
+    const timer = setTimeout(() => {
+      scrollRef.current?.scrollTo({ y: Math.max(0, todayY.current - 90), animated: false });
+      scrolledToToday.current = true;
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [items.length]);
 
   const renderItem = (item: EventItem) => {
     const date = new Date(item.date);
@@ -260,7 +272,7 @@ export default function EventsScreen() {
   };
 
   return (
-    <Page>
+    <Page scrollRef={scrollRef}>
       <Header title={t('Udalosti')} subtitle={t('Podľa tvojho portfólia')} action={<Bell size={20} color={colors.text} />} />
       <View style={styles.filterRow}>
         {filters.map((item) => {
@@ -283,10 +295,15 @@ export default function EventsScreen() {
       {!symbols.length ? <Text style={styles.empty}>{t('Pridaj pozície a uvidíš udalosti svojich akcií.')}</Text> : null}
       {failed && symbols.length ? <Text style={styles.empty}>{t('Údaje sa nepodarilo načítať. Potiahni nadol a skús znova.')}</Text> : null}
 
-      {upcoming.length ? <SectionTitle title={t('Nadchádzajúce')} /> : null}
-      {upcoming.map(renderItem)}
-      {recent.length ? <SectionTitle title={t('Nedávne')} /> : null}
-      {recent.map(renderItem)}
+      {timelinePast.map(renderItem)}
+      {items.length ? (
+        <View onLayout={(event) => { todayY.current = event.nativeEvent.layout.y; }} style={styles.todayRow}>
+          <View style={styles.todayLine} />
+          <Text style={styles.todayText}>{sk ? 'DNES' : 'TODAY'}</Text>
+          <View style={styles.todayLine} />
+        </View>
+      ) : null}
+      {timelineFuture.map(renderItem)}
 
       <Modal visible={detail !== null} animationType="slide" transparent onRequestClose={() => setDetail(null)}>
         <View style={styles.scrim}>
@@ -424,6 +441,9 @@ const styles = StyleSheet.create({
   },
   sheetNote: { color: colors.muted, fontSize: 11, marginVertical: 8, lineHeight: 16 },
   quarter: { marginBottom: 10 },
+  todayRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginVertical: 12 },
+  todayLine: { flex: 1, height: 1, backgroundColor: colors.green },
+  todayText: { color: colors.green, fontSize: 11, fontWeight: '900', letterSpacing: 1 },
   upcoming: { marginBottom: 10, borderWidth: 1, borderColor: colors.violet },
   quarterFirst: { marginBottom: 10, borderWidth: 1, borderColor: colors.green },
   quarterTitle: { color: colors.text, fontSize: 14, fontWeight: '900', marginBottom: 8 },

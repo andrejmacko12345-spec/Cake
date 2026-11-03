@@ -42,21 +42,36 @@ function emptyEntry(): WatchEntry {
   return { quote: null, history: null, loading: true, error: '' };
 }
 
+type PricePoint = { timestamp: number; price: number };
+
+// 1D = posledný obchodný deň; základ je predošlé uzavretie (rovnaká logika ako v grafe portfólia).
+function lastTradingDay(allPoints: PricePoint[]) {
+  if (!allPoints.length) return { points: [] as PricePoint[], base: null as number | null };
+  const dayOf = (point: PricePoint) => new Date(point.timestamp * 1000).toISOString().slice(0, 10);
+  const latestDay = dayOf(allPoints[allPoints.length - 1]);
+  const firstIndex = allPoints.findIndex((point) => dayOf(point) === latestDay);
+  return {
+    points: allPoints.slice(firstIndex),
+    base: firstIndex > 0 ? allPoints[firstIndex - 1].price : allPoints[firstIndex].price,
+  };
+}
+
 function getPeriodChange(
   entry: WatchEntry | undefined,
   periodLabel: (typeof periods)[number]['label'],
 ) {
   const allPoints = entry?.history?.points ?? [];
-  const points = periodLabel === '1D'
-    ? allPoints.filter((point) => point.timestamp * 1000 >= Date.now() - 24 * 60 * 60 * 1000)
-    : allPoints;
-  const currentPrice = entry?.quote?.price ?? points[points.length - 1]?.price ?? null;
-  const startPrice = points[0]?.price ?? null;
+  if (periodLabel === '1D') {
+    const { points, base } = lastTradingDay(allPoints);
+    const current = points[points.length - 1]?.price ?? entry?.quote?.price ?? null;
+    return current !== null && base !== null && base > 0 ? (current / base - 1) * 100 : null;
+  }
+  const currentPrice = entry?.quote?.price ?? allPoints[allPoints.length - 1]?.price ?? null;
+  const startPrice = allPoints[0]?.price ?? null;
   return currentPrice !== null && startPrice !== null && startPrice > 0
     ? (currentPrice / startPrice - 1) * 100
     : null;
 }
-
 function formatPrice(price: number, currency: string) {
   return new Intl.NumberFormat('sk-SK', {
     style: 'currency',
@@ -82,9 +97,7 @@ function WatchlistPriceCard({
 }) {
   const { t } = useLocale();
   const allPoints = entry?.history?.points ?? [];
-  const points = selectedPeriod === '1D'
-    ? allPoints.filter((point) => point.timestamp * 1000 >= Date.now() - 24 * 60 * 60 * 1000)
-    : allPoints;
+  const points = selectedPeriod === '1D' ? lastTradingDay(allPoints).points : allPoints;
   const currentPrice = entry?.quote?.price ?? points[points.length - 1]?.price ?? null;
   const currency = entry?.quote?.currency ?? entry?.history?.currency ?? 'USD';
   const change = getPeriodChange(entry, selectedPeriod);
@@ -218,7 +231,7 @@ export default function WatchlistScreen() {
     if (!silent) setWatchData(Object.fromEntries(symbols.map((symbol) => [symbol, emptyEntry()])));
     const startDate = new Date();
     if (period.unit === 'day') {
-      startDate.setDate(startDate.getDate() - period.amount);
+      startDate.setDate(startDate.getDate() - Math.max(period.amount, 5));
     } else {
       const dayOfMonth = startDate.getDate();
       startDate.setDate(1);

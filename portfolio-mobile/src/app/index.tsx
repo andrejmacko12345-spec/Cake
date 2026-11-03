@@ -609,7 +609,7 @@ export default function PortfolioScreen() {
           </View>
           <View style={styles.depositsPill}>
             <Text style={styles.depositsValue}>{money(totals.openCost)}</Text>
-            <Text style={styles.depositsLabel}>{t('Celkovo nakúpené')}</Text>
+            <Text style={styles.depositsLabel}>Net deposits</Text>
           </View>
         </View>
       <InvestmentTimeline

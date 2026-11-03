@@ -23,6 +23,7 @@ const englishTranslations: Record<string, string> = {
   'Výsledky zatiaľ nie sú dostupné.': 'Results are not available yet.',
   'Odhad tržieb Yahoo pre zverejnené štvrťroky neposkytuje.': 'Yahoo does not provide revenue estimates for reported quarters.',
   'Analytika': 'Analytics',
+  'Ukazovatele': 'Metrics',
   'Výhľad': 'Forecast',
   'Moje portfólio': 'My portfolio',
   'Prehľad investícií': 'Investment overview',

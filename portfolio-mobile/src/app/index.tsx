@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ActivityIndicator, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Line, Path } from 'react-native-svg';
-import { ChevronDown, ChevronUp, Eye, EyeOff, Plus, TrendingUp, UserRound, Wallet } from 'lucide-react-native';
+import { ChartNoAxesCombined, ChevronDown, ChevronRight, ChevronUp, Eye, EyeOff, Plus, TrendingUp, UserRound, Wallet } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { TransactionModal } from '../components/transaction-modal';
 import {
@@ -590,6 +590,16 @@ export default function PortfolioScreen() {
         hideAmounts={hideAmounts}
       />
 
+      <Pressable
+        accessibilityRole="button"
+        onPress={() => router.navigate('/analytics')}
+        style={styles.analyticsButton}
+      >
+        <ChartNoAxesCombined size={18} color={colors.green} />
+        <Text style={styles.analyticsButtonText}>{t('Analytika')}</Text>
+        <ChevronRight size={18} color={colors.muted} />
+      </Pressable>
+
       <SectionTitle
         title={t('Moje pozície')}
         action={(
@@ -741,6 +751,18 @@ const styles = StyleSheet.create({
   },
   buttonDisabled: { opacity: 0.4 },
   balanceCard: { borderRadius: 29, padding: 21, alignItems: 'center', marginBottom: 13 },
+  analyticsButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    minHeight: 52,
+    paddingHorizontal: 16,
+    marginTop: 4,
+    marginBottom: 6,
+    borderRadius: 16,
+    backgroundColor: colors.surface,
+  },
+  analyticsButtonText: { flex: 1, color: colors.text, fontSize: 14, fontWeight: '800' },
   balanceLabel: { color: colors.muted, fontSize: 12, fontWeight: '700' },
   balanceValue: { color: colors.text, fontSize: 32, fontWeight: '900', letterSpacing: 0.2, marginTop: 5 },
   returnRow: { width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 9 },

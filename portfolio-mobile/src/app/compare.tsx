@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import { Plus, Search, X } from 'lucide-react-native';
+import { ChevronDown, ChevronUp, Plus, Search, X } from 'lucide-react-native';
 import { Header, Page, SectionTitle, Surface } from '../components/finapp';
 import { colors } from '../data/portfolio';
 import { fetchStockEstimates, StockEstimates } from '../data/fundamentals';
@@ -46,6 +46,7 @@ export default function CompareScreen() {
   const [loadedStorage, setLoadedStorage] = useState(false);
   const [entries, setEntries] = useState<Record<string, Entry>>({});
   const [showSearch, setShowSearch] = useState(false);
+  const [metricsOpen, setMetricsOpen] = useState(false);
   const [query, setQuery] = useState('');
   const { results, loading: searching, error: searchError } = useAssetSearch(query);
   const requested = useRef(new Set<string>());
@@ -227,6 +228,17 @@ export default function CompareScreen() {
         </Pressable>
       </View>
 
+      <Pressable
+        accessibilityRole="button"
+        accessibilityState={{ expanded: metricsOpen }}
+        onPress={() => setMetricsOpen(!metricsOpen)}
+        style={styles.metricsToggle}
+      >
+        <Text style={styles.metricsToggleText}>{t('Ukazovatele')}</Text>
+        <Text style={styles.metricsCount}>{visibleColumns.length}/{columns.length}</Text>
+        {metricsOpen ? <ChevronUp size={18} color={colors.muted} /> : <ChevronDown size={18} color={colors.muted} />}
+      </Pressable>
+      {metricsOpen ? (
       <View style={styles.chipRow}>
         {columns.map((column) => {
           const active = selectedKeys.includes(column.key);
@@ -241,6 +253,7 @@ export default function CompareScreen() {
           );
         })}
       </View>
+      ) : null}
 
       {symbols.length && visibleColumns.length ? (
         <Surface style={styles.tableCard}>
@@ -339,6 +352,17 @@ const styles = StyleSheet.create({
   resultName: { flex: 1, color: colors.muted, fontSize: 12 },
   resultAction: { color: colors.green, fontSize: 18, fontWeight: '800' },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 12 },
+  metricsToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    minHeight: 48,
+    paddingHorizontal: 16,
+    marginBottom: 10,
+    borderRadius: 14,
+    backgroundColor: colors.surface,
+  },
+  metricsToggleText: { flex: 1, color: colors.text, fontSize: 13, fontWeight: '800' },
+  metricsCount: { color: colors.muted, fontSize: 11, fontWeight: '700', marginRight: 8 },
   chip: {
     flexDirection: 'row',
     alignItems: 'center',

@@ -1,7 +1,8 @@
 import { Fragment, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import Svg, { Circle, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
-import { ChevronDown, Info } from 'lucide-react-native';
+import { ArrowLeft, ChevronDown, Info } from 'lucide-react-native';
+import { useRouter } from 'expo-router';
 import { Header, Page, SectionTitle, Surface } from '../components/finapp';
 import { colors, formatMoney } from '../data/portfolio';
 import {
@@ -803,6 +804,7 @@ function FundamentalsTable({
 }
 
 export default function AnalyticsScreen() {
+  const router = useRouter();
   const { t, language } = useLocale();
   const { positions, transactions, loading } = usePositions();
   const { width: screenWidth } = useWindowDimensions();
@@ -945,7 +947,20 @@ export default function AnalyticsScreen() {
   );
   return (
     <Page>
-      <Header title={t('Analytika portfólia')} subtitle={t('Porovnanie od prvej investície')} />
+      <Header
+        title={t('Analytika portfólia')}
+        subtitle={t('Porovnanie od prvej investície')}
+        action={
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={language === 'sk' ? 'Späť' : 'Back'}
+            onPress={() => (router.canGoBack() ? router.back() : router.navigate('/'))}
+            style={{ width: 39, height: 39, alignItems: 'center', justifyContent: 'center', borderRadius: 13, backgroundColor: colors.surface }}
+          >
+            <ArrowLeft size={18} color={colors.text} />
+          </Pressable>
+        }
+      />
       <Surface style={styles.marketCard}>
         <View style={styles.marketHeading}>
           <Text style={styles.marketLabel}>{t('Trhová hodnota')}</Text>

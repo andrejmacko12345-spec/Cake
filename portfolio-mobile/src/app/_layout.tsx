@@ -3,7 +3,6 @@ import { Tabs } from 'expo-router';
 import {
   Bookmark,
   CalendarDays,
-  ChartNoAxesCombined,
   House,
   Scale,
   Sparkles,
@@ -68,13 +67,7 @@ function AppTabs() {
             tabBarIcon: ({ color, size }) => <Bookmark color={color} size={size} />,
           }}
         />
-        <Tabs.Screen
-          name="analytics"
-          options={{
-            title: t('Analytika'),
-            tabBarIcon: ({ color, size }) => <ChartNoAxesCombined color={color} size={size} />,
-          }}
-        />
+        <Tabs.Screen name="analytics" options={{ href: null }} />
         <Tabs.Screen
           name="compare"
           options={{

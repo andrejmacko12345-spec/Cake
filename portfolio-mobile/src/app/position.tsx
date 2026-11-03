@@ -9,7 +9,7 @@ import {
   View,
 } from 'react-native';
 import Svg, { Circle, Line, Path } from 'react-native-svg';
-import { ArrowLeft, Pencil, Plus, TrendingDown, TrendingUp } from 'lucide-react-native';
+import { ArrowLeft, ChevronDown, ChevronUp, Pencil, Plus, TrendingDown, TrendingUp } from 'lucide-react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { AssetLogo } from '../components/asset-logo';
 import { TransactionModal } from '../components/transaction-modal';
@@ -315,6 +315,7 @@ export default function PositionDetailScreen() {
   const [quoteError, setQuoteError] = useState('');
   const [range, setRange] = useState<RangeLabel>('3M');
   const [formVisible, setFormVisible] = useState(false);
+  const [movementsOpen, setMovementsOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | undefined>();
   const [initialType, setInitialType] = useState<'BUY' | 'SELL'>('BUY');
 
@@ -450,11 +451,17 @@ export default function PositionDetailScreen() {
 
       {heldPosition ? (
         <>
-          <SectionTitle
-            title={t('Moje pohyby')}
-            action={<Text style={styles.transactionCount}>{formatTransactionCount(position.transactions.length, language)}</Text>}
-          />
-          <TransactionTable transactions={position.transactions} onEdit={editTransaction} />
+          <Pressable
+            accessibilityRole="button"
+            accessibilityState={{ expanded: movementsOpen }}
+            onPress={() => setMovementsOpen(!movementsOpen)}
+            style={styles.movementsToggle}
+          >
+            <Text style={styles.movementsTitle}>{t('Moje pohyby')}</Text>
+            <Text style={styles.transactionCount}>{formatTransactionCount(position.transactions.length, language)}</Text>
+            {movementsOpen ? <ChevronUp size={18} color={colors.muted} /> : <ChevronDown size={18} color={colors.muted} />}
+          </Pressable>
+          {movementsOpen ? <TransactionTable transactions={position.transactions} onEdit={editTransaction} /> : null}
         </>
       ) : null}
 
@@ -508,7 +515,18 @@ const styles = StyleSheet.create({
   rangeButtonSelected: { backgroundColor: colors.green },
   rangeText: { color: colors.muted, fontSize: 9, fontWeight: '800' },
   rangeTextSelected: { color: colors.surface },
-  transactionCount: { color: colors.muted, fontSize: 9, fontWeight: '700' },
+  transactionCount: { color: colors.muted, fontSize: 10, fontWeight: '700', marginRight: 8 },
+  movementsToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    minHeight: 52,
+    paddingHorizontal: 16,
+    marginTop: 12,
+    marginBottom: 8,
+    borderRadius: 16,
+    backgroundColor: colors.surface,
+  },
+  movementsTitle: { flex: 1, color: colors.text, fontSize: 14, fontWeight: '800' },
   tableCard: { paddingHorizontal: 10, paddingVertical: 6 },
   tableHeader: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 3, paddingVertical: 8, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border },
   tableHeading: { color: colors.muted, fontSize: 8, fontWeight: '800' },

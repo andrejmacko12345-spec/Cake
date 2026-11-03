@@ -528,10 +528,10 @@ export default function PositionDetailScreen() {
             {(events?.quarters?.length || events?.nextEarnings) ? (
               <View style={styles.reportRow}>
                 <Text style={[styles.reportHead, styles.colPeriod]}>{t('Obdobie')}</Text>
-                <Text style={[styles.reportHead, styles.colNum, { textAlign: 'right' }]}>EPS</Text>
-                <Text style={[styles.reportHead, styles.colNum, { textAlign: 'right' }]}>{t('Beat / Miss')}</Text>
                 <Text style={[styles.reportHead, styles.colNum, { textAlign: 'right' }]}>{t('Tržby')}</Text>
+                <Text style={[styles.reportHead, styles.colNum, { textAlign: 'right' }]}>{t('Beat / Miss')}</Text>
                 <Text style={[styles.reportHead, styles.colNum, { textAlign: 'right' }]}>YoY</Text>
+                <Text style={[styles.reportHead, styles.colNum, { textAlign: 'right' }]}>EPS</Text>
                 <Text style={[styles.reportHead, styles.colNum, { textAlign: 'right' }]}>{t('Beat / Miss')}</Text>
               </View>
             ) : null}
@@ -545,13 +545,13 @@ export default function PositionDetailScreen() {
                   </Text>
                 </View>
                 <Text style={[styles.reportCell, styles.colNum, { color: colors.muted }]}>
-                  {events.nextEarnings.epsEstimate != null ? events.nextEarnings.epsEstimate.toFixed(2) : '–'}
-                </Text>
-                <Text style={[styles.reportCell, styles.colNum, { color: colors.muted }]}>–</Text>
-                <Text style={[styles.reportCell, styles.colNum, { color: colors.muted }]}>
                   {events.nextEarnings.revenueEstimate != null ? formatBigNumber(events.nextEarnings.revenueEstimate) : '–'}
                 </Text>
                 <Text style={[styles.reportCell, styles.colNum, { color: colors.muted }]}>–</Text>
+                <Text style={[styles.reportCell, styles.colNum, { color: colors.muted }]}>–</Text>
+                <Text style={[styles.reportCell, styles.colNum, { color: colors.muted }]}>
+                  {events.nextEarnings.epsEstimate != null ? events.nextEarnings.epsEstimate.toFixed(2) : '–'}
+                </Text>
                 <Text style={[styles.reportCell, styles.colNum, { color: colors.muted }]}>–</Text>
               </View>
             ) : null}
@@ -565,19 +565,19 @@ export default function PositionDetailScreen() {
                 <View key={quarter.periodEnd} style={styles.reportRow}>
                   <Text style={[styles.reportTitle, styles.colPeriod]}>{quarter.label}</Text>
                   <Text style={[styles.reportCell, styles.colNum]}>
-                    {quarter.epsActual != null ? quarter.epsActual.toFixed(2) : '–'}
-                  </Text>
-                  <Text style={[styles.reportCell, styles.colNum, { color: tone(epsDiff) }]}>
-                    {epsDiff != null ? epsDiff.toFixed(2) : '–'}
-                  </Text>
-                  <Text style={[styles.reportCell, styles.colNum]}>
                     {quarter.revenue != null ? formatBigNumber(quarter.revenue) : '–'}
+                  </Text>
+                  <Text style={[styles.reportCell, styles.colNum, { color: tone(revDiff) }]}>
+                    {revDiff != null ? formatBigNumber(revDiff) : '–'}
                   </Text>
                   <Text style={[styles.reportCell, styles.colNum]}>
                     {quarter.revenueYoY != null ? `${quarter.revenueYoY.toFixed(1)}%` : '–'}
                   </Text>
-                  <Text style={[styles.reportCell, styles.colNum, { color: tone(revDiff) }]}>
-                    {revDiff != null ? formatBigNumber(revDiff) : '–'}
+                  <Text style={[styles.reportCell, styles.colNum]}>
+                    {quarter.epsActual != null ? quarter.epsActual.toFixed(2) : '–'}
+                  </Text>
+                  <Text style={[styles.reportCell, styles.colNum, { color: tone(epsDiff) }]}>
+                    {epsDiff != null ? epsDiff.toFixed(2) : '–'}
                   </Text>
                 </View>
               );

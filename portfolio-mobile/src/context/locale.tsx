@@ -43,6 +43,7 @@ const englishTranslations: Record<string, string> = {
   'Pridať predaj': 'Add sale',
   'Zoradiť': 'Sort by',
   'Hodnota': 'Value',
+  'Zmena %': 'Change %',
   'A–Z': 'A–Z',
   'Načítavam tvoje pozície…': 'Loading your positions…',
   'Tvoje portfólio čaká na prvú pozíciu': 'Your portfolio is waiting for its first position',

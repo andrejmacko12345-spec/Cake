@@ -471,7 +471,7 @@ export default function PortfolioScreen() {
   const [initialType, setInitialType] = useState<'BUY' | 'SELL'>('BUY');
   const [range, setRange] = useState<ChartRange>('1D');
   const [chartLatest, setChartLatest] = useState<ChartLatest | null>(null);
-  const [positionSort, setPositionSort] = useState<'value' | 'alphabetical'>('value');
+  const [positionSort, setPositionSort] = useState<'value' | 'alphabetical' | 'change'>('value');
   const [closedExpanded, setClosedExpanded] = useState(false);
   const [sparklines, setSparklines] = useState<Record<string, number[]>>({});
   const [periodReturns, setPeriodReturns] = useState<Record<string, { gainEUR: number; returnPercent: number }>>({});
@@ -506,21 +506,29 @@ export default function PortfolioScreen() {
   const unrealized = totals.value - totals.openCost;
   const totalReturn = unrealized + totals.realized;
   const returnPercent = totals.invested > 0 ? totalReturn / totals.invested * 100 : 0;
+  const changeOf = (position: (typeof positions)[number]) => {
+    const period = range === 'Všetko' ? undefined : periodReturns[position.symbol];
+    if (period) return period.returnPercent;
+    const cost = positionCostEUR(position);
+    return cost > 0 ? ((positionValueEUR(position) - cost) / cost) * 100 : 0;
+  };
+  const comparePositions = (a: (typeof positions)[number], b: (typeof positions)[number]) =>
+    positionSort === 'value'
+      ? positionValueEUR(b) - positionValueEUR(a)
+      : positionSort === 'change'
+        ? changeOf(b) - changeOf(a)
+        : a.name.localeCompare(b.name, 'sk');
   const activePositions = useMemo(
     () => positions
       .filter((position) => position.shares > 1e-8)
-      .sort((a, b) => positionSort === 'value'
-        ? positionValueEUR(b) - positionValueEUR(a)
-        : a.name.localeCompare(b.name, 'sk')),
-    [positions, positionSort],
+      .sort(comparePositions),
+    [positions, positionSort, periodReturns, range],
   );
   const closedPositions = useMemo(
     () => positions
       .filter((position) => position.shares <= 1e-8)
-      .sort((a, b) => positionSort === 'value'
-        ? positionValueEUR(b) - positionValueEUR(a)
-        : a.name.localeCompare(b.name, 'sk')),
-    [positions, positionSort],
+      .sort(comparePositions),
+    [positions, positionSort, periodReturns, range],
   );
   const dailyGain = positions.reduce((sum, position) => {
     const dailyReturn = position.dailyChangePct;
@@ -646,6 +654,7 @@ export default function PortfolioScreen() {
           <View style={styles.sortOptions}>
             {([
               { key: 'value', label: t('Hodnota') },
+              { key: 'change', label: t('Zmena %') },
               { key: 'alphabetical', label: t('A–Z') },
             ] as const).map((option) => {
               const selected = positionSort === option.key;

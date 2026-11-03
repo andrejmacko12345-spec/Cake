@@ -183,7 +183,7 @@ function createPortfolioHistory(
   });
 }
 
-type ChartLatest = { range: ChartRange; value: number; gainEUR: number; returnPercent: number };
+type ChartLatest = { range: ChartRange; value: number; gainEUR: number; returnPercent: number; label: string | null };
 
 function InvestmentTimeline({
   transactions,
@@ -320,12 +320,21 @@ function InvestmentTimeline({
   useEffect(() => {
     onPositionReturnsChange(selectedPoint?.positionReturns ?? {});
   }, [onPositionReturnsChange, selectedPoint]);
-  const latestPoint = history[history.length - 1];
   useEffect(() => {
-    onLatestChange(latestPoint
-      ? { range, value: latestPoint.value, gainEUR: latestPoint.gainEUR, returnPercent: latestPoint.returnPercent }
+    onLatestChange(selectedPoint
+      ? {
+        range,
+        value: selectedPoint.value,
+        gainEUR: selectedPoint.gainEUR,
+        returnPercent: selectedPoint.returnPercent,
+        label: selectedIndex !== null
+          ? range === '1D'
+            ? new Date(selectedPoint.timestamp * 1000).toLocaleString(language === 'sk' ? 'sk-SK' : 'en-US')
+            : new Date(`${selectedPoint.date}T12:00:00`).toLocaleDateString(language === 'sk' ? 'sk-SK' : 'en-US')
+          : null,
+      }
       : null);
-  }, [onLatestChange, latestPoint, range]);
+  }, [onLatestChange, selectedPoint, selectedIndex, range, language]);
   const updateSelectedPoint = (locationX: number) => {
     if (!history.length || chartWidth <= 0) return;
     const normalized = Math.min(1, Math.max(0, locationX / chartWidth));
@@ -342,26 +351,6 @@ function InvestmentTimeline({
 
   return (
     <View style={styles.chartCard}>
-      <View style={[styles.chartHeader, { opacity: selectedPoint ? 1 : 0 }]}>
-        <View>
-          <Text style={styles.chartTitle}>{t('Hodnota portfólia')}</Text>
-          <Text style={styles.chartSubtitle}>
-            {selectedPoint
-              ? range === '1D'
-                ? new Date(selectedPoint.timestamp * 1000).toLocaleString(language === 'sk' ? 'sk-SK' : 'en-US')
-                : new Date(`${selectedPoint.date}T12:00:00`).toLocaleDateString(language === 'sk' ? 'sk-SK' : 'en-US')
-              : `${t('Výnos za')} ${selectedRangeLabel}`}
-          </Text>
-        </View>
-        <View style={styles.chartMetrics}>
-          <Text style={styles.chartTotal}>{money(displayedValue)}</Text>
-          {!historyError ? (
-            <Text style={[styles.chartReturn, { color: displayedGain >= 0 ? colors.green : colors.red }]}>
-              {formatPercent(displayedReturn)}{hideAmounts ? '' : ` · ${displayedGain >= 0 ? '+' : ''}${formatMoney(displayedGain)}`}
-            </Text>
-          ) : null}
-        </View>
-      </View>
       <View
         {...panResponder.panHandlers}
         onLayout={(event) => setChartWidth(event.nativeEvent.layout.width)}
@@ -559,7 +548,7 @@ export default function PortfolioScreen() {
         <Text style={styles.balanceLabel}>{t('Trhová hodnota')}</Text>
         <Text style={styles.balanceValue}>{money(headlineValue)}</Text>
         <View style={styles.returnRow}>
-          <Text style={styles.headlineHint}>{`${t('Výnos za')} ${rangeText}`}</Text>
+          <Text style={styles.headlineHint}>{chartPeriod?.label ?? `${t('Výnos za')} ${rangeText}`}</Text>
           <View style={styles.returnIndicator}>
             {headlineGain >= 0 ? <TrendingUp size={16} color={colors.green} /> : null}
             <Text style={[styles.returnPercent, { color: headlineGain >= 0 ? colors.green : colors.red }]}>

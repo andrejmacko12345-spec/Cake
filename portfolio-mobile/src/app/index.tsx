@@ -550,7 +550,7 @@ export default function PortfolioScreen() {
         <View style={styles.balanceStats}>
           <View style={styles.balanceStat}>
             <Text style={styles.statLabel}>{t('Celkovo nakúpené')}</Text>
-            <Text style={styles.statValue}>{money(totals.openInvested)}</Text>
+            <Text style={styles.statValue}>{money(totals.openCost)}</Text>
           </View>
           <View style={styles.balanceStat}>
             <Text style={styles.statLabel}>{t('Celkový výnos')}</Text>

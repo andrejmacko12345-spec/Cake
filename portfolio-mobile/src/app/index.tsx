@@ -557,32 +557,28 @@ export default function PortfolioScreen() {
         }
       />
       <Surface style={styles.heroCard}>
-      <View style={styles.balanceCard}>
-        <Text style={styles.balanceLabel}>{t('Trhová hodnota')}</Text>
-        <Text style={styles.balanceValue}>{money(headlineValue)}</Text>
-        <View style={styles.returnRow}>
-          <Text style={styles.headlineHint}>{chartPeriod?.label ?? `${t('Výnos za')} ${rangeText}`}</Text>
-          <View style={styles.returnIndicator}>
-            {headlineGain >= 0 ? <TrendingUp size={16} color={colors.green} /> : null}
-            <Text style={[styles.returnPercent, { color: headlineGain >= 0 ? colors.green : colors.red }]}>
-              {formatPercent(headlinePercent)}
-            </Text>
+        <View style={styles.balanceCard}>
+          <Text style={styles.balanceLabel}>{t('Trhová hodnota')}</Text>
+          <Text style={styles.balanceValue}>{money(headlineValue)}</Text>
+          <View style={styles.returnRow}>
+            <Text style={styles.headlineHint}>{chartPeriod?.label ?? `${t('Výnos za')} ${rangeText}`}</Text>
+            <View style={styles.returnLine}>
+              <View style={styles.returnIndicator}>
+                {headlineGain >= 0 ? <TrendingUp size={16} color={colors.green} /> : null}
+                <Text style={[styles.returnPercent, { color: headlineGain >= 0 ? colors.green : colors.red }]}>
+                  {formatPercent(headlinePercent)}
+                </Text>
+              </View>
+              <Text style={[styles.returnAmount, { color: headlineGain >= 0 ? colors.green : colors.red }]}>
+                {hideAmounts ? '' : signedMoney(headlineGain)}
+              </Text>
+            </View>
           </View>
-          <Text style={[styles.returnAmount, { color: headlineGain >= 0 ? colors.green : colors.red }]}>
-            {hideAmounts ? '' : signedMoney(headlineGain)}
-          </Text>
+          <View style={styles.depositsPill}>
+            <Text style={styles.depositsValue}>{money(totals.openCost)}</Text>
+            <Text style={styles.depositsLabel}>{t('Celkovo nakúpené')}</Text>
+          </View>
         </View>
-        <View style={styles.depositsPill}>
-          <Text style={styles.depositsValue}>{money(totals.openCost)}</Text>
-          <Text style={styles.depositsLabel}>{t('Celkovo nakúpené')}</Text>
-        </View>        {latestQuote ? (
-          <Text style={styles.lastUpdated}>
-            {language === 'sk' ? 'Trhové ceny aktualizované ' : 'Market prices updated '}
-            {new Date(latestQuote).toLocaleString(language === 'sk' ? 'sk-SK' : 'en-US')}
-          </Text>
-        ) : null}
-      </View>
-
       <InvestmentTimeline
         transactions={transactions}
         range={range}
@@ -755,7 +751,7 @@ const styles = StyleSheet.create({
   },
   buttonDisabled: { opacity: 0.4 },
   heroCard: { borderRadius: 29, padding: 0, marginBottom: 13, overflow: 'hidden' },
-  balanceCard: { padding: 21, paddingBottom: 6, alignItems: 'center' },
+  balanceCard: { padding: 21, paddingBottom: 18, alignItems: 'center' },
   analyticsButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -770,11 +766,12 @@ const styles = StyleSheet.create({
   analyticsButtonText: { flex: 1, color: colors.text, fontSize: 14, fontWeight: '800' },
   balanceLabel: { color: colors.muted, fontSize: 12, fontWeight: '700' },
   balanceValue: { color: colors.text, fontSize: 32, fontWeight: '900', letterSpacing: 0.2, marginTop: 5 },
-  returnRow: { width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 9 },
-  headlineHint: { color: colors.muted, fontSize: 10, fontWeight: '700' },
+  returnRow: { alignItems: 'center', gap: 4, marginTop: 8 },
+  returnLine: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  headlineHint: { color: colors.muted, fontSize: 11, fontWeight: '700' },
   returnIndicator: { flexDirection: 'row', alignItems: 'center', gap: 5 },
-  returnPercent: { fontSize: 13, fontWeight: '900' },
-  returnAmount: { fontSize: 13, fontWeight: '800' },
+  returnPercent: { fontSize: 16, fontWeight: '900' },
+  returnAmount: { fontSize: 16, fontWeight: '800' },
   balanceDivider: { width: '100%', height: StyleSheet.hairlineWidth, backgroundColor: colors.border, marginVertical: 13 },
   balanceStats: { width: '100%', flexDirection: 'row' },
   depositsPill: {
@@ -792,8 +789,7 @@ const styles = StyleSheet.create({
   balanceStat: { flex: 1 },
   statLabel: { color: colors.muted, fontSize: 10, fontWeight: '600' },
   statValue: { color: colors.text, fontSize: 12, fontWeight: '800', marginTop: 5 },
-  lastUpdated: { alignSelf: 'flex-start', color: colors.muted, fontSize: 9, marginTop: 12 },
-  chartCard: { paddingHorizontal: 8, paddingTop: 4, paddingBottom: 10 },
+  chartCard: { paddingHorizontal: 10, paddingTop: 12, paddingBottom: 12, backgroundColor: colors.background, borderTopWidth: 1, borderTopColor: colors.border },
   chartHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 2 },
   chartTitle: { color: colors.text, fontSize: 14, fontWeight: '900' },
   chartSubtitle: { color: colors.muted, fontSize: 9, marginTop: 3 },

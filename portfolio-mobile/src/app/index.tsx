@@ -26,9 +26,9 @@ const chartRanges = [
   { label: '1M', days: 30 },
   { label: '3M', days: 90 },
   { label: '6M', days: 180 },
-  { label: '1R', days: 365 },
-  { label: '3R', days: 1095 },
-  { label: '5R', days: 1825 },
+  { label: '1Y', days: 365 },
+  { label: '3Y', days: 1095 },
+  { label: '5Y', days: 1825 },
   { label: 'YTD', days: 'ytd' },
   { label: 'Všetko', days: null },
 ] as const;
@@ -240,7 +240,7 @@ function InvestmentTimeline({
     const rangeStartDate = new Date(`${rangeStart}T00:00:00.000Z`);
     rangeStartDate.setUTCDate(rangeStartDate.getUTCDate() - (range === '1D' ? 5 : 7));
     const queryStart = rangeStartDate.toISOString().slice(0, 10);
-    const interval = range === '1D' ? '5m' : range === '5R' || range === 'Všetko' ? '1wk' : '1d';
+    const interval = range === '1D' ? '5m' : range === '5Y' || range === 'Všetko' ? '1wk' : '1d';
     const symbols = [...new Set(transactions.map((transaction) => transaction.symbol))];
     if (!silent) {
       setLoadingHistory(true);

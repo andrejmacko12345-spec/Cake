@@ -24,8 +24,8 @@ const periods = [
   { label: '1M', amount: 1, unit: 'month', interval: '1d' },
   { label: '3M', amount: 3, unit: 'month', interval: '1d' },
   { label: '6M', amount: 6, unit: 'month', interval: '1d' },
-  { label: '1R', amount: 12, unit: 'month', interval: '1d' },
-  { label: '5R', amount: 60, unit: 'month', interval: '1d' },
+  { label: '1Y', amount: 12, unit: 'month', interval: '1d' },
+  { label: '5Y', amount: 60, unit: 'month', interval: '1d' },
 ] as const;
 
 function isValidSymbol(value: string) {
@@ -533,30 +533,28 @@ const styles = StyleSheet.create({
   },
   periodSelector: {
     flexDirection: 'row',
-    gap: 5,
-    marginBottom: 6,
+    padding: 3,
+    marginBottom: 10,
+    borderRadius: 12,
+    backgroundColor: colors.surface,
   },
   periodButton: {
     flex: 1,
-    minHeight: 29,
+    minHeight: 32,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
+    borderRadius: 9,
   },
   periodButtonSelected: {
-    borderColor: colors.green,
-    backgroundColor: colors.green,
+    backgroundColor: colors.surfaceRaised,
   },
   periodText: {
     color: colors.muted,
-    fontSize: 9,
-    fontWeight: '800',
+    fontSize: 12,
+    fontWeight: '700',
   },
   periodTextSelected: {
-    color: colors.surface,
+    color: colors.text,
   },
   assetList: {
     gap: 2,

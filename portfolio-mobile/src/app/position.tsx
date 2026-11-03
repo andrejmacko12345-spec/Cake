@@ -33,9 +33,9 @@ const ranges = [
   { label: '1M', days: 30, interval: '1d' },
   { label: '3M', days: 90, interval: '1d' },
   { label: '6M', days: 180, interval: '1d' },
-  { label: '1R', days: 365, interval: '1d' },
-  { label: '3R', days: 1095, interval: '1wk' },
-  { label: '5R', days: 1825, interval: '1wk' },
+  { label: '1Y', days: 365, interval: '1d' },
+  { label: '3Y', days: 1095, interval: '1wk' },
+  { label: '5Y', days: 1825, interval: '1wk' },
   { label: 'Všetko', days: null, interval: '1wk' },
 ] as const;
 

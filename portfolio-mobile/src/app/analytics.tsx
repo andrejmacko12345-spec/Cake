@@ -323,7 +323,7 @@ const comparisonPeriods = [
   { label: '1M', days: 30 },
   { label: '3M', days: 91 },
   { label: '6M', days: 183 },
-  { label: '1R', days: 365 },
+  { label: '1Y', days: 365 },
   { label: 'Všetko', days: null },
 ] as const;
 

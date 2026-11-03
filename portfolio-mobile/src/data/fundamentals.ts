@@ -107,6 +107,75 @@ export async function fetchFundamentals(symbol: string): Promise<Fundamentals> {
   }
 }
 
+export type StockEstimates = {
+  symbol: string;
+  name: string;
+  currentPE: number | null;
+  forwardPE: number | null;
+  peThisYear: number | null;
+  peNextYear: number | null;
+  revenueGrowthThisYear: number | null;
+  revenueGrowthNextYear: number | null;
+  epsGrowthThisYear: number | null;
+  epsGrowthNextYear: number | null;
+};
+
+type EstimatesResponse = {
+  quoteSummary?: {
+    result?: Array<{
+      price?: { regularMarketPrice?: RawValue; shortName?: string; longName?: string };
+      summaryDetail?: { trailingPE?: RawValue; forwardPE?: RawValue };
+      defaultKeyStatistics?: { forwardPE?: RawValue };
+      earningsTrend?: {
+        trend?: Array<{
+          period?: string;
+          revenueEstimate?: { growth?: RawValue };
+          earningsEstimate?: { avg?: RawValue; growth?: RawValue };
+        }>;
+      };
+    }> | null;
+  };
+};
+
+// Yahoo zverejňuje odhady len pre aktuálny (0y) a nasledujúci (+1y) fiškálny rok.
+export async function fetchStockEstimates(symbol: string): Promise<StockEstimates> {
+  const crumb = await getCrumb();
+  const url = `https://query2.finance.yahoo.com/v10/finance/quoteSummary/${encodeURIComponent(symbol)}`
+    + `?modules=price,summaryDetail,defaultKeyStatistics,earningsTrend&crumb=${encodeURIComponent(crumb)}`;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15000);
+  try {
+    const response = await fetch(url, {
+      headers: { 'User-Agent': USER_AGENT, Accept: 'application/json' },
+      signal: controller.signal,
+    });
+    if (response.status === 401) crumbPromise = null;
+    if (!response.ok) throw new Error(`Zdroj fundamentov vrátil HTTP ${response.status}.`);
+    const data = await response.json() as EstimatesResponse;
+    const result = data.quoteSummary?.result?.[0];
+    if (!result) throw new Error(`Fundamenty pre ${symbol} sa nepodarilo nájsť.`);
+    const trend = result.earningsTrend?.trend ?? [];
+    const thisYear = trend.find((item) => item.period === '0y');
+    const nextYear = trend.find((item) => item.period === '+1y');
+    const price = finite(result.price?.regularMarketPrice);
+    const peFrom = (eps: number | null) => (price !== null && eps !== null && eps > 0 ? price / eps : null);
+    return {
+      symbol,
+      name: result.price?.shortName ?? result.price?.longName ?? symbol,
+      currentPE: finite(result.summaryDetail?.trailingPE),
+      forwardPE: finite(result.summaryDetail?.forwardPE) ?? finite(result.defaultKeyStatistics?.forwardPE),
+      peThisYear: peFrom(finite(thisYear?.earningsEstimate?.avg)),
+      peNextYear: peFrom(finite(nextYear?.earningsEstimate?.avg)),
+      revenueGrowthThisYear: finite(thisYear?.revenueEstimate?.growth),
+      revenueGrowthNextYear: finite(nextYear?.revenueEstimate?.growth),
+      epsGrowthThisYear: finite(thisYear?.earningsEstimate?.growth),
+      epsGrowthNextYear: finite(nextYear?.earningsEstimate?.growth),
+    };
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 // Vážený priemer; P/E sa agreguje cez harmonický priemer (vážené výnosy zisku), rast aritmeticky.
 function aggregate(
   items: Array<{ weight: number; value: number | null }>,

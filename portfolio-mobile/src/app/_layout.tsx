@@ -4,6 +4,7 @@ import {
   CalendarDays,
   ChartNoAxesCombined,
   House,
+  Scale,
   Sparkles,
 } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -71,6 +72,13 @@ function AppTabs() {
           options={{
             title: t('Analytika'),
             tabBarIcon: ({ color, size }) => <ChartNoAxesCombined color={color} size={size} />,
+          }}
+        />
+        <Tabs.Screen
+          name="compare"
+          options={{
+            title: t('Porovnanie'),
+            tabBarIcon: ({ color, size }) => <Scale color={color} size={size} />,
           }}
         />
         <Tabs.Screen

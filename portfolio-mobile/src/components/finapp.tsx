@@ -331,7 +331,9 @@ export function PositionRow({
   performance,
   onPress,
   hideAmounts = false,
+  spark,
 }: {
+  spark?: number[];
   position: Position;
   performance?: { gainEUR: number; returnPercent: number };
   onPress: () => void;
@@ -347,6 +349,15 @@ export function PositionRow({
       ? (cost > 0 ? (unrealized / cost) * 100 : 0)
       : position.totalInvestedEUR > 0 ? (result / position.totalInvestedEUR) * 100 : 0);
   const money = (value: number) => (hideAmounts ? '•••••' : formatMoney(value));
+  const tone = result >= 0 ? colors.green : colors.red;
+  let sparkPath = '';
+  if (spark && spark.length > 1) {
+    const lo = Math.min(...spark);
+    const spread = Math.max(...spark) - lo || 1;
+    sparkPath = spark
+      .map((price, index) => `${index === 0 ? 'M' : 'L'} ${(index / (spark.length - 1)) * 160} ${35 - ((price - lo) / spread) * 30}`)
+      .join(' ');
+  }
   return (
     <Pressable
       accessibilityLabel={`Zobraziť graf a pohyby ${position.symbol}`}
@@ -354,7 +365,7 @@ export function PositionRow({
       onPress={onPress}
       style={styles.assetRow}
     >
-      <AssetLogo symbol={position.symbol} color={position.color} />
+      <AssetLogo symbol={position.symbol} color={position.color} size={40} />
       <View style={styles.assetIdentity}>
         <Text style={styles.assetSymbol}>{position.symbol}</Text>
         <Text style={styles.assetName} numberOfLines={1}>
@@ -363,23 +374,29 @@ export function PositionRow({
             : `Predaná · ${position.transactions.length} pohybov`}
         </Text>
       </View>
+      {sparkPath ? (
+        <Svg style={styles.rowSpark} height={28} viewBox="0 0 160 40" preserveAspectRatio="none">
+          <Path d={sparkPath} fill="none" stroke={tone} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        </Svg>
+      ) : null}
       <View style={styles.assetNumbers}>
-        <Text style={styles.assetValue}>
+        <View style={[styles.rowPill, { backgroundColor: tone }]}>
+          <Text style={styles.rowPillText}>{formatPercent(returnPercent)}</Text>
+        </View>
+        <Text style={styles.rowValue}>
           {position.shares > 0
             ? money(marketValue)
             : performance ? money(result) : money(position.realizedProfitEUR)}
-        </Text>
-        <Text style={[styles.change, { color: result >= 0 ? colors.green : colors.red }]}>
-          {position.shares > 0 || performance
-            ? `${hideAmounts ? '' : `${result >= 0 ? '+' : ''}${formatMoney(result)} · `}${formatPercent(returnPercent)}`
-            : `Realizovaný výsledok · ${formatPercent(returnPercent)}`}
         </Text>
       </View>
     </Pressable>
   );
 }
-
 const styles = StyleSheet.create({
+  rowSpark: { width: 56, height: 28, marginHorizontal: 8 },
+  rowPill: { borderRadius: 7, paddingHorizontal: 8, paddingVertical: 3, minWidth: 78, alignItems: 'center' },
+  rowPillText: { color: colors.background, fontSize: 14, fontWeight: '800', fontVariant: ['tabular-nums'] },
+  rowValue: { color: colors.text, fontSize: 12, fontWeight: '600', marginTop: 4, fontVariant: ['tabular-nums'] },
   safeArea: {
     flex: 1,
     backgroundColor: colors.background,

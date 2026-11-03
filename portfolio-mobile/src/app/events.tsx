@@ -324,7 +324,10 @@ export default function EventsScreen() {
               </Pressable>
             </View>
             <ScrollView>
-              {detail?.nextEarnings ? <UpcomingCard company={detail} sk={sk} /> : null}
+              {detail?.nextEarnings && !(detail.lastReportDate
+                && detail.lastReportDate * 1000 > Date.now() - 90 * DAY
+                && detail.lastReportDate * 1000 <= Date.now()
+                && detail.quarters.length) ? <UpcomingCard company={detail} sk={sk} /> : null}
               {detail?.quarters.length ? (
                 detail.quarters.slice(0, 4).map((quarter, index) => (
                   <QuarterCard key={quarter.label} quarter={quarter} first={index === 0} sk={sk} />

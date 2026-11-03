@@ -41,6 +41,7 @@ type PortfolioHistoryPoint = {
   gainEUR: number;
   returnPercent: number;
   positionReturns: Record<string, { gainEUR: number; returnPercent: number }>;
+  prices: Record<string, number>;
 };
 
 function getRangeStart(range: ChartRange, transactions: Transaction[]) {
@@ -103,6 +104,7 @@ function createPortfolioHistory(
 
     let value = 0;
     const positionValues = new Map<string, number>();
+    const prices: Record<string, number> = {};
     for (const [symbol, shares] of quantities) {
       if (shares <= 1e-8) continue;
       const quoteSeries = seriesBySymbol.get(symbol);
@@ -119,6 +121,7 @@ function createPortfolioHistory(
       const positionValue = shares * quote.price * fxToEur;
       value += positionValue;
       positionValues.set(symbol, positionValue);
+      prices[symbol] = quote.price;
     }
 
     let dailyProfit = 0;
@@ -175,6 +178,7 @@ function createPortfolioHistory(
       value,
       gainEUR: periodGain,
       returnPercent: (periodGrowth - 1) * 100,
+      prices,
       positionReturns: Object.fromEntries([...positionGains.entries()].map(([symbol, gainEUR]) => [
         symbol,
         { gainEUR, returnPercent: ((positionGrowth.get(symbol) ?? 1) - 1) * 100 },
@@ -190,6 +194,7 @@ function InvestmentTimeline({
   range,
   onRangeChange,
   onPositionReturnsChange,
+  onSparklinesChange,
   onLatestChange,
   currentValue,
   hideAmounts,
@@ -198,6 +203,7 @@ function InvestmentTimeline({
   range: ChartRange;
   onRangeChange: (value: ChartRange) => void;
   onPositionReturnsChange: (returns: Record<string, { gainEUR: number; returnPercent: number }>) => void;
+  onSparklinesChange: (sparks: Record<string, number[]>) => void;
   onLatestChange: (latest: ChartLatest | null) => void;
   currentValue: number;
   hideAmounts: boolean;
@@ -324,6 +330,14 @@ function InvestmentTimeline({
       day: 'numeric',
       month: 'short',
     });
+  useEffect(() => {
+    const sparks: Record<string, number[]> = {};
+    for (const point of history) {
+      for (const [symbol, price] of Object.entries(point.prices)) (sparks[symbol] ??= []).push(price);
+    }
+    onSparklinesChange(sparks);
+  }, [history, onSparklinesChange]);
+
   const selectedPoint = selectedIndex !== null
     ? history[Math.min(selectedIndex, history.length - 1)]
     : history[history.length - 1];
@@ -459,6 +473,7 @@ export default function PortfolioScreen() {
   const [chartLatest, setChartLatest] = useState<ChartLatest | null>(null);
   const [positionSort, setPositionSort] = useState<'value' | 'alphabetical'>('value');
   const [closedExpanded, setClosedExpanded] = useState(false);
+  const [sparklines, setSparklines] = useState<Record<string, number[]>>({});
   const [periodReturns, setPeriodReturns] = useState<Record<string, { gainEUR: number; returnPercent: number }>>({});
   const { t, language } = useLocale();
   const [hideAmounts, setHideAmounts] = useState(false);
@@ -593,6 +608,7 @@ export default function PortfolioScreen() {
         range={range}
         onRangeChange={setRange}
         onPositionReturnsChange={setPeriodReturns}
+        onSparklinesChange={setSparklines}
         onLatestChange={setChartLatest}
         currentValue={totals.value}
         hideAmounts={hideAmounts}
@@ -664,6 +680,7 @@ export default function PortfolioScreen() {
               position={position}
               hideAmounts={hideAmounts}
               performance={range === 'Všetko' ? undefined : periodReturns[position.symbol]}
+              spark={sparklines[position.symbol]}
               onPress={() => openPositionDetails(position.symbol)}
             />
           ))}
@@ -719,6 +736,7 @@ export default function PortfolioScreen() {
                   position={position}
                   hideAmounts={hideAmounts}
                   performance={periodReturns[position.symbol]}
+                  spark={sparklines[position.symbol]}
                   onPress={() => openPositionDetails(position.symbol)}
                 />
               ))}

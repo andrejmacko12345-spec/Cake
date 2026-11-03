@@ -45,7 +45,7 @@ jobs:
 
       - name: Build release APK
         working-directory: portfolio-mobile/android
-        run: ./gradlew assembleRelease --no-daemon -PreactNativeArchitectures=arm64-v8a
+        run: ./gradlew assembleRelease --no-daemon
 
       - name: Rename APK
         run: cp android/app/build/outputs/apk/release/app-release.apk portfolio-mobile.apk

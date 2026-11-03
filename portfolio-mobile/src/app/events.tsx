@@ -181,7 +181,7 @@ export default function EventsScreen() {
           title: `${sk ? 'Výsledky' : 'Earnings'} ${quarter.label}`,
           lines,
           company,
-          color: quarter.epsSurprisePct !== null && quarter.epsSurprisePct < 0 ? colors.red : colors.green,
+          color: quarter.epsSurprisePct === null ? colors.muted : quarter.epsSurprisePct < 0 ? colors.red : colors.green,
         });
       });
       const dividendLine = company.dividendAmount !== null
@@ -240,13 +240,14 @@ export default function EventsScreen() {
     const date = new Date(item.date);
     const months = sk ? MONTHS_SK : MONTHS_EN;
     const clickable = item.category === 'Výsledky' || item.link;
+    const reported = item.category === 'Výsledky' && item.date <= Date.now();
     const onPress = () => {
       if (item.link) void Linking.openURL(item.link).catch(() => undefined);
       else if (item.company) setDetail(item.company);
     };
     return (
       <Pressable key={item.key} disabled={!clickable} onPress={onPress}>
-        <Surface style={styles.eventCard}>
+        <Surface style={reported ? { ...styles.eventCard, borderLeftWidth: 4, borderLeftColor: item.color, backgroundColor: item.color === colors.red ? 'rgba(239,68,68,0.12)' : item.color === colors.green ? 'rgba(34,197,94,0.12)' : colors.surface } : styles.eventCard}>
           <View style={styles.dateBadge}>
             <Text style={styles.dateDay}>{String(date.getDate()).padStart(2, '0')}</Text>
             <Text style={styles.dateMonth}>{months[date.getMonth()]}</Text>

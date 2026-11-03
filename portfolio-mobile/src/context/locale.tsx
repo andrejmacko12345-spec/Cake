@@ -50,6 +50,8 @@ const englishTranslations: Record<string, string> = {
   'odhad': 'estimated',
   'Odhad': 'Estimate',
   'Tržby': 'Revenue',
+  'Obdobie': 'Period',
+  'Beat / Miss': 'Beat / Miss',
   'Odhad nedostupný': 'Estimate unavailable',
   'Žiadne reporty': 'No reports',
   'Celé obdobie': 'All time',

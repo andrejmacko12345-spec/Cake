@@ -525,48 +525,60 @@ export default function PositionDetailScreen() {
       <Surface style={styles.statsCard}>
         {infoLoading ? <ActivityIndicator color={colors.green} /> : (
           <>
-            {events?.nextEarnings ? (
+            {(events?.quarters?.length || events?.nextEarnings) ? (
               <View style={styles.reportRow}>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.reportTitle}>{t('Budúci report')}</Text>
-                  <Text style={styles.reportSub}>
-                    {new Date(events.nextEarnings.date * 1000).toLocaleDateString(language === 'sk' ? 'sk-SK' : 'en-US')}
-                    {events.nextEarnings.estimate ? ` (${t('odhad')})` : ''}
-                  </Text>
-                </View>
-                <View style={styles.reportRight}>
-                  <Text style={styles.reportValue}>
-                    {events.nextEarnings.epsEstimate != null ? `EPS ${events.nextEarnings.epsEstimate.toFixed(2)}` : '–'}
-                  </Text>
-                  <Text style={styles.reportSub}>
-                    {events.nextEarnings.revenueEstimate != null
-                      ? `${t('Tržby')} ${formatBigNumber(events.nextEarnings.revenueEstimate)}` : `${t('Tržby')} –`}
-                  </Text>
-                </View>
+                <Text style={[styles.reportHead, styles.colPeriod]}>{t('Obdobie')}</Text>
+                <Text style={[styles.reportHead, styles.colNum, { textAlign: 'right' }]}>EPS</Text>
+                <Text style={[styles.reportHead, styles.colNum, { textAlign: 'right' }]}>{t('Beat / Miss')}</Text>
+                <Text style={[styles.reportHead, styles.colNum, { textAlign: 'right' }]}>{t('Tržby')}</Text>
+                <Text style={[styles.reportHead, styles.colNum, { textAlign: 'right' }]}>YoY</Text>
+                <Text style={[styles.reportHead, styles.colNum, { textAlign: 'right' }]}>{t('Beat / Miss')}</Text>
               </View>
             ) : null}
-            {(events?.quarters ?? []).slice(0, 4).map((quarter) => {
-              const beat = quarter.epsActual != null && quarter.epsEstimate != null
-                ? quarter.epsActual >= quarter.epsEstimate : null;
+            {events?.nextEarnings ? (
+              <View style={styles.reportRow}>
+                <View style={styles.colPeriod}>
+                  <Text style={styles.reportTitle}>{events.nextEarnings.label ?? t('Budúci report')}</Text>
+                  <Text style={styles.reportSub}>
+                    {new Date(events.nextEarnings.date * 1000).toLocaleDateString(language === 'sk' ? 'sk-SK' : 'en-US', { day: 'numeric', month: 'short' })}
+                    {events.nextEarnings.estimate ? '*' : ''}
+                  </Text>
+                </View>
+                <Text style={[styles.reportCell, styles.colNum, { color: colors.muted }]}>
+                  {events.nextEarnings.epsEstimate != null ? events.nextEarnings.epsEstimate.toFixed(2) : '–'}
+                </Text>
+                <Text style={[styles.reportCell, styles.colNum, { color: colors.muted }]}>–</Text>
+                <Text style={[styles.reportCell, styles.colNum, { color: colors.muted }]}>
+                  {events.nextEarnings.revenueEstimate != null ? formatBigNumber(events.nextEarnings.revenueEstimate) : '–'}
+                </Text>
+                <Text style={[styles.reportCell, styles.colNum, { color: colors.muted }]}>–</Text>
+                <Text style={[styles.reportCell, styles.colNum, { color: colors.muted }]}>–</Text>
+              </View>
+            ) : null}
+            {(events?.quarters ?? []).slice(0, 6).map((quarter) => {
+              const epsDiff = quarter.epsActual != null && quarter.epsEstimate != null
+                ? quarter.epsActual - quarter.epsEstimate : null;
+              const revDiff = quarter.revenue != null && quarter.revenueEstimate != null
+                ? quarter.revenue - quarter.revenueEstimate : null;
+              const tone = (value: number | null) => (value == null ? colors.muted : value >= 0 ? colors.green : colors.red);
               return (
                 <View key={quarter.periodEnd} style={styles.reportRow}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.reportTitle}>{quarter.label}</Text>
-                    <Text style={styles.reportSub}>
-                      {quarter.epsEstimate != null ? `${t('Odhad')} ${quarter.epsEstimate.toFixed(2)}` : t('Odhad nedostupný')}
-                    </Text>
-                  </View>
-                  <View style={styles.reportRight}>
-                    <Text style={[styles.reportValue, beat != null && { color: beat ? colors.green : colors.red }]}>
-                      {quarter.epsActual != null ? `EPS ${quarter.epsActual.toFixed(2)}` : '–'}
-                    </Text>
-                    <Text style={styles.reportSub}>
-                      {`${t('Tržby')} ${quarter.revenue != null ? formatBigNumber(quarter.revenue) : '–'}`}
-                      {quarter.revenueYoY != null
-                        ? ` · ${quarter.revenueYoY >= 0 ? '+' : ''}${quarter.revenueYoY.toFixed(1)} % YoY`
-                        : ''}
-                    </Text>
-                  </View>
+                  <Text style={[styles.reportTitle, styles.colPeriod]}>{quarter.label}</Text>
+                  <Text style={[styles.reportCell, styles.colNum]}>
+                    {quarter.epsActual != null ? quarter.epsActual.toFixed(2) : '–'}
+                  </Text>
+                  <Text style={[styles.reportCell, styles.colNum, { color: tone(epsDiff) }]}>
+                    {epsDiff != null ? epsDiff.toFixed(2) : '–'}
+                  </Text>
+                  <Text style={[styles.reportCell, styles.colNum]}>
+                    {quarter.revenue != null ? formatBigNumber(quarter.revenue) : '–'}
+                  </Text>
+                  <Text style={[styles.reportCell, styles.colNum]}>
+                    {quarter.revenueYoY != null ? `${quarter.revenueYoY.toFixed(1)}%` : '–'}
+                  </Text>
+                  <Text style={[styles.reportCell, styles.colNum, { color: tone(revDiff) }]}>
+                    {revDiff != null ? formatBigNumber(revDiff) : '–'}
+                  </Text>
                 </View>
               );
             })}
@@ -680,8 +692,10 @@ const styles = StyleSheet.create({
   reportRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8 },
   reportTitle: { color: colors.text, fontSize: 12, fontWeight: '800' },
   reportSub: { color: colors.muted, fontSize: 10, marginTop: 2 },
-  reportRight: { alignItems: 'flex-end' },
-  reportValue: { color: colors.text, fontSize: 12, fontWeight: '900' },
+  reportHead: { color: colors.muted, fontSize: 9, fontWeight: '700' },
+  reportCell: { color: colors.text, fontSize: 10, fontWeight: '700', textAlign: 'right' },
+  colPeriod: { flex: 1.3 },
+  colNum: { flex: 1, textAlign: 'right' },
   emptyTable: { color: colors.muted, fontSize: 10, textAlign: 'center', paddingVertical: 20 },
   loadingCard: { alignItems: 'center', padding: 22 },
 });

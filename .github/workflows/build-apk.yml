@@ -17,6 +17,8 @@ concurrency:
 
 jobs:
   build:
+    # Build beží len ručne (Run workflow) alebo keď správa commitu obsahuje [build].
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build]')
     runs-on: ubuntu-latest
     defaults:
       run:

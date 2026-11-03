@@ -112,6 +112,7 @@ const englishTranslations: Record<string, string> = {
   'Pridať k existujúcim': 'Add to existing',
   'Nahradiť všetky': 'Replace all',
   'Zrušiť': 'Cancel',
+  'Odstrániť z watchlistu?': 'Remove from watchlist?',
   'Naozaj vymazať všetky transakcie?': 'Really delete all transactions?',
   'Túto akciu nie je možné vrátiť späť.': 'This cannot be undone.',
   'Vymazať': 'Delete',

@@ -112,70 +112,56 @@ function WatchlistPriceCard({
     return `${index === 0 ? 'M' : 'L'} ${x} ${y}`;
   }).join(' ');
 
+  const tone = change === null ? colors.muted : isPositive ? colors.green : colors.red;
+
   return (
-    <View style={styles.assetCard}>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={`Zobraziť detail ${asset.symbol}`}
-        onPress={onPress}
-        style={styles.assetMain}
-      >
-        <View style={styles.assetHeading}>
-          <AssetLogo symbol={asset.symbol} color={asset.color} size={32} />
-          <View style={styles.assetCopy}>
-            <Text style={styles.assetSymbol}>{asset.symbol}</Text>
-            <Text style={styles.assetName} numberOfLines={1}>{asset.name}</Text>
-          </View>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={`Zobraziť detail ${asset.symbol}`}
+      onPress={onPress}
+      onLongPress={() =>
+        Alert.alert(asset.symbol, t('Odstrániť z watchlistu?'), [
+          { text: t('Zrušiť'), style: 'cancel' },
+          { text: t('Odstrániť'), style: 'destructive', onPress: onRemove },
+        ])}
+      style={styles.assetCard}
+    >
+      <AssetLogo symbol={asset.symbol} color={asset.color} size={40} />
+      <View style={styles.assetCopy}>
+        <Text style={styles.assetSymbol} numberOfLines={1}>{asset.symbol}</Text>
+        <Text style={styles.assetName} numberOfLines={1}>{asset.name}</Text>
+      </View>
+      {chartPath ? (
+        <Svg style={styles.sparkline} height={28} viewBox="0 0 160 40" preserveAspectRatio="none">
+          <Path
+            d={chartPath}
+            fill="none"
+            stroke={tone}
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </Svg>
+      ) : <View style={styles.sparkline} />}
+      <View style={styles.changeBlock}>
+        <View style={[styles.changePill, { backgroundColor: tone }]}>
+          <Text style={styles.periodChange}>
+            {change === null
+              ? entry?.loading ? '…' : '—'
+              : `${change > 0 ? '+' : ''}${change.toLocaleString('sk-SK', { maximumFractionDigits: 2 })} %`}
+          </Text>
         </View>
-
-        <View style={styles.priceRow}>
-          <View>
-            {entry?.loading && currentPrice === null ? (
-              <ActivityIndicator size="small" color={colors.green} style={styles.priceLoading} />
-            ) : (
-              <Text style={styles.currentPrice}>
-                {currentPrice === null ? '—' : formatPrice(currentPrice, currency)}
-              </Text>
-            )}
-          </View>
-          <View style={styles.changeBlock}>
-            <Text style={[
-              styles.periodChange,
-              { color: change === null ? colors.muted : isPositive ? colors.green : colors.red },
-            ]}>
-              {change === null
-                ? entry?.loading ? '…' : '—'
-                : `${change > 0 ? '+' : ''}${change.toLocaleString('sk-SK', { maximumFractionDigits: 2 })} %`}
-            </Text>
-          </View>
-        </View>
-
-        {chartPath ? (
-          <Svg style={styles.sparkline} height={24} viewBox="0 0 160 40" preserveAspectRatio="none">
-            <Path
-              d={chartPath}
-              fill="none"
-              stroke={isPositive ? colors.green : colors.red}
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </Svg>
-        ) : null}
-      </Pressable>
-      <Pressable
-        accessibilityLabel={`Odstrániť ${asset.symbol} z watchlistu`}
-        accessibilityRole="button"
-        onPress={onRemove}
-        hitSlop={8}
-        style={styles.removeButton}
-      >
-        <X size={16} color={colors.muted} />
-      </Pressable>
-    </View>
+        {entry?.loading && currentPrice === null ? (
+          <ActivityIndicator size="small" color={colors.green} style={styles.priceLoading} />
+        ) : (
+          <Text style={styles.currentPrice}>
+            {currentPrice === null ? '—' : formatPrice(currentPrice, currency)}
+          </Text>
+        )}
+      </View>
+    </Pressable>
   );
 }
-
 function showStorageError(action: string, error: unknown) {
   const detail = error instanceof Error ? error.message : String(error);
   Alert.alert(`Chyba: ${action} watchlistu`, detail);
@@ -642,18 +628,15 @@ const styles = StyleSheet.create({
     color: colors.surface,
   },
   assetList: {
-    gap: 4,
+    gap: 2,
   },
   assetCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 9,
-    paddingVertical: 6,
-    minHeight: 56,
-    borderRadius: 11,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
+    paddingHorizontal: 4,
+    paddingVertical: 8,
+    minHeight: 62,
+    gap: 10,
   },
   assetMain: {
     flex: 1,
@@ -702,15 +685,16 @@ const styles = StyleSheet.create({
   },
   assetCopy: {
     flex: 1,
+    minWidth: 0,
   },
   assetSymbol: {
     color: colors.text,
-    fontSize: 14,
-    fontWeight: '900',
+    fontSize: 16,
+    fontWeight: '800',
   },
   assetName: {
     color: colors.muted,
-    fontSize: 10,
+    fontSize: 12,
     marginTop: 1,
   },
   priceRow: {
@@ -729,9 +713,9 @@ const styles = StyleSheet.create({
   },
   currentPrice: {
     color: colors.text,
-    fontSize: 15,
-    fontWeight: '900',
-    marginTop: 0,
+    fontSize: 12,
+    fontWeight: '600',
+    marginTop: 4,
     fontVariant: ['tabular-nums'],
   },
   priceLoading: {
@@ -741,15 +725,22 @@ const styles = StyleSheet.create({
   changeBlock: {
     alignItems: 'flex-end',
   },
+  changePill: {
+    borderRadius: 7,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    minWidth: 78,
+    alignItems: 'center',
+  },
   periodChange: {
-    fontSize: 12,
-    fontWeight: '900',
-    marginTop: 0,
+    color: colors.background,
+    fontSize: 14,
+    fontWeight: '800',
     fontVariant: ['tabular-nums'],
   },
   sparkline: {
-    width: 44,
-    marginLeft: 1,
+    width: 56,
+    height: 28,
   },
   removeButton: {
     padding: 4,

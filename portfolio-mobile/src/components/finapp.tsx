@@ -384,7 +384,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   page: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 12,
     paddingTop: 16,
     paddingBottom: 28,
   },

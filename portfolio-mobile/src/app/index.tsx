@@ -123,9 +123,9 @@ function createPortfolioHistory(
 
     let dailyProfit = 0;
     let dailyReturn = 0;
-    if (rangeStartTimestamp !== undefined
+    if (previousValue !== undefined && (rangeStartTimestamp !== undefined
       ? timestamp >= rangeStartTimestamp
-      : date >= rangeStart) {
+      : date >= rangeStart)) {
       const cashFlows = new Map<string, number>();
       const buyFlows = new Map<string, number>();
       for (const transaction of orderedTransactions) {
@@ -222,7 +222,7 @@ function InvestmentTimeline({
     }
 
     const rangeStartDate = new Date(`${rangeStart}T00:00:00.000Z`);
-    rangeStartDate.setUTCDate(rangeStartDate.getUTCDate() - (range === '1D' ? 1 : 7));
+    rangeStartDate.setUTCDate(rangeStartDate.getUTCDate() - (range === '1D' ? 5 : 7));
     const queryStart = rangeStartDate.toISOString().slice(0, 10);
     const interval = range === '1D' ? '5m' : range === '5R' || range === 'Všetko' ? '1wk' : '1d';
     const symbols = [...new Set(transactions.map((transaction) => transaction.symbol))];

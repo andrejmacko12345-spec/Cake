@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { YAHOO_USER_AGENT, yahooQuoteSummary } from './fundamentals';
+import { fetchFmpQuarterly, FmpQuarterly, getFmpKey } from './fmp';
 
 type Raw = { raw?: number } | undefined;
 
@@ -193,6 +194,26 @@ function buildQuarters(
   return quarters.reverse();
 }
 
+export function clearEventsCache() {
+  cache.clear();
+}
+
+// FMP má dlhšiu históriu tržieb aj historické odhady analytikov, preto má prednosť pred Yahoo.
+function applyFmp(quarters: QuarterResult[], fmp: FmpQuarterly) {
+  for (const quarter of quarters) {
+    const periodEnd = Date.parse(`${quarter.periodEnd}T00:00:00Z`) / 1000;
+    const revenue = nearest(fmp.revenue, periodEnd, 15)?.value ?? quarter.revenue;
+    quarter.revenue = revenue;
+    quarter.revenueYoY = growth(revenue, nearest(fmp.revenue, periodEnd - 365 * DAY, 20)?.value) ?? quarter.revenueYoY;
+    quarter.revenueQoQ = growth(revenue, nearest(fmp.revenue, periodEnd - 91 * DAY, 20)?.value) ?? quarter.revenueQoQ;
+    const estimate = nearest(fmp.revenueEstimate, periodEnd, 15)?.value;
+    if (estimate !== undefined && estimate > 0) {
+      quarter.revenueEstimate = estimate;
+      quarter.revenueSurprisePct = revenue !== null ? ((revenue - estimate) / estimate) * 100 : null;
+    }
+  }
+}
+
 type SavedEstimate = { date: number; estimate: number };
 
 // Yahoo nedáva odhad tržieb pre už zverejnené štvrťroky, preto si odhad pamätáme z obdobia pred reportom.
@@ -256,6 +277,12 @@ export async function fetchCompanyEvents(symbol: string, force = false): Promise
         quarters[0].revenueSurprisePct = ((quarters[0].revenue - match.estimate) / match.estimate) * 100;
       }
     }
+  }
+
+  const fmpKey = await getFmpKey();
+  if (fmpKey) {
+    const fmp = await fetchFmpQuarterly(symbol, fmpKey).catch(() => null);
+    if (fmp) applyFmp(quarters, fmp);
   }
 
   const value: CompanyEvents = {

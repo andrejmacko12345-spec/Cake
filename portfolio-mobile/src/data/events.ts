@@ -194,10 +194,6 @@ function buildQuarters(
   return quarters.reverse();
 }
 
-export function clearEventsCache() {
-  cache.clear();
-}
-
 // FMP má dlhšiu históriu tržieb aj historické odhady analytikov, preto má prednosť pred Yahoo.
 function applyFmp(quarters: QuarterResult[], fmp: FmpQuarterly) {
   for (const quarter of quarters) {

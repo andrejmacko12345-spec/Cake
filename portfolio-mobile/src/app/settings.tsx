@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import type { ReactNode } from 'react';
-import { ActivityIndicator, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as DocumentPicker from 'expo-document-picker';
 import { File, Paths } from 'expo-file-system';
@@ -8,8 +8,6 @@ import { readAsStringAsync } from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import { ArrowLeft, Bell, Check, ChevronDown, ChevronRight, Download, Globe2, Moon, Palette, Sun, Trash2, Upload } from 'lucide-react-native';
 import { setEventPref, useEventPrefs } from '../data/event-prefs';
-import { clearEventsCache } from '../data/events';
-import { getFmpKey, setFmpKey } from '../data/fmp';
 import { Header, Page, Surface } from '../components/finapp';
 import { AppLanguage, useLocale } from '../context/locale';
 import { availableAssets, colors } from '../data/portfolio';
@@ -83,12 +81,7 @@ async function loadUsdRates(startDate: string) {
 export default function SettingsScreen() {
   const router = useRouter();
   const { language, setLanguage, t } = useLocale();
-  const [openSection, setOpenSection] = useState<'language' | 'data' | 'appearance' | 'events' | 'sources' | null>(null);
-  const [fmpKey, setFmpKeyText] = useState('');
-  const [fmpSaved, setFmpSaved] = useState(false);
-  useEffect(() => {
-    void getFmpKey().then((key) => setFmpKeyText(key ?? ''));
-  }, []);
+  const [openSection, setOpenSection] = useState<'language' | 'data' | 'appearance' | 'events' | null>(null);
   const eventPrefs = useEventPrefs();
   const [themeChoice, setThemeChoice] = useState<ThemeName>(getTheme());
   const [themeChanged, setThemeChanged] = useState(false);
@@ -308,41 +301,6 @@ export default function SettingsScreen() {
       ) : null}
 
       <AccordionHeader
-        icon={<Globe2 size={17} color={colors.green} />}
-        title={t('Zdroje dát')}
-        open={openSection === 'sources'}
-        onPress={() => setOpenSection(openSection === 'sources' ? null : 'sources')}
-      />
-      {openSection === 'sources' ? (
-        <Surface style={styles.languageList}>
-          <View style={styles.languageCopy}>
-            <Text style={styles.languageName}>{t('FMP API kľúč')}</Text>
-            <Text style={styles.languageNative}>
-              {t('Zadarmo kľúč z financialmodelingprep.com doplní tržby, YoY a odhady tržieb v reportoch.')}
-            </Text>
-            <TextInput
-              value={fmpKey}
-              onChangeText={(text) => { setFmpKeyText(text); setFmpSaved(false); }}
-              placeholder="API key"
-              placeholderTextColor={colors.muted}
-              autoCapitalize="none"
-              autoCorrect={false}
-              style={styles.keyInput}
-            />
-            <Pressable
-              accessibilityRole="button"
-              onPress={() => {
-                void setFmpKey(fmpKey).then(() => { clearEventsCache(); setFmpSaved(true); });
-              }}
-              style={styles.keySave}
-            >
-              <Text style={styles.keySaveText}>{fmpSaved ? t('Uložené') : t('Uložiť')}</Text>
-            </Pressable>
-          </View>
-        </Surface>
-      ) : null}
-
-      <AccordionHeader
         icon={<Upload size={17} color={colors.green} />}
         title={t('Prenos dát')}
         open={openSection === 'data'}
@@ -498,9 +456,6 @@ const styles = StyleSheet.create({
     borderRadius: 13,
     backgroundColor: colors.surface,
   },
-  keyInput: { marginTop: 10, borderRadius: 10, backgroundColor: colors.background, color: colors.text, paddingHorizontal: 12, paddingVertical: 9, fontSize: 12 },
-  keySave: { marginTop: 8, alignSelf: 'flex-start', borderRadius: 10, backgroundColor: colors.green, paddingHorizontal: 16, paddingVertical: 8 },
-  keySaveText: { color: colors.surface, fontSize: 12, fontWeight: '800' },
   languageList: {
     paddingVertical: 0,
     paddingHorizontal: 0,

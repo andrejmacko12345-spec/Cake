@@ -1,20 +1,6 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const KEY_STORAGE = 'fmp-api-key';
-let cachedKey: string | null | undefined;
-
+// Kľúč sa číta z lokálneho súboru .env (EXPO_PUBLIC_FMP_API_KEY), ktorý nie je v gite.
 export async function getFmpKey() {
-  if (cachedKey === undefined) {
-    cachedKey = (await AsyncStorage.getItem(KEY_STORAGE).catch(() => null))?.trim() || null;
-  }
-  return cachedKey;
-}
-
-export async function setFmpKey(key: string) {
-  const value = key.trim();
-  cachedKey = value || null;
-  if (value) await AsyncStorage.setItem(KEY_STORAGE, value);
-  else await AsyncStorage.removeItem(KEY_STORAGE);
+  return process.env.EXPO_PUBLIC_FMP_API_KEY?.trim() || null;
 }
 
 export type FmpPoint = { time: number; value: number };

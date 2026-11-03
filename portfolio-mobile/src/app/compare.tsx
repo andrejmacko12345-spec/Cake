@@ -10,6 +10,7 @@ import { usePositions } from '../hooks/use-positions';
 import { useLocale } from '../context/locale';
 
 const STORAGE_KEY = '@portfolio-mobile/compare-symbols';
+const METRICS_KEY = '@portfolio-mobile/compare-metrics';
 const MAX_SYMBOLS = 30;
 
 type Entry = { data: StockEstimates | null; loading: boolean; error: string };
@@ -48,6 +49,29 @@ export default function CompareScreen() {
   const [query, setQuery] = useState('');
   const { results, loading: searching, error: searchError } = useAssetSearch(query);
   const requested = useRef(new Set<string>());
+  const [selectedKeys, setSelectedKeys] = useState<string[]>(columns.map((column) => column.key));
+
+  useEffect(() => {
+    AsyncStorage.getItem(METRICS_KEY)
+      .then((saved) => {
+        if (!saved) return;
+        const parsed = JSON.parse(saved) as unknown;
+        if (Array.isArray(parsed)) {
+          setSelectedKeys(parsed.filter((item): item is string => columns.some((column) => column.key === item)));
+        }
+      })
+      .catch(() => undefined);
+  }, []);
+
+  const toggleMetric = (key: string) => {
+    const next = selectedKeys.includes(key)
+      ? selectedKeys.filter((item) => item !== key)
+      : columns.map((column) => column.key as string).filter((item) => item === key || selectedKeys.includes(item));
+    setSelectedKeys(next);
+    AsyncStorage.setItem(METRICS_KEY, JSON.stringify(next)).catch(() => undefined);
+  };
+
+  const visibleColumns = columns.filter((column) => selectedKeys.includes(column.key));
 
   useEffect(() => {
     AsyncStorage.getItem(STORAGE_KEY)
@@ -203,7 +227,22 @@ export default function CompareScreen() {
         </Pressable>
       </View>
 
-      {symbols.length ? (
+      <View style={styles.chipRow}>
+        {columns.map((column) => {
+          const active = selectedKeys.includes(column.key);
+          return (
+            <Pressable
+              key={column.key}
+              onPress={() => toggleMetric(column.key)}
+              style={[styles.chip, active && styles.chipSelected]}
+            >
+              <Text style={[styles.chipText, !active && styles.chipMuted]}>{t(column.label)}</Text>
+            </Pressable>
+          );
+        })}
+      </View>
+
+      {symbols.length && visibleColumns.length ? (
         <Surface style={styles.tableCard}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <View>
@@ -217,7 +256,7 @@ export default function CompareScreen() {
                   </Pressable>
                 ))}
               </View>
-              {columns.map((column) => (
+              {visibleColumns.map((column) => (
                 <View key={column.key} style={[styles.row, styles.bodyRow]}>
                   <Text style={[styles.labelCell, styles.labelText]}>{t(column.label)}</Text>
                   {symbols.map((symbol) => {
@@ -315,6 +354,8 @@ const styles = StyleSheet.create({
   chipAction: { borderColor: colors.green },
   chipActionText: { color: colors.green, fontSize: 12, fontWeight: '700' },
   chipActive: { backgroundColor: colors.green },
+  chipSelected: { borderColor: colors.green },
+  chipMuted: { color: colors.muted, fontWeight: '600' },
   chipActiveText: { color: colors.surface },
   tableCard: { padding: 0, overflow: 'hidden' },
   row: { flexDirection: 'row', alignItems: 'center' },

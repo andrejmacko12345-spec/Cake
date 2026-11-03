@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ActivityIndicator, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Line, Path } from 'react-native-svg';
-import { ChevronDown, ChevronUp, Plus, Settings, TrendingUp, Wallet } from 'lucide-react-native';
+import { ChevronDown, ChevronUp, Eye, EyeOff, Plus, Settings, TrendingUp, Wallet } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { TransactionModal } from '../components/transaction-modal';
 import {
@@ -15,6 +16,8 @@ import { colors, formatMoney, formatPercent } from '../data/portfolio';
 import { Transaction, TransactionInput, positionCostEUR, positionValueEUR, usePositions } from '../hooks/use-positions';
 import { useLocale } from '../context/locale';
 import { fetchHistoricalQuoteSeries, HistoricalQuotePoint, HistoricalQuoteSeries, LiveQuote } from '../data/quotes';
+
+const HIDE_AMOUNTS_KEY = '@portfolio-mobile/hide-amounts';
 
 const chartRanges = [
   { label: '1D', days: 1 },
@@ -186,14 +189,17 @@ function InvestmentTimeline({
   onRangeChange,
   onPositionReturnsChange,
   currentValue,
+  hideAmounts,
 }: {
   transactions: Transaction[];
   range: ChartRange;
   onRangeChange: (value: ChartRange) => void;
   onPositionReturnsChange: (returns: Record<string, { gainEUR: number; returnPercent: number }>) => void;
   currentValue: number;
+  hideAmounts: boolean;
 }) {
   const { t, language } = useLocale();
+  const money = (value: number) => (hideAmounts ? '•••••' : formatMoney(value));
   const [history, setHistory] = useState<PortfolioHistoryPoint[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [historyError, setHistoryError] = useState('');
@@ -328,10 +334,10 @@ function InvestmentTimeline({
           </Text>
         </View>
         <View style={styles.chartMetrics}>
-          <Text style={styles.chartTotal}>{formatMoney(displayedValue)}</Text>
+          <Text style={styles.chartTotal}>{money(displayedValue)}</Text>
           {!historyError ? (
             <Text style={[styles.chartReturn, { color: displayedGain >= 0 ? colors.green : colors.red }]}>
-              {formatPercent(displayedReturn)} · {displayedGain >= 0 ? '+' : ''}{formatMoney(displayedGain)}
+              {formatPercent(displayedReturn)}{hideAmounts ? '' : ` · ${displayedGain >= 0 ? '+' : ''}${formatMoney(displayedGain)}`}
             </Text>
           ) : null}
         </View>
@@ -427,16 +433,32 @@ export default function PortfolioScreen() {
   const [closedExpanded, setClosedExpanded] = useState(false);
   const [periodReturns, setPeriodReturns] = useState<Record<string, { gainEUR: number; returnPercent: number }>>({});
   const { t, language } = useLocale();
+  const [hideAmounts, setHideAmounts] = useState(false);
+  const money = (value: number) => (hideAmounts ? '•••••' : formatMoney(value));
+  const signedMoney = (value: number) => (hideAmounts ? '•••••' : `${value >= 0 ? '+' : ''}${formatMoney(value)}`);
+
+  useEffect(() => {
+    AsyncStorage.getItem(HIDE_AMOUNTS_KEY)
+      .then((saved) => setHideAmounts(saved === 'true'))
+      .catch(() => undefined);
+  }, []);
+
+  const toggleHideAmounts = () => {
+    const next = !hideAmounts;
+    setHideAmounts(next);
+    AsyncStorage.setItem(HIDE_AMOUNTS_KEY, String(next)).catch(() => undefined);
+  };
 
   const totals = useMemo(() => positions.reduce(
     (result, position) => {
       result.value += positionValueEUR(position);
       result.openCost += positionCostEUR(position);
       result.invested += position.totalInvestedEUR;
+      if (position.shares > 1e-8) result.openInvested += position.totalInvestedEUR;
       result.realized += position.realizedProfitEUR;
       return result;
     },
-    { value: 0, openCost: 0, invested: 0, realized: 0 },
+    { value: 0, openCost: 0, invested: 0, openInvested: 0, realized: 0 },
   ), [positions]);
   const unrealized = totals.value - totals.openCost;
   const totalReturn = unrealized + totals.realized;
@@ -487,19 +509,31 @@ export default function PortfolioScreen() {
         title={t('Moje portfólio')}
         subtitle={t('Prehľad investícií')}
         action={
-          <Pressable
-            accessibilityLabel={t('Nastavenia aplikácie')}
-            accessibilityRole="button"
-            onPress={() => router.navigate('/settings')}
-            style={styles.iconButton}
-          >
-            <Settings size={18} color={colors.green} />
-          </Pressable>
+          <View style={styles.headerActions}>
+            <Pressable
+              accessibilityLabel={hideAmounts
+                ? (language === 'sk' ? 'Zobraziť sumy' : 'Show amounts')
+                : (language === 'sk' ? 'Skryť sumy' : 'Hide amounts')}
+              accessibilityRole="button"
+              onPress={toggleHideAmounts}
+              style={styles.iconButton}
+            >
+              {hideAmounts ? <EyeOff size={18} color={colors.green} /> : <Eye size={18} color={colors.green} />}
+            </Pressable>
+            <Pressable
+              accessibilityLabel={t('Nastavenia aplikácie')}
+              accessibilityRole="button"
+              onPress={() => router.navigate('/settings')}
+              style={styles.iconButton}
+            >
+              <Settings size={18} color={colors.green} />
+            </Pressable>
+          </View>
         }
       />
       <Surface style={styles.balanceCard}>
         <Text style={styles.balanceLabel}>{t('Trhová hodnota')}</Text>
-        <Text style={styles.balanceValue}>{formatMoney(totals.value)}</Text>
+        <Text style={styles.balanceValue}>{money(totals.value)}</Text>
         <View style={styles.returnRow}>
           <Text style={styles.headlineHint}>{latestQuote ? t('Denná zmena') : t('Celkový výnos')}</Text>
           <View style={styles.returnIndicator}>
@@ -509,19 +543,19 @@ export default function PortfolioScreen() {
             </Text>
           </View>
           <Text style={[styles.returnAmount, { color: headlineGain >= 0 ? colors.green : colors.red }]}>
-            {headlineGain >= 0 ? '+' : ''}{formatMoney(headlineGain)}
+            {hideAmounts ? '' : signedMoney(headlineGain)}
           </Text>
         </View>
         <View style={styles.balanceDivider} />
         <View style={styles.balanceStats}>
           <View style={styles.balanceStat}>
             <Text style={styles.statLabel}>{t('Celkovo nakúpené')}</Text>
-            <Text style={styles.statValue}>{formatMoney(totals.invested)}</Text>
+            <Text style={styles.statValue}>{money(totals.openInvested)}</Text>
           </View>
           <View style={styles.balanceStat}>
             <Text style={styles.statLabel}>{t('Celkový výnos')}</Text>
             <Text style={[styles.statValue, { color: totalReturn >= 0 ? colors.green : colors.red }]}>
-              {totalReturn >= 0 ? '+' : ''}{formatMoney(totalReturn)} ({formatPercent(returnPercent)})
+              {hideAmounts ? '' : `${signedMoney(totalReturn)} (`}{formatPercent(returnPercent)}{hideAmounts ? '' : ')'}
             </Text>
           </View>
         </View>
@@ -529,13 +563,13 @@ export default function PortfolioScreen() {
           <View style={styles.balanceStat}>
             <Text style={styles.statLabel}>{t('Nerealizovaný výnos')}</Text>
             <Text style={[styles.statValue, { color: unrealized >= 0 ? colors.green : colors.red }]}>
-              {unrealized >= 0 ? '+' : ''}{formatMoney(unrealized)}
+              {signedMoney(unrealized)}
             </Text>
           </View>
           <View style={styles.balanceStat}>
             <Text style={styles.statLabel}>{t('Realizovaný výnos')}</Text>
             <Text style={[styles.statValue, { color: totals.realized >= 0 ? colors.green : colors.red }]}>
-              {totals.realized >= 0 ? '+' : ''}{formatMoney(totals.realized)}
+              {signedMoney(totals.realized)}
             </Text>
           </View>
         </View>
@@ -553,6 +587,7 @@ export default function PortfolioScreen() {
         onRangeChange={setRange}
         onPositionReturnsChange={setPeriodReturns}
         currentValue={totals.value}
+        hideAmounts={hideAmounts}
       />
 
       <SectionTitle
@@ -608,6 +643,7 @@ export default function PortfolioScreen() {
             <PositionRow
               key={position.id}
               position={position}
+              hideAmounts={hideAmounts}
               performance={periodReturns[position.symbol]}
               onPress={() => openPositionDetails(position.symbol)}
             />
@@ -662,6 +698,7 @@ export default function PortfolioScreen() {
                 <PositionRow
                   key={position.id}
                   position={position}
+                  hideAmounts={hideAmounts}
                   performance={periodReturns[position.symbol]}
                   onPress={() => openPositionDetails(position.symbol)}
                 />
@@ -697,6 +734,7 @@ export default function PortfolioScreen() {
 }
 
 const styles = StyleSheet.create({
+  headerActions: { flexDirection: 'row', gap: 8 },
   iconButton: {
     width: 39, height: 39, borderRadius: 13, backgroundColor: colors.surface,
     alignItems: 'center', justifyContent: 'center',

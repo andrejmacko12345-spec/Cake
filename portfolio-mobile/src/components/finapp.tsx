@@ -369,16 +369,19 @@ export function PositionRow({
   position,
   performance,
   onPress,
+  hideAmounts = false,
 }: {
   position: Position;
   performance?: { gainEUR: number; returnPercent: number };
   onPress: () => void;
+  hideAmounts?: boolean;
 }) {
   const marketValue = positionValueEUR(position);
   const cost = positionCostEUR(position);
   const result = performance?.gainEUR ?? marketValue - cost + position.realizedProfitEUR;
   const returnPercent = performance?.returnPercent ??
     (position.totalInvestedEUR > 0 ? (result / position.totalInvestedEUR) * 100 : 0);
+  const money = (value: number) => (hideAmounts ? '•••••' : formatMoney(value));
   return (
     <Pressable
       accessibilityLabel={`Zobraziť graf a pohyby ${position.symbol}`}
@@ -391,19 +394,19 @@ export function PositionRow({
         <Text style={styles.assetSymbol}>{position.symbol}</Text>
         <Text style={styles.assetName} numberOfLines={1}>
           {position.shares > 0
-            ? `${position.shares.toLocaleString('sk-SK')} ks · ${position.currentPrice.toFixed(2)} ${position.currency}`
+            ? `${hideAmounts ? '•••' : position.shares.toLocaleString('sk-SK')} ks · ${position.currentPrice.toFixed(2)} ${position.currency}`
             : `Predaná · ${position.transactions.length} pohybov`}
         </Text>
       </View>
       <View style={styles.assetNumbers}>
         <Text style={styles.assetValue}>
           {position.shares > 0
-            ? formatMoney(marketValue)
-            : performance ? formatMoney(result) : formatMoney(position.realizedProfitEUR)}
+            ? money(marketValue)
+            : performance ? money(result) : money(position.realizedProfitEUR)}
         </Text>
         <Text style={[styles.change, { color: result >= 0 ? colors.green : colors.red }]}>
           {position.shares > 0 || performance
-            ? `${result >= 0 ? '+' : ''}${formatMoney(result)} · ${formatPercent(returnPercent)}`
+            ? `${hideAmounts ? '' : `${result >= 0 ? '+' : ''}${formatMoney(result)} · `}${formatPercent(returnPercent)}`
             : `Realizovaný výsledok · ${formatPercent(returnPercent)}`}
         </Text>
       </View>

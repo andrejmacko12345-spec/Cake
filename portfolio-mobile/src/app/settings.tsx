@@ -6,7 +6,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import { File, Paths } from 'expo-file-system';
 import { readAsStringAsync } from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
-import { ArrowLeft, Bell, Check, ChevronDown, ChevronUp, Download, Globe2, Moon, Palette, Sun, Trash2, Upload } from 'lucide-react-native';
+import { ArrowLeft, Bell, Check, ChevronDown, ChevronRight, Download, Globe2, Moon, Palette, Sun, Trash2, Upload } from 'lucide-react-native';
 import { setEventPref, useEventPrefs } from '../data/event-prefs';
 import { Header, Page, Surface } from '../components/finapp';
 import { AppLanguage, useLocale } from '../context/locale';
@@ -53,7 +53,7 @@ function AccordionHeader({
     >
       <View style={styles.languageIcon}>{icon}</View>
       <Text style={styles.accordionTitle}>{title}</Text>
-      {open ? <ChevronUp size={18} color={colors.muted} /> : <ChevronDown size={18} color={colors.muted} />}
+      {open ? <ChevronDown size={18} color={colors.muted} /> : <ChevronRight size={18} color={colors.muted} />}
     </Pressable>
   );
 }
@@ -218,6 +218,7 @@ export default function SettingsScreen() {
           </Pressable>
         }
       />
+      <View style={styles.menuCard}>
       <AccordionHeader
         icon={<Globe2 size={17} color={colors.green} />}
         title={t('Jazyk aplikácie')}
@@ -421,6 +422,7 @@ export default function SettingsScreen() {
           <Text style={styles.success}>{t('Motív sa zmení po reštarte aplikácie. Zatvor ju a otvor znova.')}</Text>
         ) : null}
       </>) : null}
+      </View>
     </Page>
   );
 }
@@ -429,18 +431,22 @@ const styles = StyleSheet.create({
   accordion: {
     flexDirection: 'row',
     alignItems: 'center',
-    minHeight: 58,
-    paddingHorizontal: 13,
-    marginTop: 10,
-    marginBottom: 8,
-    borderRadius: 14,
+    minHeight: 62,
+    paddingHorizontal: 16,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.border,
+  },
+  menuCard: {
+    marginTop: 8,
+    borderRadius: 22,
     backgroundColor: colors.surface,
+    overflow: 'hidden',
   },
   accordionTitle: {
     flex: 1,
     color: colors.text,
-    fontSize: 14,
-    fontWeight: '800',
+    fontSize: 16,
+    fontWeight: '600',
   },
   backButton: {
     width: 39,
@@ -451,7 +457,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
   },
   languageList: {
-    paddingVertical: 2,
+    paddingVertical: 0,
+    paddingHorizontal: 0,
+    padding: 0,
+    borderRadius: 0,
+    borderWidth: 0,
+    backgroundColor: colors.surfaceRaised,
   },
   languageOption: {
     flexDirection: 'row',
@@ -470,8 +481,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 12,
-    backgroundColor: colors.surface,
-    marginRight: 11,
+    backgroundColor: 'transparent',
+    marginRight: 12,
   },
   languageCopy: {
     flex: 1,
@@ -489,18 +500,18 @@ const styles = StyleSheet.create({
   error: {
     color: colors.red,
     fontSize: 12,
-    marginTop: 10,
+    margin: 12,
   },
   success: {
     color: colors.green,
     fontSize: 12,
-    marginTop: 10,
+    margin: 12,
   },
   disabled: {
     opacity: 0.45,
   },
   confirmCard: {
-    marginTop: 10,
+    margin: 12,
     padding: 13,
     gap: 4,
   },

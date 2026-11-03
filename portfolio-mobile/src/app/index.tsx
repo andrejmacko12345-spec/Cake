@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ActivityIndicator, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
-import Svg, { Circle, Line, Path } from 'react-native-svg';
+import Svg, { Circle, Defs, LinearGradient, Line, Path, Stop } from 'react-native-svg';
 import { ChartNoAxesCombined, ChevronDown, ChevronRight, ChevronUp, Eye, EyeOff, Plus, TrendingUp, UserRound, Wallet } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { TransactionModal } from '../components/transaction-modal';
@@ -311,6 +311,7 @@ function InvestmentTimeline({
     if (index === 0) return `M ${point.x} ${point.y}`;
     return `${result} L ${point.x} ${point.y}`;
   }, '');
+  const areaPath = points.length > 1 ? `${path} L ${points[points.length - 1].x} 126 L ${points[0].x} 126 Z` : '';
   const labels = history.length > 1
     ? [history[0].date, history[Math.floor(history.length / 2)].date, history[history.length - 1].date]
     : [];
@@ -371,6 +372,13 @@ function InvestmentTimeline({
         <Svg width="100%" height={185} viewBox="0 0 320 145" preserveAspectRatio="none">
           <Line x1="8" y1="126" x2="312" y2="126" stroke={colors.border} strokeWidth="1" />
           <Line x1="8" y1="18" x2="8" y2="126" stroke={colors.border} strokeWidth="1" />
+          <Defs>
+            <LinearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
+              <Stop offset="0" stopColor={colors.green} stopOpacity="0.28" />
+              <Stop offset="1" stopColor={colors.green} stopOpacity="0" />
+            </LinearGradient>
+          </Defs>
+          {areaPath ? <Path d={areaPath} fill="url(#areaFill)" /> : null}
           {path ? <Path d={path} fill="none" stroke={colors.green} strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" /> : null}
           {selectedPoint && points[selectedIndex ?? points.length - 1] ? (
             <>
@@ -792,7 +800,7 @@ const styles = StyleSheet.create({
   balanceStat: { flex: 1 },
   statLabel: { color: colors.muted, fontSize: 10, fontWeight: '600' },
   statValue: { color: colors.text, fontSize: 12, fontWeight: '800', marginTop: 5 },
-  chartCard: { paddingHorizontal: 10, paddingTop: 12, paddingBottom: 12, backgroundColor: colors.background, borderTopWidth: 1, borderTopColor: colors.border },
+  chartCard: { paddingHorizontal: 10, paddingTop: 12, paddingBottom: 12 },
   chartHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 2 },
   chartTitle: { color: colors.text, fontSize: 14, fontWeight: '900' },
   chartSubtitle: { color: colors.muted, fontSize: 9, marginTop: 3 },

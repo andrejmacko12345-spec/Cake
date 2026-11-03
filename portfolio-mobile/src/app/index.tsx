@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ActivityIndicator, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Line, Path } from 'react-native-svg';
-import { ChevronDown, ChevronUp, Eye, EyeOff, Plus, Settings, TrendingUp, Wallet } from 'lucide-react-native';
+import { ChevronDown, ChevronUp, Eye, EyeOff, Plus, TrendingUp, UserRound, Wallet } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { TransactionModal } from '../components/transaction-modal';
 import {
@@ -521,12 +521,12 @@ export default function PortfolioScreen() {
               {hideAmounts ? <EyeOff size={18} color={colors.green} /> : <Eye size={18} color={colors.green} />}
             </Pressable>
             <Pressable
-              accessibilityLabel={t('Nastavenia aplikácie')}
+              accessibilityLabel={t('Profil')}
               accessibilityRole="button"
               onPress={() => router.navigate('/settings')}
               style={styles.iconButton}
             >
-              <Settings size={18} color={colors.green} />
+              <UserRound size={18} color={colors.green} />
             </Pressable>
           </View>
         }

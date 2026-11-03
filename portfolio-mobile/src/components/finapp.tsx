@@ -14,6 +14,7 @@ import {
 import Svg, { Circle, Line, Path, Rect } from 'react-native-svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Asset, colors, formatMoney, formatPercent } from '../data/portfolio';
+import { getTheme } from '../data/theme';
 import type { Position } from '../hooks/use-positions';
 import { positionCostEUR, positionValueEUR, usePositions } from '../hooks/use-positions';
 import { AssetLogo } from './asset-logo';
@@ -53,7 +54,7 @@ export function Page({
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" />
+      <StatusBar barStyle={getTheme() === 'light' ? 'dark-content' : 'light-content'} />
       <ScrollView
         contentContainerStyle={styles.page}
         showsVerticalScrollIndicator={false}

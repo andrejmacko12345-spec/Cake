@@ -39,7 +39,28 @@ export const marketBasket = [
 ];
 
 const USER_AGENT = 'Mozilla/5.0';
+export const YAHOO_USER_AGENT = USER_AGENT;
 let crumbPromise: Promise<string> | null = null;
+
+export async function yahooQuoteSummary<T>(symbol: string, modules: string): Promise<T | undefined> {
+  const crumb = await getCrumb();
+  const url = `https://query2.finance.yahoo.com/v10/finance/quoteSummary/${encodeURIComponent(symbol)}`
+    + `?modules=${modules}&crumb=${encodeURIComponent(crumb)}`;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15000);
+  try {
+    const response = await fetch(url, {
+      headers: { 'User-Agent': USER_AGENT, Accept: 'application/json' },
+      signal: controller.signal,
+    });
+    if (response.status === 401) crumbPromise = null;
+    if (!response.ok) throw new Error(`Zdroj dát vrátil HTTP ${response.status}.`);
+    const data = await response.json() as { quoteSummary?: { result?: T[] | null } };
+    return data.quoteSummary?.result?.[0];
+  } finally {
+    clearTimeout(timeout);
+  }
+}
 
 async function loadCrumb() {
   try {

@@ -1,14 +1,16 @@
 import { useState } from 'react';
+import type { ReactNode } from 'react';
 import { ActivityIndicator, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as DocumentPicker from 'expo-document-picker';
 import { File, Paths } from 'expo-file-system';
 import { readAsStringAsync } from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
-import { ArrowLeft, Check, Download, Globe2, Trash2, Upload } from 'lucide-react-native';
-import { Header, Page, SectionTitle, Surface } from '../components/finapp';
+import { ArrowLeft, Check, ChevronDown, ChevronUp, Download, Globe2, Moon, Palette, Sun, Trash2, Upload } from 'lucide-react-native';
+import { Header, Page, Surface } from '../components/finapp';
 import { AppLanguage, useLocale } from '../context/locale';
 import { availableAssets, colors } from '../data/portfolio';
+import { getTheme, storeTheme, ThemeName } from '../data/theme';
 import { fetchHistoricalQuoteSeries } from '../data/quotes';
 import {
   parseTransactionCsv,
@@ -24,6 +26,36 @@ const languages: { code: AppLanguage; label: string; englishLabel: string }[] = 
 ];
 
 type PendingImport = { transactions: Transaction[]; adjusted: number; dropped: number };
+
+const themeOptions: { name: ThemeName; label: string; Icon: typeof Moon }[] = [
+  { name: 'dark', label: 'Tmavý', Icon: Moon },
+  { name: 'light', label: 'Svetlý', Icon: Sun },
+];
+
+function AccordionHeader({
+  icon,
+  title,
+  open,
+  onPress,
+}: {
+  icon: ReactNode;
+  title: string;
+  open: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityState={{ expanded: open }}
+      onPress={onPress}
+      style={styles.accordion}
+    >
+      <View style={styles.languageIcon}>{icon}</View>
+      <Text style={styles.accordionTitle}>{title}</Text>
+      {open ? <ChevronUp size={18} color={colors.muted} /> : <ChevronDown size={18} color={colors.muted} />}
+    </Pressable>
+  );
+}
 
 async function readPickedFile(asset: DocumentPicker.DocumentPickerAsset) {
   if (Platform.OS === 'web') {
@@ -48,6 +80,20 @@ async function loadUsdRates(startDate: string) {
 export default function SettingsScreen() {
   const router = useRouter();
   const { language, setLanguage, t } = useLocale();
+  const [openSection, setOpenSection] = useState<'language' | 'data' | 'appearance' | null>(null);
+  const [themeChoice, setThemeChoice] = useState<ThemeName>(getTheme());
+  const [themeChanged, setThemeChanged] = useState(false);
+
+  const chooseTheme = (name: ThemeName) => {
+    if (name === themeChoice) return;
+    try {
+      storeTheme(name);
+      setThemeChoice(name);
+      setThemeChanged(name !== getTheme());
+    } catch {
+      setThemeChanged(false);
+    }
+  };
   const { transactions, importTransactions, resetPortfolio, refreshQuotes } = usePositions();
   const [savingLanguage, setSavingLanguage] = useState(false);
   const [saveError, setSaveError] = useState('');
@@ -158,7 +204,7 @@ export default function SettingsScreen() {
   return (
     <Page>
       <Header
-        title={t('Nastavenia aplikácie')}
+        title={t('Profil')}
         action={
           <Pressable
             accessibilityRole="button"
@@ -170,7 +216,13 @@ export default function SettingsScreen() {
           </Pressable>
         }
       />
-      <SectionTitle title={t('Jazyk aplikácie')} />
+      <AccordionHeader
+        icon={<Globe2 size={17} color={colors.green} />}
+        title={t('Jazyk aplikácie')}
+        open={openSection === 'language'}
+        onPress={() => setOpenSection(openSection === 'language' ? null : 'language')}
+      />
+      {openSection === 'language' ? (<>
       <Surface style={styles.languageList}>
         {languages.map((option) => {
           const selected = language === option.code;
@@ -211,8 +263,15 @@ export default function SettingsScreen() {
         })}
       </Surface>
       {saveError ? <Text accessibilityRole="alert" style={styles.error}>{saveError}</Text> : null}
+      </>) : null}
 
-      <SectionTitle title={t('Dáta portfólia')} />
+      <AccordionHeader
+        icon={<Upload size={17} color={colors.green} />}
+        title={t('Prenos dát')}
+        open={openSection === 'data'}
+        onPress={() => setOpenSection(openSection === 'data' ? null : 'data')}
+      />
+      {openSection === 'data' ? (<>
       <Surface style={styles.languageList}>
         <Pressable
           accessibilityRole="button"
@@ -293,11 +352,62 @@ export default function SettingsScreen() {
 
       {dataMessage ? <Text style={styles.success}>{dataMessage}</Text> : null}
       {dataError ? <Text accessibilityRole="alert" style={styles.error}>{dataError}</Text> : null}
+      </>) : null}
+
+      <AccordionHeader
+        icon={<Palette size={17} color={colors.green} />}
+        title={t('Vzhľad')}
+        open={openSection === 'appearance'}
+        onPress={() => setOpenSection(openSection === 'appearance' ? null : 'appearance')}
+      />
+      {openSection === 'appearance' ? (<>
+        <Surface style={styles.languageList}>
+          {themeOptions.map((option) => {
+            const selected = themeChoice === option.name;
+            return (
+              <Pressable
+                key={option.name}
+                accessibilityRole="button"
+                accessibilityState={{ selected }}
+                onPress={() => chooseTheme(option.name)}
+                style={[styles.languageOption, selected && styles.languageOptionSelected]}
+              >
+                <View style={styles.languageIcon}>
+                  <option.Icon size={17} color={selected ? colors.green : colors.muted} />
+                </View>
+                <View style={styles.languageCopy}>
+                  <Text style={styles.languageName}>{t(option.label)}</Text>
+                </View>
+                {selected ? <Check size={18} color={colors.green} /> : null}
+              </Pressable>
+            );
+          })}
+        </Surface>
+        {themeChanged ? (
+          <Text style={styles.success}>{t('Motív sa zmení po reštarte aplikácie. Zatvor ju a otvor znova.')}</Text>
+        ) : null}
+      </>) : null}
     </Page>
   );
 }
 
 const styles = StyleSheet.create({
+  accordion: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    minHeight: 58,
+    paddingHorizontal: 13,
+    marginTop: 10,
+    marginBottom: 8,
+    borderRadius: 14,
+    backgroundColor: colors.surface,
+  },
+  accordionTitle: {
+    flex: 1,
+    color: colors.text,
+    fontSize: 14,
+    fontWeight: '800',
+  },
   backButton: {
     width: 39,
     height: 39,

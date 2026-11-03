@@ -260,7 +260,7 @@ export default function EventsScreen() {
   };
 
   return (
-    <Page onRefresh={() => load(true)}>
+    <Page>
       <Header title={t('Udalosti')} subtitle={t('Podľa tvojho portfólia')} action={<Bell size={20} color={colors.text} />} />
       <View style={styles.filterRow}>
         {filters.map((item) => {

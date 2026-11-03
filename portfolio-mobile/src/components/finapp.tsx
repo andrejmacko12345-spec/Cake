@@ -1,9 +1,7 @@
 import { useState } from 'react';
 import type { ReactNode } from 'react';
 import {
-  Alert,
   Pressable,
-  RefreshControl,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -20,38 +18,7 @@ import { positionCostEUR, positionValueEUR, usePositions } from '../hooks/use-po
 import { AssetLogo } from './asset-logo';
 import { useLocale } from '../context/locale';
 
-export function Page({
-  children,
-  onRefresh,
-}: {
-  children: ReactNode;
-  onRefresh?: () => Promise<void>;
-}) {
-  const { refreshQuotes } = usePositions();
-  const { t } = useLocale();
-  const [refreshing, setRefreshing] = useState(false);
-  const handleRefresh = async () => {
-    if (refreshing) return;
-    setRefreshing(true);
-    try {
-      if (onRefresh) {
-        await onRefresh();
-      } else {
-        const result = await refreshQuotes();
-        if (result.failed.length) {
-          Alert.alert(t('Niektoré ceny sa neobnovili'), `${t('Nepodarilo sa obnoviť')}: ${result.failed.join(', ')}.`);
-        }
-      }
-    } catch (error) {
-      Alert.alert(
-        t('Obnovenie zlyhalo'),
-        error instanceof Error ? error.message : String(error),
-      );
-    } finally {
-      setRefreshing(false);
-    }
-  };
-
+export function Page({ children }: { children: ReactNode }) {
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle={getTheme() === 'light' ? 'dark-content' : 'light-content'} />
@@ -59,15 +26,6 @@ export function Page({
         contentContainerStyle={styles.page}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
-        refreshControl={(
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={() => void handleRefresh()}
-            tintColor={colors.green}
-            colors={[colors.green]}
-            progressBackgroundColor={colors.surface}
-          />
-        )}
       >
         {children}
       </ScrollView>

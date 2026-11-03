@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { Alert } from 'react-native';
 import { availableAssets, colors } from '../data/portfolio';
@@ -357,6 +357,15 @@ export function PositionsProvider({ children }: { children: ReactNode }) {
     if (updated > 0) await persist(transactions, nextQuotes);
     return { updated, failed };
   };
+
+  const refreshRef = useRef(refreshQuotes);
+  refreshRef.current = refreshQuotes;
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (!loading) refreshRef.current().catch(() => undefined);
+    }, 10000);
+    return () => clearInterval(timer);
+  }, [loading]);
 
   const value = useMemo(
     () => ({

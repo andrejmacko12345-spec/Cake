@@ -240,7 +240,7 @@ export default function CompareScreen() {
   }, [entries, symbols]);
 
   return (
-    <Page onRefresh={refreshAll}>
+    <Page>
       <Header
         title={t('Porovnanie akcií')}
         subtitle={t('Fundamenty')}

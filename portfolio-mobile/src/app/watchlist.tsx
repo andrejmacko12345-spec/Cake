@@ -169,7 +169,6 @@ function showStorageError(action: string, error: unknown) {
 
 export default function WatchlistScreen() {
   const router = useRouter();
-  const { refreshQuotes } = usePositions();
   const { t } = useLocale();
   const [symbols, setSymbols] = useState<string[]>(defaultSymbols);
   const [loading, setLoading] = useState(true);
@@ -209,14 +208,14 @@ export default function WatchlistScreen() {
   }, []);
 
   const period = periods.find((item) => item.label === selectedPeriod) ?? periods[2];
-  const loadWatchData = useCallback(async () => {
+  const loadWatchData = useCallback(async (silent = false) => {
     const currentRequestId = ++requestId.current;
     if (!symbols.length) {
       setWatchData({});
       return;
     }
 
-    setWatchData(Object.fromEntries(symbols.map((symbol) => [symbol, emptyEntry()])));
+    if (!silent) setWatchData(Object.fromEntries(symbols.map((symbol) => [symbol, emptyEntry()])));
     const startDate = new Date();
     if (period.unit === 'day') {
       startDate.setDate(startDate.getDate() - period.amount);
@@ -255,15 +254,10 @@ export default function WatchlistScreen() {
     };
   }, [loadWatchData]);
 
-  const refreshWatchlist = async () => {
-    const [, quoteResult] = await Promise.all([loadWatchData(), refreshQuotes()]);
-    if (quoteResult.failed.length) {
-      Alert.alert(
-        t('Niektoré ceny sa neobnovili'),
-        `Nepodarilo sa obnoviť: ${quoteResult.failed.join(', ')}.`,
-      );
-    }
-  };
+  useEffect(() => {
+    const timer = setInterval(() => { void loadWatchData(true); }, 10000);
+    return () => clearInterval(timer);
+  }, [loadWatchData]);
 
   const assets = useMemo(
     () => symbols.map((symbol) =>
@@ -307,7 +301,7 @@ export default function WatchlistScreen() {
   };
 
   return (
-    <Page onRefresh={refreshWatchlist}>
+    <Page>
       <Header
         title={t('Watchlist')}
         subtitle={t('Sledované akcie')}
@@ -332,7 +326,7 @@ export default function WatchlistScreen() {
             accessibilityRole="button"
             accessibilityLabel="Obnoviť ceny watchlistu"
             onPress={() => {
-              void refreshWatchlist().catch((error: unknown) => {
+              void loadWatchData().catch((error: unknown) => {
                 Alert.alert(
                   'Obnovenie zlyhalo',
                   error instanceof Error ? error.message : String(error),

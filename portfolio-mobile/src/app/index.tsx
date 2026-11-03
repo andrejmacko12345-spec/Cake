@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ActivityIndicator, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Line, Path } from 'react-native-svg';
@@ -210,9 +210,18 @@ function InvestmentTimeline({
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [chartWidth, setChartWidth] = useState(320);
   const rangeStart = getRangeStart(range, transactions);
+  const [refreshTick, setRefreshTick] = useState(0);
+  const loadedKey = useRef('');
+
+  useEffect(() => {
+    const timer = setInterval(() => setRefreshTick((tick) => tick + 1), 10000);
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     let active = true;
+    const key = `${range}|${rangeStart}|${transactions.map((item) => item.id).join(',')}`;
+    const silent = loadedKey.current === key;
     if (!transactions.length) {
       setHistory([]);
       setHistoryError('');
@@ -226,9 +235,11 @@ function InvestmentTimeline({
     const queryStart = rangeStartDate.toISOString().slice(0, 10);
     const interval = range === '1D' ? '5m' : range === '5R' || range === 'Všetko' ? '1wk' : '1d';
     const symbols = [...new Set(transactions.map((transaction) => transaction.symbol))];
-    setLoadingHistory(true);
-    setHistoryError('');
-    setSelectedIndex(null);
+    if (!silent) {
+      setLoadingHistory(true);
+      setHistoryError('');
+      setSelectedIndex(null);
+    }
 
     Promise.all(symbols.map((symbol) => fetchHistoricalQuoteSeries(symbol, queryStart, interval)))
       .then(async (series) => {
@@ -263,6 +274,7 @@ function InvestmentTimeline({
       })
       .then(({ rangeStartTimestamp, points }) => {
         if (active) {
+          loadedKey.current = key;
           setHistory(points.filter((point) =>
             rangeStartTimestamp !== undefined
               ? point.timestamp >= rangeStartTimestamp
@@ -270,7 +282,7 @@ function InvestmentTimeline({
         }
       })
       .catch((error: unknown) => {
-        if (active) {
+        if (active && !silent) {
           setHistory([]);
           setHistoryError(error instanceof Error ? error.message : String(error));
         }
@@ -280,7 +292,7 @@ function InvestmentTimeline({
       });
 
     return () => { active = false; };
-  }, [transactions, range, rangeStart]);
+  }, [transactions, range, rangeStart, refreshTick]);
 
   const selectedRangeLabel = range === '1T'
     ? t('1 týždeň')

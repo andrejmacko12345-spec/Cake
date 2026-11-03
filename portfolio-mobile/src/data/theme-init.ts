@@ -1,3 +1,6 @@
-import { applyTheme, readStoredTheme } from './theme';
-
-applyTheme(readStoredTheme());
+try {
+  const { applyTheme, readStoredTheme } = require('./theme');
+  applyTheme(readStoredTheme());
+} catch {
+  // pri chybe ostane predvolený tmavý motív
+}

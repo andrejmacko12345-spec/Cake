@@ -1,6 +1,13 @@
 import { Platform } from 'react-native';
-import { File, Paths } from 'expo-file-system';
 import { colors } from './portfolio';
+
+type FileApi = typeof import('expo-file-system');
+
+function themeFile() {
+  // Lazy načítanie, aby prípadná chyba natívneho modulu nezhodila štart aplikácie.
+  const fs = require('expo-file-system') as FileApi;
+  return new fs.File(fs.Paths.document, STORAGE_NAME);
+}
 
 export type ThemeName = 'dark' | 'light';
 
@@ -38,7 +45,7 @@ export function readStoredTheme(): ThemeName {
     if (Platform.OS === 'web') {
       return localStorage.getItem(STORAGE_NAME) === 'light' ? 'light' : 'dark';
     }
-    const file = new File(Paths.document, STORAGE_NAME);
+    const file = themeFile();
     return file.exists && file.textSync().trim() === 'light' ? 'light' : 'dark';
   } catch {
     return 'dark';
@@ -50,7 +57,7 @@ export function storeTheme(name: ThemeName) {
     localStorage.setItem(STORAGE_NAME, name);
     return;
   }
-  const file = new File(Paths.document, STORAGE_NAME);
+  const file = themeFile();
   if (!file.exists) file.create();
   file.writeSync(name);
 }

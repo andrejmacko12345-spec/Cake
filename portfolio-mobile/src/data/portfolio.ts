@@ -7,10 +7,10 @@ export type Asset = {
 };
 
 export const colors = {
-  background: '#323c4e',
-  surface: '#1d2634',
-  surfaceRaised: '#263144',
-  border: '#46546a',
+  background: '#252d3b',
+  surface: '#171e2a',
+  surfaceRaised: '#202a3a',
+  border: '#364355',
   text: '#f7f8fb',
   muted: '#aab4c3',
   green: '#78d84f',

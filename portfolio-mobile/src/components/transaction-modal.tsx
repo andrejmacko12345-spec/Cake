@@ -99,6 +99,7 @@ export function TransactionModal({
   const [errorMessage, setErrorMessage] = useState('');
   const [showAssetResults, setShowAssetResults] = useState(false);
   const [selectedAssetName, setSelectedAssetName] = useState('');
+  const symbolInputRef = useRef<TextInput>(null);
   const dateInputRef = useRef(dateInput);
   const symbolRef = useRef(symbol);
   const historicalRequestId = useRef(0);
@@ -129,6 +130,12 @@ export function TransactionModal({
     setSelectedAssetName('');
     historicalRequestId.current += 1;
   }, [visible, transaction, initialSymbol, initialType, initialCurrency, initialFxToEur]);
+
+  useEffect(() => {
+    if (!visible || transaction || initialSymbol) return;
+    const timer = setTimeout(() => symbolInputRef.current?.focus(), 250);
+    return () => clearTimeout(timer);
+  }, [visible, transaction, initialSymbol]);
 
   useEffect(() => {
     if (!visible || transaction || !initialSymbol) return;
@@ -360,6 +367,7 @@ export function TransactionModal({
                 <Text style={styles.label}>{t('Burzový symbol')}</Text>
                 <View style={styles.symbolRow}>
                   <TextInput
+                    ref={symbolInputRef}
                     accessibilityLabel={t('Burzový symbol')}
                     autoCapitalize="characters"
                     autoCorrect={false}

@@ -4,6 +4,7 @@ import Svg, { Circle, Line, Path, Rect, Text as SvgText } from 'react-native-svg
 import { ArrowLeft, ChevronDown, Info } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { Header, Page, SectionTitle, Surface } from '../components/finapp';
+import { TableColumn } from '../components/table-column';
 import { colors, formatMoney } from '../data/portfolio';
 import {
   fetchHistoricalQuoteSeries,
@@ -29,7 +30,6 @@ type BenchmarkValue = {
   name: string;
   shortName: string;
   color: string;
-  totalReturn: number | null;
   annualizedReturn: number | null;
 };
 
@@ -46,7 +46,6 @@ type ComparisonPoint = {
 };
 
 type AnalyticsHistory = {
-  totalPortfolioReturn: number | null;
   annualPerformance: AnnualPerformance[];
   comparison: ComparisonPoint[];
   benchmarks: BenchmarkValue[];
@@ -99,6 +98,14 @@ function annualizedIndexReturn(start: HistoricalQuotePoint, end: HistoricalQuote
   return years > 0 ? (Math.pow(growth, 1 / years) - 1) * 100 : (growth - 1) * 100;
 }
 
+function formatWholeEUR(value: number, language: 'sk' | 'en') {
+  return new Intl.NumberFormat(language === 'sk' ? 'sk-SK' : 'en-US', {
+    style: 'currency',
+    currency: 'EUR',
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
 function calculateComparison(
   transactions: Transaction[],
   assetSeries: HistoricalQuoteSeries[],
@@ -133,7 +140,6 @@ function calculateComparison(
   let transactionIndex = 0;
   let previousValue = 0;
   let portfolioGrowth = 1;
-  let totalPortfolioReturn: number | null = null;
 
   for (const timestamp of timestamps) {
     const date = new Date(timestamp * 1000).toISOString().slice(0, 10);
@@ -178,7 +184,6 @@ function calculateComparison(
         : 1;
       portfolioGrowth *= growthFactor;
       portfolioReturn = (portfolioGrowth - 1) * 100;
-      totalPortfolioReturn = portfolioReturn;
       const year = Number(date.slice(0, 4));
       annualGrowth.set(year, (annualGrowth.get(year) ?? 1) * growthFactor);
     }
@@ -235,12 +240,8 @@ function calculateComparison(
     const start = benchmarkStarts.get(benchmark.symbol);
     const end = benchmarkEnds.get(benchmark.symbol);
     const series = indexSeries.get(benchmark.symbol);
-    const totalReturn = start && end && start.price > 0
-      ? (end.price / start.price - 1) * 100
-      : null;
     return {
       ...benchmark,
-      totalReturn,
       annualizedReturn: start && end
         ? annualizedIndexReturn(start, end)
         : null,
@@ -248,7 +249,6 @@ function calculateComparison(
   });
 
   return {
-    totalPortfolioReturn,
     annualPerformance,
     comparison,
     benchmarks,
@@ -570,12 +570,12 @@ function AnnualComparisonChart({
 }) {
   const { language, t } = useLocale();
   const { width: screenWidth } = useWindowDimensions();
-  const viewportWidth = Math.max(250, screenWidth - 92);
-  const groupWidth = 88;
+  const viewportWidth = Math.max(280, screenWidth - 72);
+  const groupWidth = 104;
   const chartWidth = Math.max(viewportWidth, values.length * groupWidth);
-  const chartHeight = 220;
-  const baseline = 116;
-  const verticalSpace = 68;
+  const chartHeight = 250;
+  const baseline = 132;
+  const verticalSpace = 82;
   const displayedValues = [...values].reverse();
   const series = [
     portfolioSeries,
@@ -592,8 +592,8 @@ function AnnualComparisonChart({
   ]).filter((value): value is number => value !== null);
   const maxAbs = Math.max(5, ...returns.map(Math.abs));
   const groupCenter = (index: number) => index * groupWidth + groupWidth / 2;
-  const barWidth = 24;
-  const barGap = 16;
+  const barWidth = 30;
+  const barGap = 14;
   const clusterWidth = series.length * barWidth + (series.length - 1) * barGap;
   const formatValue = (value: number | null) => value === null
     ? '—'
@@ -655,10 +655,10 @@ function AnnualComparisonChart({
                       />
                       <SvgText
                         x={x + barWidth / 2}
-                        y={value >= 0 ? baseline - height - 5 : baseline + height + 12}
+                        y={value >= 0 ? baseline - height - 7 : baseline + height + 15}
                         fill={series[seriesIndex].color}
-                        fontSize="10"
-                        fontWeight="800"
+                        fontSize="12"
+                        fontWeight="900"
                         textAnchor="middle"
                       >
                         {formatValue(value)}
@@ -668,10 +668,10 @@ function AnnualComparisonChart({
                 })}
                 <SvgText
                   x={center}
-                  y={chartHeight - 4}
+                  y={chartHeight - 5}
                   fill={colors.muted}
-                  fontSize="11"
-                  fontWeight="800"
+                  fontSize="13"
+                  fontWeight="900"
                   textAnchor="middle"
                 >
                   {year.year}
@@ -703,14 +703,10 @@ function ReturnCard({
   title,
   portfolioReturn,
   indexReturns,
-  periodLabel,
-  comparisonType,
 }: {
   title: string;
   portfolioReturn: number | null;
   indexReturns: BenchmarkValue[];
-  periodLabel: string;
-  comparisonType: 'total' | 'annual';
 }) {
   const { t, language } = useLocale();
   const portfolioColor = portfolioReturn === null
@@ -721,21 +717,21 @@ function ReturnCard({
     <Surface style={styles.returnCard}>
       <View style={styles.returnCardHeading}>
         <Text style={styles.returnCardTitle}>{t(title)}</Text>
-        <Text style={styles.returnPeriod}>{periodLabel}</Text>
       </View>
       <View style={styles.portfolioReturnBlock}>
-        <Text style={styles.portfolioReturnLabel}>{t('MOJE PORTFÓLIO')}</Text>
         <Text style={[styles.portfolioReturnValue, { color: portfolioColor }]}>
           {formatCompactPercent(portfolioReturn, language)}
         </Text>
       </View>
       <View style={styles.indexReturns}>
         {indexReturns.map((benchmark) => {
-          const value = comparisonType === 'total' ? benchmark.totalReturn : benchmark.annualizedReturn;
+          const value = benchmark.annualizedReturn;
           return (
             <View key={benchmark.symbol} style={styles.indexReturn}>
-              <View style={[styles.indexReturnDot, { backgroundColor: benchmark.color }]} />
-              <Text style={styles.indexReturnLabel}>{benchmark.shortName}</Text>
+              <View style={styles.indexReturnIdentity}>
+                <View style={[styles.indexReturnDot, { backgroundColor: benchmark.color }]} />
+                <Text numberOfLines={1} style={styles.indexReturnLabel}>{benchmark.shortName}</Text>
+              </View>
               <Text numberOfLines={1} adjustsFontSizeToFit style={styles.indexReturnValue}>{formatCompactPercent(value, language)}</Text>
             </View>
           );
@@ -756,33 +752,33 @@ function FundamentalsTable({
 }) {
   const { t } = useLocale();
   const locale = language === 'sk' ? 'sk-SK' : 'en-US';
-  const period = (end: string | null) => {
+  const fiscalYear = (end: string | null) => {
     if (!end) return '';
     const date = new Date(`${end}T12:00:00`);
     return Number.isNaN(date.getTime())
       ? ''
-      : ` · ${date.toLocaleDateString(locale, { month: 'short', year: 'numeric' })}`;
+      : ` ${date.getFullYear()}`;
   };
-  const fy0 = period(portfolio.fy0End ?? market.fy0End);
-  const fy1 = period(portfolio.fy1End ?? market.fy1End);
+  const fy0 = fiscalYear(portfolio.fy0End ?? market.fy0End);
+  const fy1 = fiscalYear(portfolio.fy1End ?? market.fy1End);
   const rows = [
-    { label: t('Aktuálne P/E'), sub: language === 'sk' ? 'posledných 12 mesiacov' : 'trailing 12 months', key: 'trailingPE', isPE: true },
-    { label: `Forward P/E${fy0}`, sub: language === 'sk' ? 'odhad zisku tento rok' : 'this year EPS estimate', key: 'peFY0', isPE: true },
-    { label: `Forward P/E${fy1}`, sub: language === 'sk' ? 'odhad zisku budúci rok' : 'next year EPS estimate', key: 'peFY1', isPE: true },
-    { label: `${t('Rast tržieb')}${fy0}`, sub: language === 'sk' ? 'odhad, tento rok' : 'estimate, this year', key: 'revGrowthFY0', isPE: false },
-    { label: `${t('Rast tržieb')}${fy1}`, sub: language === 'sk' ? 'odhad, budúci rok' : 'estimate, next year', key: 'revGrowthFY1', isPE: false },
-    { label: `${t('Rast EPS')}${fy0}`, sub: language === 'sk' ? 'odhad, tento rok' : 'estimate, this year', key: 'epsGrowthFY0', isPE: false },
-    { label: `${t('Rast EPS')}${fy1}`, sub: language === 'sk' ? 'odhad, budúci rok' : 'estimate, next year', key: 'epsGrowthFY1', isPE: false },
+    { label: t('Aktuálne P/E'), key: 'trailingPE', isPE: true },
+    { label: `Forward P/E${fy0}`, key: 'peFY0', isPE: true },
+    { label: `Forward P/E${fy1}`, key: 'peFY1', isPE: true },
+    { label: `${t('Rast tržieb')}${fy0}`, key: 'revGrowthFY0', isPE: false },
+    { label: `${t('Rast tržieb')}${fy1}`, key: 'revGrowthFY1', isPE: false },
+    { label: `${t('Rast EPS')}${fy0}`, key: 'epsGrowthFY0', isPE: false },
+    { label: `${t('Rast EPS')}${fy1}`, key: 'epsGrowthFY1', isPE: false },
   ] as const;
   return (
-    <View>
-      <View style={styles.fundRow}>
-        <Text style={[styles.fundLabel, styles.fundHeader]} />
-        <Text style={[styles.fundCell, styles.fundHeader]}>{t('Portfólio')}</Text>
-        <Text style={[styles.fundCell, styles.fundHeader]}>{t('Trh')}</Text>
-        <Text style={[styles.fundCell, styles.fundHeader]}>{t('Rozdiel')}</Text>
+    <View style={styles.fundTable}>
+      <View style={[styles.fundRow, styles.fundHeaderRow]}>
+        <View style={styles.fundLabelBox} />
+        <TableColumn tone="green" header style={styles.fundColumn}><Text style={[styles.fundCell, styles.fundHeader]}>{t('Portfólio')}</Text></TableColumn>
+        <TableColumn tone="cyan" header style={styles.fundColumn}><Text style={[styles.fundCell, styles.fundHeader]}>{t('S&P 500')}</Text></TableColumn>
+        <TableColumn tone="violet" header style={styles.fundColumn}><Text style={[styles.fundCell, styles.fundHeader]}>{t('Rozdiel')}</Text></TableColumn>
       </View>
-      {rows.map((row) => {
+      {rows.map((row, index) => {
         const p = portfolio[row.key];
         const m = market[row.key];
         const format = (value: number | null) => value === null
@@ -791,24 +787,20 @@ function FundamentalsTable({
             ? value.toLocaleString(locale, { maximumFractionDigits: 1, minimumFractionDigits: 1 })
             : `${(value * 100).toLocaleString(locale, { maximumFractionDigits: 0 })}%`;
         const diff = p === null || m === null ? null : row.isPE ? p - m : (p - m) * 100;
-        // Vyššie P/E je drahšie (červené), vyšší rast je lepší (zelený).
         const good = diff === null ? null : row.isPE ? diff <= 0 : diff >= 0;
         const diffText = diff === null
           ? '—'
           : `${diff > 0 ? '+' : ''}${diff.toLocaleString(locale, { maximumFractionDigits: 1 })}${row.isPE ? '' : ' pp'}`;
         return (
-          <View key={row.key} style={styles.fundRow}>
+          <View key={row.key} style={[styles.fundRow, index % 2 === 1 && styles.fundAlternateRow]}>
             <View style={styles.fundLabelBox}>
-              <Text style={[styles.fundLabel, { flex: 0 }]}>{row.label}</Text>
-              <Text style={styles.fundSub}>{row.sub}</Text>
+              <Text style={styles.fundLabel}>{row.label}</Text>
             </View>
-            <Text style={styles.fundCell}>{format(p)}</Text>
-            <Text style={styles.fundCell}>{format(m)}</Text>
-            <Text style={[
-              styles.fundCell,
-              styles.fundDiff,
-              { color: good === null ? colors.muted : good ? colors.green : colors.red },
-            ]}>{diffText}</Text>
+            <TableColumn tone="green" style={styles.fundColumn}><Text style={styles.fundCell}>{format(p)}</Text></TableColumn>
+            <TableColumn tone="cyan" style={styles.fundColumn}><Text style={styles.fundCell}>{format(m)}</Text></TableColumn>
+            <TableColumn tone="violet" style={styles.fundColumn}>
+              <Text style={[styles.fundCell, { color: good === null ? colors.muted : good ? colors.green : colors.red }]}>{diffText}</Text>
+            </TableColumn>
           </View>
         );
       })}
@@ -820,14 +812,11 @@ export default function AnalyticsScreen() {
   const router = useRouter();
   const { t, language } = useLocale();
   const { positions, transactions, loading } = usePositions();
-  const { width: screenWidth } = useWindowDimensions();
   const [history, setHistory] = useState<AnalyticsHistory>({
-    totalPortfolioReturn: null,
     annualPerformance: [],
     comparison: [],
     benchmarks: benchmarkAssets.map((benchmark) => ({
       ...benchmark,
-      totalReturn: null,
       annualizedReturn: null,
     })),
     benchmarkError: '',
@@ -845,15 +834,16 @@ export default function AnalyticsScreen() {
   const openCostEUR = positions.reduce((sum, position) => sum + positionCostEUR(position), 0);
   const realizedEUR = positions.reduce((sum, position) => sum + position.realizedProfitEUR, 0);
   const unrealizedEUR = totalValue - openCostEUR;
-  const totalReturnEUR = unrealizedEUR + realizedEUR;
+  const totalReturnEUR = positions.reduce(
+    (sum, position) => sum + positionValueEUR(position) - positionCostEUR(position) + position.realizedProfitEUR,
+    0,
+  );
   const totalReturnPct = totalInvested > 0 ? totalReturnEUR / totalInvested * 100 : 0;
-  const signed = (value: number) => `${value >= 0 ? '+' : ''}${formatMoney(value)}`;
   const startDate = getEarliestTransactionDate(transactions);
   const weightedAnnualReturnValue = useMemo(
     () => weightedAnnualReturn(transactions, totalValue),
     [transactions, totalValue],
   );
-  const isWide = screenWidth >= 680;
   const lineBenchmark = benchmarkAssets.find((benchmark) => benchmark.symbol === lineBenchmarkSymbol)
     ?? benchmarkAssets[0];
   const annualBenchmark = benchmarkAssets.find((benchmark) => benchmark.symbol === annualBenchmarkSymbol)
@@ -888,12 +878,10 @@ export default function AnalyticsScreen() {
     let active = true;
     if (!transactions.length) {
       setHistory({
-        totalPortfolioReturn: null,
         annualPerformance: [],
         comparison: [],
         benchmarks: benchmarkAssets.map((benchmark) => ({
           ...benchmark,
-          totalReturn: null,
           annualizedReturn: null,
         })),
         benchmarkError: '',
@@ -965,7 +953,7 @@ export default function AnalyticsScreen() {
     [startDate, transactions.length],
   );
   return (
-    <Page>
+    <Page animateOnFocus>
       <Header
         title={t('Analytika portfólia')}
         subtitle={t('Porovnanie od prvej investície')}
@@ -980,72 +968,71 @@ export default function AnalyticsScreen() {
           </Pressable>
         }
       />
-      <Surface style={styles.marketCard}>
-        <Text style={styles.marketLabel}>{t('Trhová hodnota')}</Text>
-        <Text style={styles.marketValue}>{formatMoney(totalValue)}</Text>
-        <View style={styles.statGrid}>
-          <View style={styles.statTile}>
-            <Text style={styles.statTileLabel}>{t('Investované')}</Text>
-            <Text style={styles.statTileValue}>{formatMoney(totalInvested)}</Text>
+      <View style={styles.overviewRow}>
+        <Surface style={styles.marketCard}>
+          <Text style={styles.marketLabel}>{t('Trhová hodnota')}</Text>
+          <Text numberOfLines={1} adjustsFontSizeToFit style={styles.marketValue}>{formatWholeEUR(totalValue, language)}</Text>
+          <View style={styles.marketStatRow}>
+            <Text style={styles.marketStatLabel}>{t('Investované')}</Text>
+            <Text numberOfLines={1} adjustsFontSizeToFit style={styles.marketStatValue}>{formatWholeEUR(totalInvested, language)}</Text>
           </View>
-          <View style={styles.statTile}>
-            <Text style={styles.statTileLabel}>{t('Celkový výnos')}</Text>
-            <Text style={[styles.statTileValue, { color: totalReturnEUR >= 0 ? colors.green : colors.red }]}>
-              {signed(totalReturnEUR)}
-            </Text>
-            <Text style={[styles.statTilePercent, { color: totalReturnEUR >= 0 ? colors.green : colors.red }]}>
-              {totalReturnPct >= 0 ? '+' : ''}{totalReturnPct.toFixed(1)} %
+          <View style={styles.marketStatRow}>
+            <Text style={styles.marketStatLabel}>{t('Nerealizovaný výnos')}</Text>
+            <Text numberOfLines={1} adjustsFontSizeToFit style={[styles.marketStatValue, { color: unrealizedEUR >= 0 ? colors.green : colors.red }]}>
+              {formatWholeEUR(unrealizedEUR, language)}
             </Text>
           </View>
-          <View style={styles.statTile}>
-            <Text style={styles.statTileLabel}>{t('Nerealizovaný výnos')}</Text>
-            <Text style={[styles.statTileValue, { color: unrealizedEUR >= 0 ? colors.green : colors.red }]}>
-              {signed(unrealizedEUR)}
+          <View style={styles.marketStatRow}>
+            <Text style={styles.marketStatLabel}>{t('Realizovaný výnos')}</Text>
+            <Text numberOfLines={1} adjustsFontSizeToFit style={[styles.marketStatValue, { color: realizedEUR >= 0 ? colors.green : colors.red }]}>
+              {formatWholeEUR(realizedEUR, language)}
             </Text>
           </View>
-          <View style={styles.statTile}>
-            <Text style={styles.statTileLabel}>{t('Realizovaný výnos')}</Text>
-            <Text style={[styles.statTileValue, { color: realizedEUR >= 0 ? colors.green : colors.red }]}>
-              {signed(realizedEUR)}
-            </Text>
+          <View style={styles.marketStatRow}>
+            <Text style={styles.marketStatLabel}>{t('Celkový výnos')}</Text>
+            <View style={styles.marketReturnValues}>
+              <Text numberOfLines={1} adjustsFontSizeToFit style={[styles.marketStatValue, { color: totalReturnEUR >= 0 ? colors.green : colors.red }]}>
+                {formatWholeEUR(totalReturnEUR, language)}
+              </Text>
+              <Text style={[styles.marketReturnPercent, { color: totalReturnEUR >= 0 ? colors.green : colors.red }]}>
+                {totalReturnPct >= 0 ? '+' : ''}{totalReturnPct.toFixed(1)}%
+              </Text>
+            </View>
           </View>
+        </Surface>
+        <ReturnCard
+          title={t('Priemerný ročný výnos')}
+          portfolioReturn={weightedAnnualReturnValue}
+          indexReturns={history.benchmarks}
+        />
+      </View>
+
+      <SectionTitle
+        title={t('Výkonnosť po rokoch')}
+        action={historyLoading ? <ActivityIndicator size="small" color={colors.green} /> : null}
+      />
+      <Surface style={styles.performanceCard}>
+        <View style={styles.chartControls}>
+          <Text style={styles.controlLabel}>{t('Porovnať s')}</Text>
+          <BenchmarkPicker
+            selectedSymbol={annualBenchmark.symbol}
+            onSelect={setAnnualBenchmarkSymbol}
+          />
         </View>
+        {historyLoading ? (
+          <View style={styles.chartLoading}>
+            <ActivityIndicator color={colors.green} />
+            <Text style={styles.emptyText}>{t('Počítam výnosy jednotlivých rokov…')}</Text>
+          </View>
+        ) : historyError ? (
+          <View style={styles.errorState}>
+            <Info size={15} color={colors.red} />
+            <Text style={styles.errorText}>{historyError}</Text>
+          </View>
+        ) : (
+          <AnnualComparisonChart values={history.annualPerformance} benchmark={annualBenchmark} />
+        )}
       </Surface>
-      {isWide ? (
-        <View style={styles.cardsRow}>
-          <ReturnCard
-            title={t('Celkový výnos')}
-            portfolioReturn={history.totalPortfolioReturn}
-            indexReturns={history.benchmarks}
-            periodLabel={language === 'sk' ? 'OD ZAČIATKU' : 'FROM START'}
-            comparisonType="total"
-          />
-          <ReturnCard
-            title={t('Priemerný ročný výnos')}
-            portfolioReturn={weightedAnnualReturnValue}
-            indexReturns={history.benchmarks}
-            periodLabel={language === 'sk' ? 'PRIEMERNE ZA ROK' : 'AVERAGE PER YEAR'}
-            comparisonType="annual"
-          />
-        </View>
-      ) : (
-        <>
-          <ReturnCard
-            title={t('Celkový výnos')}
-            portfolioReturn={history.totalPortfolioReturn}
-            indexReturns={history.benchmarks}
-            periodLabel={language === 'sk' ? 'OD ZAČIATKU' : 'FROM START'}
-            comparisonType="total"
-          />
-          <ReturnCard
-            title={t('Priemerný ročný výnos')}
-            portfolioReturn={weightedAnnualReturnValue}
-            indexReturns={history.benchmarks}
-            periodLabel={language === 'sk' ? 'PRIEMERNE ZA ROK' : 'AVERAGE PER YEAR'}
-            comparisonType="annual"
-          />
-        </>
-      )}
 
       {history.benchmarkError ? (
         <Text style={styles.inlineError}>{history.benchmarkError}</Text>
@@ -1106,33 +1093,6 @@ export default function AnalyticsScreen() {
       </Surface>
 
       <SectionTitle
-        title={t('Výkonnosť po rokoch')}
-        action={historyLoading ? <ActivityIndicator size="small" color={colors.green} /> : null}
-      />
-      <Surface style={styles.performanceCard}>
-        <View style={styles.chartControls}>
-          <Text style={styles.controlLabel}>{t('Porovnať s')}</Text>
-          <BenchmarkPicker
-            selectedSymbol={annualBenchmark.symbol}
-            onSelect={setAnnualBenchmarkSymbol}
-          />
-        </View>
-        {historyLoading ? (
-          <View style={styles.chartLoading}>
-            <ActivityIndicator color={colors.green} />
-            <Text style={styles.emptyText}>{t('Počítam výnosy jednotlivých rokov…')}</Text>
-          </View>
-        ) : historyError ? (
-          <View style={styles.errorState}>
-            <Info size={15} color={colors.red} />
-            <Text style={styles.errorText}>{historyError}</Text>
-          </View>
-        ) : (
-          <AnnualComparisonChart values={history.annualPerformance} benchmark={annualBenchmark} />
-        )}
-      </Surface>
-
-      <SectionTitle
         title={t('Fundamenty: portfólio vs trh')}
         action={fundamentalsLoading ? <ActivityIndicator size="small" color={colors.green} /> : null}
       />
@@ -1151,7 +1111,7 @@ export default function AnalyticsScreen() {
           </View>
         )}
         <Text style={styles.fundNote}>
-          {t('Trh = 20 najväčších firiem S&P 500 vážených kapitalizáciou. Fundamenty sa počítajú len z akcií, ktoré ich majú k dispozícii.')}
+          {t('S&P 500: vzorka 50 veľkých firiem, vážená trhovou kapitalizáciou.')}
         </Text>
       </Surface>
 
@@ -1171,165 +1131,157 @@ export default function AnalyticsScreen() {
 
 const styles = StyleSheet.create({
   marketCard: {
-    paddingHorizontal: 16,
-    paddingVertical: 14,
+    flex: 1.15,
+    minWidth: 0,
+    paddingHorizontal: 12,
+    paddingVertical: 13,
     borderWidth: 1,
     borderColor: colors.border,
+    marginBottom: 8,
   },
   marketValue: {
     color: colors.text,
-    fontSize: 32,
+    fontSize: 29,
     fontWeight: '900',
-    marginTop: 4,
+    marginTop: 6,
+    marginBottom: 12,
+    fontVariant: ['tabular-nums'],
   },
   marketLabel: {
     color: colors.muted,
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '800',
-    letterSpacing: 0.6,
+    letterSpacing: 0.4,
     textTransform: 'uppercase',
   },
-  statGrid: {
+  overviewRow: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
-    marginTop: 16,
+    alignItems: 'stretch',
+    gap: 8,
   },
-  statTile: {
-    flexBasis: '47%',
-    flexGrow: 1,
-    padding: 13,
-    borderRadius: 16,
-    backgroundColor: colors.surfaceRaised,
+  marketStatRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 4,
+    paddingTop: 7,
+    marginTop: 5,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: colors.border,
   },
-  statTileLabel: {
+  marketStatLabel: {
     color: colors.muted,
     fontSize: 11,
     fontWeight: '800',
-    marginBottom: 6,
+    flexShrink: 1,
   },
-  statTileValue: {
+  marketStatValue: {
     color: colors.text,
-    fontSize: 17,
+    fontSize: 13,
     fontWeight: '900',
+    fontVariant: ['tabular-nums'],
+    textAlign: 'right',
   },
-  statTilePercent: {
-    fontSize: 12,
+  marketReturnValues: {
+    flex: 1,
+    alignItems: 'flex-end',
+    minWidth: 0,
+  },
+  marketReturnPercent: {
+    fontSize: 11,
     fontWeight: '800',
-    marginTop: 2,
-  },
-  cardsRow: {
-    flexDirection: 'row',
-    gap: 10,
+    marginTop: 1,
   },
   returnCard: {
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    marginBottom: 12,
-    flex: 1,
+    flex: 0.85,
+    minWidth: 0,
+    paddingHorizontal: 12,
+    paddingVertical: 13,
+    marginBottom: 8,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 24,
+    borderRadius: 18,
   },
   returnCardHeading: {
-    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 4,
-    marginBottom: 9,
+    marginBottom: 6,
   },
   returnCardTitle: {
     color: colors.text,
-    fontSize: 16,
+    fontSize: 11,
     fontWeight: '900',
-  },
-  returnPeriod: {
-    color: colors.muted,
-    fontSize: 10,
-    fontWeight: '800',
-    letterSpacing: 0.4,
+    textAlign: 'center',
   },
   portfolioReturnBlock: {
-    paddingHorizontal: 10,
-    paddingVertical: 9,
-    borderRadius: 10,
-    backgroundColor: colors.surfaceRaised,
-    borderLeftWidth: 3,
-    borderLeftColor: colors.green,
-    marginBottom: 9,
-  },
-  portfolioReturnLabel: {
-    color: colors.muted,
-    fontSize: 10,
-    fontWeight: '800',
-    letterSpacing: 0.6,
+    alignItems: 'center',
+    marginBottom: 8,
   },
   portfolioReturnValue: {
-    fontSize: 32,
-    lineHeight: 38,
+    fontSize: 27,
+    lineHeight: 32,
     fontWeight: '900',
     marginTop: 2,
   },
   indexReturns: {
-    flexDirection: 'row',
-    gap: 8,
+    gap: 5,
   },
   indexReturn: {
-    flex: 1,
-    minWidth: 0,
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-    borderRadius: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 4,
+    paddingVertical: 4,
+    paddingHorizontal: 5,
+    borderRadius: 7,
     backgroundColor: colors.surfaceRaised,
   },
+  indexReturnIdentity: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 5, minWidth: 0 },
   indexReturnDot: {
-    width: 9,
-    height: 9,
+    width: 6,
+    height: 6,
     borderRadius: 5,
-    marginBottom: 6,
   },
   indexReturnLabel: {
     color: colors.muted,
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '800',
   },
   indexReturnValue: {
     color: colors.text,
-    fontSize: 15,
+    fontSize: 12,
     fontWeight: '900',
-    marginTop: 3,
+    textAlign: 'right',
   },
   fundRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 9,
+    minHeight: 36,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.border,
   },
+  fundTable: { overflow: 'hidden', borderRadius: 10 },
+  fundHeaderRow: { minHeight: 34, backgroundColor: colors.surfaceRaised },
+  fundAlternateRow: { backgroundColor: colors.surfaceRaised },
   fundLabel: {
-    flex: 1.5,
     color: colors.text,
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: '800',
   },
-  fundLabelBox: { flex: 1.5 },
-  fundSub: { color: colors.muted, fontSize: 9, fontWeight: '600', marginTop: 2 },
+  fundLabelBox: { flex: 1.5, paddingHorizontal: 6 },
   fundHeader: {
     color: colors.muted,
     fontSize: 10,
     textTransform: 'uppercase',
+    textAlign: 'center',
   },
   fundCell: {
-    flex: 1,
     color: colors.text,
-    fontSize: 13,
+    fontSize: 10,
     fontWeight: '800',
-    textAlign: 'right',
+    textAlign: 'center',
     fontVariant: ['tabular-nums'],
   },
-  fundDiff: {
-    fontWeight: '900',
-  },
+  fundColumn: { flex: 1, alignSelf: 'stretch' },
   fundNote: {
     color: colors.muted,
     fontSize: 9,
@@ -1519,13 +1471,13 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   legendSwatch: {
-    width: 9,
-    height: 9,
+    width: 10,
+    height: 10,
     borderRadius: 2,
   },
   legendText: {
     color: colors.muted,
-    fontSize: 8,
+    fontSize: 10,
   },
   periodNote: {
     flexDirection: 'row',

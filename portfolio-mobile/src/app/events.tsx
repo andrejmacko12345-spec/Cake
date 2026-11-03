@@ -1,11 +1,13 @@
 import type { ComponentRef } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useFocusEffect } from 'expo-router';
 import { ActivityIndicator, Linking, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { Bell, ChevronRight, Clock3, Newspaper, X } from 'lucide-react-native';
+import { Bell, ChevronRight, X } from 'lucide-react-native';
 import { AssetLogo } from '../components/asset-logo';
 import { Header, Page, SectionTitle, Surface } from '../components/finapp';
 import { useLocale } from '../context/locale';
-import { CompanyEvents, fetchCompanyEvents, QuarterResult } from '../data/events';
+import { CompanyEvents, QuarterResult } from '../data/events';
+import { getEventsCacheSnapshot, preloadCompanyEvents, subscribeToEventsCache } from '../data/events-cache';
 import { useEventPrefs } from '../data/event-prefs';
 import { colors } from '../data/portfolio';
 import { usePositions } from '../hooks/use-positions';
@@ -68,32 +70,21 @@ function earningsTime(ms: number, sk: boolean) {
   }
 }
 
-async function loadAll(symbols: string[], force: boolean) {
-  const result: Record<string, CompanyEvents> = {};
-  let index = 0;
-  const worker = async () => {
-    while (index < symbols.length) {
-      const symbol = symbols[index++];
-      try {
-        result[symbol] = await fetchCompanyEvents(symbol, force);
-      } catch {
-        // symbol bez dát preskočíme
-      }
-    }
-  };
-  await Promise.all(Array.from({ length: Math.min(5, symbols.length) }, worker));
-  return result;
-}
-
 export default function EventsScreen() {
   const { language, t } = useLocale();
   const sk = language === 'sk';
   const { positions } = usePositions();
   const prefs = useEventPrefs();
-  const [data, setData] = useState<Record<string, CompanyEvents>>({});
-  const [loading, setLoading] = useState(false);
-  const [failed, setFailed] = useState(false);
+  const [cache, setCache] = useState(getEventsCacheSnapshot);
   const [detail, setDetail] = useState<CompanyEvents | null>(null);
+  const [screenFocused, setScreenFocused] = useState(false);
+  const [scrollHeight, setScrollHeight] = useState(0);
+  const [todayPosition, setTodayPosition] = useState<{ y: number; height: number } | null>(null);
+
+  useFocusEffect(useCallback(() => {
+    setScreenFocused(true);
+    return () => setScreenFocused(false);
+  }, []));
 
   const symbols = useMemo(
     () => [...new Set(positions.filter((position) => position.shares > 1e-8).map((position) => position.symbol))],
@@ -101,25 +92,19 @@ export default function EventsScreen() {
   );
   const symbolKey = symbols.join(',');
 
-  const load = useCallback(
-    async (force: boolean) => {
-      if (!symbols.length) {
-        setData({});
-        return;
-      }
-      setLoading(true);
-      const loaded = await loadAll(symbols, force);
-      setData(loaded);
-      setFailed(Object.keys(loaded).length === 0);
-      setLoading(false);
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [symbolKey],
-  );
-
   useEffect(() => {
-    void load(false);
-  }, [load]);
+    const unsubscribe = subscribeToEventsCache(setCache);
+    setCache(getEventsCacheSnapshot());
+    if (symbols.length) void preloadCompanyEvents(symbols);
+    return unsubscribe;
+  }, [symbolKey]);
+
+  const data = useMemo(
+    () => Object.fromEntries(symbols.flatMap((symbol) => cache.data[symbol] ? [[symbol, cache.data[symbol]]] : [])),
+    [cache.data, symbolKey],
+  );
+  const loading = symbols.some((symbol) => cache.loading.includes(symbol));
+  const failed = symbols.length > 0 && symbols.every((symbol) => !data[symbol] && cache.errors[symbol]);
 
   const items = useMemo(() => {
     const now = Date.now();
@@ -136,10 +121,6 @@ export default function EventsScreen() {
         const lines: string[] = [];
         const time = earningsTime(ms, sk);
         if (time) lines.push(time);
-        if (next.epsEstimate !== null) lines.push(`${sk ? 'Odhad EPS' : 'EPS estimate'}: ${fmtNum(next.epsEstimate)}`);
-        if (next.revenueEstimate !== null) {
-          lines.push(`${sk ? 'Odhad tržieb' : 'Revenue estimate'}: ${fmtRevenue(next.revenueEstimate, sk)}`);
-        }
         if (next.estimate) lines.push(sk ? 'Dátum je orientačný' : 'Date is an estimate');
         list.push({
           key: `${symbol}-next`,
@@ -164,19 +145,10 @@ export default function EventsScreen() {
           : new Date(quarter.periodEnd).getTime() + lag;
         if (!reportedMs || reportedMs > now) return;
         const lines: string[] = [];
-        if (quarter.epsActual !== null) {
-          lines.push(`EPS ${fmtNum(quarter.epsActual)} ${sk ? 'vs odhad' : 'vs est.'} ${fmtNum(quarter.epsEstimate)}`);
+        if (quarter.revenue !== null) {
+          lines.push(`${sk ? 'Tržby' : 'Revenue'}: ${fmtRevenue(quarter.revenue, sk)}${quarter.revenueYoY !== null ? ` (${fmtPct(quarter.revenueYoY)} YoY)` : ''}`);
         }
-        if (quarter.revenueSurprisePct !== null) {
-          lines.push(
-            `${sk ? 'Tržby' : 'Revenue'} ${quarter.revenueSurprisePct >= 0 ? (sk ? 'prekonané' : 'beat') : sk ? 'nedosiahnuté' : 'missed'} ${fmtPct(quarter.revenueSurprisePct)}`,
-          );
-        }
-        if (quarter.epsSurprisePct !== null) {
-          lines.push(
-            `${quarter.epsSurprisePct >= 0 ? (sk ? 'Prekonané' : 'Beat') : sk ? 'Nedosiahnuté' : 'Missed'} ${fmtPct(quarter.epsSurprisePct)}`,
-          );
-        }
+        if (quarter.epsActual !== null) lines.push(`EPS: ${fmtNum(quarter.epsActual)}`);
         list.push({
           key: `${symbol}-q-${quarter.label}`,
           symbol,
@@ -185,9 +157,9 @@ export default function EventsScreen() {
           title: `${sk ? 'Výsledky' : 'Earnings'} ${quarter.label}`,
           lines,
           company,
-          color: quarter.epsSurprisePct === null && quarter.revenueSurprisePct === null
+          color: quarter.revenueYoY === null
             ? colors.muted
-            : (quarter.epsSurprisePct ?? 0) < 0 || (quarter.revenueSurprisePct ?? 0) < 0 ? colors.red : colors.green,
+            : quarter.revenueYoY >= 0 ? colors.green : colors.red,
         });
       });
       const dividendLine = company.dividendAmount !== null
@@ -231,16 +203,14 @@ export default function EventsScreen() {
   const timelinePast = items.filter((item) => item.date < now || item.category === 'Správy').sort((a, b) => a.date - b.date);
   const timelineFuture = items.filter((item) => item.date >= now && item.category !== 'Správy').sort((a, b) => a.date - b.date);
   const scrollRef = useRef<ComponentRef<typeof ScrollView> | null>(null);
-  const todayY = useRef(0);
-  const scrolledToToday = useRef(false);
   useEffect(() => {
-    if (scrolledToToday.current || !items.length) return;
+    if (!screenFocused || !items.length || !todayPosition || !scrollHeight) return;
     const timer = setTimeout(() => {
-      scrollRef.current?.scrollTo({ y: Math.max(0, todayY.current - 90), animated: false });
-      scrolledToToday.current = true;
-    }, 150);
+      const centeredY = todayPosition.y - (scrollHeight - todayPosition.height) / 2;
+      scrollRef.current?.scrollTo({ y: Math.max(0, centeredY), animated: false });
+    }, 80);
     return () => clearTimeout(timer);
-  }, [items.length]);
+  }, [items.length, screenFocused, scrollHeight, todayPosition]);
 
   const renderItem = (item: EventItem) => {
     const date = new Date(item.date);
@@ -258,23 +228,20 @@ export default function EventsScreen() {
             <Text style={styles.dateDay}>{String(date.getDate()).padStart(2, '0')}</Text>
             <Text style={styles.dateMonth}>{months[date.getMonth()]}</Text>
           </View>
-          <AssetLogo symbol={item.symbol} color={item.color} size={34} />
+          <AssetLogo symbol={item.symbol} color={item.color} size={40} />
           <View style={styles.eventBody}>
             <View style={styles.eventTopline}>
               <Text style={styles.symbol}>{item.symbol}</Text>
               <Text style={styles.category}>{t(item.category)}</Text>
             </View>
-            <Text style={styles.eventTitle} numberOfLines={item.category === 'Správy' ? 3 : 2}>{item.title}</Text>
-            {item.lines.map((line) => (
-              <View key={line} style={styles.eventTime}>
-                {item.category === 'Správy' ? (
-                  <Newspaper size={12} color={colors.muted} />
-                ) : (
-                  <Clock3 size={12} color={colors.muted} />
-                )}
-                <Text style={styles.eventTimeText}>{line}</Text>
-              </View>
-            ))}
+            <Text style={styles.eventTitle} numberOfLines={item.category === 'Správy' ? 2 : 1}>
+              {item.category === 'Výsledky'
+                ? item.title.replace(/^(Výsledky|Earnings)\s*/, '')
+                : item.title}
+            </Text>
+            {item.lines.length ? (
+              <Text style={styles.eventTimeText} numberOfLines={1}>{item.lines.join(' · ')}</Text>
+            ) : null}
           </View>
           {clickable ? <ChevronRight size={16} color={colors.muted} /> : null}
         </Surface>
@@ -283,15 +250,23 @@ export default function EventsScreen() {
   };
 
   return (
-    <Page scrollRef={scrollRef}>
-      <Header title={t('Udalosti')} subtitle={t('Podľa tvojho portfólia')} action={<Bell size={20} color={colors.text} />} />
-      {loading && !items.length ? <ActivityIndicator color={colors.green} style={styles.loader} /> : null}
+    <Page scrollRef={scrollRef} onScrollViewLayout={setScrollHeight}>
+      <Header compact title={t('Udalosti')} action={<Bell size={18} color={colors.text} />} />
+      {loading ? <ActivityIndicator color={colors.green} style={styles.loader} /> : null}
       {!symbols.length ? <Text style={styles.empty}>{t('Pridaj pozície a uvidíš udalosti svojich akcií.')}</Text> : null}
       {failed && symbols.length ? <Text style={styles.empty}>{t('Údaje sa nepodarilo načítať. Potiahni nadol a skús znova.')}</Text> : null}
 
       {timelinePast.map(renderItem)}
       {items.length ? (
-        <View onLayout={(event) => { todayY.current = event.nativeEvent.layout.y; }} style={styles.todayRow}>
+        <View
+          onLayout={(event) => {
+            const { y, height } = event.nativeEvent.layout;
+            setTodayPosition((previous) =>
+              previous?.y === y && previous.height === height ? previous : { y, height },
+            );
+          }}
+          style={styles.todayRow}
+        >
           <View style={styles.todayLine} />
           <Text style={styles.todayText}>{sk ? 'DNES' : 'TODAY'}</Text>
           <View style={styles.todayLine} />
@@ -323,7 +298,15 @@ export default function EventsScreen() {
               ) : (
                 <Text style={styles.empty}>{t('Výsledky zatiaľ nie sú dostupné.')}</Text>
               )}
-              <Text style={styles.sheetNote}>{t('Odhad tržieb Yahoo pre zverejnené štvrťroky neposkytuje.')}</Text>
+              {detail?.financialDataIssue ? (
+                <Text style={styles.sheetNote}>
+                  {t(detail.financialDataIssue === 'missing-key'
+                    ? 'FMP API kľúč sa nenačítal. Skontroluj .env v koreňovom priečinku a reštartuj Expo.'
+                    : detail.financialDataIssue === 'plan-required'
+                      ? 'FMP odmietlo prístup k historickým finančným výkazom (HTTP 402). Tvoj plán API tento endpoint nepovoľuje.'
+                      : 'FMP sa nepodarilo načítať kvartálne finančné údaje. Skús to neskôr.')}
+                </Text>
+              ) : null}
             </ScrollView>
           </View>
         </View>
@@ -344,33 +327,23 @@ function Row({ label, value, color }: { label: string; value: string; color?: st
 function UpcomingCard({ company, sk }: { company: CompanyEvents; sk: boolean }) {
   const next = company.nextEarnings;
   if (!next) return null;
-  const last = company.quarters[3];
-  const growth = (estimate: number | null, base: number | null | undefined) =>
-    estimate !== null && base ? ((estimate - base) / Math.abs(base)) * 100 : null;
-  const epsYoY = growth(next.epsEstimate, last?.epsActual);
-  const revYoY = growth(next.revenueEstimate, last?.revenue);
   const ms = next.date * 1000;
   const time = earningsTime(ms, sk);
   return (
     <Surface style={styles.upcoming}>
       <Text style={styles.quarterTitle}>
-        {sk ? 'Očakávania' : 'Expectations'}{next.label ? ` · ${next.label}` : ''}
+        {sk ? 'Nadchádzajúci report' : 'Upcoming report'}{next.label ? ` · ${next.label}` : ''}
       </Text>
       <Row
         label={sk ? 'Dátum výsledkov' : 'Report date'}
         value={`${new Date(ms).toLocaleDateString(sk ? 'sk-SK' : 'en-US')}${next.estimate ? (sk ? ' (orientačne)' : ' (est.)') : ''}`}
       />
       {time ? <Row label={sk ? 'Čas' : 'Time'} value={time} /> : null}
-      <Row label={sk ? 'Tržby (odhad)' : 'Revenue (est.)'} value={fmtRevenue(next.revenueEstimate, sk)} />
-      <Row label={sk ? 'Tržby r/r (odhad)' : 'Revenue YoY (est.)'} value={fmtPct(revYoY)} color={pctColor(revYoY)} />
-      <Row label={sk ? 'EPS (odhad)' : 'EPS (est.)'} value={fmtNum(next.epsEstimate)} />
-      <Row label={sk ? 'EPS r/r (odhad)' : 'EPS YoY (est.)'} value={fmtPct(epsYoY)} color={pctColor(epsYoY)} />
     </Surface>
   );
 }
 
 function QuarterCard({ quarter, first, sk }: { quarter: QuarterResult; first: boolean; sk: boolean }) {
-  const diff = quarter.epsActual !== null && quarter.epsEstimate !== null ? quarter.epsActual - quarter.epsEstimate : null;
   return (
     <Surface style={first ? styles.quarterFirst : styles.quarter}>
       <Text style={styles.quarterTitle}>{quarter.label}</Text>
@@ -378,14 +351,6 @@ function QuarterCard({ quarter, first, sk }: { quarter: QuarterResult; first: bo
       <Row label={sk ? 'Tržby r/r' : 'Revenue YoY'} value={fmtPct(quarter.revenueYoY)} color={pctColor(quarter.revenueYoY)} />
       <Row label="EPS" value={fmtNum(quarter.epsActual)} />
       <Row label={sk ? 'EPS r/r' : 'EPS YoY'} value={fmtPct(quarter.epsYoY)} color={pctColor(quarter.epsYoY)} />
-      <Row label={sk ? 'Odhad analytikov (tržby)' : 'Analyst estimate (revenue)'} value={fmtRevenue(quarter.revenueEstimate, sk)} />
-      <Row label={sk ? 'Tržby: prekonanie / nedosiahnutie' : 'Revenue beat / miss'} value={fmtPct(quarter.revenueSurprisePct)} color={pctColor(quarter.revenueSurprisePct)} />
-      <Row label={sk ? 'Odhad analytikov (EPS)' : 'Analyst estimate (EPS)'} value={fmtNum(quarter.epsEstimate)} />
-      <Row
-        label={sk ? 'Prekonanie / nedosiahnutie' : 'Beat / miss'}
-        value={diff === null ? '—' : `${diff >= 0 ? '+' : ''}${diff.toFixed(2)} (${fmtPct(quarter.epsSurprisePct)})`}
-        color={pctColor(quarter.epsSurprisePct)}
-      />
     </Surface>
   );
 }
@@ -393,26 +358,25 @@ function QuarterCard({ quarter, first, sk }: { quarter: QuarterResult; first: bo
 const styles = StyleSheet.create({
   loader: { marginVertical: 24 },
   empty: { color: colors.muted, fontSize: 12, textAlign: 'center', marginVertical: 18, lineHeight: 18 },
-  eventCard: { flexDirection: 'row', alignItems: 'center', padding: 14 },
+  eventCard: { flexDirection: 'row', alignItems: 'center', padding: 10, marginBottom: 5, borderRadius: 15 },
   dateBadge: {
-    width: 44,
-    height: 50,
-    borderRadius: 13,
+    width: 38,
+    height: 44,
+    borderRadius: 11,
     backgroundColor: colors.surfaceRaised,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 11,
+    marginRight: 8,
   },
-  dateDay: { color: colors.text, fontSize: 17, fontWeight: '900' },
-  dateMonth: { color: colors.muted, fontSize: 9, fontWeight: '800', marginTop: 1 },
+  dateDay: { color: colors.text, fontSize: 16, fontWeight: '900' },
+  dateMonth: { color: colors.muted, fontSize: 10, fontWeight: '800', marginTop: 1 },
   eventAccent: { width: 3, alignSelf: 'stretch', borderRadius: 4, marginRight: 11 },
   eventBody: { flex: 1 },
-  eventTopline: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 5 },
-  symbol: { color: colors.green, fontSize: 10, fontWeight: '900', letterSpacing: 0.8 },
-  category: { color: colors.muted, fontSize: 9, fontWeight: '700' },
-  eventTitle: { color: colors.text, fontSize: 14, fontWeight: '800', marginBottom: 4 },
-  eventTime: { flexDirection: 'row', alignItems: 'center', marginTop: 4 },
-  eventTimeText: { color: colors.muted, fontSize: 11, marginLeft: 5, flexShrink: 1 },
+  eventTopline: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 1 },
+  symbol: { color: colors.green, fontSize: 11, fontWeight: '900', letterSpacing: 0.8 },
+  category: { color: colors.muted, fontSize: 10, fontWeight: '700' },
+  eventTitle: { color: colors.text, fontSize: 13, fontWeight: '800' },
+  eventTimeText: { color: colors.muted, fontSize: 10, marginTop: 2, flexShrink: 1 },
   scrim: { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', justifyContent: 'flex-end' },
   sheet: {
     maxHeight: '85%',
@@ -435,7 +399,7 @@ const styles = StyleSheet.create({
   },
   sheetNote: { color: colors.muted, fontSize: 11, marginVertical: 8, lineHeight: 16 },
   quarter: { marginBottom: 10 },
-  todayRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginVertical: 12 },
+  todayRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginVertical: 8 },
   todayLine: { flex: 1, height: 1, backgroundColor: colors.green },
   todayText: { color: colors.green, fontSize: 11, fontWeight: '900', letterSpacing: 1 },
   upcoming: { marginBottom: 10, borderWidth: 1, borderColor: colors.violet },

@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { YAHOO_USER_AGENT, yahooQuoteSummary } from './fundamentals';
 import { fetchFmpQuarterly, FmpQuarterly, getFmpKey } from './fmp';
 
@@ -11,8 +10,6 @@ type SummaryResult = {
       earningsDate?: Raw[];
       earningsCallDate?: Raw[];
       isEarningsDateEstimate?: boolean;
-      earningsAverage?: Raw;
-      revenueAverage?: Raw;
     };
     exDividendDate?: Raw;
     dividendDate?: Raw;
@@ -21,8 +18,6 @@ type SummaryResult = {
     history?: Array<{
       quarter?: Raw;
       epsActual?: Raw;
-      epsEstimate?: Raw;
-      surprisePercent?: Raw;
     }>;
   };
   earnings?: {
@@ -38,14 +33,10 @@ export type QuarterResult = {
   label: string;
   periodEnd: string;
   epsActual: number | null;
-  epsEstimate: number | null;
-  epsSurprisePct: number | null;
   epsYoY: number | null;
   revenue: number | null;
   revenueYoY: number | null;
   revenueQoQ: number | null;
-  revenueEstimate: number | null;
-  revenueSurprisePct: number | null;
 };
 
 export type NewsItem = { title: string; publisher: string; link: string; time: number };
@@ -53,12 +44,11 @@ export type NewsItem = { title: string; publisher: string; link: string; time: n
 export type CompanyEvents = {
   symbol: string;
   name: string;
+  financialDataIssue: 'missing-key' | 'plan-required' | 'provider-error' | null;
   nextEarnings: {
     date: number;
     estimate: boolean;
     label: string | null;
-    epsEstimate: number | null;
-    revenueEstimate: number | null;
   } | null;
   lastReportDate: number | null;
   exDividend: number | null;
@@ -72,7 +62,7 @@ export type CompanyEvents = {
 type SeriesPoint = { time: number; value: number };
 
 const DAY = 86400;
-const CACHE_MS = 10 * 60 * 1000;
+const CACHE_MS = 30 * 60 * 1000;
 const cache = new Map<string, { at: number; value: CompanyEvents }>();
 
 function num(value: Raw) {
@@ -169,82 +159,64 @@ function buildQuarters(
   const quarters = history.map((item, index): QuarterResult => {
     const periodEnd = num(item.quarter) as number;
     const epsActual = num(item.epsActual);
-    const epsEstimate = num(item.epsEstimate);
     const revenuePoint = nearest(series.revenue, periodEnd, 12);
     const revenue = revenuePoint?.value ?? null;
     const epsPoint = nearest(series.eps, periodEnd, 12);
     const eps = epsActual ?? epsPoint?.value ?? null;
-    const surprise = epsActual !== null && epsEstimate !== null && epsEstimate !== 0
-      ? ((epsActual - epsEstimate) / Math.abs(epsEstimate)) * 100
-      : num(item.surprisePercent) !== null ? (num(item.surprisePercent) as number) * 100 : null;
     return {
       label: (aligned ? fiscalLabel(chart[index].date) : null) ?? new Date(periodEnd * 1000).toISOString().slice(0, 10),
       periodEnd: new Date(periodEnd * 1000).toISOString().slice(0, 10),
       epsActual: eps,
-      epsEstimate,
-      epsSurprisePct: surprise,
       epsYoY: growth(eps, nearest(series.eps, periodEnd - 365 * DAY, 20)?.value),
       revenue,
       revenueYoY: growth(revenue, nearest(series.revenue, periodEnd - 365 * DAY, 20)?.value),
       revenueQoQ: growth(revenue, nearest(series.revenue, periodEnd - 91 * DAY, 20)?.value),
-      revenueEstimate: null,
-      revenueSurprisePct: null,
     };
   });
   return quarters.reverse();
 }
 
-// FMP má dlhšiu históriu tržieb aj historické odhady analytikov, preto má prednosť pred Yahoo.
-function applyFmp(quarters: QuarterResult[], fmp: FmpQuarterly) {
-  for (const quarter of quarters) {
-    const periodEnd = Date.parse(`${quarter.periodEnd}T00:00:00Z`) / 1000;
-    const revenue = nearest(fmp.revenue, periodEnd, 15)?.value ?? quarter.revenue;
-    quarter.revenue = revenue;
-    quarter.revenueYoY = growth(revenue, nearest(fmp.revenue, periodEnd - 365 * DAY, 20)?.value) ?? quarter.revenueYoY;
-    quarter.revenueQoQ = growth(revenue, nearest(fmp.revenue, periodEnd - 91 * DAY, 20)?.value) ?? quarter.revenueQoQ;
-    const estimate = nearest(fmp.revenueEstimate, periodEnd, 15)?.value;
-    if (estimate !== undefined && estimate > 0) {
-      quarter.revenueEstimate = estimate;
-      quarter.revenueSurprisePct = revenue !== null ? ((revenue - estimate) / estimate) * 100 : null;
-    }
-  }
-}
-
-type SavedEstimate = { date: number; estimate: number };
-
-// Yahoo nedáva odhad tržieb pre už zverejnené štvrťroky, preto si odhad pamätáme z obdobia pred reportom.
-async function syncRevenueEstimates(symbol: string, upcoming: { date: number; estimate: number | null } | null) {
-  const key = `revenue-estimates:${symbol}`;
-  let saved: SavedEstimate[] = [];
-  try {
-    saved = JSON.parse((await AsyncStorage.getItem(key)) ?? '[]') as SavedEstimate[];
-  } catch {
-    saved = [];
-  }
-  if (upcoming && upcoming.estimate !== null) {
-    const next = { date: upcoming.date, estimate: upcoming.estimate };
-    saved = [...saved.filter((item) => Math.abs(item.date - next.date) > 20 * DAY), next].slice(-6);
-    await AsyncStorage.setItem(key, JSON.stringify(saved)).catch(() => undefined);
-  }
-  return saved;
+// Fetch each fiscal quarter separately to stay within FMP's five-row free limit.
+function applyFmp(fmp: FmpQuarterly): QuarterResult[] {
+  const rows = fmp.quarters;
+  return rows.map((row): QuarterResult => {
+    const priorYear = rows.find((candidate) =>
+      candidate.period === row.period && Number(candidate.fiscalYear) === Number(row.fiscalYear) - 1,
+    );
+    const previousQuarter = nearest(
+      rows.flatMap((candidate) => candidate.revenue === null ? [] : [{ time: candidate.time, value: candidate.revenue }]),
+      row.time - 91 * DAY,
+      45,
+    );
+    return {
+      label: `${row.period} ${row.fiscalYear}`,
+      periodEnd: new Date(row.time * 1000).toISOString().slice(0, 10),
+      epsActual: row.eps,
+      epsYoY: growth(row.eps, priorYear?.eps ?? undefined),
+      revenue: row.revenue,
+      revenueYoY: growth(row.revenue, priorYear?.revenue ?? undefined),
+      revenueQoQ: growth(row.revenue, previousQuarter?.value),
+    };
+  }).sort((a, b) => b.periodEnd.localeCompare(a.periodEnd));
 }
 
 export async function fetchCompanyEvents(symbol: string, force = false): Promise<CompanyEvents> {
   const cached = cache.get(symbol);
   if (!force && cached && Date.now() - cached.at < CACHE_MS) return cached.value;
 
-  const [summaryResult, seriesResult, dividendResult, newsResult] = await Promise.allSettled([
+  const [summaryResult, seriesResult, dividendResult, newsResult, fmpResult] = await Promise.allSettled([
     yahooQuoteSummary<SummaryResult>(symbol, 'price,calendarEvents,earningsHistory,earnings'),
     fetchTimeseries(symbol),
     fetchDividends(symbol),
     fetchNews(symbol),
+    getFmpKey().then((key) => key ? fetchFmpQuarterly(symbol, key) : null),
   ]);
   if (summaryResult.status === 'rejected') throw summaryResult.reason;
   const summary = summaryResult.value;
   if (!summary) throw new Error(`Údaje pre ${symbol} sa nepodarilo nájsť.`);
 
   const series = seriesResult.status === 'fulfilled' ? seriesResult.value : { revenue: [], eps: [] };
-  const quarters = buildQuarters(summary, series);
+  let quarters = buildQuarters(summary, series);
   const now = Date.now() / 1000;
   const earnings = summary.calendarEvents?.earnings;
   const nextDate = num(earnings?.earningsDate?.[0]);
@@ -258,39 +230,30 @@ export async function fetchCompanyEvents(symbol: string, force = false): Promise
   const reportCandidates = [callDate, upcoming ? null : nextDate]
     .filter((value): value is number => value !== null && value > latestPeriod && value <= now);
 
-  const savedEstimates = await syncRevenueEstimates(
-    symbol,
-    upcoming ? { date: nextDate as number, estimate: num(earnings?.revenueAverage) } : null,
-  );
   const reportedAt = reportCandidates.length ? Math.max(...reportCandidates) : null;
-  if (quarters[0] && reportedAt !== null) {
-    const match = savedEstimates
-      .filter((item) => item.date > latestPeriod && item.date <= reportedAt + 5 * DAY)
-      .sort((a, b) => Math.abs(a.date - reportedAt) - Math.abs(b.date - reportedAt))[0];
-    if (match) {
-      quarters[0].revenueEstimate = match.estimate;
-      if (quarters[0].revenue !== null && match.estimate > 0) {
-        quarters[0].revenueSurprisePct = ((quarters[0].revenue - match.estimate) / match.estimate) * 100;
-      }
-    }
-  }
 
-  const fmpKey = await getFmpKey();
-  if (fmpKey) {
-    const fmp = await fetchFmpQuarterly(symbol, fmpKey).catch(() => null);
-    if (fmp) applyFmp(quarters, fmp);
+  let financialDataIssue: CompanyEvents['financialDataIssue'] = null;
+  if (fmpResult.status === 'rejected') {
+    const message = fmpResult.reason instanceof Error ? fmpResult.reason.message : String(fmpResult.reason);
+    financialDataIssue = message.includes('HTTP 402') ? 'plan-required' : 'provider-error';
+  } else if (fmpResult.value === null) {
+    financialDataIssue = 'missing-key';
+  } else {
+    if (fmpResult.value.quarters.length) quarters = applyFmp(fmpResult.value);
+    if (fmpResult.value.error) {
+      financialDataIssue = fmpResult.value.error.includes('HTTP 402') ? 'plan-required' : 'provider-error';
+    }
   }
 
   const value: CompanyEvents = {
     symbol,
     name: summary.price?.shortName ?? summary.price?.longName ?? symbol,
+    financialDataIssue,
     nextEarnings: upcoming
       ? {
         date: nextDate as number,
         estimate: earnings?.isEarningsDateEstimate ?? true,
         label: nextLabel,
-        epsEstimate: num(earnings?.earningsAverage),
-        revenueEstimate: num(earnings?.revenueAverage),
       }
       : null,
     lastReportDate: reportCandidates.length ? Math.max(...reportCandidates) : null,

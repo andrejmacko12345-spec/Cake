@@ -8,9 +8,15 @@ type Props = {
   size?: number;
 };
 
-export function AssetLogo({ symbol, color, size = 38 }: Props) {
-  const [failedSymbol, setFailedSymbol] = useState<string>();
-  const imageFailed = failedSymbol === symbol;
+export function AssetLogo({ symbol, color, size = 44 }: Props) {
+  const [failedLogo, setFailedLogo] = useState<{ symbol: string; index: number }>({ symbol: '', index: 0 });
+  const logoIndex = failedLogo.symbol === symbol ? failedLogo.index : 0;
+  const encodedSymbol = encodeURIComponent(symbol);
+  const logoSources = [
+    `https://financialmodelingprep.com/image-stock/${encodedSymbol}.png`,
+    `https://assets.parqet.com/logos/symbol/${encodedSymbol}?format=png`,
+  ];
+  const imageFailed = logoIndex >= logoSources.length;
 
   return (
     <View
@@ -21,8 +27,8 @@ export function AssetLogo({ symbol, color, size = 38 }: Props) {
         {
           width: size,
           height: size,
-          borderRadius: Math.round(size * 0.28),
-          backgroundColor: imageFailed ? color : 'transparent',
+          borderRadius: size / 2,
+          backgroundColor: imageFailed ? color : colors.surfaceRaised,
         },
       ]}
     >
@@ -32,10 +38,11 @@ export function AssetLogo({ symbol, color, size = 38 }: Props) {
         </Text>
       ) : (
         <Image
-          onError={() => setFailedSymbol(symbol)}
-          resizeMode="cover"
-          source={{ uri: `https://assets.parqet.com/logos/symbol/${encodeURIComponent(symbol)}?format=png` }}
-          style={{ width: size, height: size }}
+          key={`${symbol}-${logoIndex}`}
+          onError={() => setFailedLogo({ symbol, index: logoIndex + 1 })}
+          resizeMode="contain"
+          source={{ uri: logoSources[logoIndex] }}
+          style={{ width: size * 0.72, height: size * 0.72 }}
         />
       )}
     </View>

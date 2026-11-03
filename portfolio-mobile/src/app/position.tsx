@@ -12,6 +12,7 @@ import Svg, { Circle, Line, Path } from 'react-native-svg';
 import { ArrowLeft, ChevronDown, ChevronUp, Pencil, Plus, TrendingDown, TrendingUp } from 'lucide-react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { AssetLogo } from '../components/asset-logo';
+import { TableColumn } from '../components/table-column';
 import { TransactionModal } from '../components/transaction-modal';
 import { Header, Page, SectionTitle, Surface } from '../components/finapp';
 import { Asset, availableAssets, colors, formatMoney, formatPercent } from '../data/portfolio';
@@ -287,10 +288,10 @@ function TransactionTable({
   return (
     <Surface style={styles.tableCard}>
       <View style={styles.tableHeader}>
-        <Text style={[styles.tableHeading, styles.dateColumn]}>{t('Dátum')}</Text>
-        <Text style={[styles.tableHeading, styles.typeColumn]}>{t('Typ')}</Text>
-        <Text style={[styles.tableHeading, styles.sharesColumn]}>{t('Počet')}</Text>
-        <Text style={[styles.tableHeading, styles.amountColumn]}>{t('Cena / suma')}</Text>
+        <TableColumn first header style={[styles.dateColumn, styles.tableHeaderCell]}><Text style={styles.tableHeading}>{t('Dátum')}</Text></TableColumn>
+        <TableColumn header style={[styles.typeColumn, styles.tableHeaderCell]}><Text style={styles.tableHeading}>{t('Typ')}</Text></TableColumn>
+        <TableColumn header style={[styles.sharesColumn, styles.tableHeaderCell]}><Text style={styles.tableHeading}>{t('Počet')}</Text></TableColumn>
+        <TableColumn header style={[styles.amountColumn, styles.tableHeaderCell]}><Text style={styles.tableHeading}>{t('Cena / suma')}</Text></TableColumn>
       </View>
       {transactions.map((transaction) => {
         const isBuy = transaction.type === 'BUY';
@@ -303,20 +304,24 @@ function TransactionTable({
             onPress={() => onEdit(transaction)}
             style={styles.tableRow}
           >
-            <View style={styles.dateColumn}>
+            <TableColumn first style={[styles.dateColumn, styles.tableBodyCell]}>
               <Text style={styles.tableDate}>{new Date(`${transaction.date}T12:00:00`).toLocaleDateString(language === 'sk' ? 'sk-SK' : 'en-US')}</Text>
               {transaction.dateEstimated ? <Text style={styles.estimatedDate}>{t('Odhadovaný dátum')}</Text> : null}
-            </View>
-            <View style={[styles.typeBadge, { backgroundColor: isBuy ? 'rgba(120,216,79,0.12)' : 'rgba(255,90,98,0.12)' }]}>
-              {isBuy
-                ? <TrendingUp size={11} color={colors.green} />
-                : <TrendingDown size={11} color={colors.red} />}
-              <Text style={[styles.typeBadgeText, { color: isBuy ? colors.green : colors.red }]}>
-                {isBuy ? t('Nákup') : t('Predaj')}
-              </Text>
-            </View>
-            <Text style={[styles.tableShares, styles.sharesColumn]}>{transaction.shares.toLocaleString(language === 'sk' ? 'sk-SK' : 'en-US')}</Text>
-            <View style={[styles.amountColumn, styles.tableAmounts]}>
+            </TableColumn>
+            <TableColumn style={[styles.typeColumn, styles.tableBodyCell]}>
+              <View style={[styles.typeBadge, { backgroundColor: isBuy ? 'rgba(120,216,79,0.12)' : 'rgba(255,90,98,0.12)' }]}>
+                {isBuy
+                  ? <TrendingUp size={11} color={colors.green} />
+                  : <TrendingDown size={11} color={colors.red} />}
+                <Text style={[styles.typeBadgeText, { color: isBuy ? colors.green : colors.red }]}>
+                  {isBuy ? t('Nákup') : t('Predaj')}
+                </Text>
+              </View>
+            </TableColumn>
+            <TableColumn style={[styles.sharesColumn, styles.tableBodyCell]}>
+              <Text style={[styles.tableShares, styles.sharesText]}>{transaction.shares.toLocaleString(language === 'sk' ? 'sk-SK' : 'en-US')}</Text>
+            </TableColumn>
+            <TableColumn style={[styles.amountColumn, styles.tableBodyCell, styles.tableAmounts]}>
               <Text style={styles.tablePrice}>
                 {transaction.price.toLocaleString(language === 'sk' ? 'sk-SK' : 'en-US', { maximumFractionDigits: 2 })} {transaction.currency}
               </Text>
@@ -324,7 +329,7 @@ function TransactionTable({
                 <Text style={styles.tableTotalText}>{formatMoney(total * transaction.fxToEur)}</Text>
                 <Pencil size={10} color={colors.muted} />
               </View>
-            </View>
+            </TableColumn>
           </Pressable>
         );
       })}
@@ -425,7 +430,7 @@ export default function PositionDetailScreen() {
 
   if (loading && !position && !asset) {
     return (
-      <Page>
+      <Page animateOnFocus>
         <Header title={t('Pozícia')} action={<Pressable onPress={() => router.back()}><ArrowLeft size={20} color={colors.text} /></Pressable>} />
         <Surface style={styles.loadingCard}><ActivityIndicator color={colors.green} /></Surface>
       </Page>
@@ -434,7 +439,7 @@ export default function PositionDetailScreen() {
 
   if (!position || !symbol) {
     return (
-      <Page>
+      <Page animateOnFocus>
         <Header title={t('Pozícia')} action={<Pressable onPress={() => router.back()}><ArrowLeft size={20} color={colors.text} /></Pressable>} />
           <Surface style={styles.loadingCard}><Text style={styles.emptyTable}>{t('Pozíciu sa nepodarilo nájsť.')}</Text></Surface>
       </Page>
@@ -442,13 +447,13 @@ export default function PositionDetailScreen() {
   }
 
   return (
-    <Page>
+    <Page animateOnFocus>
       <Header
         title={position.symbol}
         subtitle={position.name}
         action={
           <View style={styles.detailHeader}>
-            <AssetLogo symbol={position.symbol} color={position.color} size={42} />
+            <AssetLogo symbol={position.symbol} color={position.color} size={48} />
             <Pressable accessibilityLabel={t('Späť na portfólio')} onPress={() => router.back()} style={styles.backButton}>
               <ArrowLeft size={18} color={colors.text} />
             </Pressable>
@@ -485,7 +490,7 @@ export default function PositionDetailScreen() {
         <View style={styles.resultsRow}>
           <Surface style={styles.resultCard}>
             <Text style={styles.resultCaption}>{t('Hodnota investície')}</Text>
-            <Text style={styles.resultAmount}>{formatMoney(currentValue)}</Text>
+            <Text style={[styles.resultAmount, { color: colors.text }]}>{formatMoney(currentValue)}</Text>
           </Surface>
           <Surface style={styles.resultCard}>
             <Text style={styles.resultCaption}>{t('Nerealizovaný výnos')}</Text>
@@ -493,9 +498,13 @@ export default function PositionDetailScreen() {
               {unrealized >= 0 ? '+' : ''}{formatMoney(unrealized)}
             </Text>
             {openCost > 0 ? (
-              <Text style={[styles.resultPct, { color: unrealized >= 0 ? colors.green : colors.red }]}>
-                {formatPercent((unrealized / openCost) * 100)}
-              </Text>
+              <View style={[styles.resultPctBadge, {
+                backgroundColor: unrealized >= 0 ? 'rgba(120,216,79,0.12)' : 'rgba(255,90,98,0.12)',
+              }]}>
+                <Text style={[styles.resultPct, { color: unrealized >= 0 ? colors.green : colors.red }]}>
+                  {formatPercent((unrealized / openCost) * 100)}
+                </Text>
+              </View>
             ) : null}
           </Surface>
           <Surface style={styles.resultCard}>
@@ -536,63 +545,70 @@ export default function PositionDetailScreen() {
           <>
             {(events?.quarters?.length || events?.nextEarnings) ? (
               <View style={styles.reportRow}>
-                <Text style={[styles.reportHead, styles.colPeriod]}>{t('Obdobie')}</Text>
-                <Text style={[styles.reportHead, styles.colNum, { textAlign: 'right' }]}>{t('Tržby')}</Text>
-                <Text style={[styles.reportHead, styles.colNum, { textAlign: 'right' }]}>{t('Beat / Miss')}</Text>
-                <Text style={[styles.reportHead, styles.colNum, { textAlign: 'right' }]}>YoY</Text>
-                <Text style={[styles.reportHead, styles.colNum, { textAlign: 'right' }]}>EPS</Text>
-                <Text style={[styles.reportHead, styles.colNum, { textAlign: 'right' }]}>{t('Beat / Miss')}</Text>
+                <TableColumn first tone="neutral" header style={[styles.reportColumn, styles.colPeriod]}>
+                  <Text style={styles.reportHead}>{t('Obdobie')}</Text>
+                </TableColumn>
+                <TableColumn tone="green" header style={[styles.reportColumn, styles.colNum]}>
+                  <Text style={styles.reportHead}>{t('Tržby')}</Text>
+                </TableColumn>
+                <TableColumn tone="cyan" header style={[styles.reportColumn, styles.colNum]}>
+                  <Text style={styles.reportHead}>{t('YoY tržieb')}</Text>
+                </TableColumn>
+                <TableColumn tone="violet" header style={[styles.reportColumn, styles.colNum]}>
+                  <Text style={styles.reportHead}>EPS</Text>
+                </TableColumn>
+                <TableColumn tone="amber" header style={[styles.reportColumn, styles.colNum]}>
+                  <Text style={styles.reportHead}>{t('YoY EPS')}</Text>
+                </TableColumn>
               </View>
             ) : null}
             {events?.nextEarnings ? (
               <View style={styles.reportRow}>
-                <View style={styles.colPeriod}>
+                <TableColumn first tone="neutral" style={[styles.reportColumn, styles.colPeriod]}>
                   <Text style={styles.reportTitle}>{events.nextEarnings.label ?? t('Budúci report')}</Text>
                   <Text style={styles.reportSub}>
                     {new Date(events.nextEarnings.date * 1000).toLocaleDateString(language === 'sk' ? 'sk-SK' : 'en-US', { day: 'numeric', month: 'short' })}
                     {events.nextEarnings.estimate ? '*' : ''}
                   </Text>
-                </View>
-                <Text style={[styles.reportCell, styles.colNum, { color: colors.muted }]}>
-                  {events.nextEarnings.revenueEstimate != null ? formatBigNumber(events.nextEarnings.revenueEstimate) : '–'}
-                </Text>
-                <Text style={[styles.reportCell, styles.colNum, { color: colors.muted }]}>–</Text>
-                <Text style={[styles.reportCell, styles.colNum, { color: colors.muted }]}>–</Text>
-                <Text style={[styles.reportCell, styles.colNum, { color: colors.muted }]}>
-                  {events.nextEarnings.epsEstimate != null ? events.nextEarnings.epsEstimate.toFixed(2) : '–'}
-                </Text>
-                <Text style={[styles.reportCell, styles.colNum, { color: colors.muted }]}>–</Text>
+                </TableColumn>
+                <TableColumn tone="green" style={[styles.reportColumn, styles.colNum]}><Text style={styles.reportCell}>–</Text></TableColumn>
+                <TableColumn tone="cyan" style={[styles.reportColumn, styles.colNum]}><Text style={styles.reportCell}>–</Text></TableColumn>
+                <TableColumn tone="violet" style={[styles.reportColumn, styles.colNum]}><Text style={styles.reportCell}>–</Text></TableColumn>
+                <TableColumn tone="amber" style={[styles.reportColumn, styles.colNum]}><Text style={styles.reportCell}>–</Text></TableColumn>
               </View>
             ) : null}
             {(events?.quarters ?? []).slice(0, 6).map((quarter) => {
-              const epsDiff = quarter.epsActual != null && quarter.epsEstimate != null
-                ? quarter.epsActual - quarter.epsEstimate : null;
-              const revDiff = quarter.revenue != null && quarter.revenueEstimate != null
-                ? quarter.revenue - quarter.revenueEstimate : null;
-              const tone = (value: number | null) => (value == null ? colors.muted : value >= 0 ? colors.green : colors.red);
               return (
                 <View key={quarter.periodEnd} style={styles.reportRow}>
-                  <Text style={[styles.reportTitle, styles.colPeriod]}>{quarter.label}</Text>
-                  <Text style={[styles.reportCell, styles.colNum]}>
-                    {quarter.revenue != null ? formatBigNumber(quarter.revenue) : '–'}
-                  </Text>
-                  <Text style={[styles.reportCell, styles.colNum, { color: tone(revDiff) }]}>
-                    {revDiff != null ? formatBigNumber(revDiff) : '–'}
-                  </Text>
-                  <Text style={[styles.reportCell, styles.colNum]}>
-                    {quarter.revenueYoY != null ? `${quarter.revenueYoY.toFixed(1)}%` : '–'}
-                  </Text>
-                  <Text style={[styles.reportCell, styles.colNum]}>
-                    {quarter.epsActual != null ? quarter.epsActual.toFixed(2) : '–'}
-                  </Text>
-                  <Text style={[styles.reportCell, styles.colNum, { color: tone(epsDiff) }]}>
-                    {epsDiff != null ? epsDiff.toFixed(2) : '–'}
-                  </Text>
+                  <TableColumn first tone="neutral" style={[styles.reportColumn, styles.colPeriod]}>
+                    <Text style={styles.reportTitle}>{quarter.label}</Text>
+                  </TableColumn>
+                  <TableColumn tone="green" style={[styles.reportColumn, styles.colNum]}>
+                    <Text style={styles.reportCell}>{quarter.revenue != null ? formatBigNumber(quarter.revenue) : '–'}</Text>
+                  </TableColumn>
+                  <TableColumn tone="cyan" style={[styles.reportColumn, styles.colNum]}>
+                    <Text style={styles.reportCell}>{quarter.revenueYoY != null ? `${quarter.revenueYoY.toFixed(1)}%` : '–'}</Text>
+                  </TableColumn>
+                  <TableColumn tone="violet" style={[styles.reportColumn, styles.colNum]}>
+                    <Text style={styles.reportCell}>{quarter.epsActual != null ? quarter.epsActual.toFixed(2) : '–'}</Text>
+                  </TableColumn>
+                  <TableColumn tone="amber" style={[styles.reportColumn, styles.colNum]}>
+                    <Text style={styles.reportCell}>{quarter.epsYoY != null ? `${quarter.epsYoY.toFixed(1)}%` : '–'}</Text>
+                  </TableColumn>
                 </View>
               );
             })}
             {!events?.nextEarnings && !(events?.quarters?.length) ? (
               <Text style={styles.emptyTable}>{t('Žiadne reporty')}</Text>
+            ) : null}
+            {events?.financialDataIssue ? (
+              <Text style={styles.reportSub}>
+                {t(events.financialDataIssue === 'missing-key'
+                  ? 'FMP API kľúč sa nenačítal. Skontroluj .env v koreňovom priečinku a reštartuj Expo.'
+                  : events.financialDataIssue === 'plan-required'
+                    ? 'FMP odmietlo prístup k historickým finančným výkazom (HTTP 402). Tvoj plán API tento endpoint nepovoľuje.'
+                    : 'FMP sa nepodarilo načítať kvartálne finančné údaje. Skús to neskôr.')}
+              </Text>
             ) : null}
           </>
         )}
@@ -644,7 +660,8 @@ const styles = StyleSheet.create({
   resultsRow: { flexDirection: 'row', gap: 8, marginBottom: 3 },
   resultCard: { flex: 1, padding: 12, marginBottom: 4 },
   resultCaption: { color: colors.muted, fontSize: 9, fontWeight: '700' },
-  resultPct: { fontSize: 10, fontWeight: '800', marginTop: 2 },
+  resultPctBadge: { alignSelf: 'flex-start', borderRadius: 999, paddingHorizontal: 8, paddingVertical: 4, marginTop: 8 },
+  resultPct: { fontSize: 10, fontWeight: '800' },
   resultAmount: { fontSize: 13, fontWeight: '900', marginTop: 5 },
   chartCard: { padding: 14 },
   chartHeading: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
@@ -678,12 +695,15 @@ const styles = StyleSheet.create({
   },
   movementsTitle: { flex: 1, color: colors.text, fontSize: 14, fontWeight: '800' },
   tableCard: { paddingHorizontal: 10, paddingVertical: 6 },
-  tableHeader: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 3, paddingVertical: 8, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border },
+  tableHeader: { flexDirection: 'row', alignItems: 'stretch', paddingHorizontal: 3, paddingVertical: 8, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border },
+  tableHeaderCell: { justifyContent: 'center', alignSelf: 'stretch' },
+  tableBodyCell: { justifyContent: 'center', alignSelf: 'stretch' },
   tableHeading: { color: colors.muted, fontSize: 8, fontWeight: '800' },
   tableRow: { minHeight: 53, flexDirection: 'row', alignItems: 'center', borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border, paddingVertical: 7, paddingHorizontal: 3 },
   dateColumn: { flex: 1.15 },
   typeColumn: { flex: 0.95 },
-  sharesColumn: { flex: 0.65, textAlign: 'right' },
+  sharesColumn: { flex: 0.65 },
+  sharesText: { textAlign: 'right' },
   amountColumn: { flex: 1.4 },
   tableDate: { color: colors.text, fontSize: 9, fontWeight: '700' },
   estimatedDate: { color: colors.muted, fontSize: 7, marginTop: 3 },
@@ -699,13 +719,14 @@ const styles = StyleSheet.create({
   statItem: { width: '33.33%', paddingVertical: 6 },
   statLabel: { color: colors.muted, fontSize: 9, fontWeight: '700' },
   statValue: { color: colors.text, fontSize: 13, fontWeight: '900', marginTop: 3 },
-  reportRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8 },
+  reportRow: { flexDirection: 'row', alignItems: 'stretch', minHeight: 34, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border },
+  reportColumn: { justifyContent: 'center', paddingHorizontal: 3 },
   reportTitle: { color: colors.text, fontSize: 12, fontWeight: '800' },
   reportSub: { color: colors.muted, fontSize: 10, marginTop: 2 },
   reportHead: { color: colors.muted, fontSize: 9, fontWeight: '700' },
-  reportCell: { color: colors.text, fontSize: 10, fontWeight: '700', textAlign: 'right' },
+  reportCell: { color: colors.text, fontSize: 9, fontWeight: '700', textAlign: 'right' },
   colPeriod: { flex: 1.3 },
-  colNum: { flex: 1, textAlign: 'right' },
+  colNum: { flex: 1 },
   emptyTable: { color: colors.muted, fontSize: 10, textAlign: 'center', paddingVertical: 20 },
   loadingCard: { alignItems: 'center', padding: 22 },
 });

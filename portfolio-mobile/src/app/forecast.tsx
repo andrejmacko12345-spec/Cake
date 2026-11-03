@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Info, Sparkles } from 'lucide-react-native';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Info, Settings2, Sparkles, X } from 'lucide-react-native';
+import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import {
   Header,
   Page,
@@ -36,6 +36,7 @@ export default function ForecastScreen() {
   const [selectedChartIndex, setSelectedChartIndex] = useState<number | null>(null);
   const portfolioValue = positions.reduce((sum, position) => sum + positionValueEUR(position), 0);
   const [basis, setBasis] = useState<ReturnBasis>('all');
+  const [basisSettingsOpen, setBasisSettingsOpen] = useState(false);
   const [windowReturn, setWindowReturn] = useState<{ key: string; value: number | null } | null>(null);
   const [basisLoading, setBasisLoading] = useState(false);
   const allReturn = weightedAnnualReturn(transactions, portfolioValue);
@@ -90,7 +91,79 @@ export default function ForecastScreen() {
 
   return (
     <Page>
-      <Header title={t('Výhľad')} subtitle={t('Scenárový odhad')} />
+      <Header
+        title={t('Výhľad')}
+        subtitle={t('Scenárový odhad')}
+        action={(
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t('Nastavenia výhľadu')}
+            accessibilityState={{ expanded: basisSettingsOpen }}
+            onPress={() => setBasisSettingsOpen(true)}
+            style={styles.settingsButton}
+          >
+            <Settings2 size={18} color={colors.green} />
+          </Pressable>
+        )}
+      />
+      <Modal
+        visible={basisSettingsOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setBasisSettingsOpen(false)}
+      >
+        <View style={styles.settingsScrim}>
+          <Pressable
+            accessibilityLabel={t('Zavrieť')}
+            style={StyleSheet.absoluteFill}
+            onPress={() => setBasisSettingsOpen(false)}
+          />
+          <View style={styles.settingsPanel}>
+            <View style={styles.settingsHeader}>
+              <Text style={styles.settingsTitle}>{t('Nastavenia výhľadu')}</Text>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={t('Zavrieť')}
+                onPress={() => setBasisSettingsOpen(false)}
+                style={styles.settingsClose}
+              >
+                <X size={17} color={colors.text} />
+              </Pressable>
+            </View>
+            <Text style={styles.settingsDescription}>
+              {t('Základ výnosu určuje, z akého obdobia sa vypočíta historický ročný výnos pre scenár. Ak pre zvolené obdobie chýba história, použije sa celé obdobie.')}
+            </Text>
+            <Text style={styles.settingsLabel}>{t('Základ výnosu')}</Text>
+            <View style={styles.selectorRow}>
+              {([
+                { key: 'all', label: t('Celé obdobie') },
+                { key: '1Y', label: '1Y' },
+                { key: '3Y', label: '3Y' },
+                { key: '5Y', label: '5Y' },
+              ] as const).map((option) => {
+                const selected = basis === option.key;
+                return (
+                  <Pressable
+                    key={option.key}
+                    onPress={() => setBasis(option.key)}
+                    accessibilityRole="button"
+                    accessibilityState={{ selected }}
+                    style={[styles.selectorButton, selected && styles.selectorButtonSelected]}
+                  >
+                    <Text style={[styles.selectorText, selected && styles.selectorTextSelected]}>{option.label}</Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+            {basisLoading ? <Text style={styles.scenarioHint}>{t('Počítam výnos…')}</Text> : null}
+            {windowUnavailable ? (
+              <Text style={styles.scenarioHint}>
+                {t('Na toto obdobie nemáš dosť histórie, použitý je výnos za celé obdobie.')}
+              </Text>
+            ) : null}
+          </View>
+        </View>
+      </Modal>
       {portfolioValue <= 0 ? (
         <Surface style={styles.emptyState}>
           <Info size={18} color={colors.muted} />
@@ -143,35 +216,6 @@ export default function ForecastScreen() {
           );
         })}
       </View>
-
-      <SectionTitle title={t('Základ výnosu')} />
-      <View style={styles.selectorRow}>
-        {([
-          { key: 'all', label: t('Celé obdobie') },
-          { key: '1Y', label: '1Y' },
-          { key: '3Y', label: '3Y' },
-          { key: '5Y', label: '5Y' },
-        ] as const).map((option) => {
-          const selected = basis === option.key;
-          return (
-            <Pressable
-              key={option.key}
-              onPress={() => setBasis(option.key)}
-              accessibilityRole="button"
-              accessibilityState={{ selected }}
-              style={[styles.selectorButton, selected && styles.selectorButtonSelected]}
-            >
-              <Text style={[styles.selectorText, selected && styles.selectorTextSelected]}>{option.label}</Text>
-            </Pressable>
-          );
-        })}
-      </View>
-      {basisLoading ? <Text style={styles.scenarioHint}>{t('Počítam výnos…')}</Text> : null}
-      {windowUnavailable ? (
-        <Text style={styles.scenarioHint}>
-          {t('Na toto obdobie nemáš dosť histórie, použitý je výnos za celé obdobie.')}
-        </Text>
-      ) : null}
 
       <SectionTitle title={t('Scenár ročného výnosu')} />
       <Text style={styles.scenarioHint}>
@@ -244,17 +288,38 @@ export default function ForecastScreen() {
 }
 
 const styles = StyleSheet.create({
+  settingsButton: {
+    width: 38,
+    height: 38,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 12,
+    backgroundColor: colors.surface,
+  },
+  settingsScrim: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.55)' },
+  settingsPanel: {
+    padding: 18,
+    paddingBottom: 28,
+    borderTopLeftRadius: 22,
+    borderTopRightRadius: 22,
+    backgroundColor: colors.background,
+  },
+  settingsHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 },
+  settingsTitle: { color: colors.text, fontSize: 17, fontWeight: '900' },
+  settingsClose: { width: 34, height: 34, alignItems: 'center', justifyContent: 'center', borderRadius: 11, backgroundColor: colors.surface },
+  settingsDescription: { color: colors.muted, fontSize: 11, lineHeight: 16, marginBottom: 16 },
+  settingsLabel: { color: colors.text, fontSize: 12, fontWeight: '800', marginBottom: 8 },
   heroCard: {
-    padding: 20,
+    padding: 14,
   },
   heroLabelRow: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   sparkleIcon: {
-    width: 30,
-    height: 30,
-    borderRadius: 10,
+    width: 26,
+    height: 26,
+    borderRadius: 9,
     backgroundColor: colors.surfaceRaised,
     alignItems: 'center',
     justifyContent: 'center',
@@ -267,9 +332,9 @@ const styles = StyleSheet.create({
   },
   projectedValue: {
     color: colors.text,
-    fontSize: 35,
+    fontSize: 30,
     fontWeight: '900',
-    marginTop: 16,
+    marginTop: 6,
   },
   projectedHint: {
     color: colors.muted,
@@ -282,8 +347,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: colors.border,
-    marginTop: 17,
-    paddingTop: 14,
+    marginTop: 8,
+    paddingTop: 8,
   },
   gainLabel: {
     color: colors.muted,
@@ -308,7 +373,7 @@ const styles = StyleSheet.create({
     borderRadius: 13,
     alignItems: 'center',
     paddingHorizontal: 2,
-    paddingVertical: 11,
+    paddingVertical: 7,
   },
   selectorButtonSelected: {
     backgroundColor: colors.green,

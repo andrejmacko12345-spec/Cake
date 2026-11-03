@@ -3,11 +3,17 @@ export async function getFmpKey() {
   return process.env.EXPO_PUBLIC_FMP_API_KEY?.trim() || null;
 }
 
-export type FmpPoint = { time: number; value: number };
+export type FmpQuarter = {
+  time: number;
+  fiscalYear: string;
+  period: string;
+  revenue: number | null;
+  eps: number | null;
+};
 
 export type FmpQuarterly = {
-  revenue: FmpPoint[];
-  revenueEstimate: FmpPoint[];
+  quarters: FmpQuarter[];
+  error: string | null;
 };
 
 async function getArray<T>(url: string): Promise<T[]> {
@@ -23,27 +29,50 @@ async function getArray<T>(url: string): Promise<T[]> {
   }
 }
 
-function toPoints<T extends { date?: string }>(rows: T[], pick: (row: T) => unknown): FmpPoint[] {
-  return rows
-    .flatMap((row) => {
-      const value = pick(row);
-      const time = row.date ? Date.parse(`${row.date}T00:00:00Z`) / 1000 : NaN;
-      return typeof value === 'number' && Number.isFinite(value) && Number.isFinite(time) ? [{ time, value }] : [];
-    })
-    .sort((a, b) => a.time - b.time);
-}
-
 export async function fetchFmpQuarterly(symbol: string, apiKey: string): Promise<FmpQuarterly> {
   const base = 'https://financialmodelingprep.com/stable';
   const key = `apikey=${encodeURIComponent(apiKey)}`;
   const sym = `symbol=${encodeURIComponent(symbol)}`;
-  const [income, estimates] = await Promise.allSettled([
-    getArray<{ date?: string; revenue?: number }>(`${base}/income-statement?${sym}&period=quarter&limit=12&${key}`),
-    getArray<{ date?: string; revenueAvg?: number }>(`${base}/analyst-estimates?${sym}&period=quarter&page=0&limit=24&${key}`),
-  ]);
-  if (income.status === 'rejected' && estimates.status === 'rejected') throw income.reason;
+  const statements = await Promise.allSettled(
+    (['Q1', 'Q2', 'Q3', 'Q4'] as const).map((period) =>
+      getArray<{
+        date?: string;
+        fiscalYear?: string;
+        period?: string;
+        revenue?: number;
+        epsdiluted?: number;
+        eps?: number;
+      }>(
+        `${base}/income-statement?${sym}&period=${period}&limit=5&${key}`,
+      ),
+    ),
+  );
+  const available = statements.flatMap((result) => result.status === 'fulfilled' ? result.value : []);
+  if (!available.length) {
+    const failure = statements.find((result) => result.status === 'rejected');
+    throw failure?.status === 'rejected' ? failure.reason : new Error('FMP nevrátilo kvartálne výkazy.');
+  }
+  const failures = statements.filter((result) => result.status === 'rejected');
+  const error = failures.length
+    ? failures.map((result) => result.status === 'rejected' && result.reason instanceof Error
+      ? result.reason.message
+      : 'FMP nevrátilo kvartálny výkaz.').join(' ')
+    : null;
   return {
-    revenue: income.status === 'fulfilled' ? toPoints(income.value, (row) => row.revenue) : [],
-    revenueEstimate: estimates.status === 'fulfilled' ? toPoints(estimates.value, (row) => row.revenueAvg) : [],
+    quarters: [...new Map(available.flatMap((row) => {
+      const time = row.date ? Date.parse(`${row.date}T00:00:00Z`) / 1000 : NaN;
+      const eps = row.epsdiluted ?? row.eps;
+      if (!Number.isFinite(time) || !row.fiscalYear || !row.period
+        || (typeof row.revenue !== 'number' && typeof eps !== 'number')) return [];
+      const quarter = {
+        time,
+        fiscalYear: row.fiscalYear,
+        period: row.period,
+        revenue: typeof row.revenue === 'number' && Number.isFinite(row.revenue) ? row.revenue : null,
+        eps: typeof eps === 'number' && Number.isFinite(eps) ? eps : null,
+      };
+      return [[time, quarter] as const];
+    })).values()].sort((a, b) => a.time - b.time),
+    error,
   };
 }

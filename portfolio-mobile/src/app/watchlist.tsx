@@ -1,10 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import type { ComponentRef } from 'react';
+import { ActivityIndicator, Alert, Animated, Modal, PanResponder, Pressable, ScrollView, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
+import type { PointerEvent } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
-import { Check, Plus, Search, X } from 'lucide-react-native';
+import { Check, Pencil, Plus, Search, Trash2, X } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
-import { Header, Page, SortControl, Surface } from '../components/finapp';
+import { FloatingAddButton, Header, Page, SortControl, Surface } from '../components/finapp';
 import { Asset, availableAssets, colors } from '../data/portfolio';
 import {
   fetchHistoricalQuoteSeries,
@@ -19,6 +21,12 @@ import { useLocale } from '../context/locale';
 
 const STORAGE_KEY = '@portfolio-mobile/watchlist';
 const defaultSymbols = ['NVDA', 'AMZN'];
+type Watchlist = { id: string; name: string; symbols: string[] };
+type WatchlistsState = { selectedId: string; lists: Watchlist[] };
+const defaultWatchlists: WatchlistsState = {
+  selectedId: 'default',
+  lists: [{ id: 'default', name: 'Watchlist', symbols: defaultSymbols }],
+};
 const periods = [
   { label: '1D', amount: 1, unit: 'day', interval: '5m' },
   { label: '1M', amount: 1, unit: 'month', interval: '1d' },
@@ -88,6 +96,7 @@ function WatchlistPriceCard({
   selectedPeriod,
   onRemove,
   onPress,
+  last,
 }: {
   asset: Asset;
   entry: WatchEntry | undefined;
@@ -95,6 +104,7 @@ function WatchlistPriceCard({
   selectedPeriod: (typeof periods)[number]['label'];
   onRemove: () => void;
   onPress: () => void;
+  last: boolean;
 }) {
   const { t } = useLocale();
   const allPoints = entry?.history?.points ?? [];
@@ -124,9 +134,9 @@ function WatchlistPriceCard({
           { text: t('Zrušiť'), style: 'cancel' },
           { text: t('Odstrániť'), style: 'destructive', onPress: onRemove },
         ])}
-      style={styles.assetCard}
+      style={[styles.assetCard, !last && styles.assetCardDivider]}
     >
-      <AssetLogo symbol={asset.symbol} color={asset.color} size={40} />
+      <AssetLogo symbol={asset.symbol} color={asset.color} size={48} />
       <View style={styles.assetCopy}>
         <Text style={styles.assetSymbol} numberOfLines={1}>{asset.symbol}</Text>
         <Text style={styles.assetName} numberOfLines={1}>{asset.name}</Text>
@@ -170,15 +180,38 @@ function showStorageError(action: string, error: unknown) {
 export default function WatchlistScreen() {
   const router = useRouter();
   const { t } = useLocale();
-  const [symbols, setSymbols] = useState<string[]>(defaultSymbols);
+  const [watchlists, setWatchlists] = useState<WatchlistsState>(defaultWatchlists);
   const [loading, setLoading] = useState(true);
   const [showPicker, setShowPicker] = useState(false);
+  const [showLists, setShowLists] = useState(false);
+  const [editingListId, setEditingListId] = useState<string | null>(null);
+  const [listNameInput, setListNameInput] = useState('');
+  const [confirmDeleteListId, setConfirmDeleteListId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPeriod, setSelectedPeriod] = useState<(typeof periods)[number]['label']>('1D');
   const [sortOrder, setSortOrder] = useState<'alphabetical' | 'change'>('alphabetical');
   const [watchData, setWatchData] = useState<Record<string, WatchEntry>>({});
   const requestId = useRef(0);
+  const swipeX = useRef(new Animated.Value(0)).current;
+  const pointerStart = useRef<{ x: number; y: number; time: number } | null>(null);
+  const { width: screenWidth } = useWindowDimensions();
+  const searchInputRef = useRef<ComponentRef<typeof TextInput>>(null);
+  const listNameInputRef = useRef<ComponentRef<typeof TextInput>>(null);
   const { results: matchingAssets, loading: searching, error: searchError } = useAssetSearch(searchQuery);
+  const selectedWatchlist = watchlists.lists.find((list) => list.id === watchlists.selectedId) ?? watchlists.lists[0];
+  const symbols = selectedWatchlist?.symbols ?? [];
+
+  useEffect(() => {
+    if (!showPicker) return;
+    const timer = setTimeout(() => searchInputRef.current?.focus(), 250);
+    return () => clearTimeout(timer);
+  }, [showPicker]);
+
+  useEffect(() => {
+    if (!showLists || editingListId === null) return;
+    const timer = setTimeout(() => listNameInputRef.current?.focus(), 250);
+    return () => clearTimeout(timer);
+  }, [editingListId, showLists]);
 
   useEffect(() => {
     let active = true;
@@ -187,13 +220,35 @@ export default function WatchlistScreen() {
         const saved = await AsyncStorage.getItem(STORAGE_KEY);
         if (saved !== null) {
           const parsed: unknown = JSON.parse(saved);
-          if (
-            !Array.isArray(parsed) ||
-            !parsed.every((symbol) => typeof symbol === 'string' && isValidSymbol(symbol))
+          if (Array.isArray(parsed) && parsed.every((symbol) => typeof symbol === 'string' && isValidSymbol(symbol))) {
+            const migrated: WatchlistsState = {
+              selectedId: 'default',
+              lists: [{ id: 'default', name: 'Watchlist', symbols: parsed }],
+            };
+            if (active) setWatchlists(migrated);
+            await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
+          } else if (
+            typeof parsed === 'object' &&
+            parsed !== null &&
+            'lists' in parsed &&
+            Array.isArray(parsed.lists) &&
+            parsed.lists.length > 0 &&
+            parsed.lists.every((list) =>
+              typeof list === 'object' && list !== null &&
+              'id' in list && typeof list.id === 'string' &&
+              'name' in list && typeof list.name === 'string' &&
+              'symbols' in list && Array.isArray(list.symbols) &&
+              list.symbols.every((symbol) => typeof symbol === 'string' && isValidSymbol(symbol)))
           ) {
+            const lists = parsed.lists as Watchlist[];
+            const selectedId = 'selectedId' in parsed && typeof parsed.selectedId === 'string' &&
+              lists.some((list) => list.id === parsed.selectedId)
+              ? parsed.selectedId
+              : lists[0].id;
+            if (active) setWatchlists({ selectedId, lists });
+          } else {
             throw new Error('Uložený zoznam nemá očakávaný formát.');
           }
-          if (active) setSymbols(parsed);
         }
       } catch (error) {
         showStorageError('načítanie', error);
@@ -281,48 +336,198 @@ export default function WatchlistScreen() {
     }
     return a.name.localeCompare(b.name, 'sk');
   }), [assets, selectedPeriod, sortOrder, watchData]);
-  const saveSymbols = async (nextSymbols: string[]) => {
-    setSymbols(nextSymbols);
+  const saveWatchlists = async (next: WatchlistsState) => {
+    setWatchlists(next);
     try {
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(nextSymbols));
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(next));
     } catch (error) {
       showStorageError('uloženie', error);
     }
   };
 
+  const selectWatchlist = (id: string) => {
+    setWatchData({});
+    void saveWatchlists({ ...watchlists, selectedId: id });
+    setShowLists(false);
+  };
+
+  const swipeWatchlist = (direction: -1 | 1) => {
+    const currentIndex = watchlists.lists.findIndex((list) => list.id === watchlists.selectedId);
+    const next = watchlists.lists[currentIndex + direction];
+    if (!next) return;
+    setWatchData({});
+    void saveWatchlists({ ...watchlists, selectedId: next.id });
+  };
+
+  const finishSwipe = (dx: number, velocityX = 0) => {
+    const horizontalDistance = Math.abs(dx);
+    const mostlyHorizontal = horizontalDistance >= 12;
+    const quickShortSwipe = horizontalDistance >= 8 && Math.abs(velocityX) >= 0.18;
+    const direction = mostlyHorizontal || quickShortSwipe
+      ? dx < 0 ? 1 : -1
+      : null;
+    const currentIndex = watchlists.lists.findIndex((list) => list.id === watchlists.selectedId);
+    if (direction === null || !watchlists.lists[currentIndex + direction]) {
+      Animated.spring(swipeX, { toValue: 0, useNativeDriver: false, speed: 22, bounciness: 5 }).start();
+      return;
+    }
+
+    const outgoingX = direction === 1 ? -screenWidth : screenWidth;
+    Animated.timing(swipeX, {
+      toValue: outgoingX,
+      duration: 130,
+      useNativeDriver: false,
+    }).start(({ finished }) => {
+      if (!finished) return;
+      swipeWatchlist(direction);
+      swipeX.setValue(-outgoingX);
+      requestAnimationFrame(() => {
+        Animated.spring(swipeX, { toValue: 0, useNativeDriver: false, speed: 18, bounciness: 3 }).start();
+      });
+    });
+  };
+
+  const pointerGestureHandlers = useMemo(() => ({
+    onPointerDown: (event: PointerEvent) => {
+      if (event.nativeEvent.pointerType === 'mouse' && !showLists && !showPicker) {
+        pointerStart.current = {
+          x: event.nativeEvent.pageX,
+          y: event.nativeEvent.pageY,
+          time: event.nativeEvent.timestamp,
+        };
+      }
+    },
+    onPointerMove: (event: PointerEvent) => {
+      const start = pointerStart.current;
+      if (!start || event.nativeEvent.pointerType !== 'mouse') return;
+      const dx = event.nativeEvent.pageX - start.x;
+      const dy = event.nativeEvent.pageY - start.y;
+      if (Math.abs(dx) > 3) {
+        swipeX.setValue(dx * 0.9);
+      }
+    },
+    onPointerUp: (event: PointerEvent) => {
+      const start = pointerStart.current;
+      pointerStart.current = null;
+      if (start && event.nativeEvent.pointerType === 'mouse') {
+        const dx = event.nativeEvent.pageX - start.x;
+        const elapsed = Math.max(event.nativeEvent.timestamp - start.time, 1);
+        finishSwipe(dx, dx / elapsed);
+      }
+    },
+    onPointerCancel: () => {
+      pointerStart.current = null;
+      Animated.spring(swipeX, { toValue: 0, useNativeDriver: false, speed: 22, bounciness: 5 }).start();
+    },
+  }), [finishSwipe, showLists, showPicker, swipeX]);
+
+  const swipeResponder = useMemo(() => PanResponder.create({
+    onMoveShouldSetPanResponderCapture: (_, gesture) =>
+      !showLists && !showPicker &&
+      Math.abs(gesture.dx) > 2 && Math.abs(gesture.dx) > Math.abs(gesture.dy) * 0.15,
+    onPanResponderTerminationRequest: () => false,
+    onPanResponderMove: (_, gesture) => {
+      swipeX.setValue(gesture.dx * 0.9);
+    },
+    onPanResponderRelease: (_, gesture) => finishSwipe(gesture.dx, gesture.vx),
+    onPanResponderTerminate: () => {
+      Animated.spring(swipeX, { toValue: 0, useNativeDriver: false, speed: 22, bounciness: 5 }).start();
+    },
+  }), [finishSwipe, showLists, showPicker, swipeX]);
+
+  const beginCreateList = () => {
+    setListNameInput('');
+    setEditingListId('new');
+  };
+
+  const beginRenameList = (list: Watchlist) => {
+    setListNameInput(list.name);
+    setEditingListId(list.id);
+  };
+
+  const saveListName = () => {
+    const name = listNameInput.trim();
+    if (!name) return;
+    if (editingListId === 'new') {
+      const id = `list-${Date.now()}`;
+      const nextList = { id, name, symbols: [] };
+      setWatchData({});
+      void saveWatchlists({
+        selectedId: id,
+        lists: [...watchlists.lists, nextList],
+      });
+    } else if (editingListId) {
+      void saveWatchlists({
+        ...watchlists,
+        lists: watchlists.lists.map((list) => list.id === editingListId ? { ...list, name } : list),
+      });
+    }
+    setEditingListId(null);
+    setListNameInput('');
+  };
+
+  const deleteWatchlist = (list: Watchlist) => {
+    if (watchlists.lists.length <= 1) return;
+    setConfirmDeleteListId(list.id);
+  };
+
+  const confirmDeleteWatchlist = (list: Watchlist) => {
+    const lists = watchlists.lists.filter((item) => item.id !== list.id);
+    const selectedId = watchlists.selectedId === list.id ? lists[0].id : watchlists.selectedId;
+    setWatchData({});
+    setConfirmDeleteListId(null);
+    void saveWatchlists({ selectedId, lists });
+  };
+
   const addAsset = (symbol: string) => {
-    void saveSymbols([...symbols, symbol]);
+    void saveWatchlists({
+      ...watchlists,
+      lists: watchlists.lists.map((list) =>
+        list.id === watchlists.selectedId ? { ...list, symbols: [...symbols, symbol] } : list,
+      ),
+    });
     setShowPicker(false);
     setSearchQuery('');
   };
 
   const removeAsset = (symbol: string) => {
-    void saveSymbols(symbols.filter((item) => item !== symbol));
+    void saveWatchlists({
+      ...watchlists,
+      lists: watchlists.lists.map((list) =>
+        list.id === watchlists.selectedId ? { ...list, symbols: symbols.filter((item) => item !== symbol) } : list,
+      ),
+    });
   };
 
   return (
-    <Page>
-      <Header
-        title={t('Watchlist')}
-        subtitle={t('Sledované akcie')}
-        action={
-          <Pressable
-            accessibilityLabel={t('Pridať akciu')}
-            accessibilityRole="button"
-            onPress={() => setShowPicker(true)}
-            style={styles.addButton}
-          >
-            <Plus size={19} color={colors.surface} />
-          </Pressable>
-        }
+    <Page
+      gestureHandlers={swipeResponder.panHandlers}
+      pointerGestureHandlers={pointerGestureHandlers}
+      floating={(
+      <FloatingAddButton
+        accessibilityLabel={t('Pridať akciu')}
+        onPress={() => setShowPicker(true)}
       />
-      <View style={styles.summaryRow}>
-        <View>
-          <Text style={styles.summaryLabel}>{t('Sleduješ')}</Text>
-          <Text style={styles.summaryValue}>{assets.length} {t('titulov')}</Text>
-        </View>
-      </View>
+    )}
+    >
+      <Animated.View style={{ transform: [{ translateX: swipeX }] }}>
+      <Header
+        compact
+        title={selectedWatchlist?.name ?? t('Watchlist')}
+        titleExpanded={showLists}
+        onTitlePress={() => {
+          setEditingListId(null);
+          setShowLists(true);
+        }}
+        action={(
+          <View style={styles.countPill}>
+            <Text style={styles.countValue}>{assets.length}</Text>
+            <Text style={styles.countLabel}>{t('titulov')}</Text>
+          </View>
+        )}
+      />
 
+      <View>
       {assets.length ? (
         <>
           <View style={styles.periodSelector}>
@@ -358,8 +563,8 @@ export default function WatchlistScreen() {
           <Text style={styles.loadingText}>{t('Načítavam watchlist…')}</Text>
         </Surface>
       ) : assets.length ? (
-        <View style={styles.assetList}>
-          {sortedAssets.map((asset) => (
+        <Surface style={styles.assetList}>
+          {sortedAssets.map((asset, index) => (
             <WatchlistPriceCard
               key={asset.symbol}
               asset={asset}
@@ -368,19 +573,154 @@ export default function WatchlistScreen() {
               selectedPeriod={selectedPeriod}
               onRemove={() => removeAsset(asset.symbol)}
               onPress={() => router.push({ pathname: '/position', params: { symbol: asset.symbol } })}
+              last={index === sortedAssets.length - 1}
             />
           ))}
-        </View>
+        </Surface>
       ) : (
         <Surface style={styles.emptyState}>
           <Search size={25} color={colors.muted} />
           <Text style={styles.emptyTitle}>{t('Zatiaľ nič nesleduješ')}</Text>
           <Text style={styles.emptyDescription}>{t('Pridaj akcie a maj ich ceny na jednom mieste.')}</Text>
-          <Pressable onPress={() => setShowPicker(true)} style={styles.emptyButton}>
-            <Text style={styles.emptyButtonText}>{t('Pridať prvú akciu')}</Text>
-          </Pressable>
         </Surface>
       )}
+      </View>
+      </Animated.View>
+
+      <Modal
+        animationType="slide"
+        transparent
+        visible={showLists}
+        onRequestClose={() => {
+          setShowLists(false);
+          setEditingListId(null);
+        }}
+      >
+        <View style={styles.modalScrim}>
+          <Pressable
+            style={StyleSheet.absoluteFill}
+            onPress={() => {
+              setShowLists(false);
+              setEditingListId(null);
+            }}
+          />
+          <View style={styles.modalSheet}>
+            <View style={styles.modalHeader}>
+              <View>
+                <Text style={styles.modalTitle}>{t('Moje watchlisty')}</Text>
+                <Text style={styles.modalSubtitle}>{t('Vyber alebo uprav svoj zoznam akcií.')}</Text>
+              </View>
+              <Pressable
+                accessibilityLabel={t('Zavrieť')}
+                onPress={() => {
+                  setShowLists(false);
+                  setEditingListId(null);
+                }}
+                style={styles.closeButton}
+              >
+                <X size={18} color={colors.text} />
+              </Pressable>
+            </View>
+            {editingListId !== null ? (
+              <View style={styles.listEditor}>
+                <TextInput
+                  ref={listNameInputRef}
+                  autoFocus
+                  autoCorrect={false}
+                  maxLength={32}
+                  onChangeText={setListNameInput}
+                  onSubmitEditing={saveListName}
+                  placeholder={t('Názov watchlistu')}
+                  placeholderTextColor={colors.muted}
+                  returnKeyType="done"
+                  style={styles.searchInput}
+                  value={listNameInput}
+                />
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={t('Uložiť')}
+                  disabled={!listNameInput.trim()}
+                  onPress={saveListName}
+                  style={[styles.saveListButton, !listNameInput.trim() && styles.saveListButtonDisabled]}
+                >
+                  <Check size={18} color={colors.surface} />
+                </Pressable>
+                <Pressable
+                  accessibilityLabel={t('Zrušiť')}
+                  onPress={() => setEditingListId(null)}
+                  style={styles.closeButton}
+                >
+                  <X size={17} color={colors.muted} />
+                </Pressable>
+              </View>
+            ) : null}
+            <ScrollView
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}
+              style={styles.searchResultsList}
+            >
+              {watchlists.lists.map((list) => {
+                const selected = list.id === watchlists.selectedId;
+                return (
+                  <View key={list.id}>
+                    <View style={[styles.watchlistOption, selected && styles.watchlistOptionSelected]}>
+                      <Pressable
+                        accessibilityRole="button"
+                        accessibilityState={{ selected }}
+                        onPress={() => selectWatchlist(list.id)}
+                        style={styles.watchlistSelect}
+                      >
+                        <View style={styles.optionCopy}>
+                          <Text style={styles.optionSymbol} numberOfLines={1}>{list.name}</Text>
+                          <Text style={styles.optionName}>
+                            {list.symbols.length} {t('titulov')}
+                          </Text>
+                        </View>
+                        {selected ? <Check size={17} color={colors.green} /> : null}
+                      </Pressable>
+                      <Pressable
+                        accessibilityRole="button"
+                        accessibilityLabel={`${t('Premenovať')} ${list.name}`}
+                        onPress={() => beginRenameList(list)}
+                        style={styles.listActionButton}
+                      >
+                        <Pencil size={15} color={colors.muted} />
+                      </Pressable>
+                      {watchlists.lists.length > 1 ? (
+                        <Pressable
+                          accessibilityRole="button"
+                          accessibilityLabel={`${t('Odstrániť')} ${list.name}`}
+                          onPress={() => deleteWatchlist(list)}
+                          style={styles.listActionButton}
+                        >
+                          <Trash2 size={15} color={colors.red} />
+                        </Pressable>
+                      ) : null}
+                    </View>
+                    {confirmDeleteListId === list.id ? (
+                      <View style={styles.deleteConfirmation}>
+                        <Text style={styles.deleteConfirmationText}>{t('Odstrániť tento watchlist?')}</Text>
+                        <Pressable onPress={() => setConfirmDeleteListId(null)} style={styles.deleteCancelButton}>
+                          <Text style={styles.deleteCancelText}>{t('Zrušiť')}</Text>
+                        </Pressable>
+                        <Pressable onPress={() => confirmDeleteWatchlist(list)} style={styles.deleteConfirmButton}>
+                          <Text style={styles.deleteConfirmText}>{t('Odstrániť')}</Text>
+                        </Pressable>
+                      </View>
+                    ) : null}
+                  </View>
+                );
+              })}
+            </ScrollView>
+            {editingListId === null ? (
+              <Pressable accessibilityRole="button" onPress={beginCreateList} style={styles.createListButton}>
+                <Plus size={17} color={colors.green} />
+                <Text style={styles.createListText}>{t('Vytvoriť watchlist')}</Text>
+              </Pressable>
+            ) : null}
+          </View>
+        </View>
+      </Modal>
 
       <Modal
         animationType="slide"
@@ -419,6 +759,8 @@ export default function WatchlistScreen() {
             <View style={styles.searchBox}>
               <Search size={17} color={colors.muted} />
               <TextInput
+                ref={searchInputRef}
+                autoFocus
                 accessibilityLabel="Hľadať akciu"
                 autoCapitalize="characters"
                 autoCorrect={false}
@@ -482,59 +824,21 @@ export default function WatchlistScreen() {
 }
 
 const styles = StyleSheet.create({
-  addButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 14,
-    backgroundColor: colors.green,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  summaryRow: {
+  countPill: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 2,
-    marginBottom: 8,
-  },
-  summaryLabel: {
-    color: colors.muted,
-    fontSize: 9,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
-  },
-  summaryValue: {
-    color: colors.text,
-    fontSize: 16,
-    fontWeight: '800',
-    marginTop: 2,
-  },
-  summaryIcon: {
-    width: 30,
-    height: 30,
-    borderRadius: 10,
-    backgroundColor: colors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  summaryActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'baseline',
     gap: 6,
-  },
-  refreshButton: {
-    width: 32,
-    height: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
     borderRadius: 10,
     backgroundColor: colors.surface,
   },
+  countValue: { color: colors.text, fontSize: 13, fontWeight: '900' },
+  countLabel: { color: colors.muted, fontSize: 9, fontWeight: '700' },
   periodSelector: {
     flexDirection: 'row',
     padding: 3,
-    marginBottom: 10,
+    marginBottom: 6,
     borderRadius: 12,
     backgroundColor: colors.surface,
   },
@@ -557,15 +861,23 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   assetList: {
-    gap: 2,
+    paddingVertical: 2,
+    paddingHorizontal: 10,
+    marginBottom: 14,
+    borderRadius: 18,
+    backgroundColor: colors.surface,
   },
   assetCard: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 4,
-    paddingVertical: 8,
+    paddingVertical: 7,
     minHeight: 62,
     gap: 10,
+  },
+  assetCardDivider: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.border,
   },
   assetMain: {
     flex: 1,
@@ -600,6 +912,70 @@ const styles = StyleSheet.create({
   optionRowDisabled: {
     opacity: 0.6,
   },
+  listEditor: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 8,
+  },
+  saveListButton: {
+    width: 38,
+    height: 38,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 12,
+    backgroundColor: colors.green,
+  },
+  saveListButtonDisabled: { opacity: 0.45 },
+  watchlistOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    minHeight: 58,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.border,
+  },
+  watchlistOptionSelected: {
+    backgroundColor: 'rgba(120,216,79,0.07)',
+  },
+  watchlistSelect: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    minHeight: 56,
+    paddingHorizontal: 10,
+  },
+  listActionButton: {
+    width: 38,
+    height: 42,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  createListButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    minHeight: 46,
+    marginTop: 10,
+    borderRadius: 12,
+    backgroundColor: colors.surface,
+  },
+  createListText: { color: colors.green, fontSize: 13, fontWeight: '800' },
+  deleteConfirmation: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    marginBottom: 6,
+    borderRadius: 10,
+    backgroundColor: 'rgba(255,90,98,0.08)',
+  },
+  deleteConfirmationText: { flex: 1, color: colors.muted, fontSize: 10 },
+  deleteCancelButton: { paddingHorizontal: 8, paddingVertical: 6 },
+  deleteCancelText: { color: colors.muted, fontSize: 10, fontWeight: '700' },
+  deleteConfirmButton: { paddingHorizontal: 9, paddingVertical: 6, borderRadius: 8, backgroundColor: colors.red },
+  deleteConfirmText: { color: colors.surface, fontSize: 10, fontWeight: '800' },
   assetHeading: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -702,17 +1078,6 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     marginTop: 7,
     marginBottom: 16,
-  },
-  emptyButton: {
-    backgroundColor: colors.green,
-    borderRadius: 13,
-    paddingVertical: 11,
-    paddingHorizontal: 15,
-  },
-  emptyButtonText: {
-    color: colors.surface,
-    fontSize: 12,
-    fontWeight: '800',
   },
   modalScrim: {
     flex: 1,

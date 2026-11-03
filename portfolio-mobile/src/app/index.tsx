@@ -1,12 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ActivityIndicator, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Animated, PanResponder, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import type { ComponentRef } from 'react';
+import type { PointerEvent } from 'react-native';
 import Svg, { Circle, Defs, LinearGradient, Line, Path, Stop } from 'react-native-svg';
-import { ChartNoAxesCombined, ChevronDown, ChevronRight, ChevronUp, Eye, EyeOff, Plus, TrendingUp, UserRound, Wallet } from 'lucide-react-native';
+import { ChartNoAxesCombined, ChevronDown, ChevronRight, ChevronUp, Eye, EyeOff, TrendingUp, UserRound, Wallet } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { TransactionModal } from '../components/transaction-modal';
 import {
   Header,
+  FloatingAddButton,
   Page,
   PositionRow,
   SortControl,
@@ -17,6 +20,7 @@ import { colors, formatMoney, formatPercent } from '../data/portfolio';
 import { Transaction, TransactionInput, positionCostEUR, positionValueEUR, usePositions } from '../hooks/use-positions';
 import { useLocale } from '../context/locale';
 import { fetchHistoricalQuoteSeries, HistoricalQuotePoint, HistoricalQuoteSeries, LiveQuote } from '../data/quotes';
+import { DividendOverview } from '../components/dividend-overview';
 
 const HIDE_AMOUNTS_KEY = '@portfolio-mobile/hide-amounts';
 
@@ -199,6 +203,7 @@ function InvestmentTimeline({
   onLatestChange,
   currentValue,
   hideAmounts,
+  onGestureActiveChange,
 }: {
   transactions: Transaction[];
   range: ChartRange;
@@ -208,6 +213,7 @@ function InvestmentTimeline({
   onLatestChange: (latest: ChartLatest | null) => void;
   currentValue: number;
   hideAmounts: boolean;
+  onGestureActiveChange: (active: boolean) => void;
 }) {
   const { t, language } = useLocale();
   const money = (value: number) => (hideAmounts ? '•••••' : formatMoney(value));
@@ -382,6 +388,12 @@ function InvestmentTimeline({
     <View style={styles.chartCard}>
       <View
         {...panResponder.panHandlers}
+        onTouchStart={() => onGestureActiveChange(true)}
+        onTouchEnd={() => onGestureActiveChange(false)}
+        onTouchCancel={() => onGestureActiveChange(false)}
+        onPointerDown={() => onGestureActiveChange(true)}
+        onPointerUp={() => onGestureActiveChange(false)}
+        onPointerCancel={() => onGestureActiveChange(false)}
         onLayout={(event) => setChartWidth(event.nativeEvent.layout.width)}
         style={styles.chartWrap}
       >
@@ -462,6 +474,8 @@ function InvestmentTimeline({
 
 export default function PortfolioScreen() {
   const router = useRouter();
+  const { width: screenWidth } = useWindowDimensions();
+  const pageScrollRef = useRef<ComponentRef<typeof ScrollView> | null>(null);
   const {
     positions,
     transactions,
@@ -478,6 +492,10 @@ export default function PortfolioScreen() {
   const [periodReturns, setPeriodReturns] = useState<Record<string, { gainEUR: number; returnPercent: number }>>({});
   const { t, language } = useLocale();
   const [hideAmounts, setHideAmounts] = useState(false);
+  const [dashboardPage, setDashboardPage] = useState<'portfolio' | 'dividends'>('portfolio');
+  const dashboardOffset = useRef(new Animated.Value(0)).current;
+  const pointerStart = useRef<{ x: number; y: number; time: number } | null>(null);
+  const chartGestureActive = useRef(false);
   const money = (value: number) => (hideAmounts ? '•••••' : formatMoney(value));
   const signedMoney = (value: number) => (hideAmounts ? '•••••' : `${value >= 0 ? '+' : ''}${formatMoney(value)}`);
 
@@ -560,12 +578,92 @@ export default function PortfolioScreen() {
     router.push({ pathname: '/position', params: { symbol } });
   const handleSaveTransaction = (input: TransactionInput, id?: string, quote?: LiveQuote) =>
     saveTransaction(input, id, quote);
+  const switchDashboard = (next: 'portfolio' | 'dividends') => {
+    if (next === dashboardPage || formVisible) return;
+    pageScrollRef.current?.scrollTo({ y: 0, animated: false });
+    const outgoingX = next === 'dividends' ? -screenWidth : screenWidth;
+    Animated.timing(dashboardOffset, {
+      toValue: outgoingX,
+      duration: 150,
+      useNativeDriver: false,
+    }).start(({ finished }) => {
+      if (!finished) return;
+      setDashboardPage(next);
+      dashboardOffset.setValue(-outgoingX);
+      requestAnimationFrame(() => {
+        Animated.spring(dashboardOffset, { toValue: 0, useNativeDriver: false, speed: 18, bounciness: 3 }).start();
+      });
+    });
+  };
+  const finishDashboardSwipe = (dx: number, velocityX = 0) => {
+    if (dx <= -28 || (dx <= -12 && velocityX <= -0.18)) switchDashboard('dividends');
+    else if (dx >= 28 || (dx >= 12 && velocityX >= 0.18)) switchDashboard('portfolio');
+    else Animated.spring(dashboardOffset, { toValue: 0, useNativeDriver: false, speed: 22, bounciness: 5 }).start();
+  };
+  const dashboardPanResponder = useMemo(() => PanResponder.create({
+    onMoveShouldSetPanResponderCapture: (_, gesture) =>
+      !formVisible && !chartGestureActive.current &&
+      Math.abs(gesture.dx) > 2 &&
+      Math.abs(gesture.dx) > Math.abs(gesture.dy) * 0.15,
+    onPanResponderTerminationRequest: () => false,
+    onPanResponderMove: (_, gesture) => {
+      if (Math.abs(gesture.dx) > Math.abs(gesture.dy) * 0.15) {
+        dashboardOffset.setValue(gesture.dx * 0.75);
+      }
+    },
+    onPanResponderRelease: (_, gesture) => finishDashboardSwipe(gesture.dx, gesture.vx),
+    onPanResponderTerminate: () => {
+      Animated.spring(dashboardOffset, { toValue: 0, useNativeDriver: false, speed: 22, bounciness: 5 }).start();
+    },
+  }), [dashboardOffset, dashboardPage, formVisible, screenWidth]);
+  const dashboardPointerHandlers = useMemo(() => ({
+    onPointerDown: (event: PointerEvent) => {
+      if (event.nativeEvent.pointerType === 'mouse' && !formVisible && !chartGestureActive.current) {
+        pointerStart.current = {
+          x: event.nativeEvent.pageX,
+          y: event.nativeEvent.pageY,
+          time: event.nativeEvent.timestamp,
+        };
+      }
+    },
+    onPointerMove: (event: PointerEvent) => {
+      const start = pointerStart.current;
+      if (!start || event.nativeEvent.pointerType !== 'mouse') return;
+      const dx = event.nativeEvent.pageX - start.x;
+      const dy = event.nativeEvent.pageY - start.y;
+      if (Math.abs(dx) > 3 && Math.abs(dx) > Math.abs(dy) * 0.15) {
+        dashboardOffset.setValue(dx * 0.75);
+      }
+    },
+    onPointerUp: (event: PointerEvent) => {
+      const start = pointerStart.current;
+      pointerStart.current = null;
+      if (!start || event.nativeEvent.pointerType !== 'mouse') return;
+      const dx = event.nativeEvent.pageX - start.x;
+      const elapsed = Math.max(event.nativeEvent.timestamp - start.time, 1);
+      finishDashboardSwipe(dx, dx / elapsed);
+    },
+    onPointerCancel: () => {
+      pointerStart.current = null;
+      Animated.spring(dashboardOffset, { toValue: 0, useNativeDriver: false, speed: 22, bounciness: 5 }).start();
+    },
+  }), [dashboardOffset, dashboardPage, formVisible, screenWidth]);
 
   return (
-    <Page>
+    <Page
+      scrollRef={pageScrollRef}
+      gestureHandlers={dashboardPanResponder.panHandlers}
+      pointerGestureHandlers={dashboardPointerHandlers}
+      floating={(
+      <FloatingAddButton
+        accessibilityLabel={t('Pridať akciu a transakciu')}
+        onPress={() => openNewTransaction('BUY')}
+      />
+    )}
+    >
       <Header
+        compact
         title={t('Moje portfólio')}
-        subtitle={t('Prehľad investícií')}
         action={
           <View style={styles.headerActions}>
             <Pressable
@@ -589,6 +687,31 @@ export default function PortfolioScreen() {
           </View>
         }
       />
+      <View style={styles.dashboardTabs}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityState={{ selected: dashboardPage === 'portfolio' }}
+          onPress={() => switchDashboard('portfolio')}
+          style={[styles.dashboardTab, dashboardPage === 'portfolio' && styles.dashboardTabSelected]}
+        >
+          <Text style={[styles.dashboardTabText, dashboardPage === 'portfolio' && styles.dashboardTabTextSelected]}>
+            {t('Portfólio')}
+          </Text>
+        </Pressable>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityState={{ selected: dashboardPage === 'dividends' }}
+          onPress={() => switchDashboard('dividends')}
+          style={[styles.dashboardTab, dashboardPage === 'dividends' && styles.dashboardTabSelected]}
+        >
+          <Text style={[styles.dashboardTabText, dashboardPage === 'dividends' && styles.dashboardTabTextSelected]}>
+            {t('Dividendy')}
+          </Text>
+        </Pressable>
+      </View>
+      <Animated.View style={{ transform: [{ translateX: dashboardOffset }] }}>
+      {dashboardPage === 'portfolio' ? (
+      <>
       <Surface style={styles.heroCard}>
         <View style={styles.balanceCard}>
           <Text style={styles.balanceLabel}>{t('Trhová hodnota')}</Text>
@@ -621,6 +744,7 @@ export default function PortfolioScreen() {
         onLatestChange={setChartLatest}
         currentValue={totals.value}
         hideAmounts={hideAmounts}
+        onGestureActiveChange={(active) => { chartGestureActive.current = active; }}
       />
       </Surface>
 
@@ -634,20 +758,7 @@ export default function PortfolioScreen() {
         <ChevronRight size={18} color={colors.muted} />
       </Pressable>
 
-      <SectionTitle
-        title={t('Moje pozície')}
-        action={(
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={t('Pridať akciu a transakciu')}
-            onPress={() => openNewTransaction('BUY')}
-            hitSlop={8}
-            style={styles.addPositionButton}
-          >
-            <Plus size={18} color={colors.green} />
-          </Pressable>
-        )}
-      />
+      <SectionTitle title={t('Moje pozície')} />
 
       {positions.length ? (
         <SortControl
@@ -696,10 +807,6 @@ export default function PortfolioScreen() {
                 : 'Find sold positions below in Closed positions. Their result is still included.'
               : t('Pridaj skutočné nákupy. Každý pohyb sa uloží samostatne a portfólio zobrazí každú akciu iba raz.')}
           </Text>
-          <Pressable onPress={() => openNewTransaction('BUY')} style={styles.emptyButton}>
-            <Plus size={16} color={colors.surface} />
-            <Text style={styles.emptyButtonText}>{closedPositions.length ? t('Pridať nákup') : t('Pridať prvý nákup')}</Text>
-          </Pressable>
         </Surface>
       )}
 
@@ -744,15 +851,15 @@ export default function PortfolioScreen() {
           Ťukni na akciu a zobraz jej graf aj kompletnú históriu nákupov a predajov.
         </Text>
       ) : null}
-
-      <Pressable
-        accessibilityLabel={t('Pridať akciu a transakciu')}
-        accessibilityRole="button"
-        onPress={() => openNewTransaction('BUY')}
-        style={styles.floatingAdd}
-      >
-        <Plus size={23} color={colors.surface} />
-      </Pressable>
+      </>
+      ) : (
+        <DividendOverview
+          positions={activePositions}
+          transactions={transactions}
+          hideAmounts={hideAmounts}
+        />
+      )}
+      </Animated.View>
 
       <TransactionModal
         visible={formVisible}
@@ -765,6 +872,24 @@ export default function PortfolioScreen() {
 }
 
 const styles = StyleSheet.create({
+  dashboardTabs: {
+    flexDirection: 'row',
+    gap: 5,
+    padding: 4,
+    marginBottom: 12,
+    borderRadius: 16,
+    backgroundColor: colors.surface,
+  },
+  dashboardTab: {
+    flex: 1,
+    minHeight: 38,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 12,
+  },
+  dashboardTabSelected: { backgroundColor: colors.surfaceRaised },
+  dashboardTabText: { color: colors.muted, fontSize: 12, fontWeight: '800' },
+  dashboardTabTextSelected: { color: colors.text },
   headerActions: { flexDirection: 'row', gap: 8 },
   iconButton: {
     width: 39, height: 39, borderRadius: 13, backgroundColor: colors.surface,
@@ -842,14 +967,6 @@ const styles = StyleSheet.create({
   closedSubtitle: { color: colors.muted, fontSize: 8, marginTop: 4 },
   closedToggleRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   closedCount: { color: colors.green, fontSize: 11, fontWeight: '900' },
-  addPositionButton: {
-    width: 32,
-    height: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 10,
-    backgroundColor: colors.surface,
-  },
   assetsCard: { paddingVertical: 4, paddingHorizontal: 10, backgroundColor: colors.surface, borderRadius: 18 },
   emptyCard: { alignItems: 'center', padding: 22 },
   emptyIcon: {
@@ -858,22 +975,5 @@ const styles = StyleSheet.create({
   },
   emptyTitle: { color: colors.text, fontSize: 15, fontWeight: '900', textAlign: 'center' },
   emptyDescription: { color: colors.muted, fontSize: 11, textAlign: 'center', lineHeight: 17, marginTop: 8 },
-  emptyButton: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: colors.green,
-    borderRadius: 13, paddingVertical: 11, paddingHorizontal: 15, marginTop: 16,
-  },
-  emptyButtonText: { color: colors.surface, fontSize: 12, fontWeight: '900', marginLeft: 6 },
   hint: { color: colors.muted, fontSize: 9, marginTop: 2 },
-  floatingAdd: {
-    alignSelf: 'flex-end',
-    width: 54,
-    height: 54,
-    borderRadius: 27,
-    backgroundColor: colors.green,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 4,
-    marginBottom: 10,
-    elevation: 5,
-  },
 });

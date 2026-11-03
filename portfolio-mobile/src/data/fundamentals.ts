@@ -50,10 +50,13 @@ type QuoteSummaryResponse = {
   };
 };
 
-// Yahoo neposkytuje fundamenty indexu, preto trh aproximujeme najväčšími firmami S&P 500.
+// Yahoo neposkytuje fundamenty indexu, preto trh aproximujeme veľkými firmami S&P 500.
 export const marketBasket = [
   'AAPL', 'MSFT', 'NVDA', 'AMZN', 'GOOGL', 'META', 'AVGO', 'TSLA', 'JPM', 'LLY',
   'V', 'XOM', 'UNH', 'MA', 'COST', 'WMT', 'PG', 'HD', 'JNJ', 'ORCL',
+  'BRK-B', 'NFLX', 'ABBV', 'KO', 'CVX', 'BAC', 'CRM', 'AMD', 'TMUS', 'WFC',
+  'CSCO', 'MCD', 'ACN', 'LIN', 'ABT', 'DHR', 'PM', 'IBM', 'GE', 'NOW',
+  'TMO', 'CAT', 'INTU', 'TXN', 'QCOM', 'AMGN', 'DIS', 'MS', 'NEE', 'GS',
 ];
 
 const USER_AGENT = 'Mozilla/5.0';
@@ -277,8 +280,14 @@ export function aggregateFundamentals(
 }
 
 async function settled(symbols: string[]) {
-  const results = await Promise.allSettled(symbols.map((symbol) => fetchFundamentals(symbol)));
-  return results.map((result) => (result.status === 'fulfilled' ? result.value : null));
+  const results: Array<Fundamentals | null> = [];
+  for (let index = 0; index < symbols.length; index += 8) {
+    const batch = await Promise.allSettled(
+      symbols.slice(index, index + 8).map((symbol) => fetchFundamentals(symbol)),
+    );
+    results.push(...batch.map((result) => result.status === 'fulfilled' ? result.value : null));
+  }
+  return results;
 }
 
 export async function fetchFundamentalsComparison(

@@ -35,7 +35,7 @@ export function TransactionHistoryModal({ visible, position, onClose, onAdd, onE
         <View style={styles.sheet}>
           <View style={styles.header}>
             <View style={styles.identity}>
-              <AssetLogo symbol={position.symbol} color={position.color} size={40} />
+              <AssetLogo symbol={position.symbol} color={position.color} size={46} />
               <View style={styles.headingCopy}>
                 <Text style={styles.title}>{position.symbol}</Text>
                 <Text style={styles.subtitle} numberOfLines={1}>{position.name}</Text>

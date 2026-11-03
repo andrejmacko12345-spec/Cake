@@ -1,15 +1,21 @@
-import { useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import type { ComponentRef, ReactNode, RefObject } from 'react';
 import {
+  Animated,
+  Easing,
   Pressable,
+  Platform,
   ScrollView,
+  Image,
   StatusBar,
   StyleSheet,
   Text,
   View,
-  ViewStyle,
 } from 'react-native';
+import type { PanResponderInstance, ViewProps, ViewStyle } from 'react-native';
+import { useFocusEffect } from 'expo-router';
 import Svg, { Circle, Line, Path, Rect } from 'react-native-svg';
+import { ChevronDown, Plus } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Asset, colors, formatMoney, formatPercent } from '../data/portfolio';
 import { getTheme } from '../data/theme';
@@ -18,20 +24,90 @@ import { positionCostEUR, positionValueEUR, usePositions } from '../hooks/use-po
 import { AssetLogo } from './asset-logo';
 import { useLocale } from '../context/locale';
 
-export function Page({ children, scrollRef, floating }: { children: ReactNode; scrollRef?: RefObject<ComponentRef<typeof ScrollView> | null>; floating?: ReactNode }) {
+export function Page({
+  children,
+  scrollRef,
+  floating,
+  onScrollViewLayout,
+  animateOnFocus = false,
+  gestureHandlers,
+  pointerGestureHandlers,
+}: {
+  children: ReactNode;
+  scrollRef?: RefObject<ComponentRef<typeof ScrollView> | null>;
+  floating?: ReactNode;
+  onScrollViewLayout?: (height: number) => void;
+  animateOnFocus?: boolean;
+  gestureHandlers?: PanResponderInstance['panHandlers'];
+  pointerGestureHandlers?: Pick<ViewProps, 'onPointerDown' | 'onPointerMove' | 'onPointerUp' | 'onPointerCancel'>;
+}) {
+  const entrance = useRef(new Animated.Value(animateOnFocus ? 0 : 1)).current;
+  const entranceOffset = useRef(new Animated.Value(animateOnFocus ? 10 : 0)).current;
+
+  useFocusEffect(useCallback(() => {
+    if (!animateOnFocus) return undefined;
+    entrance.setValue(0);
+    entranceOffset.setValue(10);
+    const animation = Animated.parallel([
+      Animated.timing(entrance, {
+        toValue: 1,
+        duration: 280,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: Platform.OS !== 'web',
+      }),
+      Animated.timing(entranceOffset, {
+        toValue: 0,
+        duration: 320,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: Platform.OS !== 'web',
+      }),
+    ]);
+    animation.start();
+    return () => animation.stop();
+  }, [animateOnFocus, entrance, entranceOffset]));
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle={getTheme() === 'light' ? 'dark-content' : 'light-content'} />
+      <View style={styles.gestureLayer} {...gestureHandlers} {...pointerGestureHandlers}>
       <ScrollView
         ref={scrollRef}
-        contentContainerStyle={styles.page}
+        onLayout={onScrollViewLayout ? (event) => onScrollViewLayout(event.nativeEvent.layout.height) : undefined}
+        contentContainerStyle={[styles.page, floating ? styles.pageWithFloating : undefined]}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        {children}
+        <Animated.View
+          style={animateOnFocus ? {
+            opacity: entrance,
+            transform: [{ translateY: entranceOffset }],
+          } : undefined}
+        >
+          {children}
+        </Animated.View>
       </ScrollView>
+      </View>
       {floating ? <View pointerEvents="box-none" style={styles.floating}>{floating}</View> : null}
     </SafeAreaView>
+  );
+}
+
+export function FloatingAddButton({
+  accessibilityLabel,
+  onPress,
+}: {
+  accessibilityLabel: string;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
+      onPress={onPress}
+      style={styles.floatingAddButton}
+    >
+      <Plus size={23} color={colors.surface} />
+    </Pressable>
   );
 }
 
@@ -72,17 +148,42 @@ export function Header({
   title,
   subtitle,
   action,
+  brand,
+  compact,
+  onTitlePress,
+  titleExpanded,
 }: {
   title: string;
   subtitle?: string;
   action?: ReactNode;
+  brand?: boolean;
+  compact?: boolean;
+  onTitlePress?: () => void;
+  titleExpanded?: boolean;
 }) {
   const { t } = useLocale();
   return (
-    <View style={styles.header}>
+    <View style={[styles.header, compact && styles.headerCompact]}>
       <View style={styles.headerCopy}>
+        {brand ? (
+          <View style={styles.brandLine}>
+            <Image source={require('../../assets/icon.png')} style={styles.brandIcon} />
+            <Text style={styles.brandName}>Fincake</Text>
+          </View>
+        ) : null}
         {subtitle ? <Text style={styles.eyebrow}>{t(subtitle)}</Text> : null}
-        <Text style={styles.headerTitle}>{t(title)}</Text>
+        {onTitlePress ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t('Vybrať watchlist')}
+            accessibilityState={{ expanded: titleExpanded }}
+            onPress={onTitlePress}
+            style={styles.headerTitleButton}
+          >
+            <Text style={styles.headerTitle} numberOfLines={1}>{t(title)}</Text>
+            <ChevronDown size={16} color={colors.green} />
+          </Pressable>
+        ) : <Text style={styles.headerTitle}>{t(title)}</Text>}
       </View>
       {action}
     </View>
@@ -398,7 +499,7 @@ export function PositionRow({
       onPress={onPress}
       style={styles.assetRow}
     >
-      <AssetLogo symbol={position.symbol} color={position.color} size={40} />
+      <AssetLogo symbol={position.symbol} color={position.color} size={42} />
       <View style={styles.assetIdentity}>
         <Text style={styles.assetSymbol}>{position.symbol}</Text>
         <Text style={styles.assetName} numberOfLines={1}>
@@ -446,16 +547,30 @@ const styles = StyleSheet.create({
   },
   floating: {
     position: 'absolute',
-    left: 0,
-    right: 0,
+    right: 16,
     bottom: 14,
+    alignItems: 'flex-end',
+  },
+  floatingAddButton: {
+    width: 54,
+    height: 54,
+    borderRadius: 27,
+    backgroundColor: colors.green,
     alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 6,
+    shadowColor: '#000',
+    shadowOpacity: 0.22,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
   },
   page: {
     paddingHorizontal: 12,
     paddingTop: 16,
     paddingBottom: 28,
   },
+  pageWithFloating: { paddingBottom: 88 },
+  gestureLayer: { flex: 1 },
   header: {
     minHeight: 52,
     flexDirection: 'row',
@@ -463,9 +578,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 18,
   },
+  headerCompact: { minHeight: 38, marginBottom: 8 },
   headerCopy: {
     flex: 1,
   },
+  brandLine: { flexDirection: 'row', alignItems: 'center', gap: 5, marginBottom: 3 },
+  brandIcon: { width: 15, height: 15, borderRadius: 5 },
+  brandName: { color: colors.muted, fontSize: 10, fontWeight: '800', letterSpacing: 0.6 },
   eyebrow: {
     color: colors.muted,
     fontSize: 11,
@@ -479,6 +598,13 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: '800',
     letterSpacing: 0.2,
+  },
+  headerTitleButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    maxWidth: '100%',
+    gap: 5,
   },
   sectionHeading: {
     flexDirection: 'row',
@@ -604,7 +730,7 @@ const styles = StyleSheet.create({
   assetRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 13,
+    paddingVertical: 8,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.border,
   },

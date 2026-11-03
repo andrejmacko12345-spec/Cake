@@ -1,5 +1,6 @@
 import '../data/theme-init';
 import { Tabs } from 'expo-router';
+import { useEffect, useMemo } from 'react';
 import {
   Bookmark,
   CalendarDays,
@@ -9,6 +10,8 @@ import {
 } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PositionsProvider } from '../hooks/use-positions';
+import { usePositions } from '../hooks/use-positions';
+import { preloadCompanyEvents } from '../data/events-cache';
 import { colors } from '../data/portfolio';
 import { useLocale, LocaleProvider } from '../context/locale';
 
@@ -16,10 +19,26 @@ export default function RootLayout() {
   return (
     <PositionsProvider>
       <LocaleProvider>
+        <EventDataPreloader />
         <AppTabs />
       </LocaleProvider>
     </PositionsProvider>
   );
+}
+
+function EventDataPreloader() {
+  const { positions, loading } = usePositions();
+  const symbols = useMemo(
+    () => [...new Set(positions.filter((position) => position.shares > 1e-8).map((position) => position.symbol))],
+    [positions],
+  );
+  const symbolKey = symbols.join(',');
+
+  useEffect(() => {
+    if (!loading && symbols.length) void preloadCompanyEvents(symbols);
+  }, [loading, symbolKey]);
+
+  return null;
 }
 
 function AppTabs() {
@@ -36,12 +55,12 @@ function AppTabs() {
           tabBarStyle: {
             backgroundColor: colors.surface,
             borderTopColor: colors.border,
-            paddingTop: 7,
+            paddingTop: 5,
             paddingBottom: insets.bottom + 14,
-            height: 56 + insets.bottom + 14,
+            height: 52 + insets.bottom + 14,
           },
           tabBarLabelStyle: {
-            fontSize: 10,
+            fontSize: 9,
             fontWeight: '700',
           },
         }}
@@ -50,21 +69,21 @@ function AppTabs() {
           name="index"
           options={{
             title: t('Portfólio'),
-            tabBarIcon: ({ color, size }) => <House color={color} size={size} />,
+            tabBarIcon: ({ color }) => <House color={color} size={21} />,
           }}
         />
         <Tabs.Screen
           name="events"
           options={{
             title: t('Udalosti'),
-            tabBarIcon: ({ color, size }) => <CalendarDays color={color} size={size} />,
+            tabBarIcon: ({ color }) => <CalendarDays color={color} size={21} />,
           }}
         />
         <Tabs.Screen
           name="watchlist"
           options={{
             title: 'Watchlist',
-            tabBarIcon: ({ color, size }) => <Bookmark color={color} size={size} />,
+            tabBarIcon: ({ color }) => <Bookmark color={color} size={21} />,
           }}
         />
         <Tabs.Screen
@@ -78,14 +97,14 @@ function AppTabs() {
           name="compare"
           options={{
             title: t('Porovnanie'),
-            tabBarIcon: ({ color, size }) => <Scale color={color} size={size} />,
+            tabBarIcon: ({ color }) => <Scale color={color} size={21} />,
           }}
         />
         <Tabs.Screen
           name="forecast"
           options={{
             title: t('Výhľad'),
-            tabBarIcon: ({ color, size }) => <Sparkles color={color} size={size} />,
+            tabBarIcon: ({ color }) => <Sparkles color={color} size={21} />,
           }}
         />
         <Tabs.Screen name="about" options={{ href: null }} />

@@ -732,12 +732,11 @@ function ReturnCard({
       <View style={styles.indexReturns}>
         {indexReturns.map((benchmark) => {
           const value = comparisonType === 'total' ? benchmark.totalReturn : benchmark.annualizedReturn;
-          const color = value === null ? colors.muted : value >= 0 ? colors.green : colors.red;
           return (
             <View key={benchmark.symbol} style={styles.indexReturn}>
               <View style={[styles.indexReturnDot, { backgroundColor: benchmark.color }]} />
               <Text style={styles.indexReturnLabel}>{benchmark.shortName}</Text>
-              <Text style={[styles.indexReturnValue, { color }]}>{formatCompactPercent(value, language)}</Text>
+              <Text numberOfLines={1} adjustsFontSizeToFit style={styles.indexReturnValue}>{formatCompactPercent(value, language)}</Text>
             </View>
           );
         })}
@@ -1165,7 +1164,7 @@ const styles = StyleSheet.create({
   },
   marketValue: {
     color: colors.text,
-    fontSize: 38,
+    fontSize: 32,
     fontWeight: '900',
     marginTop: 4,
   },
@@ -1252,8 +1251,8 @@ const styles = StyleSheet.create({
     letterSpacing: 0.6,
   },
   portfolioReturnValue: {
-    fontSize: 40,
-    lineHeight: 46,
+    fontSize: 32,
+    lineHeight: 38,
     fontWeight: '900',
     marginTop: 2,
   },
@@ -1281,7 +1280,8 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   indexReturnValue: {
-    fontSize: 18,
+    color: colors.text,
+    fontSize: 15,
     fontWeight: '900',
     marginTop: 3,
   },

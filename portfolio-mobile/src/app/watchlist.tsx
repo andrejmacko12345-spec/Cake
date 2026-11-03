@@ -13,6 +13,7 @@ import {
   LiveQuote,
 } from '../data/quotes';
 import { usePositions } from '../hooks/use-positions';
+import { AssetLogo } from '../components/asset-logo';
 import { useAssetSearch } from '../hooks/use-asset-search';
 import { useLocale } from '../context/locale';
 
@@ -120,7 +121,7 @@ function WatchlistPriceCard({
         style={styles.assetMain}
       >
         <View style={styles.assetHeading}>
-          <View style={[styles.assetMark, { backgroundColor: asset.color }]} />
+          <AssetLogo symbol={asset.symbol} color={asset.color} size={32} />
           <View style={styles.assetCopy}>
             <Text style={styles.assetSymbol}>{asset.symbol}</Text>
             <Text style={styles.assetName} numberOfLines={1}>{asset.name}</Text>

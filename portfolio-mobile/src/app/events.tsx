@@ -2,6 +2,7 @@ import type { ComponentRef } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Linking, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Bell, ChevronRight, Clock3, Newspaper, X } from 'lucide-react-native';
+import { AssetLogo } from '../components/asset-logo';
 import { Header, Page, SectionTitle, Surface } from '../components/finapp';
 import { useLocale } from '../context/locale';
 import { CompanyEvents, fetchCompanyEvents, QuarterResult } from '../data/events';
@@ -247,7 +248,7 @@ export default function EventsScreen() {
             <Text style={styles.dateDay}>{String(date.getDate()).padStart(2, '0')}</Text>
             <Text style={styles.dateMonth}>{months[date.getMonth()]}</Text>
           </View>
-          <View style={[styles.eventAccent, { backgroundColor: item.color }]} />
+          <AssetLogo symbol={item.symbol} color={item.color} size={34} />
           <View style={styles.eventBody}>
             <View style={styles.eventTopline}>
               <Text style={styles.symbol}>{item.symbol}</Text>

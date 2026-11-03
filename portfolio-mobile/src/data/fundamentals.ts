@@ -5,6 +5,14 @@ export type Fundamentals = {
   forwardPE: number | null;
   revenueGrowth: number | null;
   epsGrowth: number | null;
+  peFY0: number | null;
+  peFY1: number | null;
+  revGrowthFY0: number | null;
+  revGrowthFY1: number | null;
+  epsGrowthFY0: number | null;
+  epsGrowthFY1: number | null;
+  fy0End: string | null;
+  fy1End: string | null;
 };
 
 export type FundamentalMetrics = {
@@ -12,6 +20,14 @@ export type FundamentalMetrics = {
   forwardPE: number | null;
   revenueGrowth: number | null;
   epsGrowth: number | null;
+  peFY0: number | null;
+  peFY1: number | null;
+  revGrowthFY0: number | null;
+  revGrowthFY1: number | null;
+  epsGrowthFY0: number | null;
+  epsGrowthFY1: number | null;
+  fy0End: string | null;
+  fy1End: string | null;
 };
 
 type RawValue = { raw?: number } | undefined;
@@ -19,13 +35,15 @@ type RawValue = { raw?: number } | undefined;
 type QuoteSummaryResponse = {
   quoteSummary?: {
     result?: Array<{
+      price?: { regularMarketPrice?: RawValue };
       summaryDetail?: { trailingPE?: RawValue; forwardPE?: RawValue; marketCap?: RawValue };
       defaultKeyStatistics?: { forwardPE?: RawValue };
       earningsTrend?: {
         trend?: Array<{
           period?: string;
+          endDate?: string;
           revenueEstimate?: { growth?: RawValue };
-          earningsEstimate?: { growth?: RawValue };
+          earningsEstimate?: { avg?: RawValue; growth?: RawValue };
         }>;
       };
     }> | null;
@@ -98,7 +116,7 @@ function finite(value: RawValue) {
 export async function fetchFundamentals(symbol: string): Promise<Fundamentals> {
   const crumb = await getCrumb();
   const url = `https://query2.finance.yahoo.com/v10/finance/quoteSummary/${encodeURIComponent(symbol)}`
-    + `?modules=summaryDetail,defaultKeyStatistics,earningsTrend&crumb=${encodeURIComponent(crumb)}`;
+    + `?modules=price,summaryDetail,defaultKeyStatistics,earningsTrend&crumb=${encodeURIComponent(crumb)}`;
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 15000);
   try {
@@ -114,9 +132,21 @@ export async function fetchFundamentals(symbol: string): Promise<Fundamentals> {
     }
     const data = await response.json() as QuoteSummaryResponse;
     const result = data.quoteSummary?.result?.[0];
-    const nextYear = result?.earningsTrend?.trend?.find((item) => item.period === '+1y');
+    const trend = result?.earningsTrend?.trend ?? [];
+    const thisYear = trend.find((item) => item.period === '0y');
+    const nextYear = trend.find((item) => item.period === '+1y');
+    const price = finite(result?.price?.regularMarketPrice);
+    const peFrom = (eps: number | null) => (price !== null && eps !== null && eps > 0 ? price / eps : null);
     return {
       symbol,
+      peFY0: peFrom(finite(thisYear?.earningsEstimate?.avg)),
+      peFY1: peFrom(finite(nextYear?.earningsEstimate?.avg)),
+      revGrowthFY0: finite(thisYear?.revenueEstimate?.growth),
+      revGrowthFY1: finite(nextYear?.revenueEstimate?.growth),
+      epsGrowthFY0: finite(thisYear?.earningsEstimate?.growth),
+      epsGrowthFY1: finite(nextYear?.earningsEstimate?.growth),
+      fy0End: thisYear?.endDate ?? null,
+      fy1End: nextYear?.endDate ?? null,
       marketCap: finite(result?.summaryDetail?.marketCap),
       trailingPE: finite(result?.summaryDetail?.trailingPE),
       forwardPE: finite(result?.summaryDetail?.forwardPE) ?? finite(result?.defaultKeyStatistics?.forwardPE),
@@ -215,10 +245,18 @@ function aggregate(
   return valid.reduce((sum, item) => sum + (item.weight / totalWeight) * (item.value as number), 0);
 }
 
+type NumericMetric = Exclude<keyof FundamentalMetrics, 'fy0End' | 'fy1End'>;
+
+// Dátum konca fiškálneho roka: berie sa od najväčšej váhy, kde je dostupný.
+function pickEnd(items: Array<{ weight: number; fundamentals: Fundamentals | null }>, key: 'fy0End' | 'fy1End') {
+  const sorted = [...items].sort((a, b) => b.weight - a.weight);
+  return sorted.find((item) => item.fundamentals?.[key])?.fundamentals?.[key] ?? null;
+}
+
 export function aggregateFundamentals(
   items: Array<{ weight: number; fundamentals: Fundamentals | null }>,
 ): FundamentalMetrics {
-  const pick = (key: keyof FundamentalMetrics) => items.map((item) => ({
+  const pick = (key: NumericMetric) => items.map((item) => ({
     weight: item.weight,
     value: item.fundamentals?.[key] ?? null,
   }));
@@ -227,6 +265,14 @@ export function aggregateFundamentals(
     forwardPE: aggregate(pick('forwardPE'), true),
     revenueGrowth: aggregate(pick('revenueGrowth'), false),
     epsGrowth: aggregate(pick('epsGrowth'), false),
+    peFY0: aggregate(pick('peFY0'), true),
+    peFY1: aggregate(pick('peFY1'), true),
+    revGrowthFY0: aggregate(pick('revGrowthFY0'), false),
+    revGrowthFY1: aggregate(pick('revGrowthFY1'), false),
+    epsGrowthFY0: aggregate(pick('epsGrowthFY0'), false),
+    epsGrowthFY1: aggregate(pick('epsGrowthFY1'), false),
+    fy0End: pickEnd(items, 'fy0End'),
+    fy1End: pickEnd(items, 'fy1End'),
   };
 }
 

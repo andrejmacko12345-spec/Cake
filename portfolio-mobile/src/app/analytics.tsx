@@ -756,13 +756,24 @@ function FundamentalsTable({
 }) {
   const { t } = useLocale();
   const locale = language === 'sk' ? 'sk-SK' : 'en-US';
+  const period = (end: string | null) => {
+    if (!end) return '';
+    const date = new Date(`${end}T12:00:00`);
+    return Number.isNaN(date.getTime())
+      ? ''
+      : ` · ${date.toLocaleDateString(locale, { month: 'short', year: 'numeric' })}`;
+  };
+  const fy0 = period(portfolio.fy0End ?? market.fy0End);
+  const fy1 = period(portfolio.fy1End ?? market.fy1End);
   const rows = [
-    { label: 'Aktuálne P/E', key: 'trailingPE', isPE: true },
-    { label: 'Forward P/E', key: 'forwardPE', isPE: true },
-    { label: 'Rast tržieb (budúci rok)', key: 'revenueGrowth', isPE: false },
-    { label: 'Rast EPS (budúci rok)', key: 'epsGrowth', isPE: false },
+    { label: t('Aktuálne P/E'), sub: language === 'sk' ? 'posledných 12 mesiacov' : 'trailing 12 months', key: 'trailingPE', isPE: true },
+    { label: `Forward P/E${fy0}`, sub: language === 'sk' ? 'odhad zisku tento rok' : 'this year EPS estimate', key: 'peFY0', isPE: true },
+    { label: `Forward P/E${fy1}`, sub: language === 'sk' ? 'odhad zisku budúci rok' : 'next year EPS estimate', key: 'peFY1', isPE: true },
+    { label: `${t('Rast tržieb')}${fy0}`, sub: language === 'sk' ? 'odhad, tento rok' : 'estimate, this year', key: 'revGrowthFY0', isPE: false },
+    { label: `${t('Rast tržieb')}${fy1}`, sub: language === 'sk' ? 'odhad, budúci rok' : 'estimate, next year', key: 'revGrowthFY1', isPE: false },
+    { label: `${t('Rast EPS')}${fy0}`, sub: language === 'sk' ? 'odhad, tento rok' : 'estimate, this year', key: 'epsGrowthFY0', isPE: false },
+    { label: `${t('Rast EPS')}${fy1}`, sub: language === 'sk' ? 'odhad, budúci rok' : 'estimate, next year', key: 'epsGrowthFY1', isPE: false },
   ] as const;
-
   return (
     <View>
       <View style={styles.fundRow}>
@@ -787,7 +798,10 @@ function FundamentalsTable({
           : `${diff > 0 ? '+' : ''}${diff.toLocaleString(locale, { maximumFractionDigits: 1 })}${row.isPE ? '' : ' pp'}`;
         return (
           <View key={row.key} style={styles.fundRow}>
-            <Text style={styles.fundLabel}>{t(row.label)}</Text>
+            <View style={styles.fundLabelBox}>
+              <Text style={[styles.fundLabel, { flex: 0 }]}>{row.label}</Text>
+              <Text style={styles.fundSub}>{row.sub}</Text>
+            </View>
             <Text style={styles.fundCell}>{format(p)}</Text>
             <Text style={styles.fundCell}>{format(m)}</Text>
             <Text style={[
@@ -1298,6 +1312,8 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '800',
   },
+  fundLabelBox: { flex: 1.5 },
+  fundSub: { color: colors.muted, fontSize: 9, fontWeight: '600', marginTop: 2 },
   fundHeader: {
     color: colors.muted,
     fontSize: 10,

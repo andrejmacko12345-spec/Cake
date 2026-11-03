@@ -359,6 +359,7 @@ function InvestmentTimeline({
       history.length > 0 && Math.abs(gesture.dx) > Math.abs(gesture.dy) && Math.abs(gesture.dx) > 4,
     onPanResponderGrant: (event) => updateSelectedPoint(event.nativeEvent.locationX),
     onPanResponderMove: (event) => updateSelectedPoint(event.nativeEvent.locationX),
+    onPanResponderRelease: () => setSelectedIndex(null),
     onPanResponderTerminate: () => setSelectedIndex(null),
   }), [history, chartWidth]);
 

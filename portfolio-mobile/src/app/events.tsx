@@ -127,7 +127,9 @@ export default function EventsScreen() {
     const list: EventItem[] = [];
     for (const company of Object.values(data)) {
       const symbol = company.symbol;
-      if (company.nextEarnings) {
+      const latestReportMs = company.lastReportDate ? company.lastReportDate * 1000 : 0;
+      const reportedThisPeriod = latestReportMs > now - 90 * DAY && latestReportMs <= now;
+      if (company.nextEarnings && !reportedThisPeriod) {
         const next = company.nextEarnings;
         const ms = next.date * 1000;
         const lines: string[] = [];
@@ -155,7 +157,7 @@ export default function EventsScreen() {
         ? company.lastReportDate * 1000 - new Date(latest.periodEnd).getTime()
         : 30 * DAY;
       if (!(lag > 0 && lag < 75 * DAY)) lag = 30 * DAY;
-      company.quarters.forEach((quarter, index) => {
+      company.quarters.slice(0, 1).forEach((quarter, index) => {
         const reportedMs = index === 0 && company.lastReportDate
           ? company.lastReportDate * 1000
           : new Date(quarter.periodEnd).getTime() + lag;

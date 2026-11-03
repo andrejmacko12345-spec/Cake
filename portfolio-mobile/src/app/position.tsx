@@ -484,10 +484,19 @@ export default function PositionDetailScreen() {
       {heldPosition ? (
         <View style={styles.resultsRow}>
           <Surface style={styles.resultCard}>
+            <Text style={styles.resultCaption}>{t('Hodnota investície')}</Text>
+            <Text style={styles.resultAmount}>{formatMoney(currentValue)}</Text>
+          </Surface>
+          <Surface style={styles.resultCard}>
             <Text style={styles.resultCaption}>{t('Nerealizovaný výnos')}</Text>
             <Text style={[styles.resultAmount, { color: unrealized >= 0 ? colors.green : colors.red }]}>
               {unrealized >= 0 ? '+' : ''}{formatMoney(unrealized)}
             </Text>
+            {openCost > 0 ? (
+              <Text style={[styles.resultPct, { color: unrealized >= 0 ? colors.green : colors.red }]}>
+                {formatPercent((unrealized / openCost) * 100)}
+              </Text>
+            ) : null}
           </Surface>
           <Surface style={styles.resultCard}>
             <Text style={styles.resultCaption}>{t('Celkový výsledok')}</Text>
@@ -635,6 +644,7 @@ const styles = StyleSheet.create({
   resultsRow: { flexDirection: 'row', gap: 8, marginBottom: 3 },
   resultCard: { flex: 1, padding: 12, marginBottom: 4 },
   resultCaption: { color: colors.muted, fontSize: 9, fontWeight: '700' },
+  resultPct: { fontSize: 10, fontWeight: '800', marginTop: 2 },
   resultAmount: { fontSize: 13, fontWeight: '900', marginTop: 5 },
   chartCard: { padding: 14 },
   chartHeading: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },

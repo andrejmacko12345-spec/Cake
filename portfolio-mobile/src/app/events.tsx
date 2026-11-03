@@ -148,7 +148,10 @@ export default function EventsScreen() {
         });
       }
       const latest = company.quarters[0];
-      if (latest && company.lastReportDate && now - company.lastReportDate * 1000 < 100 * DAY) {
+      const reportedMs = company.lastReportDate
+        ? company.lastReportDate * 1000
+        : latest ? new Date(latest.periodEnd).getTime() + 30 * DAY : 0;
+      if (latest && reportedMs && now - reportedMs < 100 * DAY && reportedMs <= now) {
         const lines: string[] = [];
         if (latest.epsActual !== null) {
           lines.push(`EPS ${fmtNum(latest.epsActual)} ${sk ? 'vs odhad' : 'vs est.'} ${fmtNum(latest.epsEstimate)}`);
@@ -162,7 +165,7 @@ export default function EventsScreen() {
           key: `${symbol}-last`,
           symbol,
           category: 'Výsledky',
-          date: company.lastReportDate * 1000,
+          date: reportedMs,
           title: `${sk ? 'Výsledky' : 'Earnings'} ${latest.label}`,
           lines,
           company,
@@ -292,11 +295,7 @@ export default function EventsScreen() {
               </Pressable>
             </View>
             <ScrollView>
-              {detail?.nextEarnings ? (
-                <Text style={styles.sheetNote}>
-                  {sk ? 'Najbližšie výsledky' : 'Next earnings'}: {new Date(detail.nextEarnings.date * 1000).toLocaleDateString(sk ? 'sk-SK' : 'en-US')}
-                </Text>
-              ) : null}
+              {detail?.nextEarnings ? <UpcomingCard company={detail} sk={sk} /> : null}
               {detail?.quarters.length ? (
                 detail.quarters.slice(0, 4).map((quarter, index) => (
                   <QuarterCard key={quarter.label} quarter={quarter} first={index === 0} sk={sk} />
@@ -319,6 +318,34 @@ function Row({ label, value, color }: { label: string; value: string; color?: st
       <Text style={styles.rowLabel}>{label}</Text>
       <Text style={[styles.rowValue, color ? { color } : null]}>{value}</Text>
     </View>
+  );
+}
+
+function UpcomingCard({ company, sk }: { company: CompanyEvents; sk: boolean }) {
+  const next = company.nextEarnings;
+  if (!next) return null;
+  const last = company.quarters[0];
+  const growth = (estimate: number | null, base: number | null | undefined) =>
+    estimate !== null && base ? ((estimate - base) / Math.abs(base)) * 100 : null;
+  const epsQoQ = growth(next.epsEstimate, last?.epsActual);
+  const revQoQ = growth(next.revenueEstimate, last?.revenue);
+  const ms = next.date * 1000;
+  const time = earningsTime(ms, sk);
+  return (
+    <Surface style={styles.upcoming}>
+      <Text style={styles.quarterTitle}>
+        {sk ? 'Očakávania' : 'Expectations'}{next.label ? ` · ${next.label}` : ''}
+      </Text>
+      <Row
+        label={sk ? 'Dátum výsledkov' : 'Report date'}
+        value={`${new Date(ms).toLocaleDateString(sk ? 'sk-SK' : 'en-US')}${next.estimate ? (sk ? ' (orientačne)' : ' (est.)') : ''}`}
+      />
+      {time ? <Row label={sk ? 'Čas' : 'Time'} value={time} /> : null}
+      <Row label={sk ? 'Očakávané tržby' : 'Expected revenue'} value={fmtRevenue(next.revenueEstimate, sk)} />
+      <Row label={sk ? 'Očakávané tržby q/q' : 'Expected revenue QoQ'} value={fmtPct(revQoQ)} color={pctColor(revQoQ)} />
+      <Row label={sk ? 'Očakávané EPS' : 'Expected EPS'} value={fmtNum(next.epsEstimate)} />
+      <Row label={sk ? 'Očakávané EPS q/q' : 'Expected EPS QoQ'} value={fmtPct(epsQoQ)} color={pctColor(epsQoQ)} />
+    </Surface>
   );
 }
 
@@ -392,6 +419,7 @@ const styles = StyleSheet.create({
   },
   sheetNote: { color: colors.muted, fontSize: 11, marginVertical: 8, lineHeight: 16 },
   quarter: { marginBottom: 10 },
+  upcoming: { marginBottom: 10, borderWidth: 1, borderColor: colors.violet },
   quarterFirst: { marginBottom: 10, borderWidth: 1, borderColor: colors.green },
   quarterTitle: { color: colors.text, fontSize: 14, fontWeight: '900', marginBottom: 8 },
   row: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 4 },

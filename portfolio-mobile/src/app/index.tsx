@@ -511,10 +511,11 @@ export default function PortfolioScreen() {
     .map((position) => position.updatedAt)
     .sort()
     .at(-1);
-  const chartDaily = range === '1D' && chartLatest?.range === '1D' ? chartLatest : null;
-  const headlineGain = chartDaily ? chartDaily.gainEUR : latestQuote ? dailyGain : totalReturn;
-  const headlinePercent = chartDaily ? chartDaily.returnPercent : latestQuote ? dailyPercent : returnPercent;
-  const headlineValue = chartDaily ? chartDaily.value : totals.value;
+  const chartPeriod = chartLatest?.range === range ? chartLatest : null;
+  const headlineGain = chartPeriod ? chartPeriod.gainEUR : latestQuote ? dailyGain : totalReturn;
+  const headlinePercent = chartPeriod ? chartPeriod.returnPercent : latestQuote ? dailyPercent : returnPercent;
+  const headlineValue = chartPeriod ? chartPeriod.value : totals.value;
+  const rangeText = range === 'Všetko' ? t('Všetko') : range === '1T' && language === 'en' ? '1W' : range;
 
   const openNewTransaction = (type: 'BUY' | 'SELL' = 'BUY') => {
     setInitialType(type);
@@ -558,7 +559,7 @@ export default function PortfolioScreen() {
         <Text style={styles.balanceLabel}>{t('Trhová hodnota')}</Text>
         <Text style={styles.balanceValue}>{money(headlineValue)}</Text>
         <View style={styles.returnRow}>
-          <Text style={styles.headlineHint}>{latestQuote || chartDaily ? t('Denná zmena') : t('Celkový výnos')}</Text>
+          <Text style={styles.headlineHint}>{`${t('Výnos za')} ${rangeText}`}</Text>
           <View style={styles.returnIndicator}>
             {headlineGain >= 0 ? <TrendingUp size={16} color={colors.green} /> : null}
             <Text style={[styles.returnPercent, { color: headlineGain >= 0 ? colors.green : colors.red }]}>
@@ -569,34 +570,10 @@ export default function PortfolioScreen() {
             {hideAmounts ? '' : signedMoney(headlineGain)}
           </Text>
         </View>
-        <View style={styles.balanceDivider} />
-        <View style={styles.balanceStats}>
-          <View style={styles.balanceStat}>
-            <Text style={styles.statLabel}>{t('Celkovo nakúpené')}</Text>
-            <Text style={styles.statValue}>{money(totals.openCost)}</Text>
-          </View>
-          <View style={styles.balanceStat}>
-            <Text style={styles.statLabel}>{t('Celkový výnos')}</Text>
-            <Text style={[styles.statValue, { color: totalReturn >= 0 ? colors.green : colors.red }]}>
-              {hideAmounts ? '' : `${signedMoney(totalReturn)} (`}{formatPercent(returnPercent)}{hideAmounts ? '' : ')'}
-            </Text>
-          </View>
-        </View>
-        <View style={[styles.balanceStats, { marginTop: 10 }]}>
-          <View style={styles.balanceStat}>
-            <Text style={styles.statLabel}>{t('Nerealizovaný výnos')}</Text>
-            <Text style={[styles.statValue, { color: unrealized >= 0 ? colors.green : colors.red }]}>
-              {signedMoney(unrealized)}
-            </Text>
-          </View>
-          <View style={styles.balanceStat}>
-            <Text style={styles.statLabel}>{t('Realizovaný výnos')}</Text>
-            <Text style={[styles.statValue, { color: totals.realized >= 0 ? colors.green : colors.red }]}>
-              {signedMoney(totals.realized)}
-            </Text>
-          </View>
-        </View>
-        {latestQuote ? (
+        <View style={styles.depositsPill}>
+          <Text style={styles.depositsValue}>{money(totals.openCost)}</Text>
+          <Text style={styles.depositsLabel}>{t('Celkovo nakúpené')}</Text>
+        </View>        {latestQuote ? (
           <Text style={styles.lastUpdated}>
             {language === 'sk' ? 'Trhové ceny aktualizované ' : 'Market prices updated '}
             {new Date(latestQuote).toLocaleString(language === 'sk' ? 'sk-SK' : 'en-US')}
@@ -796,6 +773,18 @@ const styles = StyleSheet.create({
   returnAmount: { fontSize: 13, fontWeight: '800' },
   balanceDivider: { width: '100%', height: StyleSheet.hairlineWidth, backgroundColor: colors.border, marginVertical: 13 },
   balanceStats: { width: '100%', flexDirection: 'row' },
+  depositsPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 14,
+    paddingVertical: 9,
+    paddingHorizontal: 14,
+    borderRadius: 999,
+    backgroundColor: colors.surfaceRaised,
+  },
+  depositsValue: { color: colors.text, fontSize: 12, fontWeight: '800' },
+  depositsLabel: { color: colors.muted, fontSize: 11, fontWeight: '700' },
   balanceStat: { flex: 1 },
   statLabel: { color: colors.muted, fontSize: 10, fontWeight: '600' },
   statValue: { color: colors.text, fontSize: 12, fontWeight: '800', marginTop: 5 },

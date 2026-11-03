@@ -10,7 +10,7 @@ import {
   HistoricalQuotePoint,
   HistoricalQuoteSeries,
 } from '../data/quotes';
-import { positionValueEUR, Transaction, usePositions } from '../hooks/use-positions';
+import { positionCostEUR, positionValueEUR, Transaction, usePositions } from '../hooks/use-positions';
 import { weightedAnnualReturn } from '../data/performance';
 import { fetchFundamentalsComparison, FundamentalMetrics } from '../data/fundamentals';
 import { useLocale } from '../context/locale';
@@ -829,6 +829,12 @@ export default function AnalyticsScreen() {
   const [annualBenchmarkSymbol, setAnnualBenchmarkSymbol] = useState<string>(benchmarkAssets[0].symbol);
   const totalValue = positions.reduce((sum, position) => sum + positionValueEUR(position), 0);
   const totalInvested = positions.reduce((sum, position) => sum + position.totalInvestedEUR, 0);
+  const openCostEUR = positions.reduce((sum, position) => sum + positionCostEUR(position), 0);
+  const realizedEUR = positions.reduce((sum, position) => sum + position.realizedProfitEUR, 0);
+  const unrealizedEUR = totalValue - openCostEUR;
+  const totalReturnEUR = unrealizedEUR + realizedEUR;
+  const totalReturnPct = totalInvested > 0 ? totalReturnEUR / totalInvested * 100 : 0;
+  const signed = (value: number) => `${value >= 0 ? '+' : ''}${formatMoney(value)}`;
   const startDate = getEarliestTransactionDate(transactions);
   const weightedAnnualReturnValue = useMemo(
     () => weightedAnnualReturn(transactions, totalValue),
@@ -970,6 +976,24 @@ export default function AnalyticsScreen() {
           <View style={styles.marketRow}>
             <Text style={styles.marketRowLabel}>{t('Investované')}</Text>
             <Text style={styles.marketRowValue}>{formatMoney(totalInvested)}</Text>
+          </View>
+          <View style={styles.marketRow}>
+            <Text style={styles.marketRowLabel}>{t('Celkový výnos')}</Text>
+            <Text style={[styles.marketRowValue, { color: totalReturnEUR >= 0 ? colors.green : colors.red }]}>
+              {signed(totalReturnEUR)} ({totalReturnPct >= 0 ? '+' : ''}{totalReturnPct.toFixed(1)} %)
+            </Text>
+          </View>
+          <View style={styles.marketRow}>
+            <Text style={styles.marketRowLabel}>{t('Nerealizovaný výnos')}</Text>
+            <Text style={[styles.marketRowValue, { color: unrealizedEUR >= 0 ? colors.green : colors.red }]}>
+              {signed(unrealizedEUR)}
+            </Text>
+          </View>
+          <View style={styles.marketRow}>
+            <Text style={styles.marketRowLabel}>{t('Realizovaný výnos')}</Text>
+            <Text style={[styles.marketRowValue, { color: realizedEUR >= 0 ? colors.green : colors.red }]}>
+              {signed(realizedEUR)}
+            </Text>
           </View>
           <View style={styles.marketRow}>
             <Text style={styles.marketRowLabel}>{t('Portfólio aktívne od')}</Text>

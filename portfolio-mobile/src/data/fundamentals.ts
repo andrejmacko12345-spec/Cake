@@ -302,3 +302,25 @@ export async function fetchFundamentalsComparison(
     }))),
   };
 }
+
+export type KeyStats = {
+  eps: number | null;
+  pe: number | null;
+  forwardPE: number | null;
+  dividendYield: number | null;
+  marketCap: number | null;
+};
+
+export async function fetchKeyStats(symbol: string): Promise<KeyStats> {
+  const result = await yahooQuoteSummary<{
+    summaryDetail?: { trailingPE?: RawValue; forwardPE?: RawValue; marketCap?: RawValue; dividendYield?: RawValue };
+    defaultKeyStatistics?: { trailingEps?: RawValue; forwardPE?: RawValue };
+  }>(symbol, 'summaryDetail,defaultKeyStatistics');
+  return {
+    eps: finite(result?.defaultKeyStatistics?.trailingEps),
+    pe: finite(result?.summaryDetail?.trailingPE),
+    forwardPE: finite(result?.summaryDetail?.forwardPE) ?? finite(result?.defaultKeyStatistics?.forwardPE),
+    dividendYield: finite(result?.summaryDetail?.dividendYield),
+    marketCap: finite(result?.summaryDetail?.marketCap),
+  };
+}

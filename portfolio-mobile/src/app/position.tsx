@@ -18,6 +18,8 @@ import { Asset, availableAssets, colors, formatMoney, formatPercent } from '../d
 import { fetchLiveQuote, LiveQuote } from '../data/quotes';
 import { fetchHistoricalQuoteSeries, HistoricalQuotePoint } from '../data/quotes';
 import { useLocale } from '../context/locale';
+import { fetchKeyStats, KeyStats } from '../data/fundamentals';
+import { CompanyEvents, fetchCompanyEvents } from '../data/events';
 import {
   Position,
   positionCostEUR,
@@ -42,6 +44,14 @@ const ranges = [
 type RangeLabel = (typeof ranges)[number]['label'];
 
 type PricePoint = HistoricalQuotePoint & { date: string };
+
+function formatBigNumber(value: number) {
+  const abs = Math.abs(value);
+  if (abs >= 1e12) return `${(value / 1e12).toFixed(2)} T`;
+  if (abs >= 1e9) return `${(value / 1e9).toFixed(2)} B`;
+  if (abs >= 1e6) return `${(value / 1e6).toFixed(2)} M`;
+  return value.toFixed(0);
+}
 
 function formatTransactionCount(count: number, language: 'sk' | 'en') {
   if (language === 'en') return `${count} ${count === 1 ? 'transaction' : 'transactions'}`;
@@ -340,6 +350,24 @@ export default function PositionDetailScreen() {
   const [range, setRange] = useState<RangeLabel>('1D');
   const [formVisible, setFormVisible] = useState(false);
   const [movementsOpen, setMovementsOpen] = useState(false);
+  const [stats, setStats] = useState<KeyStats | null>(null);
+  const [events, setEvents] = useState<CompanyEvents | null>(null);
+  const [infoLoading, setInfoLoading] = useState(true);
+
+  useEffect(() => {
+    if (!symbol) return;
+    let active = true;
+    setInfoLoading(true);
+    setStats(null);
+    setEvents(null);
+    Promise.allSettled([fetchKeyStats(symbol), fetchCompanyEvents(symbol)]).then(([s, e]) => {
+      if (!active) return;
+      if (s.status === 'fulfilled') setStats(s.value);
+      if (e.status === 'fulfilled') setEvents(e.value);
+      setInfoLoading(false);
+    });
+    return () => { active = false; };
+  }, [symbol]);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | undefined>();
   const [initialType, setInitialType] = useState<'BUY' | 'SELL'>('BUY');
 
@@ -473,6 +501,68 @@ export default function PositionDetailScreen() {
       <SectionTitle title={t('Vývoj ceny akcie')} />
       <StockChart position={position} range={range} onRangeChange={setRange} />
 
+      <SectionTitle title={t('Ukazovatele')} />
+      <Surface style={styles.statsCard}>
+        {infoLoading ? <ActivityIndicator color={colors.green} /> : (
+          <View style={styles.statsGrid}>
+            {([
+              ['EPS', stats?.eps != null ? stats.eps.toFixed(2) : '–'],
+              ['P/E', stats?.pe != null ? stats.pe.toFixed(1) : '–'],
+              ['Forward P/E', stats?.forwardPE != null ? stats.forwardPE.toFixed(1) : '–'],
+              [t('Dividend yield'), stats?.dividendYield != null ? `${(stats.dividendYield * 100).toFixed(2)} %` : '–'],
+              [t('Trhová kapitalizácia'), stats?.marketCap != null ? formatBigNumber(stats.marketCap) : '–'],
+            ] as const).map(([label, value]) => (
+              <View key={label} style={styles.statItem}>
+                <Text style={styles.statLabel}>{label}</Text>
+                <Text style={styles.statValue}>{value}</Text>
+              </View>
+            ))}
+          </View>
+        )}
+      </Surface>
+
+      <SectionTitle title={t('Earnings reporty')} />
+      <Surface style={styles.statsCard}>
+        {infoLoading ? <ActivityIndicator color={colors.green} /> : (
+          <>
+            {events?.nextEarnings ? (
+              <View style={styles.reportRow}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.reportTitle}>{t('Budúci report')}</Text>
+                  <Text style={styles.reportSub}>
+                    {new Date(events.nextEarnings.date * 1000).toLocaleDateString(language === 'sk' ? 'sk-SK' : 'en-US')}
+                    {events.nextEarnings.estimate ? ` (${t('odhad')})` : ''}
+                  </Text>
+                </View>
+                <Text style={styles.reportValue}>
+                  {events.nextEarnings.epsEstimate != null ? `EPS ${events.nextEarnings.epsEstimate.toFixed(2)}` : '–'}
+                </Text>
+              </View>
+            ) : null}
+            {(events?.quarters ?? []).slice(0, 4).map((quarter) => {
+              const beat = quarter.epsActual != null && quarter.epsEstimate != null
+                ? quarter.epsActual >= quarter.epsEstimate : null;
+              return (
+                <View key={quarter.periodEnd} style={styles.reportRow}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.reportTitle}>{quarter.label}</Text>
+                    <Text style={styles.reportSub}>
+                      {quarter.epsEstimate != null ? `${t('Odhad')} ${quarter.epsEstimate.toFixed(2)}` : t('Odhad nedostupný')}
+                    </Text>
+                  </View>
+                  <Text style={[styles.reportValue, beat != null && { color: beat ? colors.green : colors.red }]}>
+                    {quarter.epsActual != null ? `EPS ${quarter.epsActual.toFixed(2)}` : '–'}
+                  </Text>
+                </View>
+              );
+            })}
+            {!events?.nextEarnings && !(events?.quarters?.length) ? (
+              <Text style={styles.emptyTable}>{t('Žiadne reporty')}</Text>
+            ) : null}
+          </>
+        )}
+      </Surface>
+
       {heldPosition ? (
         <>
           <Pressable
@@ -568,6 +658,15 @@ const styles = StyleSheet.create({
   tablePrice: { color: colors.muted, fontSize: 8 },
   tableTotal: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 3 },
   tableTotalText: { color: colors.text, fontSize: 9, fontWeight: '800' },
+  statsCard: { padding: 14, marginBottom: 4 },
+  statsGrid: { flexDirection: 'row', flexWrap: 'wrap' },
+  statItem: { width: '33.33%', paddingVertical: 6 },
+  statLabel: { color: colors.muted, fontSize: 9, fontWeight: '700' },
+  statValue: { color: colors.text, fontSize: 13, fontWeight: '900', marginTop: 3 },
+  reportRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8 },
+  reportTitle: { color: colors.text, fontSize: 12, fontWeight: '800' },
+  reportSub: { color: colors.muted, fontSize: 10, marginTop: 2 },
+  reportValue: { color: colors.text, fontSize: 12, fontWeight: '900' },
   emptyTable: { color: colors.muted, fontSize: 10, textAlign: 'center', paddingVertical: 20 },
   loadingCard: { alignItems: 'center', padding: 22 },
 });

@@ -421,9 +421,6 @@ function InvestmentTimeline({
       {historyError ? (
         <Text accessibilityRole="alert" style={styles.chartError}>{historyError}</Text>
       ) : null}
-      {history.length ? (
-        <Text style={styles.chartHint}>{t('Potiahni prstom po grafe pre zobrazenie hodnoty a výnosu v daný deň.')}</Text>
-      ) : null}
       <View style={styles.rangeRow}>
         {chartRanges.map((item) => (
           <Pressable
@@ -812,7 +809,6 @@ const styles = StyleSheet.create({
   chartLabel: { color: colors.muted, fontSize: 9, fontWeight: '700', textTransform: 'capitalize' },
   chartEmptyLabel: { color: colors.muted, fontSize: 9, textAlign: 'center', flex: 1 },
   chartError: { color: colors.red, fontSize: 9, lineHeight: 14, marginTop: 3 },
-  chartHint: { color: colors.muted, fontSize: 8, marginTop: 3 },
   rangeRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 },
   rangeButton: { paddingVertical: 8, paddingHorizontal: 7, borderRadius: 999 },
   rangeButtonSelected: { backgroundColor: colors.green },

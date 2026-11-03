@@ -39,6 +39,64 @@ function formatValue(value: number | null, kind: Column['kind']) {
   return `${percent > 0 ? '+' : ''}${percent.toFixed(1)}%`;
 }
 
+function SourceDropdown({
+  label,
+  symbols,
+  selected,
+  open,
+  onToggleOpen,
+  onToggleSymbol,
+  onToggleAll,
+  allLabel,
+}: {
+  label: string;
+  symbols: string[];
+  selected: string[];
+  open: boolean;
+  onToggleOpen: () => void;
+  onToggleSymbol: (symbol: string) => void;
+  onToggleAll: () => void;
+  allLabel: string;
+}) {
+  const count = symbols.filter((symbol) => selected.includes(symbol)).length;
+  const allSelected = symbols.length > 0 && count === symbols.length;
+  return (
+    <>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityState={{ expanded: open }}
+        onPress={onToggleOpen}
+        style={styles.metricsToggle}
+      >
+        <Text style={styles.metricsToggleText}>{label}</Text>
+        <Text style={styles.metricsCount}>{count}/{symbols.length}</Text>
+        {open ? <ChevronUp size={18} color={colors.muted} /> : <ChevronDown size={18} color={colors.muted} />}
+      </Pressable>
+      {open ? (
+        <View style={styles.chipRow}>
+          {symbols.length > 1 ? (
+            <Pressable onPress={onToggleAll} style={[styles.chip, styles.chipAction, allSelected && styles.chipActive]}>
+              <Text style={[styles.chipActionText, allSelected && styles.chipActiveText]}>{allLabel}</Text>
+            </Pressable>
+          ) : null}
+          {symbols.map((symbol) => {
+            const active = selected.includes(symbol);
+            return (
+              <Pressable
+                key={symbol}
+                onPress={() => onToggleSymbol(symbol)}
+                style={[styles.chip, active && styles.chipSelected]}
+              >
+                <Text style={[styles.chipText, !active && styles.chipMuted]}>{symbol}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      ) : null}
+    </>
+  );
+}
+
 export default function CompareScreen() {
   const { t } = useLocale();
   const { positions } = usePositions();
@@ -136,14 +194,29 @@ export default function CompareScreen() {
     () => [...new Set(positions.filter((position) => position.shares > 1e-8).map((position) => position.symbol))],
     [positions],
   );
-  const holdingsActive = heldSymbols.length > 0 && heldSymbols.every((symbol) => symbols.includes(symbol));
+  const [openSource, setOpenSource] = useState<'portfolio' | 'watchlist' | null>(null);
+  const [watchSymbols, setWatchSymbols] = useState<string[]>([]);
 
-  const toggleOpenPositions = () => {
-    if (holdingsActive) {
-      for (const symbol of heldSymbols) requested.current.delete(symbol);
-      saveSymbols(symbols.filter((symbol) => !heldSymbols.includes(symbol)));
+  useEffect(() => {
+    AsyncStorage.getItem('@portfolio-mobile/watchlist')
+      .then((saved) => {
+        const parsed: unknown = saved === null ? ['NVDA', 'AMZN'] : JSON.parse(saved);
+        if (Array.isArray(parsed)) setWatchSymbols(parsed.filter((item): item is string => typeof item === 'string'));
+      })
+      .catch(() => undefined);
+  }, []);
+
+  const toggleSymbol = (symbol: string) => {
+    if (symbols.includes(symbol)) removeSymbol(symbol);
+    else addSymbol(symbol);
+  };
+
+  const toggleGroup = (group: string[]) => {
+    if (group.every((symbol) => symbols.includes(symbol))) {
+      for (const symbol of group) requested.current.delete(symbol);
+      saveSymbols(symbols.filter((symbol) => !group.includes(symbol)));
     } else {
-      saveSymbols([...new Set([...symbols, ...heldSymbols])].slice(0, MAX_SYMBOLS));
+      saveSymbols([...new Set([...symbols, ...group])].slice(0, MAX_SYMBOLS));
     }
   };
 
@@ -217,16 +290,26 @@ export default function CompareScreen() {
         </Surface>
       ) : null}
 
-      <View style={styles.chipRow}>
-        <Pressable
-          onPress={toggleOpenPositions}
-          style={[styles.chip, styles.chipAction, holdingsActive && styles.chipActive]}
-        >
-          <Text style={[styles.chipActionText, holdingsActive && styles.chipActiveText]}>
-            {t('Moje pozície')}{holdingsActive ? ' ✓' : ''}
-          </Text>
-        </Pressable>
-      </View>
+      <SourceDropdown
+        label={t('Moje portfólio')}
+        symbols={heldSymbols}
+        selected={symbols}
+        open={openSource === 'portfolio'}
+        onToggleOpen={() => setOpenSource(openSource === 'portfolio' ? null : 'portfolio')}
+        onToggleSymbol={toggleSymbol}
+        onToggleAll={() => toggleGroup(heldSymbols)}
+        allLabel={t('Všetky')}
+      />
+      <SourceDropdown
+        label="Watchlist"
+        symbols={watchSymbols}
+        selected={symbols}
+        open={openSource === 'watchlist'}
+        onToggleOpen={() => setOpenSource(openSource === 'watchlist' ? null : 'watchlist')}
+        onToggleSymbol={toggleSymbol}
+        onToggleAll={() => toggleGroup(watchSymbols)}
+        allLabel={t('Všetky')}
+      />
 
       <Pressable
         accessibilityRole="button"

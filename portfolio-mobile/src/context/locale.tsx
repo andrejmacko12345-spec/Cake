@@ -26,6 +26,7 @@ const englishTranslations: Record<string, string> = {
   'Ukazovatele': 'Metrics',
   'Výhľad': 'Forecast',
   'Moje portfólio': 'My portfolio',
+  'Všetky': 'All',
   'Prehľad investícií': 'Investment overview',
   'Trhová hodnota': 'Market value',
   'Denná zmena': 'Daily change',

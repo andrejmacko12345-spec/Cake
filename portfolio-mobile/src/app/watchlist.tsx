@@ -187,7 +187,7 @@ export default function WatchlistScreen() {
   const [loading, setLoading] = useState(true);
   const [showPicker, setShowPicker] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedPeriod, setSelectedPeriod] = useState<(typeof periods)[number]['label']>('3M');
+  const [selectedPeriod, setSelectedPeriod] = useState<(typeof periods)[number]['label']>('1D');
   const [sortOrder, setSortOrder] = useState<'alphabetical' | 'change'>('alphabetical');
   const [watchData, setWatchData] = useState<Record<string, WatchEntry>>({});
   const requestId = useRef(0);
@@ -220,7 +220,7 @@ export default function WatchlistScreen() {
     };
   }, []);
 
-  const period = periods.find((item) => item.label === selectedPeriod) ?? periods[2];
+  const period = periods.find((item) => item.label === selectedPeriod) ?? periods[0];
   const loadWatchData = useCallback(async (silent = false) => {
     const currentRequestId = ++requestId.current;
     if (!symbols.length) {

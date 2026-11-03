@@ -337,7 +337,7 @@ export default function PositionDetailScreen() {
   );
   const [marketQuote, setMarketQuote] = useState<LiveQuote | null>(null);
   const [quoteError, setQuoteError] = useState('');
-  const [range, setRange] = useState<RangeLabel>('3M');
+  const [range, setRange] = useState<RangeLabel>('1D');
   const [formVisible, setFormVisible] = useState(false);
   const [movementsOpen, setMovementsOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | undefined>();

@@ -534,9 +534,15 @@ export default function PositionDetailScreen() {
                     {events.nextEarnings.estimate ? ` (${t('odhad')})` : ''}
                   </Text>
                 </View>
-                <Text style={styles.reportValue}>
-                  {events.nextEarnings.epsEstimate != null ? `EPS ${events.nextEarnings.epsEstimate.toFixed(2)}` : '–'}
-                </Text>
+                <View style={styles.reportRight}>
+                  <Text style={styles.reportValue}>
+                    {events.nextEarnings.epsEstimate != null ? `EPS ${events.nextEarnings.epsEstimate.toFixed(2)}` : '–'}
+                  </Text>
+                  <Text style={styles.reportSub}>
+                    {events.nextEarnings.revenueEstimate != null
+                      ? `${t('Tržby')} ${formatBigNumber(events.nextEarnings.revenueEstimate)}` : `${t('Tržby')} –`}
+                  </Text>
+                </View>
               </View>
             ) : null}
             {(events?.quarters ?? []).slice(0, 4).map((quarter) => {
@@ -550,9 +556,17 @@ export default function PositionDetailScreen() {
                       {quarter.epsEstimate != null ? `${t('Odhad')} ${quarter.epsEstimate.toFixed(2)}` : t('Odhad nedostupný')}
                     </Text>
                   </View>
-                  <Text style={[styles.reportValue, beat != null && { color: beat ? colors.green : colors.red }]}>
-                    {quarter.epsActual != null ? `EPS ${quarter.epsActual.toFixed(2)}` : '–'}
-                  </Text>
+                  <View style={styles.reportRight}>
+                    <Text style={[styles.reportValue, beat != null && { color: beat ? colors.green : colors.red }]}>
+                      {quarter.epsActual != null ? `EPS ${quarter.epsActual.toFixed(2)}` : '–'}
+                    </Text>
+                    <Text style={styles.reportSub}>
+                      {`${t('Tržby')} ${quarter.revenue != null ? formatBigNumber(quarter.revenue) : '–'}`}
+                      {quarter.revenueYoY != null
+                        ? ` · ${quarter.revenueYoY >= 0 ? '+' : ''}${quarter.revenueYoY.toFixed(1)} % YoY`
+                        : ''}
+                    </Text>
+                  </View>
                 </View>
               );
             })}
@@ -666,6 +680,7 @@ const styles = StyleSheet.create({
   reportRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8 },
   reportTitle: { color: colors.text, fontSize: 12, fontWeight: '800' },
   reportSub: { color: colors.muted, fontSize: 10, marginTop: 2 },
+  reportRight: { alignItems: 'flex-end' },
   reportValue: { color: colors.text, fontSize: 12, fontWeight: '900' },
   emptyTable: { color: colors.muted, fontSize: 10, textAlign: 'center', paddingVertical: 20 },
   loadingCard: { alignItems: 'center', padding: 22 },

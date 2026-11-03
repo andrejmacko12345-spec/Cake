@@ -10,7 +10,7 @@ import { usePositions } from '../hooks/use-positions';
 import { useLocale } from '../context/locale';
 
 const STORAGE_KEY = '@portfolio-mobile/compare-symbols';
-const MAX_SYMBOLS = 12;
+const MAX_SYMBOLS = 30;
 
 type Entry = { data: StockEstimates | null; loading: boolean; error: string };
 
@@ -107,11 +107,19 @@ export default function CompareScreen() {
     setQuery('');
   };
 
-  const addOpenPositions = () => {
-    const held = positions
-      .filter((position) => position.shares > 1e-8)
-      .map((position) => position.symbol);
-    saveSymbols([...new Set([...symbols, ...held])].slice(0, MAX_SYMBOLS));
+  const heldSymbols = useMemo(
+    () => [...new Set(positions.filter((position) => position.shares > 1e-8).map((position) => position.symbol))],
+    [positions],
+  );
+  const holdingsActive = heldSymbols.length > 0 && heldSymbols.every((symbol) => symbols.includes(symbol));
+
+  const toggleOpenPositions = () => {
+    if (holdingsActive) {
+      for (const symbol of heldSymbols) requested.current.delete(symbol);
+      saveSymbols(symbols.filter((symbol) => !heldSymbols.includes(symbol)));
+    } else {
+      saveSymbols([...new Set([...symbols, ...heldSymbols])].slice(0, MAX_SYMBOLS));
+    }
   };
 
   const removeSymbol = (symbol: string) => {
@@ -185,14 +193,13 @@ export default function CompareScreen() {
       ) : null}
 
       <View style={styles.chipRow}>
-        {symbols.map((symbol) => (
-          <Pressable key={symbol} onPress={() => removeSymbol(symbol)} style={styles.chip}>
-            <Text style={styles.chipText}>{symbol}</Text>
-            <X size={12} color={colors.muted} />
-          </Pressable>
-        ))}
-        <Pressable onPress={addOpenPositions} style={[styles.chip, styles.chipAction]}>
-          <Text style={styles.chipActionText}>{t('Pridať moje pozície')}</Text>
+        <Pressable
+          onPress={toggleOpenPositions}
+          style={[styles.chip, styles.chipAction, holdingsActive && styles.chipActive]}
+        >
+          <Text style={[styles.chipActionText, holdingsActive && styles.chipActiveText]}>
+            {t('Moje pozície')}{holdingsActive ? ' ✓' : ''}
+          </Text>
         </Pressable>
       </View>
 
@@ -201,58 +208,61 @@ export default function CompareScreen() {
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <View>
               <View style={styles.row}>
-                <Text style={[styles.headCell, styles.symbolCell]}>{t('Akcia')}</Text>
-                {columns.map((column) => (
-                  <Text key={column.key} style={[styles.headCell, styles.valueCell]}>{t(column.label)}</Text>
+                <View style={styles.labelCell} />
+                {symbols.map((symbol) => (
+                  <Pressable key={symbol} onPress={() => removeSymbol(symbol)} style={styles.stockHead}>
+                    <Text style={styles.symbolText}>{symbol}</Text>
+                    <Text style={styles.nameText} numberOfLines={1}>{entries[symbol]?.data?.name ?? ''}</Text>
+                    <X size={11} color={colors.muted} />
+                  </Pressable>
                 ))}
               </View>
-              {symbols.map((symbol) => {
-                const entry = entries[symbol];
-                return (
-                  <View key={symbol} style={[styles.row, styles.bodyRow]}>
-                    <View style={styles.symbolCell}>
-                      <Text style={styles.symbolText}>{symbol}</Text>
-                      {entry?.data?.name ? (
-                        <Text style={styles.nameText} numberOfLines={1}>{entry.data.name}</Text>
-                      ) : null}
-                    </View>
-                    {entry?.loading && !entry.data ? (
-                      <View style={styles.statusCell}>
-                        <ActivityIndicator size="small" color={colors.green} />
-                      </View>
-                    ) : entry?.error && !entry.data ? (
-                      <Pressable style={styles.statusCell} onPress={() => void loadSymbol(symbol)}>
-                        <Text style={styles.errorText} numberOfLines={2}>{t('Nepodarilo sa načítať, ťukni pre opakovanie')}</Text>
-                      </Pressable>
-                    ) : columns.map((column) => {
-                      const value = entry?.data?.[column.key];
-                      const numeric = typeof value === 'number' ? value : null;
-                      const isBest = numeric !== null && best[column.key] === numeric;
+              {columns.map((column) => (
+                <View key={column.key} style={[styles.row, styles.bodyRow]}>
+                  <Text style={[styles.labelCell, styles.labelText]}>{t(column.label)}</Text>
+                  {symbols.map((symbol) => {
+                    const entry = entries[symbol];
+                    if (entry?.loading && !entry.data) {
                       return (
-                        <Text
-                          key={column.key}
-                          style={[
-                            styles.valueCell,
-                            styles.valueText,
-                            numeric !== null && column.kind === 'growth'
-                              ? { color: numeric >= 0 ? colors.green : colors.red }
-                              : null,
-                            isBest && styles.bestValue,
-                          ]}
-                        >
-                          {formatValue(numeric, column.kind)}
-                        </Text>
+                        <View key={symbol} style={styles.valueCell}>
+                          <ActivityIndicator size="small" color={colors.green} />
+                        </View>
                       );
-                    })}
-                  </View>
-                );
-              })}
+                    }
+                    if (entry?.error && !entry.data) {
+                      return (
+                        <Pressable key={symbol} style={styles.valueCell} onPress={() => void loadSymbol(symbol)}>
+                          <Text style={styles.errorText}>↻</Text>
+                        </Pressable>
+                      );
+                    }
+                    const value = entry?.data?.[column.key];
+                    const numeric = typeof value === 'number' ? value : null;
+                    const isBest = numeric !== null && best[column.key] === numeric;
+                    return (
+                      <Text
+                        key={symbol}
+                        style={[
+                          styles.valueCell,
+                          styles.valueText,
+                          numeric !== null && column.kind === 'growth'
+                            ? { color: numeric >= 0 ? colors.green : colors.red }
+                            : null,
+                          isBest && styles.bestValue,
+                        ]}
+                      >
+                        {formatValue(numeric, column.kind)}
+                      </Text>
+                    );
+                  })}
+                </View>
+              ))}
             </View>
           </ScrollView>
         </Surface>
       ) : (
         <Surface>
-          <Text style={styles.emptyText}>{t('Pridaj akcie cez + alebo tlačidlom Pridať moje pozície.')}</Text>
+          <Text style={styles.emptyText}>{t('Pridaj akcie cez + alebo tlačidlom Moje pozície.')}</Text>
         </Surface>
       )}
 
@@ -304,17 +314,19 @@ const styles = StyleSheet.create({
   chipText: { color: colors.text, fontSize: 12, fontWeight: '800' },
   chipAction: { borderColor: colors.green },
   chipActionText: { color: colors.green, fontSize: 12, fontWeight: '700' },
+  chipActive: { backgroundColor: colors.green },
+  chipActiveText: { color: colors.surface },
   tableCard: { padding: 0, overflow: 'hidden' },
   row: { flexDirection: 'row', alignItems: 'center' },
-  bodyRow: { borderTopWidth: 1, borderTopColor: colors.border, minHeight: 52 },
-  headCell: { color: colors.muted, fontSize: 10, fontWeight: '700', paddingVertical: 10, textAlign: 'center' },
-  symbolCell: { width: 92, paddingHorizontal: 10 },
-  valueCell: { width: 78, textAlign: 'center' },
+  bodyRow: { borderTopWidth: 1, borderTopColor: colors.border, minHeight: 46 },
+  labelCell: { width: 104, paddingHorizontal: 10 },
+  labelText: { color: colors.muted, fontSize: 11, fontWeight: '700' },
+  stockHead: { width: 78, alignItems: 'center', paddingVertical: 10, paddingHorizontal: 4, gap: 2 },
+  valueCell: { width: 78, textAlign: 'center', alignItems: 'center', justifyContent: 'center' },
   valueText: { color: colors.text, fontSize: 13, fontWeight: '600' },
   bestValue: { fontWeight: '900', textDecorationLine: 'underline' },
   symbolText: { color: colors.text, fontSize: 14, fontWeight: '800' },
-  nameText: { color: colors.muted, fontSize: 10 },
-  statusCell: { width: 78 * columns.length, alignItems: 'center', justifyContent: 'center' },
+  nameText: { color: colors.muted, fontSize: 9 },
   errorText: { color: colors.red, fontSize: 11 },
   emptyText: { color: colors.muted, fontSize: 13, lineHeight: 19 },
   note: { color: colors.muted, fontSize: 11, lineHeight: 16 },

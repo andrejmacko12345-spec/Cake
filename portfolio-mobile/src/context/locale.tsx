@@ -124,6 +124,7 @@ const englishTranslations: Record<string, string> = {
   'EPS budúci rok': 'EPS next year',
   'Nepodarilo sa načítať, ťukni pre opakovanie': 'Failed to load, tap to retry',
   'Pridaj akcie cez + alebo tlačidlom Pridať moje pozície.': 'Add stocks with + or the Add my positions button.',
+  'Pridaj akcie cez + alebo tlačidlom Moje pozície.': 'Add stocks with + or the My positions button.',
   'Poznámky': 'Notes',
   'Tento rok = aktuálny fiškálny rok, budúci rok = nasledujúci fiškálny rok. P/E za tieto roky je cena / odhadované EPS analytikov. Zvýraznená (tučná) hodnota je najlepšia v stĺpci: najnižšie P/E alebo najvyšší rast. Zdroj je Yahoo Finance a ponúka odhady len na tieto dva roky.': 'This year = current fiscal year, next year = following fiscal year. P/E for these years is price / analyst EPS estimate. The bold underlined value is the best in the column: lowest P/E or highest growth. Source is Yahoo Finance, which only provides estimates for these two years.',
   'Forward P/E': 'Forward P/E',

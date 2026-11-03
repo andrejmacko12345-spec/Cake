@@ -1,3 +1,4 @@
+import '../data/theme-init';
 import { Tabs } from 'expo-router';
 import {
   Bookmark,

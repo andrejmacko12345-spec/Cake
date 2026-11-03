@@ -556,7 +556,8 @@ export default function PortfolioScreen() {
           </View>
         }
       />
-      <Surface style={styles.balanceCard}>
+      <Surface style={styles.heroCard}>
+      <View style={styles.balanceCard}>
         <Text style={styles.balanceLabel}>{t('Trhová hodnota')}</Text>
         <Text style={styles.balanceValue}>{money(headlineValue)}</Text>
         <View style={styles.returnRow}>
@@ -580,7 +581,7 @@ export default function PortfolioScreen() {
             {new Date(latestQuote).toLocaleString(language === 'sk' ? 'sk-SK' : 'en-US')}
           </Text>
         ) : null}
-      </Surface>
+      </View>
 
       <InvestmentTimeline
         transactions={transactions}
@@ -591,6 +592,7 @@ export default function PortfolioScreen() {
         currentValue={totals.value}
         hideAmounts={hideAmounts}
       />
+      </Surface>
 
       <Pressable
         accessibilityRole="button"
@@ -752,7 +754,8 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
   },
   buttonDisabled: { opacity: 0.4 },
-  balanceCard: { borderRadius: 29, padding: 21, alignItems: 'center', marginBottom: 13 },
+  heroCard: { borderRadius: 29, padding: 0, marginBottom: 13, overflow: 'hidden' },
+  balanceCard: { padding: 21, paddingBottom: 6, alignItems: 'center' },
   analyticsButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -790,7 +793,7 @@ const styles = StyleSheet.create({
   statLabel: { color: colors.muted, fontSize: 10, fontWeight: '600' },
   statValue: { color: colors.text, fontSize: 12, fontWeight: '800', marginTop: 5 },
   lastUpdated: { alignSelf: 'flex-start', color: colors.muted, fontSize: 9, marginTop: 12 },
-  chartCard: { marginHorizontal: 2, marginTop: 4, marginBottom: 4 },
+  chartCard: { paddingHorizontal: 8, paddingTop: 4, paddingBottom: 10 },
   chartHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 2 },
   chartTitle: { color: colors.text, fontSize: 14, fontWeight: '900' },
   chartSubtitle: { color: colors.muted, fontSize: 9, marginTop: 3 },

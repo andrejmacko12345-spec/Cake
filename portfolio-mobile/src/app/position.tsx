@@ -28,6 +28,7 @@ import {
 } from '../hooks/use-positions';
 
 const ranges = [
+  { label: '1D', days: 1, interval: '5m' },
   { label: '1T', days: 7, interval: '5m' },
   { label: '1M', days: 30, interval: '1d' },
   { label: '3M', days: 90, interval: '1d' },
@@ -100,6 +101,7 @@ function StockChart({
   const [error, setError] = useState('');
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [chartWidth, setChartWidth] = useState(320);
+  const [baseline, setBaseline] = useState<number | null>(null);
   const startDate = getStartDate(range, position);
   const rangeConfig = ranges.find((item) => item.label === range) ?? ranges[2];
 
@@ -112,14 +114,26 @@ function StockChart({
     setSelectedIndex(null);
     fetchHistoricalQuoteSeries(position.symbol, fetchStart.toISOString().slice(0, 10), rangeConfig.interval)
       .then((series) => {
-        const points = series.points
-          .filter((point) => point.timestamp * 1000 >= new Date(`${startDate}T00:00:00.000Z`).getTime())
-          .map((point) => ({
-            ...point,
-            date: new Date(point.timestamp * 1000).toISOString().slice(0, 10),
-          }));
+        const toDate = (point: { timestamp: number }) => new Date(point.timestamp * 1000).toISOString().slice(0, 10);
+        let base: number | null = null;
+        let selectedPoints = series.points;
+        if (range === '1D') {
+          // Posledný obchodný deň; základ je predošlé uzavretie.
+          const latestDate = series.points.length ? toDate(series.points[series.points.length - 1]) : '';
+          selectedPoints = series.points.filter((point) => toDate(point) === latestDate);
+          const before = series.points.filter((point) => toDate(point) < latestDate);
+          base = before.length ? before[before.length - 1].price : null;
+        } else {
+          selectedPoints = series.points.filter(
+            (point) => point.timestamp * 1000 >= new Date(`${startDate}T00:00:00.000Z`).getTime(),
+          );
+        }
+        const points = selectedPoints.map((point) => ({ ...point, date: toDate(point) }));
         if (!points.length) throw new Error('Pre vybrané obdobie nie sú dostupné historické ceny.');
-        if (active) setHistory(points);
+        if (active) {
+          setBaseline(base);
+          setHistory(points);
+        }
       })
       .catch((reason: unknown) => {
         if (active) {
@@ -133,12 +147,12 @@ function StockChart({
     return () => {
       active = false;
     };
-  }, [position.symbol, startDate, rangeConfig.interval]);
+  }, [position.symbol, startDate, range, rangeConfig.interval]);
 
   const selectedPoint = selectedIndex !== null
     ? history[Math.min(selectedIndex, history.length - 1)]
     : history[history.length - 1];
-  const firstPrice = history[0]?.price ?? 0;
+  const firstPrice = (range === '1D' ? baseline : null) ?? history[0]?.price ?? 0;
   const priceChange = selectedPoint ? selectedPoint.price - firstPrice : 0;
   const priceChangePercent = firstPrice > 0 ? priceChange / firstPrice * 100 : 0;
   const prices = history.map((point) => point.price);
@@ -155,7 +169,7 @@ function StockChart({
   }, '');
   const selectedChartPoint = chartPoints[selectedIndex ?? chartPoints.length - 1];
   const labels = history.length > 1
-    ? [history[0].date, history[Math.floor(history.length / 2)].date, history[history.length - 1].date]
+    ? [history[0], history[Math.floor(history.length / 2)], history[history.length - 1]]
     : [];
   const panResponder = useMemo(() => PanResponder.create({
     onStartShouldSetPanResponder: () => false,
@@ -171,6 +185,8 @@ function StockChart({
     },
     onPanResponderTerminate: () => setSelectedIndex(null),
   }), [chartWidth, history.length]);
+  const timeLabel = (point: { timestamp: number }) =>
+    new Date(point.timestamp * 1000).toLocaleTimeString(language === 'sk' ? 'sk-SK' : 'en-US', { hour: '2-digit', minute: '2-digit' });
   const dateLabel = (value: string) =>
     new Date(`${value}T12:00:00`).toLocaleDateString(language === 'sk' ? 'sk-SK' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric' });
 
@@ -178,7 +194,11 @@ function StockChart({
     <Surface style={styles.chartCard}>
       <View style={styles.chartHeading}>
         <View>
-          <Text style={styles.chartEyebrow}>{selectedPoint ? dateLabel(selectedPoint.date) : t('Historický vývoj')}</Text>
+          <Text style={styles.chartEyebrow}>
+            {selectedPoint
+              ? range === '1D' ? `${dateLabel(selectedPoint.date)} · ${timeLabel(selectedPoint)}` : dateLabel(selectedPoint.date)
+              : t('Historický vývoj')}
+          </Text>
           <Text style={styles.chartPrice}>
             {selectedPoint
               ? `${selectedPoint.price.toLocaleString(language === 'sk' ? 'sk-SK' : 'en-US', { maximumFractionDigits: 2 })} ${position.currency}`
@@ -222,7 +242,11 @@ function StockChart({
       </View>
       <View style={styles.chartLabels}>
         {labels.length
-          ? labels.map((date, index) => <Text key={`${date}-${index}`} style={styles.chartLabel}>{dateLabel(date)}</Text>)
+          ? labels.map((point, index) => (
+              <Text key={`${point.timestamp}-${index}`} style={styles.chartLabel}>
+                {range === '1D' ? timeLabel(point) : dateLabel(point.date)}
+              </Text>
+            ))
           : <Text style={styles.chartHint}>{t('Potiahni prstom po grafe pre zobrazenie ceny v daný deň.')}</Text>}
       </View>
       <View style={styles.rangeRow}>

@@ -206,10 +206,6 @@ function InvestmentTimeline({
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [chartWidth, setChartWidth] = useState(320);
   const rangeStart = getRangeStart(range, transactions);
-  const rangeStartTimestamp = useMemo(
-    () => range === '1D' ? Math.floor(Date.now() / 1000) - 24 * 60 * 60 : undefined,
-    [range],
-  );
 
   useEffect(() => {
     let active = true;
@@ -239,15 +235,29 @@ function InvestmentTimeline({
         if (needsFx && fx?.currency !== 'USD') {
           throw new Error('Historický menový kurz USD/EUR nie je dostupný.');
         }
-        return createPortfolioHistory(
-          transactions,
-          series,
-          fx?.points ?? [],
-          rangeStart,
+        // 1D = posledný obchodný deň: od prvého bodu najnovšieho dňa, základ je predošlé uzavretie.
+        let rangeStartTimestamp: number | undefined;
+        if (range === '1D') {
+          const all = series.flatMap((item) => item.points.map((point) => point.timestamp));
+          if (all.length) {
+            const latestDate = new Date(Math.max(...all) * 1000).toISOString().slice(0, 10);
+            rangeStartTimestamp = Math.min(
+              ...all.filter((ts) => new Date(ts * 1000).toISOString().slice(0, 10) === latestDate),
+            );
+          }
+        }
+        return {
           rangeStartTimestamp,
-        );
+          points: createPortfolioHistory(
+            transactions,
+            series,
+            fx?.points ?? [],
+            rangeStart,
+            rangeStartTimestamp,
+          ),
+        };
       })
-      .then((points) => {
+      .then(({ rangeStartTimestamp, points }) => {
         if (active) {
           setHistory(points.filter((point) =>
             rangeStartTimestamp !== undefined
@@ -266,7 +276,7 @@ function InvestmentTimeline({
       });
 
     return () => { active = false; };
-  }, [transactions, range, rangeStart, rangeStartTimestamp]);
+  }, [transactions, range, rangeStart]);
 
   const selectedRangeLabel = range === '1T'
     ? t('1 týždeň')

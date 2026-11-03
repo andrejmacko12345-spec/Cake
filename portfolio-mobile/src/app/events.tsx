@@ -188,7 +188,6 @@ export default function EventsScreen() {
         ? [`${sk ? 'Dividenda' : 'Dividend'}: ${fmtNum(company.dividendAmount, 3)} ${company.currency}`]
         : [];
       for (const [field, label] of [
-        [company.exDividend, sk ? 'Ex-dividendový deň' : 'Ex-dividend date'],
         [company.dividendPay, sk ? 'Výplata dividendy' : 'Dividend payment'],
       ] as const) {
         if (field === null) continue;
@@ -204,7 +203,7 @@ export default function EventsScreen() {
           color: colors.cyan,
         });
       }
-      for (const news of company.news.slice(0, 3)) {
+      for (const news of company.news.slice(0, 1)) {
         const ms = news.time * 1000;
         if (now - ms > 7 * DAY) continue;
         list.push({

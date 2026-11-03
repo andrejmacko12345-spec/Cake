@@ -872,7 +872,7 @@ const styles = StyleSheet.create({
   sortButtonSelected: { backgroundColor: colors.green },
   sortButtonText: { color: colors.muted, fontSize: 10, fontWeight: '800' },
   sortButtonTextSelected: { color: colors.surface },
-  assetsCard: { paddingVertical: 2, backgroundColor: 'transparent', borderRadius: 0 },
+  assetsCard: { paddingVertical: 4, paddingHorizontal: 10, backgroundColor: colors.surface, borderRadius: 18 },
   emptyCard: { alignItems: 'center', padding: 22 },
   emptyIcon: {
     width: 48, height: 48, borderRadius: 16, backgroundColor: colors.surfaceRaised,

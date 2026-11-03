@@ -380,20 +380,17 @@ export function PositionRow({
         </Svg>
       ) : null}
       <View style={styles.assetNumbers}>
-        <View style={[styles.rowPill, { backgroundColor: tone }]}>
-          <Text style={styles.rowPillText}>{formatPercent(returnPercent)}</Text>
-        </View>
-        {position.shares > 0 || performance ? (
-          <Text style={[styles.rowGain, { color: tone }]}>
-            {hideAmounts ? '•••' : `${result >= 0 ? '+' : ''}${formatMoney(result)}`}
-          </Text>
-        ) : null}
         <Text style={styles.rowValue}>
           {position.shares > 0
             ? money(marketValue)
             : performance ? money(result) : money(position.realizedProfitEUR)}
         </Text>
-      </View>
+        <Text style={[styles.rowGain, { color: tone }]}>
+          {formatPercent(returnPercent)}
+          {position.shares > 0 || performance
+            ? hideAmounts ? '' : ` · ${result >= 0 ? '+' : ''}${formatMoney(result)}`
+            : ''}
+        </Text>      </View>
     </Pressable>
   );
 }
@@ -401,8 +398,8 @@ const styles = StyleSheet.create({
   rowSpark: { width: 56, height: 28, marginHorizontal: 8 },
   rowPill: { borderRadius: 7, paddingHorizontal: 8, paddingVertical: 3, minWidth: 78, alignItems: 'center' },
   rowPillText: { color: colors.background, fontSize: 14, fontWeight: '800', fontVariant: ['tabular-nums'] },
-  rowGain: { fontSize: 13, fontWeight: '800', marginTop: 4, fontVariant: ['tabular-nums'] },
-  rowValue: { color: colors.muted, fontSize: 11, fontWeight: '600', marginTop: 1, fontVariant: ['tabular-nums'] },
+  rowGain: { fontSize: 11, fontWeight: '700', marginTop: 3, fontVariant: ['tabular-nums'] },
+  rowValue: { color: colors.text, fontSize: 16, fontWeight: '800', fontVariant: ['tabular-nums'] },
   safeArea: {
     flex: 1,
     backgroundColor: colors.background,

@@ -968,40 +968,36 @@ export default function AnalyticsScreen() {
         }
       />
       <Surface style={styles.marketCard}>
-        <View style={styles.marketHeading}>
-          <Text style={styles.marketLabel}>{t('Trhová hodnota')}</Text>
-          <Text style={styles.marketValue}>{formatMoney(totalValue)}</Text>
-        </View>
-        <View style={styles.marketRows}>
-          <View style={styles.marketRow}>
-            <Text style={styles.marketRowLabel}>{t('Investované')}</Text>
-            <Text style={styles.marketRowValue}>{formatMoney(totalInvested)}</Text>
+        <Text style={styles.marketLabel}>{t('Trhová hodnota')}</Text>
+        <Text style={styles.marketValue}>{formatMoney(totalValue)}</Text>
+        <View style={styles.statGrid}>
+          <View style={styles.statTile}>
+            <Text style={styles.statTileLabel}>{t('Investované')}</Text>
+            <Text style={styles.statTileValue}>{formatMoney(totalInvested)}</Text>
           </View>
-          <View style={styles.marketRow}>
-            <Text style={styles.marketRowLabel}>{t('Celkový výnos')}</Text>
-            <Text style={[styles.marketRowValue, { color: totalReturnEUR >= 0 ? colors.green : colors.red }]}>
-              {signed(totalReturnEUR)} ({totalReturnPct >= 0 ? '+' : ''}{totalReturnPct.toFixed(1)} %)
+          <View style={styles.statTile}>
+            <Text style={styles.statTileLabel}>{t('Celkový výnos')}</Text>
+            <Text style={[styles.statTileValue, { color: totalReturnEUR >= 0 ? colors.green : colors.red }]}>
+              {signed(totalReturnEUR)}
+            </Text>
+            <Text style={[styles.statTilePercent, { color: totalReturnEUR >= 0 ? colors.green : colors.red }]}>
+              {totalReturnPct >= 0 ? '+' : ''}{totalReturnPct.toFixed(1)} %
             </Text>
           </View>
-          <View style={styles.marketRow}>
-            <Text style={styles.marketRowLabel}>{t('Nerealizovaný výnos')}</Text>
-            <Text style={[styles.marketRowValue, { color: unrealizedEUR >= 0 ? colors.green : colors.red }]}>
+          <View style={styles.statTile}>
+            <Text style={styles.statTileLabel}>{t('Nerealizovaný výnos')}</Text>
+            <Text style={[styles.statTileValue, { color: unrealizedEUR >= 0 ? colors.green : colors.red }]}>
               {signed(unrealizedEUR)}
             </Text>
           </View>
-          <View style={styles.marketRow}>
-            <Text style={styles.marketRowLabel}>{t('Realizovaný výnos')}</Text>
-            <Text style={[styles.marketRowValue, { color: realizedEUR >= 0 ? colors.green : colors.red }]}>
+          <View style={styles.statTile}>
+            <Text style={styles.statTileLabel}>{t('Realizovaný výnos')}</Text>
+            <Text style={[styles.statTileValue, { color: realizedEUR >= 0 ? colors.green : colors.red }]}>
               {signed(realizedEUR)}
             </Text>
           </View>
-          <View style={styles.marketRow}>
-            <Text style={styles.marketRowLabel}>{t('Portfólio aktívne od')}</Text>
-            <Text style={styles.marketRowValue}>{formattedStartDate}</Text>
-          </View>
         </View>
       </Surface>
-
       {isWide ? (
         <View style={styles.cardsRow}>
           <ReturnCard
@@ -1167,62 +1163,60 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
   },
-  marketHeading: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    justifyContent: 'space-between',
-    gap: 8,
-  },
   marketValue: {
     color: colors.text,
-    fontSize: 22,
+    fontSize: 38,
     fontWeight: '900',
-    textAlign: 'right',
+    marginTop: 4,
   },
   marketLabel: {
     color: colors.muted,
+    fontSize: 12,
+    fontWeight: '800',
+    letterSpacing: 0.6,
+    textTransform: 'uppercase',
+  },
+  statGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    marginTop: 16,
+  },
+  statTile: {
+    flexBasis: '47%',
+    flexGrow: 1,
+    padding: 13,
+    borderRadius: 16,
+    backgroundColor: colors.surfaceRaised,
+  },
+  statTileLabel: {
+    color: colors.muted,
     fontSize: 11,
     fontWeight: '800',
+    marginBottom: 6,
   },
-  marketRows: {
-    width: '100%',
-    flexDirection: 'column',
-    marginTop: 12,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: colors.border,
-  },
-  marketRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 12,
-    paddingVertical: 11,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: colors.border,
-  },
-  marketRowLabel: {
-    color: colors.muted,
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  marketRowValue: {
+  statTileValue: {
     color: colors.text,
-    fontSize: 14,
+    fontSize: 17,
     fontWeight: '900',
-    textAlign: 'right',
-    flexShrink: 1,
+  },
+  statTilePercent: {
+    fontSize: 12,
+    fontWeight: '800',
+    marginTop: 2,
   },
   cardsRow: {
     flexDirection: 'row',
     gap: 10,
   },
   returnCard: {
-    paddingHorizontal: 13,
-    paddingVertical: 12,
-    marginBottom: 9,
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    marginBottom: 12,
     flex: 1,
     borderWidth: 1,
     borderColor: colors.border,
+    borderRadius: 24,
   },
   returnCardHeading: {
     flexDirection: 'row',
@@ -1233,14 +1227,14 @@ const styles = StyleSheet.create({
   },
   returnCardTitle: {
     color: colors.text,
-    fontSize: 13,
+    fontSize: 16,
     fontWeight: '900',
   },
   returnPeriod: {
     color: colors.muted,
-    fontSize: 7,
+    fontSize: 10,
     fontWeight: '800',
-    letterSpacing: 0.3,
+    letterSpacing: 0.4,
   },
   portfolioReturnBlock: {
     paddingHorizontal: 10,
@@ -1253,42 +1247,43 @@ const styles = StyleSheet.create({
   },
   portfolioReturnLabel: {
     color: colors.muted,
-    fontSize: 8,
+    fontSize: 10,
     fontWeight: '800',
     letterSpacing: 0.6,
   },
   portfolioReturnValue: {
-    fontSize: 27,
-    lineHeight: 33,
+    fontSize: 40,
+    lineHeight: 46,
     fontWeight: '900',
-    marginTop: 1,
+    marginTop: 2,
   },
   indexReturns: {
     flexDirection: 'row',
-    gap: 5,
+    gap: 8,
   },
   indexReturn: {
     flex: 1,
     minWidth: 0,
-    paddingLeft: 5,
-    borderLeftWidth: StyleSheet.hairlineWidth,
-    borderLeftColor: colors.border,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    borderRadius: 14,
+    backgroundColor: colors.surfaceRaised,
   },
   indexReturnDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    marginBottom: 4,
+    width: 9,
+    height: 9,
+    borderRadius: 5,
+    marginBottom: 6,
   },
   indexReturnLabel: {
     color: colors.muted,
-    fontSize: 8,
+    fontSize: 12,
     fontWeight: '800',
   },
   indexReturnValue: {
-    fontSize: 10,
+    fontSize: 18,
     fontWeight: '900',
-    marginTop: 2,
+    marginTop: 3,
   },
   fundRow: {
     flexDirection: 'row',

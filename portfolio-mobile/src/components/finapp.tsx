@@ -35,6 +35,39 @@ export function Page({ children, scrollRef, floating }: { children: ReactNode; s
   );
 }
 
+export function SortControl<T extends string>({
+  value,
+  options,
+  onChange,
+}: {
+  value: T;
+  options: readonly { key: T; label: string }[];
+  onChange: (key: T) => void;
+}) {
+  const { t } = useLocale();
+  return (
+    <View style={styles.sortControl}>
+      <Text style={styles.sortLabel}>{t('Zoradiť')}</Text>
+      <View style={styles.sortOptions}>
+        {options.map((option) => {
+          const selected = value === option.key;
+          return (
+            <Pressable
+              key={option.key}
+              accessibilityRole="button"
+              accessibilityState={{ selected }}
+              onPress={() => onChange(option.key)}
+              style={[styles.sortButton, selected && styles.sortButtonSelected]}
+            >
+              <Text style={[styles.sortButtonText, selected && styles.sortButtonTextSelected]}>{t(option.label)}</Text>
+            </Pressable>
+          );
+        })}
+      </View>
+    </View>
+  );
+}
+
 export function Header({
   title,
   subtitle,
@@ -395,6 +428,13 @@ export function PositionRow({
   );
 }
 const styles = StyleSheet.create({
+  sortControl: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 9 },
+  sortLabel: { color: colors.muted, fontSize: 10, fontWeight: '700' },
+  sortOptions: { flexDirection: 'row', gap: 5, padding: 3, borderRadius: 11, backgroundColor: colors.surface },
+  sortButton: { minWidth: 62, alignItems: 'center', borderRadius: 8, paddingVertical: 6, paddingHorizontal: 10 },
+  sortButtonSelected: { backgroundColor: colors.green },
+  sortButtonText: { color: colors.muted, fontSize: 10, fontWeight: '800' },
+  sortButtonTextSelected: { color: colors.surface },
   rowSpark: { width: 56, height: 28, marginHorizontal: 8 },
   rowPill: { borderRadius: 7, paddingHorizontal: 8, paddingVertical: 3, minWidth: 78, alignItems: 'center' },
   rowPillText: { color: colors.background, fontSize: 14, fontWeight: '800', fontVariant: ['tabular-nums'] },

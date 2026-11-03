@@ -9,6 +9,7 @@ import {
   Header,
   Page,
   PositionRow,
+  SortControl,
   SectionTitle,
   Surface,
 } from '../components/finapp';
@@ -649,31 +650,15 @@ export default function PortfolioScreen() {
       />
 
       {positions.length ? (
-        <View style={styles.sortControl}>
-          <Text style={styles.sortLabel}>{t('Zoradiť')}</Text>
-          <View style={styles.sortOptions}>
-            {([
-              { key: 'value', label: t('Hodnota') },
-              { key: 'change', label: t('Zmena %') },
-              { key: 'alphabetical', label: t('A–Z') },
-            ] as const).map((option) => {
-              const selected = positionSort === option.key;
-              return (
-                <Pressable
-                  key={option.key}
-                  accessibilityRole="button"
-                  accessibilityState={{ selected }}
-                  onPress={() => setPositionSort(option.key)}
-                  style={[styles.sortButton, selected && styles.sortButtonSelected]}
-                >
-                  <Text style={[styles.sortButtonText, selected && styles.sortButtonTextSelected]}>
-                    {option.label}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
-        </View>
+        <SortControl
+          value={positionSort}
+          onChange={setPositionSort}
+          options={[
+            { key: 'value', label: 'Hodnota' },
+            { key: 'change', label: 'Zmena %' },
+            { key: 'alphabetical', label: 'A–Z' },
+          ]}
+        />
       ) : null}
 
       {loading ? (
@@ -865,13 +850,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: colors.surface,
   },
-  sortControl: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 9 },
-  sortLabel: { color: colors.muted, fontSize: 10, fontWeight: '700' },
-  sortOptions: { flexDirection: 'row', gap: 5, padding: 3, borderRadius: 11, backgroundColor: colors.surface },
-  sortButton: { minWidth: 62, alignItems: 'center', borderRadius: 8, paddingVertical: 6, paddingHorizontal: 10 },
-  sortButtonSelected: { backgroundColor: colors.green },
-  sortButtonText: { color: colors.muted, fontSize: 10, fontWeight: '800' },
-  sortButtonTextSelected: { color: colors.surface },
   assetsCard: { paddingVertical: 4, paddingHorizontal: 10, backgroundColor: colors.surface, borderRadius: 18 },
   emptyCard: { alignItems: 'center', padding: 22 },
   emptyIcon: {

@@ -6,11 +6,11 @@ import { AssetLogo } from '../components/asset-logo';
 import { Header, Page, SectionTitle, Surface } from '../components/finapp';
 import { useLocale } from '../context/locale';
 import { CompanyEvents, fetchCompanyEvents, QuarterResult } from '../data/events';
+import { useEventPrefs } from '../data/event-prefs';
 import { colors } from '../data/portfolio';
 import { usePositions } from '../hooks/use-positions';
 
 type Category = 'Výsledky' | 'Dividendy' | 'Správy';
-type Filter = 'Všetko' | Category;
 
 type EventItem = {
   key: string;
@@ -24,7 +24,6 @@ type EventItem = {
   color: string;
 };
 
-const filters: Filter[] = ['Všetko', 'Výsledky', 'Dividendy', 'Správy'];
 const DAY = 86_400_000;
 const MONTHS_SK = ['JAN', 'FEB', 'MAR', 'APR', 'MÁJ', 'JÚN', 'JÚL', 'AUG', 'SEP', 'OKT', 'NOV', 'DEC'];
 const MONTHS_EN = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
@@ -90,7 +89,7 @@ export default function EventsScreen() {
   const { language, t } = useLocale();
   const sk = language === 'sk';
   const { positions } = usePositions();
-  const [filter, setFilter] = useState<Filter>('Všetko');
+  const prefs = useEventPrefs();
   const [data, setData] = useState<Record<string, CompanyEvents>>({});
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -225,8 +224,8 @@ export default function EventsScreen() {
         });
       }
     }
-    return list.filter((item) => filter === 'Všetko' || item.category === filter);
-  }, [data, filter, sk]);
+    return list.filter((item) => item.category === 'Výsledky' ? prefs.earnings : item.category === 'Dividendy' ? prefs.dividends : prefs.news);
+  }, [data, prefs, sk]);
 
   const now = Date.now();
   const timelinePast = items.filter((item) => item.date < now || item.category === 'Správy').sort((a, b) => a.date - b.date);
@@ -284,24 +283,7 @@ export default function EventsScreen() {
   };
 
   return (
-    <Page scrollRef={scrollRef} floating={(
-    <View style={styles.filterRow}>
-      {filters.map((item) => {
-        const selected = filter === item;
-        return (
-          <Pressable
-            key={item}
-            onPress={() => setFilter(item)}
-            accessibilityRole="button"
-            accessibilityState={{ selected }}
-            style={[styles.filterChip, selected && styles.filterChipSelected]}
-          >
-            <Text style={[styles.filterText, selected && styles.filterTextSelected]}>{t(item)}</Text>
-          </Pressable>
-        );
-      })}
-    </View>
-    )}>
+    <Page scrollRef={scrollRef}>
       <Header title={t('Udalosti')} subtitle={t('Podľa tvojho portfólia')} action={<Bell size={20} color={colors.text} />} />
       {loading && !items.length ? <ActivityIndicator color={colors.green} style={styles.loader} /> : null}
       {!symbols.length ? <Text style={styles.empty}>{t('Pridaj pozície a uvidíš udalosti svojich akcií.')}</Text> : null}
@@ -317,7 +299,6 @@ export default function EventsScreen() {
       ) : null}
       {timelineFuture.map(renderItem)}
 
-      <View style={{ height: 70 }} />
       <Modal visible={detail !== null} animationType="slide" transparent onRequestClose={() => setDetail(null)}>
         <View style={styles.scrim}>
           <View style={styles.sheet}>
@@ -410,24 +391,6 @@ function QuarterCard({ quarter, first, sk }: { quarter: QuarterResult; first: bo
 }
 
 const styles = StyleSheet.create({
-  filterRow: {
-    flexDirection: 'row',
-    gap: 4,
-    padding: 4,
-    borderRadius: 999,
-    backgroundColor: colors.surfaceRaised,
-    borderWidth: 1,
-    borderColor: colors.border,
-    elevation: 8,
-    shadowColor: '#000',
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 3 },
-  },
-  filterChip: { backgroundColor: colors.surface, borderRadius: 999, paddingVertical: 9, paddingHorizontal: 13 },
-  filterChipSelected: { backgroundColor: colors.green },
-  filterText: { color: colors.muted, fontSize: 11, fontWeight: '700' },
-  filterTextSelected: { color: colors.surface },
   loader: { marginVertical: 24 },
   empty: { color: colors.muted, fontSize: 12, textAlign: 'center', marginVertical: 18, lineHeight: 18 },
   eventCard: { flexDirection: 'row', alignItems: 'center', padding: 14 },

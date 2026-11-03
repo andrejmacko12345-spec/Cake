@@ -6,7 +6,8 @@ import * as DocumentPicker from 'expo-document-picker';
 import { File, Paths } from 'expo-file-system';
 import { readAsStringAsync } from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
-import { ArrowLeft, Check, ChevronDown, ChevronUp, Download, Globe2, Moon, Palette, Sun, Trash2, Upload } from 'lucide-react-native';
+import { ArrowLeft, Bell, Check, ChevronDown, ChevronUp, Download, Globe2, Moon, Palette, Sun, Trash2, Upload } from 'lucide-react-native';
+import { setEventPref, useEventPrefs } from '../data/event-prefs';
 import { Header, Page, Surface } from '../components/finapp';
 import { AppLanguage, useLocale } from '../context/locale';
 import { availableAssets, colors } from '../data/portfolio';
@@ -80,7 +81,8 @@ async function loadUsdRates(startDate: string) {
 export default function SettingsScreen() {
   const router = useRouter();
   const { language, setLanguage, t } = useLocale();
-  const [openSection, setOpenSection] = useState<'language' | 'data' | 'appearance' | null>(null);
+  const [openSection, setOpenSection] = useState<'language' | 'data' | 'appearance' | 'events' | null>(null);
+  const eventPrefs = useEventPrefs();
   const [themeChoice, setThemeChoice] = useState<ThemeName>(getTheme());
   const [themeChanged, setThemeChanged] = useState(false);
 
@@ -264,6 +266,38 @@ export default function SettingsScreen() {
       </Surface>
       {saveError ? <Text accessibilityRole="alert" style={styles.error}>{saveError}</Text> : null}
       </>) : null}
+
+      <AccordionHeader
+        icon={<Bell size={17} color={colors.green} />}
+        title={t('Nastavenia udalostí')}
+        open={openSection === 'events'}
+        onPress={() => setOpenSection(openSection === 'events' ? null : 'events')}
+      />
+      {openSection === 'events' ? (
+        <Surface style={styles.languageList}>
+          {([
+            { key: 'earnings', label: t('Výsledky (earnings)') },
+            { key: 'dividends', label: t('Dividendy') },
+            { key: 'news', label: t('Správy') },
+          ] as const).map((option) => {
+            const selected = eventPrefs[option.key];
+            return (
+              <Pressable
+                key={option.key}
+                accessibilityRole="switch"
+                accessibilityState={{ checked: selected }}
+                onPress={() => void setEventPref(option.key, !selected)}
+                style={[styles.languageOption, selected && styles.languageOptionSelected]}
+              >
+                <View style={styles.languageCopy}>
+                  <Text style={styles.languageName}>{option.label}</Text>
+                </View>
+                {selected ? <Check size={18} color={colors.green} /> : null}
+              </Pressable>
+            );
+          })}
+        </Surface>
+      ) : null}
 
       <AccordionHeader
         icon={<Upload size={17} color={colors.green} />}

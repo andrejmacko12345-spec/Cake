@@ -4,7 +4,7 @@ import { ActivityIndicator, Alert, Modal, Pressable, ScrollView, StyleSheet, Tex
 import Svg, { Path } from 'react-native-svg';
 import { Bookmark, Check, Plus, RefreshCw, Search, X } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
-import { Header, Page, Surface } from '../components/finapp';
+import { Header, Page, SortControl, Surface } from '../components/finapp';
 import { Asset, availableAssets, colors } from '../data/portfolio';
 import {
   fetchHistoricalQuoteSeries,
@@ -361,28 +361,14 @@ export default function WatchlistScreen() {
               );
             })}
           </View>
-          <View style={styles.sortSelector}>
-            <Text style={styles.sortLabel}>{t('Zoradiť')}</Text>
-            <View style={styles.sortOptions}>
-              {([
-                { key: 'alphabetical', label: t('A–Z') },
-                { key: 'change', label: t('Najväčšia zmena') },
-              ] as const).map((option) => {
-                const selected = sortOrder === option.key;
-                return (
-                  <Pressable
-                    key={option.key}
-                    accessibilityRole="button"
-                    accessibilityState={{ selected }}
-                    onPress={() => setSortOrder(option.key)}
-                    style={[styles.sortButton, selected && styles.sortButtonSelected]}
-                  >
-                    <Text style={[styles.sortText, selected && styles.sortTextSelected]}>{option.label}</Text>
-                  </Pressable>
-                );
-              })}
-            </View>
-          </View>
+          <SortControl
+            value={sortOrder}
+            onChange={setSortOrder}
+            options={[
+              { key: 'change', label: 'Zmena %' },
+              { key: 'alphabetical', label: 'A–Z' },
+            ]}
+          />
         </>
       ) : null}
 
@@ -590,41 +576,6 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   periodTextSelected: {
-    color: colors.surface,
-  },
-  sortSelector: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 6,
-  },
-  sortLabel: {
-    color: colors.muted,
-    fontSize: 10,
-    fontWeight: '700',
-  },
-  sortOptions: {
-    flexDirection: 'row',
-    gap: 3,
-    padding: 2,
-    borderRadius: 9,
-    backgroundColor: colors.surface,
-  },
-  sortButton: {
-    alignItems: 'center',
-    borderRadius: 8,
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-  },
-  sortButtonSelected: {
-    backgroundColor: colors.green,
-  },
-  sortText: {
-    color: colors.muted,
-    fontSize: 9,
-    fontWeight: '800',
-  },
-  sortTextSelected: {
     color: colors.surface,
   },
   assetList: {

@@ -24,14 +24,8 @@ import { useAssetSearch } from '../hooks/use-asset-search';
 import { usePopupAnimation } from '../hooks/use-popup-animation';
 import { useLocale } from '../context/locale';
 
-const STORAGE_KEY = '@portfolio-mobile/watchlist';
-const defaultSymbols = ['NVDA', 'AMZN'];
-type Watchlist = { id: string; name: string; symbols: string[] };
-type WatchlistsState = { selectedId: string; lists: Watchlist[] };
-const defaultWatchlists: WatchlistsState = {
-  selectedId: 'default',
-  lists: [{ id: 'default', name: 'Watchlist', symbols: defaultSymbols }],
-};
+import { WATCHLIST_KEY as STORAGE_KEY, defaultWatchlists, isValidSymbol, parseWatchlists } from '../data/watchlists';
+import type { Watchlist, WatchlistsState } from '../data/watchlists';
 const periods = [
   { label: '1D', amount: 1, unit: 'day', interval: '5m' },
   { label: '1M', amount: 1, unit: 'month', interval: '1d' },
@@ -137,9 +131,6 @@ function PeriodSelector({ value, onChange }: {
   );
 }
 
-function isValidSymbol(value: string) {
-  return /^[A-Z0-9.^=-]{1,20}$/.test(value);
-}
 
 type WatchEntry = {
   quote: LiveQuote | null;
@@ -334,36 +325,9 @@ export default function WatchlistScreen() {
       try {
         const saved = await AsyncStorage.getItem(STORAGE_KEY);
         if (saved !== null) {
-          const parsed: unknown = JSON.parse(saved);
-          if (Array.isArray(parsed) && parsed.every((symbol) => typeof symbol === 'string' && isValidSymbol(symbol))) {
-            const migrated: WatchlistsState = {
-              selectedId: 'default',
-              lists: [{ id: 'default', name: 'Watchlist', symbols: parsed }],
-            };
-            if (active) setWatchlists(migrated);
-            await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
-          } else if (
-            typeof parsed === 'object' &&
-            parsed !== null &&
-            'lists' in parsed &&
-            Array.isArray(parsed.lists) &&
-            parsed.lists.length > 0 &&
-            parsed.lists.every((list) =>
-              typeof list === 'object' && list !== null &&
-              'id' in list && typeof list.id === 'string' &&
-              'name' in list && typeof list.name === 'string' &&
-              'symbols' in list && Array.isArray(list.symbols) &&
-              list.symbols.every((symbol: unknown) => typeof symbol === 'string' && isValidSymbol(symbol)))
-          ) {
-            const lists = parsed.lists as Watchlist[];
-            const selectedId = 'selectedId' in parsed && typeof parsed.selectedId === 'string' &&
-              lists.some((list) => list.id === parsed.selectedId)
-              ? parsed.selectedId
-              : lists[0].id;
-            if (active) setWatchlists({ selectedId, lists });
-          } else {
-            throw new Error('Uložený zoznam nemá očakávaný formát.');
-          }
+          const next = parseWatchlists(saved);
+          if (active) setWatchlists(next);
+          if (Array.isArray(JSON.parse(saved))) await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(next));
         }
       } catch (error) {
         showStorageError('načítanie', error);

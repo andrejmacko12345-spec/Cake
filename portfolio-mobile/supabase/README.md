@@ -68,6 +68,57 @@ access backup data; do not describe the backup as end-to-end encrypted.
 
 ## Acceptance checks
 
+- Analyse opens Projections first, with Compare second, using a shared selector
+  with a sliding highlight and selection haptics for taps and completed swipes.
+  Both financial tables use a rounded outer outline and support switching via swipe paging.
+  Both panels stay mounted to preserve symbols and scenario inputs while switching.
+  The legacy `/projections` link redirects to the Projections panel.
+  Projections provides a three-year stock scenario. Each year
+  uses the same four inputs: annual revenue growth, common net income growth
+  and low/high P/E. Growth compounds annually; all three result columns fit
+  the screen without horizontal scrolling, with compact statement totals.
+  Editable revenue growth blends latest-quarter YoY (50%), latest TTM YoY (30%)
+  and three-year annual revenue CAGR (20%). Missing components are omitted and
+  remaining weights normalized; no valid component leaves the input blank.
+  Quarterly/TTM observations must be within 190 days, annual within 550 days;
+  comparisons match fiscal dates within 35 days. CAGR requires a full three-year span.
+  This is an editable starting scenario, not a forecast.
+  Net income growth still uses the arithmetic mean of up to three consecutive annual
+  YoY changes, falling back to matching TTM history only when annual growth is unavailable.
+  Comparatives require a positive prior-year value and the same currency.
+  P/E bounds start at 75% and 125% of the three-year arithmetic mean of
+  quarter-end closing price / matching reported TTM diluted EPS. Prices use
+  split-adjusted closes, not dividend-adjusted total returns. Require at least
+  nine observations spanning the three-year window; missing history leaves
+  P/E blank with an explicit notice, never a current-P/E fallback.
+  The projection denominator is implied by matching consolidated common income
+  / reported diluted EPS (or matching diluted average shares for zero EPS),
+  never a single share class's outstanding count. All inputs remain
+  editable. Missing comparables remain blank rather than becoming zero.
+  Projections searches directly in an inline text input (no modal focus handoff)
+  and offers a compact dropdown of all open portfolio positions, without showing amounts.
+  The selector opens a bounded, scrollable modal list so Android does not clip
+  rows beyond the parent dropdown bounds; its header shows the full position count.
+  Portfolio and Watchlist selectors share one compact row. The latter groups
+  symbols by every saved watchlist, including custom names and empty-list states.
+  It reads account-scoped storage, supports legacy arrays and follows saved changes.
+  The result table is visible before selection with placeholder cells and disabled
+  assumptions. Row heights use the measured table offset and viewport above
+  navigation, reserving page padding and a bottom gap. Currency/period prose is
+  omitted from the compact view. Very small/keyboard viewports retain overflow
+  rather than shrinking rows below readable height.
+  Vertical overflow remains available for keyboards/accessibility.
+  Clearing the selected ticker resets inputs, results, errors and loading;
+  pending fetches cannot repopulate the cleared view. Result rows are grouped
+  into revenue/income, margin/EPS, price range and CAGR with distinct tones,
+  section gaps and stronger prices. Negative CAGR remains red.
+  The base is a matching, recent TTM statement pair, or a clearly labelled annual
+  pair if TTM is unavailable. Statement and quote currencies must match.
+  Shares outstanding stay constant; EPS uses common net income / shares.
+  Price = EPS × P/E; CAGR uses the current quote and 1/2/3-year horizons, excluding
+  dividends, fees and taxes. Nonpositive earnings have no P/E valuation.
+  Scenario inputs are session-only, not backed up; test both SK/EN and live themes.
+
 - Guest functionality works without Supabase credentials.
 - New account → email confirmation link → initial backup.
 - Add transaction/watchlist, sign out, sign in on another device → restore.

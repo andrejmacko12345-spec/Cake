@@ -39,6 +39,7 @@ export function Page({
   gestureHandlers,
   pointerGestureHandlers,
   scrollEnabled = true,
+  topInset = true,
 }: {
   children: ReactNode;
   scrollRef?: RefObject<ComponentRef<typeof ScrollView> | null>;
@@ -48,6 +49,7 @@ export function Page({
   gestureHandlers?: PanResponderInstance['panHandlers'];
   pointerGestureHandlers?: Pick<ViewProps, 'onPointerDown' | 'onPointerMove' | 'onPointerUp' | 'onPointerCancel'>;
   scrollEnabled?: boolean;
+  topInset?: boolean;
 }) {
   const styles = useThemedStyles(createStyles);
   const tabBarHeight = useBottomTabBarHeight();
@@ -81,7 +83,7 @@ export function Page({
   }, [animateOnFocus, entrance, entranceOffset]));
 
   return (
-    <SafeAreaView edges={['top', 'left', 'right']} style={styles.safeArea}>
+    <SafeAreaView edges={topInset ? ['top', 'left', 'right'] : ['left', 'right']} style={styles.safeArea}>
       <StatusBar barStyle={getTheme() === 'light' ? 'dark-content' : 'light-content'} />
       <BlurTargetView ref={blurTarget} style={styles.gestureLayer} {...gestureHandlers} {...pointerGestureHandlers}>
       <ScrollView

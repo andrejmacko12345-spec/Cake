@@ -197,8 +197,8 @@ function AppTabs() {
         <Tabs.Screen
           name="compare"
           options={{
-            title: t('Porovnanie'),
-            tabBarAccessibilityLabel: t('Porovnanie'),
+            title: t('Analýza'),
+            tabBarAccessibilityLabel: t('Analýza'),
             tabBarIcon: ({ color, focused }) => <TabIcon icon={Scale} color={color} focused={focused} />,
           }}
         />
@@ -214,6 +214,10 @@ function AppTabs() {
         <Tabs.Screen name="projects" options={{ href: null }} />
         <Tabs.Screen name="experience" options={{ href: null }} />
         <Tabs.Screen name="contact" options={{ href: null }} />
+        <Tabs.Screen name="projections" options={{
+          title: t('Projekcie'),
+          tabBarItemStyle: { display: 'none' },
+        }} />
         <Tabs.Screen
           name="settings"
           options={{

@@ -1,5 +1,6 @@
 import { useThemedStyles } from '../data/theme';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import type { ComponentRef } from 'react';
 import { ActivityIndicator, Animated, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { ChevronRight, Search, X } from 'lucide-react-native';
 import { useLocale } from '../context/locale';
@@ -14,11 +15,13 @@ export function StockSearchModal({ onClose, onSelect }: {
   const styles = useThemedStyles(createStyles);
   const { t } = useLocale();
   const [query, setQuery] = useState('');
+  const inputRef = useRef<ComponentRef<typeof TextInput>>(null);
   const { results, loading, error } = useAssetSearch(query);
   const animation = usePopupAnimation(true);
   const close = () => animation.close(onClose);
   return (
-    <Modal visible transparent animationType="none" onRequestClose={close}>
+    <Modal visible transparent animationType="none" onRequestClose={close}
+      onShow={() => inputRef.current?.focus()}>
       <KeyboardAvoidingView style={styles.scrim} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.backdrop, animation.backdrop]} />
         <Pressable style={StyleSheet.absoluteFill} onPress={close} accessibilityRole="button" accessibilityLabel={t('Zavrieť')} />
@@ -32,6 +35,7 @@ export function StockSearchModal({ onClose, onSelect }: {
           <View style={styles.search}>
             <Search size={18} color={colors.muted} />
             <TextInput
+              ref={inputRef}
               autoFocus
               autoCapitalize="characters"
               autoCorrect={false}

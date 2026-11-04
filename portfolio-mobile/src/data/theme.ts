@@ -1,6 +1,7 @@
 import { Platform } from 'react-native';
 import { colors } from './portfolio';
 import { appStorage } from './app-storage';
+import { useMemo, useSyncExternalStore } from 'react';
 
 type FileApi = typeof import('expo-file-system');
 
@@ -15,29 +16,44 @@ export type ThemeName = 'dark' | 'light';
 const STORAGE_NAME = 'theme.txt';
 const dark = { ...colors };
 const light: typeof colors = {
-  background: '#eef1f6',
-  surface: '#ffffff',
-  surfaceRaised: '#e6eaf2',
-  border: '#d2d9e5',
-  text: '#161c28',
-  muted: '#5b6779',
-  green: '#2f9e44',
-  red: '#e0313a',
-  cyan: '#0e8fa0',
+  background: '#fff0d6',
+  surface: '#fff7e6',
+  surfaceRaised: '#f8e3bd',
+  border: '#e3c28e',
+  text: '#402c23',
+  muted: '#6e5547',
+  green: '#226336',
+  red: '#a82d3b',
+  cyan: '#105c6a',
   blue: '#1758b7',
-  violet: '#4f5fe0',
+  violet: '#4551bd',
 };
 
 let currentTheme: ThemeName = 'dark';
+const listeners = new Set<() => void>();
+const subscribe = (listener: () => void) => {
+  listeners.add(listener);
+  return () => { listeners.delete(listener); };
+};
 
 export function getTheme() {
   return currentTheme;
 }
 
-// Štýly sa vytvárajú pri štarte aplikácie, preto sa motív aplikuje pred načítaním obrazoviek.
 export function applyTheme(name: ThemeName) {
+  if (name === currentTheme) return;
   currentTheme = name;
   Object.assign(colors, name === 'light' ? light : dark);
+  listeners.forEach((listener) => listener());
+}
+
+export function useTheme() {
+  return useSyncExternalStore(subscribe, getTheme, getTheme);
+}
+
+export function useThemedStyles<T>(createStyles: () => T): T {
+  const theme = useTheme();
+  return useMemo(createStyles, [createStyles, theme]);
 }
 
 // Synchrónne čítanie, aby bol motív známy ešte pred vytvorením štýlov.
@@ -53,14 +69,14 @@ export function readStoredTheme(): ThemeName {
   }
 }
 
-export function storeTheme(name: ThemeName, backup = true) {
-  if (backup) void appStorage.setItem('@portfolio-mobile/theme', name)
-    .catch((error: unknown) => console.warn('Theme backup preference failed:', error));
+export async function storeTheme(name: ThemeName, backup = true) {
+  if (backup) await appStorage.setItem('@portfolio-mobile/theme', name);
   if (Platform.OS === 'web') {
     localStorage.setItem(STORAGE_NAME, name);
-    return;
+  } else {
+    const file = themeFile();
+    if (!file.exists) file.create();
+    file.writeSync(name);
   }
-  const file = themeFile();
-  if (!file.exists) file.create();
-  file.writeSync(name);
+  applyTheme(name);
 }

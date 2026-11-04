@@ -73,7 +73,7 @@ export function useAppStorage() {
 }
 
 export const appStorage = {
-  getItem: (key: string) => storageFor(owner).getItem(key),
+  getItem: (key: string, userId: string | null = owner) => storageFor(userId).getItem(key),
   setItem: (key: string, value: string) => storageFor(owner).setItem(key, value),
 };
 

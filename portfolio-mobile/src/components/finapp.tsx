@@ -21,12 +21,14 @@ import Svg, { Circle, Line, Path, Rect } from 'react-native-svg';
 import { ArrowDownWideNarrow, ArrowUpWideNarrow, ChevronDown, Plus } from 'lucide-react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Asset, colors, formatMoney, formatPercent } from '../data/portfolio';
-import { getTheme } from '../data/theme';
+import { getTheme, useThemedStyles } from '../data/theme';
 import type { Position } from '../hooks/use-positions';
 import { positionCostEUR, positionValueEUR, usePositions } from '../hooks/use-positions';
 import { AssetLogo } from './asset-logo';
 import { useLocale } from '../context/locale';
 import { FLOATING_NAVIGATION_GAP, GlassBackground, GlassTargetContext } from './glass-background';
+import { useChartHaptics } from '../hooks/use-chart-haptics';
+import { selectionHaptic } from '../data/haptics';
 
 export function Page({
   children,
@@ -47,6 +49,7 @@ export function Page({
   pointerGestureHandlers?: Pick<ViewProps, 'onPointerDown' | 'onPointerMove' | 'onPointerUp' | 'onPointerCancel'>;
   scrollEnabled?: boolean;
 }) {
+  const styles = useThemedStyles(createStyles);
   const tabBarHeight = useBottomTabBarHeight();
   const blurTarget = useContext(GlassTargetContext);
   const insets = useSafeAreaInsets();
@@ -113,6 +116,7 @@ export function FloatingActionButton({
   onPress: () => void;
   children: ReactNode;
 }) {
+  const styles = useThemedStyles(createStyles);
   return (
     <Pressable
       accessibilityRole="button"
@@ -155,6 +159,7 @@ export function SortControl<T extends string>({
   direction: 'asc' | 'desc';
   onToggleDirection: () => void;
 }) {
+  const styles = useThemedStyles(createStyles);
   const { t } = useLocale();
   return (
     <View style={styles.sortControl}>
@@ -167,7 +172,7 @@ export function SortControl<T extends string>({
               key={option.key}
               accessibilityRole="button"
               accessibilityState={{ selected }}
-              onPress={() => onChange(option.key)}
+              onPress={() => { selectionHaptic(); onChange(option.key); }}
               style={[styles.sortButton, selected && styles.sortButtonSelected]}
             >
               <Text style={[styles.sortButtonText, selected && styles.sortButtonTextSelected]}>{t(option.label)}</Text>
@@ -177,7 +182,7 @@ export function SortControl<T extends string>({
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={t(direction === 'asc' ? 'Vzostupne' : 'Zostupne')}
-          onPress={onToggleDirection}
+          onPress={() => { selectionHaptic(); onToggleDirection(); }}
           style={styles.sortDirectionButton}
         >
           {direction === 'asc'
@@ -208,6 +213,7 @@ export function Header({
   onTitlePress?: () => void;
   titleExpanded?: boolean;
 }) {
+  const styles = useThemedStyles(createStyles);
   const { t } = useLocale();
   return (
     <View style={[styles.header, compact && styles.headerCompact]}>
@@ -222,7 +228,7 @@ export function Header({
         {onTitlePress ? (
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel={t('Vybrať watchlist')}
+            accessibilityLabel={t('Vybrať zoznam sledovaných')}
             accessibilityState={{ expanded: titleExpanded }}
             onPress={onTitlePress}
             style={styles.headerTitleButton}
@@ -245,6 +251,7 @@ export function SectionTitle({
   title: string;
   action?: ReactNode;
 }) {
+  const styles = useThemedStyles(createStyles);
   const { t } = useLocale();
   return (
     <View style={styles.sectionHeading}>
@@ -261,10 +268,12 @@ export function Surface({
   children: ReactNode;
   style?: ViewStyle;
 }) {
+  const styles = useThemedStyles(createStyles);
   return <View style={[styles.surface, style]}>{children}</View>;
 }
 
 export function DemoNotice({ label }: { label: string }) {
+  const styles = useThemedStyles(createStyles);
   const { t } = useLocale();
   return (
     <View style={styles.demoNotice}>
@@ -275,6 +284,7 @@ export function DemoNotice({ label }: { label: string }) {
 }
 
 export function ChangeLabel({ value }: { value: number }) {
+  const styles = useThemedStyles(createStyles);
   const positive = value >= 0;
   return (
     <Text style={[styles.change, { color: positive ? colors.green : colors.red }]}>
@@ -298,8 +308,11 @@ export function PortfolioChart({
   onSelectPoint?: (index: number) => void;
   onSelectionEnd?: () => void;
 }) {
+  const styles = useThemedStyles(createStyles);
+  const { t } = useLocale();
   const [chartWidth, setChartWidth] = useState(320);
   const [touching, setTouching] = useState(false);
+  const chartHaptics = useChartHaptics();
   const min = Math.min(...values);
   const max = Math.max(...values);
   const range = max - min || 1;
@@ -322,7 +335,9 @@ export function PortfolioChart({
     if (!onSelectPoint || points.length < 2) return;
     const chartX = event.nativeEvent.locationX * 320 / Math.max(1, chartWidth);
     const ratio = Math.max(0, Math.min(1, (chartX - 8) / 304));
-    onSelectPoint(Math.round(ratio * (points.length - 1)));
+    const index = Math.round(ratio * (points.length - 1));
+    chartHaptics(index);
+    onSelectPoint(index);
   };
 
   return (
@@ -337,14 +352,16 @@ export function PortfolioChart({
       }}
       onResponderMove={selectNearestPoint}
       onResponderRelease={() => {
+        chartHaptics(null);
         setTouching(false);
         onSelectionEnd?.();
       }}
       onResponderTerminate={() => {
+        chartHaptics(null);
         setTouching(false);
         onSelectionEnd?.();
       }}
-      accessibilityLabel={onSelectPoint ? 'Potiahnutím po grafe vyber konkrétny bod projekcie.' : undefined}
+      accessibilityLabel={onSelectPoint ? t('Potiahnutím po grafe vyber konkrétny bod projekcie.') : undefined}
     >
       <Svg width="100%" height={height} viewBox="0 0 320 132" preserveAspectRatio="none">
         <Line x1="8" y1="126" x2="312" y2="126" stroke={colors.border} strokeWidth="1" />
@@ -423,6 +440,7 @@ export function LegendRow({
   value: string;
   color: string;
 }) {
+  const styles = useThemedStyles(createStyles);
   return (
     <View style={styles.legendRow}>
       <View style={[styles.legendDot, { backgroundColor: color }]} />
@@ -433,6 +451,7 @@ export function LegendRow({
 }
 
 export function PerformanceBars({ values }: { values: number[] }) {
+  const styles = useThemedStyles(createStyles);
   const years = ['2020', '2021', '2022', '2023', '2024'];
   return (
     <View style={styles.barsWrap}>
@@ -470,6 +489,7 @@ export function MoneyPair({
   value: number;
   color?: string;
 }) {
+  const styles = useThemedStyles(createStyles);
   return (
     <View style={styles.moneyPair}>
       <Text style={styles.moneyLabel}>{label}</Text>
@@ -487,6 +507,7 @@ export function AssetRow({
   action?: ReactNode;
   onPress?: () => void;
 }) {
+  const styles = useThemedStyles(createStyles);
   const { t } = useLocale();
   const content = (
     <>
@@ -530,6 +551,8 @@ export function PositionRow({
   onPress: () => void;
   hideAmounts?: boolean;
 }) {
+  const styles = useThemedStyles(createStyles);
+  const { t, language } = useLocale();
   const marketValue = positionValueEUR(position);
   const cost = positionCostEUR(position);
   const unrealized = marketValue - cost;
@@ -551,7 +574,7 @@ export function PositionRow({
   }
   return (
     <Pressable
-      accessibilityLabel={`Zobraziť graf a pohyby ${position.symbol}`}
+      accessibilityLabel={`${t('Zobraziť graf a pohyby')} ${position.symbol}`}
       accessibilityRole="button"
       onPress={onPress}
       style={styles.assetRow}
@@ -561,8 +584,8 @@ export function PositionRow({
         <Text style={styles.assetSymbol}>{position.symbol}</Text>
         <Text style={styles.assetName} numberOfLines={1}>
           {position.shares > 0
-            ? `${hideAmounts ? '•••' : position.shares.toLocaleString('sk-SK')} ks`
-            : `Predaná · ${position.transactions.length} pohybov`}
+            ? `${hideAmounts ? '•••' : position.shares.toLocaleString(language === 'sk' ? 'sk-SK' : 'en-US')} ${t('ks')}`
+            : `${t('Predaná')} · ${position.transactions.length} ${t('pohybov')}`}
         </Text>
       </View>
       {sparkPath ? (
@@ -585,7 +608,7 @@ export function PositionRow({
     </Pressable>
   );
 }
-const styles = StyleSheet.create({
+const createStyles = () => StyleSheet.create({
   sortControl: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 9 },
   sortLabel: { color: colors.muted, fontSize: 10, fontWeight: '700' },
   sortOptions: { flexDirection: 'row', gap: 5, padding: 3, borderRadius: 11, backgroundColor: colors.surface },

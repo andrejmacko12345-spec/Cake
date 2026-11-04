@@ -1,3 +1,4 @@
+import { useThemedStyles } from '../data/theme';
 import { useAppStorage } from '../data/app-storage';
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ComponentRef } from 'react';
@@ -59,14 +60,14 @@ function formatValue(value: number | null, kind: Column['kind']) {
   return `${kind === 'growth' && percent > 0 ? '+' : ''}${percent.toFixed(1)}%`;
 }
 
-function groupDividerStyle(group: Column['group']) {
+function groupDividerStyle(group: Column['group'], styles: ReturnType<typeof createStyles>) {
   if (group === 'revenue') return styles.groupDividerRevenue;
   if (group === 'eps') return styles.groupDividerEps;
   if (group === 'profitability') return styles.groupDividerProfitability;
   return styles.groupDividerPe;
 }
 
-function groupIndicatorStyle(group: Column['group']) {
+function groupIndicatorStyle(group: Column['group'], styles: ReturnType<typeof createStyles>) {
   if (group === 'revenue') return styles.groupIndicatorRevenue;
   if (group === 'eps') return styles.groupIndicatorEps;
   if (group === 'profitability') return styles.groupIndicatorProfitability;
@@ -88,8 +89,9 @@ function calendarDate(data: StockEstimates | null | undefined, column: Column) {
 }
 
 export default function CompareScreen() {
+  const styles = useThemedStyles(createStyles);
   const AsyncStorage = useAppStorage();
-  const { t } = useLocale();
+  const { t, errorText } = useLocale();
   const { width: screenWidth } = useWindowDimensions();
   const [viewportHeight, setViewportHeight] = useState(0);
   const [tableLayout, setTableLayout] = useState({ width: screenWidth - 24, y: 60 });
@@ -363,7 +365,7 @@ export default function CompareScreen() {
                   />
                   {searching ? <ActivityIndicator size="small" color={colors.green} /> : null}
                 </View>
-                {searchError ? <Text style={styles.errorText}>{searchError}</Text> : null}
+                {searchError ? <Text style={styles.errorText}>{errorText(searchError)}</Text> : null}
                 {results.filter((asset) => !symbols.includes(asset.symbol)).slice(0, 5).map((asset) => (
                   <Pressable key={asset.symbol} onPress={() => addSymbol(asset.symbol)} style={styles.resultRow}>
                     <View style={styles.resultCopy}>
@@ -384,10 +386,10 @@ export default function CompareScreen() {
                   ? (
                     <View style={[
                       styles.groupDivider,
-                      groupDividerStyle(column.group),
+                      groupDividerStyle(column.group, styles),
                       { width: LABEL_WIDTH + cellWidth * symbols.length + addColumnWidth },
                     ]}>
-                      <View style={[styles.groupIndicator, groupIndicatorStyle(column.group)]} />
+                      <View style={[styles.groupIndicator, groupIndicatorStyle(column.group, styles)]} />
                       <Text style={styles.groupDividerText}>{t(groupLabel(column.group))}</Text>
                     </View>
                   )
@@ -507,7 +509,7 @@ export default function CompareScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = () => StyleSheet.create({
   keyboardAvoiding: { flex: 1 },
   tableCard: {
     padding: 0,

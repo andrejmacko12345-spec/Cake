@@ -1,3 +1,4 @@
+import { useThemedStyles } from '../data/theme';
 import {
   Modal,
   Pressable,
@@ -10,6 +11,8 @@ import { Pencil, Plus, TrendingDown, TrendingUp, X } from 'lucide-react-native';
 import { colors, formatMoney, formatPercent } from '../data/portfolio';
 import { Position, positionCostEUR, positionValueEUR, Transaction } from '../hooks/use-positions';
 import { AssetLogo } from './asset-logo';
+import { useLocale } from '../context/locale';
+import { useAmountVisibility } from '../context/amount-visibility';
 
 type Props = {
   visible: boolean;
@@ -20,6 +23,12 @@ type Props = {
 };
 
 export function TransactionHistoryModal({ visible, position, onClose, onAdd, onEdit }: Props) {
+  const styles = useThemedStyles(createStyles);
+  const { hideAmounts } = useAmountVisibility();
+  const money = (value: number, signed = false) => hideAmounts ? '•••••'
+    : `${signed && value >= 0 ? '+' : ''}${formatMoney(value)}`;
+  const { t, language } = useLocale();
+  const locale = language === 'sk' ? 'sk-SK' : 'en-US';
   if (!position) return null;
 
   const value = positionValueEUR(position);
@@ -41,7 +50,7 @@ export function TransactionHistoryModal({ visible, position, onClose, onAdd, onE
                 <Text style={styles.subtitle} numberOfLines={1}>{position.name}</Text>
               </View>
             </View>
-            <Pressable accessibilityLabel="Zavrieť" onPress={onClose} style={styles.closeButton}>
+            <Pressable accessibilityLabel={t('Zavrieť')} onPress={onClose} style={styles.closeButton}>
               <X size={18} color={colors.text} />
             </Pressable>
           </View>
@@ -49,44 +58,44 @@ export function TransactionHistoryModal({ visible, position, onClose, onAdd, onE
           <View style={styles.summaryCard}>
             <View style={styles.summaryTop}>
               <View>
-                <Text style={styles.summaryLabel}>Aktuálna hodnota</Text>
-                <Text style={styles.summaryValue}>{formatMoney(value)}</Text>
+                <Text style={styles.summaryLabel}>{t('Aktuálna hodnota')}</Text>
+                <Text style={styles.summaryValue}>{money(value)}</Text>
               </View>
               <View style={styles.summaryRight}>
-                <Text style={styles.summaryLabel}>Vlastníš</Text>
-                <Text style={styles.summaryShares}>{position.shares.toLocaleString('sk-SK')} ks</Text>
+                <Text style={styles.summaryLabel}>{t('Vlastníš')}</Text>
+                <Text style={styles.summaryShares}>{hideAmounts ? '•••••' : position.shares.toLocaleString(locale)} {t('ks')}</Text>
               </View>
             </View>
             <View style={styles.summaryDivider} />
             <View style={styles.summaryTop}>
               <View>
-                <Text style={styles.summaryLabel}>Nerealizovaný výsledok</Text>
+                <Text style={styles.summaryLabel}>{t('Nerealizovaný výsledok')}</Text>
                 <Text style={[styles.resultValue, { color: unrealized >= 0 ? colors.green : colors.red }]}>
-                  {unrealized >= 0 ? '+' : ''}{formatMoney(unrealized)}
+                  {money(unrealized, true)}
                 </Text>
               </View>
               <View style={styles.summaryRight}>
-                <Text style={styles.summaryLabel}>Realizovaný výsledok</Text>
+                <Text style={styles.summaryLabel}>{t('Realizovaný výsledok')}</Text>
                 <Text style={[styles.resultValue, { color: position.realizedProfitEUR >= 0 ? colors.green : colors.red }]}>
-                  {position.realizedProfitEUR >= 0 ? '+' : ''}{formatMoney(position.realizedProfitEUR)}
+                  {money(position.realizedProfitEUR, true)}
                 </Text>
               </View>
             </View>
             <Text style={styles.returnCaption}>
-              Celkový výsledok {formatPercent(returnPercent)} · metóda váženého priemeru
+              {t('Celkový výsledok')} {formatPercent(returnPercent)} · {t('metóda váženého priemeru')}
             </Text>
           </View>
 
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Pohyby ({position.transactions.length})</Text>
+            <Text style={styles.sectionTitle}>{t('Pohyby')} ({position.transactions.length})</Text>
             <View style={styles.actionButtons}>
-              <Pressable accessibilityLabel="Pridať nákup" onPress={() => onAdd('BUY')} style={styles.addButton}>
+              <Pressable accessibilityLabel={t('Pridať nákup')} onPress={() => onAdd('BUY')} style={styles.addButton}>
                 <Plus size={14} color={colors.surface} />
-                <Text style={styles.addButtonText}>Nákup</Text>
+                <Text style={styles.addButtonText}>{t('Nákup')}</Text>
               </Pressable>
-              <Pressable accessibilityLabel="Pridať predaj" onPress={() => onAdd('SELL')} style={styles.sellButton}>
+              <Pressable accessibilityLabel={t('Pridať predaj')} onPress={() => onAdd('SELL')} style={styles.sellButton}>
                 <Plus size={14} color={colors.red} />
-                <Text style={styles.sellButtonText}>Predaj</Text>
+                <Text style={styles.sellButtonText}>{t('Predaj')}</Text>
               </Pressable>
             </View>
           </View>
@@ -96,7 +105,7 @@ export function TransactionHistoryModal({ visible, position, onClose, onAdd, onE
               const isBuy = transaction.type === 'BUY';
               return (
                 <Pressable
-                  accessibilityLabel={`Upraviť ${isBuy ? 'nákup' : 'predaj'} ${position.symbol} z ${transaction.date}`}
+                  accessibilityLabel={`${t(isBuy ? 'Upraviť nákup z' : 'Upraviť predaj z')} ${transaction.date} · ${position.symbol}`}
                   accessibilityRole="button"
                   key={transaction.id}
                   onPress={() => onEdit(transaction)}
@@ -108,18 +117,18 @@ export function TransactionHistoryModal({ visible, position, onClose, onAdd, onE
                       : <TrendingDown size={16} color={colors.red} />}
                   </View>
                   <View style={styles.transactionCopy}>
-                    <Text style={styles.transactionTitle}>{isBuy ? 'Nákup' : 'Predaj'} · {transaction.shares.toLocaleString('sk-SK')} ks</Text>
+                    <Text style={styles.transactionTitle}>{t(isBuy ? 'Nákup' : 'Predaj')} · {hideAmounts ? '•••••' : transaction.shares.toLocaleString(locale)} {t('ks')}</Text>
                     <Text style={styles.transactionDate}>
-                      {new Date(`${transaction.date}T12:00:00`).toLocaleDateString('sk-SK')}
-                      {transaction.dateEstimated ? ' · približný dátum' : ''}
+                      {new Date(`${transaction.date}T12:00:00`).toLocaleDateString(locale)}
+                      {transaction.dateEstimated ? ` · ${t('približný dátum')}` : ''}
                     </Text>
                   </View>
                   <View style={styles.transactionAmounts}>
                     <Text style={styles.transactionTotal}>
-                      {formatMoney(transaction.shares * transaction.price * transaction.fxToEur)}
+                      {money(transaction.shares * transaction.price * transaction.fxToEur)}
                     </Text>
                     <Text style={styles.transactionPrice}>
-                      {transaction.price.toLocaleString('sk-SK', { maximumFractionDigits: 4 })} {transaction.currency}/ks
+                      {hideAmounts ? '•••••' : transaction.price.toLocaleString(locale, { maximumFractionDigits: 4 })} {transaction.currency}/{t('ks')}
                     </Text>
                   </View>
                   <Pencil size={14} color={colors.muted} />
@@ -133,7 +142,7 @@ export function TransactionHistoryModal({ visible, position, onClose, onAdd, onE
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = () => StyleSheet.create({
   scrim: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.65)' },
   sheet: {
     height: '88%',

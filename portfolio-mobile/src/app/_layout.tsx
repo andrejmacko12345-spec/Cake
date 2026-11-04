@@ -1,3 +1,4 @@
+import { useThemedStyles } from '../data/theme';
 import '../data/theme-init';
 import { Tabs, usePathname } from 'expo-router';
 import { createRef, useEffect, useMemo, useRef } from 'react';
@@ -20,18 +21,21 @@ import { colors } from '../data/portfolio';
 import { FLOATING_NAVIGATION_GAP, GlassBackground, GlassTargetContext } from '../components/glass-background';
 import { useLocale, LocaleProvider } from '../context/locale';
 import { AccountProvider } from '../context/account';
+import { AmountVisibilityProvider } from '../context/amount-visibility';
 
 const NAVIGATION_ROUTES = ['/', '/events', '/watchlist', '/compare', '/forecast'];
 
 export default function RootLayout() {
   return (
     <AccountProvider>
-    <PositionsProvider>
       <LocaleProvider>
-        <EventDataPreloader />
-        <AppTabs />
+        <AmountVisibilityProvider>
+          <PositionsProvider>
+            <EventDataPreloader />
+            <AppTabs />
+          </PositionsProvider>
+        </AmountVisibilityProvider>
       </LocaleProvider>
-    </PositionsProvider>
     </AccountProvider>
   );
 }
@@ -52,6 +56,7 @@ function EventDataPreloader() {
 }
 
 function TabIcon({ icon: Icon, color, focused }: { icon: LucideIcon; color: LucideProps['color']; focused: boolean }) {
+  const styles = useThemedStyles(createStyles);
   return (
     <View style={styles.tabIcon}>
       <Icon color={color} size={23} strokeWidth={focused ? 2.4 : 1.8} />
@@ -60,6 +65,7 @@ function TabIcon({ icon: Icon, color, focused }: { icon: LucideIcon; color: Luci
 }
 
 function AppTabs() {
+  const styles = useThemedStyles(createStyles);
   const { t } = useLocale();
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
@@ -172,8 +178,8 @@ function AppTabs() {
         <Tabs.Screen
           name="watchlist"
           options={{
-            title: 'Watchlist',
-            tabBarAccessibilityLabel: 'Watchlist',
+            title: t('Sledované'),
+            tabBarAccessibilityLabel: t('Sledované'),
             tabBarIcon: ({ color, focused }) => <TabIcon icon={Bookmark} color={color} focused={focused} />,
           }}
         />
@@ -219,7 +225,7 @@ function AppTabs() {
         <Tabs.Screen
           name="position"
           options={{
-            title: 'Detail akcie',
+            title: t('Detail akcie'),
             tabBarItemStyle: { display: 'none' },
             tabBarStyle: { display: 'none' },
           }}
@@ -229,7 +235,7 @@ function AppTabs() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = () => StyleSheet.create({
   navigation: {
     flex: 1,
     backgroundColor: colors.background,

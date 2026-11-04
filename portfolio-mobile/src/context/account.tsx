@@ -10,6 +10,8 @@ import { parseBackup } from '../data/account-backup';
 import { colors } from '../data/portfolio';
 import { readStoredTheme, storeTheme } from '../data/theme';
 import { appStorage } from '../data/app-storage';
+import { englishTranslations } from './locale';
+import { AppLanguage, localizedError, translateText } from '../data/translations';
 
 type Account = {
   session: Session | null;
@@ -40,6 +42,8 @@ export function AccountProvider({ children }: { children: ReactNode }) {
   const [firstBackupChoice, setFirstBackupChoice] = useState<{ userId: string; importGuest: boolean } | null>(null);
   const [needsFirstBackup, setNeedsFirstBackup] = useState(false);
   const [transitioning, setTransitioning] = useState(false);
+  const [language, setLanguage] = useState<AppLanguage>('sk');
+  const t = (text: string) => translateText(text, language, englishTranslations);
   const link = useLinkingURL();
   const consumedLink = useRef<string | null>(null);
   const revision = useRef(0);
@@ -51,6 +55,23 @@ export function AccountProvider({ children }: { children: ReactNode }) {
   const userId = session?.user.id ?? null;
   const currentUser = useRef(userId);
   currentUser.current = userId;
+
+  useEffect(() => {
+    let active = true;
+    const updateLanguage = () => {
+      void (async () => {
+        const saved = await appStorage.getItem('@portfolio-mobile/language', userId)
+          ?? await appStorage.getItem('@portfolio-mobile/language', null);
+        if (active && currentUser.current === userId) setLanguage(saved === 'en' ? 'en' : 'sk');
+      })().catch((error: unknown) => {
+        console.warn('Could not read account display language:', error);
+        if (active) setLoadError(messageOf(error));
+      });
+    };
+    updateLanguage();
+    const unsubscribe = onStorageChange(updateLanguage);
+    return () => { active = false; unsubscribe(); };
+  }, [userId]);
 
   useEffect(() => {
     if (!link || link === consumedLink.current || !supabase) return;
@@ -121,9 +142,10 @@ export function AccountProvider({ children }: { children: ReactNode }) {
       if (inFlight.current) await inFlight.current.catch(() => undefined);
       if (!userId) {
         setStorageOwner(null);
+        setLanguage(await appStorage.getItem('@portfolio-mobile/language') === 'en' ? 'en' : 'sk');
         const theme = await appStorage.getItem('@portfolio-mobile/theme');
         if (!theme) await appStorage.setItem('@portfolio-mobile/theme', readStoredTheme());
-        else storeTheme(theme === 'light' ? 'light' : 'dark', false);
+        else await storeTheme(theme === 'light' ? 'light' : 'dark', false);
       }
       if (userId && supabase) {
         const { data, error } = await supabase.from('account_backups')
@@ -148,9 +170,10 @@ export function AccountProvider({ children }: { children: ReactNode }) {
         }
         if (!active || generation !== epoch.current) return;
         await restoreBackup(userId, backup);
+        setLanguage(backup.values['@portfolio-mobile/language'] === 'en' ? 'en' : 'sk');
         lastPayload.current = JSON.stringify(await readBackup(userId));
         if (backup.values['@portfolio-mobile/theme']) {
-          storeTheme(backup.values['@portfolio-mobile/theme'] === 'light' ? 'light' : 'dark', false);
+          await storeTheme(backup.values['@portfolio-mobile/theme'] === 'light' ? 'light' : 'dark', false);
         }
       }
       if (!active || generation !== epoch.current) return;
@@ -250,7 +273,7 @@ export function AccountProvider({ children }: { children: ReactNode }) {
       }
       if (cleanupFailure) {
         console.warn('Deleted account cache cleanup failed:', cleanupFailure);
-        Alert.alert('Fincake', 'Account deleted, but local cache cleanup failed. Clear app data in device settings.');
+        Alert.alert('Fincake', t('Účet bol vymazaný, ale lokálnu pamäť sa nepodarilo vyčistiť. Vymaž dáta aplikácie v nastaveniach zariadenia.'));
       }
     } finally { resume(); deletingAccount.current = false; setTransitioning(false); }
   };
@@ -271,29 +294,29 @@ export function AccountProvider({ children }: { children: ReactNode }) {
       {!initialized || !ready ? (
         <View style={{ flex: 1, backgroundColor: colors.background, justifyContent: 'center', padding: 28, gap: 18 }}>
           {needsFirstBackup && userId ? <>
-            <Text style={{ color: colors.text, fontSize: 20 }}>First account backup / Prvá záloha účtu</Text>
-            <Text style={{ color: colors.muted }}>This account has no backup. Choose whether to upload this device's guest portfolio. / Účet nemá zálohu. Chceš preniesť lokálne portfólio?</Text>
+            <Text style={{ color: colors.text, fontSize: 20 }}>{t('Prvá záloha účtu')}</Text>
+            <Text style={{ color: colors.muted }}>{t('Účet nemá zálohu. Chceš preniesť lokálne portfólio?')}</Text>
             <Pressable accessibilityRole="button" onPress={() => setFirstBackupChoice({ userId, importGuest: false })}>
-              <Text style={{ color: colors.green, padding: 14 }}>Start empty / Začať s prázdnym účtom</Text>
+              <Text style={{ color: colors.green, padding: 14 }}>{t('Začať s prázdnym účtom')}</Text>
             </Pressable>
             <Pressable accessibilityRole="button" onPress={() => setFirstBackupChoice({ userId, importGuest: true })}>
-              <Text style={{ color: colors.text, padding: 14 }}>Import guest data / Preniesť lokálne dáta</Text>
+              <Text style={{ color: colors.text, padding: 14 }}>{t('Preniesť lokálne dáta')}</Text>
             </Pressable>
           </> : loadError ? <>
-            <Text style={{ color: colors.red }}>{loadError}</Text>
-            <Pressable onPress={reloadBackup}><Text style={{ color: colors.green }}>Skúsiť znova / Retry</Text></Pressable>
+            <Text style={{ color: colors.red }}>{localizedError(loadError, language)}</Text>
+            <Pressable onPress={reloadBackup}><Text style={{ color: colors.green }}>{t('Skúsiť znova')}</Text></Pressable>
             <Pressable onPress={() => {
               if (!supabase) return;
               void supabase.auth.signOut({ scope: 'local' }).then(({ error }) => {
                 if (error) setLoadError(error.message);
                 else { setSession(null); setInitialized(true); }
               }).catch((error: unknown) => setLoadError(messageOf(error)));
-            }}><Text style={{ color: colors.text }}>Pokračovať bez účtu / Continue without account</Text></Pressable>
-          </> : <><ActivityIndicator color={colors.green} /><Text style={{ color: colors.muted }}>Načítavam účet / Loading account…</Text></>}
+            }}><Text style={{ color: colors.text }}>{t('Pokračovať bez účtu')}</Text></Pressable>
+          </> : <><ActivityIndicator color={colors.green} /><Text style={{ color: colors.muted }}>{t('Načítavam účet…')}</Text></>}
         </View>
       ) : <View key={`${userId ?? 'guest'}:${reload}`} style={{ flex: 1 }}>
         {backupError ? <Text accessibilityRole="alert" style={{ color: colors.red, backgroundColor: colors.surface, padding: 14, paddingTop: 40 }}>
-          Záloha zlyhala. Otvor Profil. / Backup failed. Open Profile.
+          {t('Záloha zlyhala. Otvor Profil.')}
         </Text> : null}
         {children}
         {transitioning ? <View accessibilityViewIsModal style={{

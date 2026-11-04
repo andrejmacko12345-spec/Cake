@@ -1,3 +1,4 @@
+import { useThemedStyles } from '../data/theme';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { ComponentRef } from 'react';
 import { Check, ChevronDown, Settings2, X } from 'lucide-react-native';
@@ -14,12 +15,13 @@ import { weightedAnnualReturn } from '../data/performance';
 import { ForecastBasis, marketAnnualReturn, marketPeriod, smoothedPortfolioReturn } from '../data/forecast-model';
 import { positionValueEUR, usePositions } from '../hooks/use-positions';
 import { useLocale } from '../context/locale';
+import { useAmountVisibility } from '../context/amount-visibility';
 
 const horizons = [1, 3, 5, 10, 20] as const;
 const scenarioDefinitions = [
-  { key: 'opatrny', title: 'Opatrný', color: colors.cyan },
-  { key: 'zakladny', title: 'Základný', color: colors.green },
-  { key: 'optimisticky', title: 'Optimistický', color: colors.violet },
+  { key: 'opatrny', title: 'Opatrný', get color() { return colors.cyan; } },
+  { key: 'zakladny', title: 'Základný', get color() { return colors.green; } },
+  { key: 'optimisticky', title: 'Optimistický', get color() { return colors.violet; } },
 ] as const;
 
 type ScenarioKey = (typeof scenarioDefinitions)[number]['key'];
@@ -31,7 +33,9 @@ function yearLabel(year: number, language: 'sk' | 'en') {
 }
 
 export default function ForecastScreen() {
-  const { t, language } = useLocale();
+  const styles = useThemedStyles(createStyles);
+  const { hideAmounts } = useAmountVisibility();
+  const { t, language, errorText } = useLocale();
   const { positions, transactions } = usePositions();
   const [horizon, setHorizon] = useState<(typeof horizons)[number]>(3);
   const horizonRef = useRef<(typeof horizons)[number]>(3);
@@ -146,7 +150,7 @@ export default function ForecastScreen() {
 
   return (
     <Page onScrollViewLayout={setViewportHeight} scrollEnabled={!sliderDragging}>
-      <Header title="Výhľad" compact />
+      <Header title={t('Výhľad')} compact />
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>{t('Časový horizont')}</Text>
           <Pressable
@@ -218,12 +222,12 @@ export default function ForecastScreen() {
                     </View>
                     <Text style={styles.basisCardDescription}>{option.description}</Text>
                     {option.key === 'smoothed' && !currentModel ? <Text style={styles.basisCardDescription}>{t('Počítam výnos…')}</Text> : null}
-                    {option.key === 'smoothed' && currentModel?.error ? <Text style={styles.basisError} accessibilityRole="alert">{t(currentModel.error)}</Text> : null}
+                    {option.key === 'smoothed' && currentModel?.error ? <Text style={styles.basisError} accessibilityRole="alert">{errorText(currentModel.error)}</Text> : null}
                   </Pressable>
                 );
               })}
             </View>
-            {basisError && basis !== 'smoothed' ? <Text style={styles.basisError} accessibilityRole="alert">{t(basisError)}</Text> : null}
+            {basisError && basis !== 'smoothed' ? <Text style={styles.basisError} accessibilityRole="alert">{errorText(basisError)}</Text> : null}
             <Pressable onPress={() => setMethodologyOpen((open) => !open)} accessibilityRole="button"
               accessibilityState={{ expanded: methodologyOpen }} style={styles.methodologyButton}>
               <Text style={styles.methodologyLabel}>{t('Ako sa počíta výnos')}</Text>
@@ -348,9 +352,12 @@ export default function ForecastScreen() {
                 <Text style={styles.scenarioSub}>{calculatedAnnualReturn === null ? '—' : formatPercent(item.rate, 1)} / {t('rok')}</Text>
               </View>
               <View style={styles.scenarioNumbers}>
-                <Text style={styles.scenarioAmount}>{calculatedAnnualReturn === null ? '—' : formatMoney(value, true)}</Text>
+                <Text style={styles.scenarioAmount}>{calculatedAnnualReturn === null ? '—'
+                  : hideAmounts ? formatPercent(((1 + item.rate / 100) ** horizon - 1) * 100, 1)
+                    : formatMoney(value, true)}</Text>
                 <Text style={[styles.scenarioProfit, { color: gain >= 0 ? colors.green : colors.red }]}>
-                  {calculatedAnnualReturn === null ? '—' : `${gain >= 0 ? '+' : '−'}${formatMoney(Math.abs(gain), true)}`}
+                  {calculatedAnnualReturn === null ? '—' : hideAmounts ? t('za celé obdobie')
+                    : `${gain >= 0 ? '+' : '−'}${formatMoney(Math.abs(gain), true)}`}
                 </Text>
               </View>
             </Pressable>
@@ -359,7 +366,7 @@ export default function ForecastScreen() {
       </View>
 
       <View onLayout={({ nativeEvent: { layout } }) => setProjectionTop(layout.y)}>
-      <Text style={styles.sectionTitle}>{t('Projekcia hodnoty')}</Text>
+      <Text style={styles.sectionTitle}>{t(hideAmounts ? 'Projekcia výnosu' : 'Projekcia hodnoty')}</Text>
       <Surface style={{ ...styles.projectionCard, height: Math.max(120, viewportHeight - 16 - projectionTop - 28 - 28) }}>
         <View style={styles.chartHeader}>
           <Text style={styles.chartTitle}>{t('Odhadovaný vývoj')}</Text>
@@ -367,7 +374,8 @@ export default function ForecastScreen() {
         </View>
         <View style={[styles.selectedProjection, compact && styles.selectedProjectionCompact]}>
           <Text style={[styles.selectedProjectionTime, compact && { lineHeight: 11 }]}>{selectedTimeLabel}</Text>
-          <Text style={[styles.selectedProjectionValue, compact && { fontSize: 16, lineHeight: 18, marginTop: 0 }]}>{calculatedAnnualReturn === null ? '—' : formatMoney(selectedValue, true)}</Text>
+          <Text style={[styles.selectedProjectionValue, compact && { fontSize: 16, lineHeight: 18, marginTop: 0 }]}>{calculatedAnnualReturn === null ? '—'
+            : hideAmounts ? formatPercent(selectedReturn, 2) : formatMoney(selectedValue, true)}</Text>
           <Text
             style={[
               styles.selectedProjectionReturn,
@@ -375,7 +383,8 @@ export default function ForecastScreen() {
               { color: selectedReturn >= 0 ? colors.green : colors.red },
             ]}
           >
-            {calculatedAnnualReturn === null ? '—' : `${formatPercent(selectedReturn, 2)} ${t('oproti dnešku')}`}
+            {calculatedAnnualReturn === null ? '—' : hideAmounts ? t('oproti dnešku')
+              : `${formatPercent(selectedReturn, 2)} ${t('oproti dnešku')}`}
           </Text>
         </View>
         <View style={styles.chartSpace} onLayout={({ nativeEvent: { layout } }) => setChartHeight(Math.max(1, layout.height - 10))}>
@@ -398,7 +407,7 @@ export default function ForecastScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = () => StyleSheet.create({
   basisOptions: { gap: 6, marginBottom: 10 },
   basisCard: { padding: 14, borderRadius: 18, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface, gap: 5 },
   basisCardHeader: { flexDirection: 'row', alignItems: 'center', gap: 10 },

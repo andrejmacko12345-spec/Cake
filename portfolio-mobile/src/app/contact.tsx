@@ -1,31 +1,34 @@
+import { useThemedStyles } from '../data/theme';
 import { Link } from 'expo-router';
 import { ArrowLeft, Briefcase, Code2, Mail, MapPin } from 'lucide-react-native';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useLocale } from '../context/locale';
 
 const contactMethods = [
   { label: 'Email', value: 'hello@andrej.dev', icon: Mail },
   { label: 'GitHub', value: '@andrej-dev', icon: Code2 },
-  { label: 'Portfolio', value: 'projektový stack', icon: Briefcase },
+  { label: 'Portfólio projektov', value: 'projektový stack', icon: Briefcase },
   { label: 'Lokalita', value: 'Bratislava, SK', icon: MapPin },
 ];
 
 export default function ContactScreen() {
+  const styles = useThemedStyles(createStyles);
+  const { t } = useLocale();
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
         <Link href="/" asChild>
           <Pressable style={styles.backButton}>
             <ArrowLeft size={18} color="#dbeafe" />
-            <Text style={styles.backText}>Späť</Text>
+            <Text style={styles.backText}>{t('Späť')}</Text>
           </Pressable>
         </Link>
 
-        <Text style={styles.eyebrow}>Kontakt</Text>
-        <Text style={styles.title}>Nechajme z projektu niečo výnimočné.</Text>
+        <Text style={styles.eyebrow}>{t('Kontakt')}</Text>
+        <Text style={styles.title}>{t('Nechajme z projektu niečo výnimočné.')}</Text>
         <Text style={styles.description}>
-          Ak potrebuješ partnera na vývoj mobilných produktov, rozšírenie funkcionality alebo redesign produktu,
-          rád pomôžem.
+          {t('Ak potrebuješ partnera na vývoj mobilných produktov, rozšírenie funkcionality alebo redesign produktu, rád pomôžem.')}
         </Text>
 
         <View style={styles.contactList}>
@@ -35,8 +38,8 @@ export default function ContactScreen() {
                 <Icon size={18} color="#dbeafe" />
               </View>
               <View style={styles.contactBody}>
-                <Text style={styles.label}>{label}</Text>
-                <Text style={styles.value}>{value}</Text>
+                <Text style={styles.label}>{t(label)}</Text>
+                <Text style={styles.value}>{t(value)}</Text>
               </View>
             </View>
           ))}
@@ -44,14 +47,14 @@ export default function ContactScreen() {
 
         <Pressable style={styles.primaryButton}>
           <Mail size={18} color="#08111f" />
-          <Text style={styles.primaryButtonText}>Napísať mail</Text>
+          <Text style={styles.primaryButtonText}>{t('Napísať mail')}</Text>
         </Pressable>
       </ScrollView>
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = () => StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#0b1021',

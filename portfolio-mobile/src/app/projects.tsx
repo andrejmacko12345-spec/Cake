@@ -1,7 +1,9 @@
+import { useThemedStyles } from '../data/theme';
 import { Link } from 'expo-router';
 import { ArrowLeft, ExternalLink, FolderKanban } from 'lucide-react-native';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useLocale } from '../context/locale';
 
 const projects = [
   {
@@ -25,38 +27,40 @@ const projects = [
 ];
 
 export default function ProjectsScreen() {
+  const styles = useThemedStyles(createStyles);
+  const { t } = useLocale();
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
         <Link href="/" asChild>
           <Pressable style={styles.backButton}>
             <ArrowLeft size={18} color="#dbeafe" />
-            <Text style={styles.backText}>Späť</Text>
+            <Text style={styles.backText}>{t('Späť')}</Text>
           </Pressable>
         </Link>
 
         <View style={styles.headerRow}>
-          <Text style={styles.eyebrow}>Projekty</Text>
+          <Text style={styles.eyebrow}>{t('Projekty')}</Text>
           <FolderKanban size={18} color="#93c5fd" />
         </View>
 
-        <Text style={styles.title}>Realizované riešenia pre skutočné potreby.</Text>
+        <Text style={styles.title}>{t('Realizované riešenia pre skutočné potreby.')}</Text>
 
         {projects.map((project) => (
           <View key={project.name} style={styles.card}>
             <View style={[styles.accent, { backgroundColor: project.color }]} />
             <View style={styles.cardBody}>
               <Text style={styles.projectName}>{project.name}</Text>
-              <Text style={styles.summary}>{project.summary}</Text>
+              <Text style={styles.summary}>{t(project.summary)}</Text>
               <View style={styles.stackRow}>
                 {project.stack.map((item) => (
                   <View key={item} style={styles.stackPill}>
-                    <Text style={styles.stackText}>{item}</Text>
+                    <Text style={styles.stackText}>{t(item)}</Text>
                   </View>
                 ))}
               </View>
               <View style={styles.footerRow}>
-                <Text style={styles.meta}>Mobilný produkt</Text>
+                <Text style={styles.meta}>{t('Mobilný produkt')}</Text>
                 <ExternalLink size={16} color="#bfdbfe" />
               </View>
             </View>
@@ -67,7 +71,7 @@ export default function ProjectsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = () => StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#0b1021',

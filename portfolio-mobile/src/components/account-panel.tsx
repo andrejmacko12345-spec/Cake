@@ -1,3 +1,4 @@
+import { useThemedStyles } from '../data/theme';
 import { useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useAccount } from '../context/account';
@@ -5,11 +6,13 @@ import { useLocale } from '../context/locale';
 import { authRedirectUrl, supabase } from '../data/supabase';
 import { colors } from '../data/portfolio';
 import { Surface } from './finapp';
+import { localizedError } from '../data/translations';
 
 type Mode = 'login' | 'register' | 'confirm' | 'reset';
 
 export function AccountPanel() {
-  const { t, language } = useLocale();
+  const styles = useThemedStyles(createStyles);
+  const { t, language, errorText } = useLocale();
   const account = useAccount();
   const [mode, setMode] = useState<Mode>('login');
   const [email, setEmail] = useState('');
@@ -24,7 +27,10 @@ export function AccountPanel() {
     if (busy) return;
     setBusy(true); setError(''); setMessage('');
     try { await action(); }
-    catch (failure) { setError(failure instanceof Error ? failure.message : String(failure)); }
+    catch (failure) {
+      console.warn('Account operation failed:', failure);
+      setError(failure instanceof Error ? failure.message : String(failure));
+    }
     finally { setBusy(false); }
   };
   const switchMode = (next: Mode) => {
@@ -72,7 +78,7 @@ export function AccountPanel() {
     <Surface style={styles.card}>
       <Text style={styles.title}>{account.session
         ? account.session.user.user_metadata.display_name || t('Môj účet') : t('Účet a zálohovanie')}</Text>
-      {account.authError ? <Text accessibilityRole="alert" style={styles.error}>{account.authError}</Text> : null}
+      {account.authError ? <Text accessibilityRole="alert" style={styles.error}>{localizedError(account.authError, language)}</Text> : null}
       {account.session && account.recovery ? <>
         <Text style={styles.heading}>{t('Uložiť nové heslo')}</Text>
         {input('Heslo', password, setPassword, true)}
@@ -87,9 +93,9 @@ export function AccountPanel() {
         <Text style={styles.copy}>{account.session.user.email}</Text>
         <Text style={styles.copy}>{t('Posledná záloha')}: {account.lastBackup
           ? new Date(account.lastBackup).toLocaleString(language === 'sk' ? 'sk-SK' : 'en-GB') : '—'}</Text>
-        <Text style={styles.copy}>{t('Zálohy obsahujú transakcie, watchlisty a nastavenia. Kurzy a finančné cache sa nezálohujú.')}</Text>
+        <Text style={styles.copy}>{t('Zálohy obsahujú transakcie, zoznamy sledovaných a nastavenia. Kurzy a finančné cache sa nezálohujú.')}</Text>
         {account.backupError ? <>
-          <Text accessibilityRole="alert" style={styles.error}>{account.backupError}</Text>
+          <Text accessibilityRole="alert" style={styles.error}>{localizedError(account.backupError, language)}</Text>
           <Text style={styles.copy}>{t('Obnovenie nahradí lokálne dáta prihláseného účtu dátami zo zálohy.')}</Text>
           {button('Obnoviť dáta z účtu', account.reloadBackup)}
         </> : null}
@@ -134,13 +140,13 @@ export function AccountPanel() {
         </>}
       </>}
       {busy ? <ActivityIndicator color={colors.green} /> : null}
-      {error ? <Text accessibilityRole="alert" style={styles.error}>{error}</Text> : null}
+      {error ? <Text accessibilityRole="alert" style={styles.error}>{errorText(error)}</Text> : null}
       {message ? <Text style={styles.copy}>{message}</Text> : null}
     </Surface>
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = () => StyleSheet.create({
   card: { padding: 18, marginBottom: 16, gap: 12 },
   title: { color: colors.text, fontSize: 21, fontWeight: '800' },
   heading: { color: colors.text, fontSize: 17, fontWeight: '700' },

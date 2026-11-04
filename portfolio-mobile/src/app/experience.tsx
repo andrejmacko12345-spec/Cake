@@ -1,51 +1,55 @@
+import { useThemedStyles } from '../data/theme';
 import { Link } from 'expo-router';
 import { ArrowLeft, Briefcase, Clock3, Rocket } from 'lucide-react-native';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useLocale } from '../context/locale';
 
 const timeline = [
   {
     period: '2022 – teraz',
-    title: 'Senior mobile developer',
+    title: 'Seniorný mobilný vývojár',
     description: 'Vedenie mobilných projektov od konceptu po produkčné nasadenie, spolupráca s designérmi a product teamami.',
   },
   {
     period: '2020 – 2022',
-    title: 'Frontend specialist',
+    title: 'Špecialista na frontend',
     description: 'Budovanie používateľských rozhraní, komponentových systémov a vývoj produktových workflowov pre náročné aplikácie.',
   },
   {
     period: '2018 – 2020',
-    title: 'UI/UX developer',
+    title: 'UI/UX vývojár',
     description: 'Práca na dizajne, prototypoch a interaktívnych konceptoch so zameraním na výnimočný používateľský zážitok.',
   },
 ];
 
 const highlights = [
-  { icon: Rocket, label: 'Launches', value: '18+' },
+  { icon: Rocket, label: 'Uvedení na trh', value: '18+' },
   { icon: Briefcase, label: 'Produktov', value: '24' },
   { icon: Clock3, label: 'Rýchlosť', value: '2x' },
 ];
 
 export default function ExperienceScreen() {
+  const styles = useThemedStyles(createStyles);
+  const { t } = useLocale();
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
         <Link href="/" asChild>
           <Pressable style={styles.backButton}>
             <ArrowLeft size={18} color="#dbeafe" />
-            <Text style={styles.backText}>Späť</Text>
+            <Text style={styles.backText}>{t('Späť')}</Text>
           </Pressable>
         </Link>
 
-        <Text style={styles.eyebrow}>Skúsenosti</Text>
-        <Text style={styles.title}>Rozvoj produktov, ktorý mení používateľský zážitok.</Text>
+        <Text style={styles.eyebrow}>{t('Skúsenosti')}</Text>
+        <Text style={styles.title}>{t('Rozvoj produktov, ktorý mení používateľský zážitok.')}</Text>
 
         <View style={styles.highlightsRow}>
           {highlights.map(({ icon: Icon, label, value }) => (
             <View key={label} style={styles.highlightCard}>
               <Icon size={18} color="#dbeafe" />
-              <Text style={styles.highlightLabel}>{label}</Text>
+              <Text style={styles.highlightLabel}>{t(label)}</Text>
               <Text style={styles.highlightValue}>{value}</Text>
             </View>
           ))}
@@ -56,9 +60,9 @@ export default function ExperienceScreen() {
             <View key={item.title} style={styles.timelineItem}>
               <View style={styles.dot} />
               <View style={styles.content}>
-                <Text style={styles.period}>{item.period}</Text>
-                <Text style={styles.role}>{item.title}</Text>
-                <Text style={styles.description}>{item.description}</Text>
+                <Text style={styles.period}>{t(item.period)}</Text>
+                <Text style={styles.role}>{t(item.title)}</Text>
+                <Text style={styles.description}>{t(item.description)}</Text>
               </View>
             </View>
           ))}
@@ -68,7 +72,7 @@ export default function ExperienceScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = () => StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#0b1021',

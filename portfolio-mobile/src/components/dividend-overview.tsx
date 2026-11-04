@@ -1,3 +1,4 @@
+import { useThemedStyles } from '../data/theme';
 import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import Svg, { Line, Rect } from 'react-native-svg';
@@ -21,6 +22,7 @@ export function DividendOverview({
   transactions: Transaction[];
   hideAmounts: boolean;
 }) {
+  const styles = useThemedStyles(createStyles);
   const { t, language } = useLocale();
   const { width: screenWidth } = useWindowDimensions();
   const [series, setSeries] = useState<DividendSeries[]>([]);
@@ -265,6 +267,7 @@ function PeriodButton({
   selected: boolean;
   onPress: () => void;
 }) {
+  const styles = useThemedStyles(createStyles);
   return (
     <Pressable
       accessibilityRole="button"
@@ -277,7 +280,7 @@ function PeriodButton({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = () => StyleSheet.create({
   incomeCard: { padding: 18, backgroundColor: colors.surface, borderRadius: 22 },
   eyebrow: { color: colors.muted, fontSize: 11, fontWeight: '700', textAlign: 'center' },
   annualValue: { color: colors.text, fontSize: 38, fontWeight: '900', textAlign: 'center', marginTop: 4 },

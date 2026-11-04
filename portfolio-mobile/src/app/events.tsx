@@ -1,3 +1,4 @@
+import { useThemedStyles } from '../data/theme';
 import type { ComponentRef } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFocusEffect, useRouter } from 'expo-router';
@@ -80,6 +81,7 @@ function earningsTime(ms: number, sk: boolean) {
 }
 
 export default function EventsScreen() {
+  const styles = useThemedStyles(createStyles);
   const router = useRouter();
   const { language, t } = useLocale();
   const sk = language === 'sk';
@@ -265,7 +267,7 @@ export default function EventsScreen() {
                     ['EPS', item.report.epsBeat],
                   ] as const).map(([label, beat]) => (
                     <View key={label} style={styles.reportIndicator} accessible
-                      accessibilityLabel={`${label}: ${beat === null || !Number.isFinite(beat) ? (sk ? 'Odhad nedostupný' : 'Estimate unavailable') : beat > 0 ? 'Beat' : beat < 0 ? 'Miss' : (sk ? 'V súlade s odhadom' : 'In line')}`}>
+                      accessibilityLabel={`${label}: ${beat === null || !Number.isFinite(beat) ? (sk ? 'Odhad nedostupný' : 'Estimate unavailable') : beat > 0 ? t('Prekonanie odhadu') : beat < 0 ? t('Zaostanie za odhadom') : (sk ? 'V súlade s odhadom' : 'In line')}`}>
                       <Text style={styles.eventTimeText}>{label}</Text>
                       <View style={[styles.reportDot, { backgroundColor: pctColor(beat) }]} />
                     </View>
@@ -374,10 +376,10 @@ export default function EventsScreen() {
                 </Text>
               ) : null}
               <Text style={styles.sheetNote}>
-                {t('Beat = výsledok − odhad. Revenue beat je v mene tržieb, EPS beat na akciu. EPS používa metodiku konsenzu (GAAP alebo upravené).')}
+                {t('Rozdiel = výsledok − odhad. Rozdiel tržieb je v mene tržieb, rozdiel EPS na akciu. EPS používa metodiku konsenzu (GAAP alebo upravené).')}
               </Text>
               {detail?.quarters.some((quarter) => quarter.revenueBeatProvisional) ? (
-                <Text style={styles.sheetNote}>{t('* Predbežný revenue beat z odhadu uloženého pred reportom; čaká na manuálne overenie.')}</Text>
+                <Text style={styles.sheetNote}>{t('* Predbežný rozdiel tržieb z odhadu uloženého pred reportom; čaká na manuálne overenie.')}</Text>
               ) : null}
             </ScrollView>
           </Animated.View>
@@ -388,6 +390,7 @@ export default function EventsScreen() {
 }
 
 function Row({ label, value, color }: { label: string; value: string; color?: string }) {
+  const styles = useThemedStyles(createStyles);
   return (
     <View style={styles.row}>
       <Text style={styles.rowLabel}>{label}</Text>
@@ -397,49 +400,50 @@ function Row({ label, value, color }: { label: string; value: string; color?: st
 }
 
 function QuarterCard({ quarter, sk }: { quarter: QuarterResult; sk: boolean }) {
+  const styles = useThemedStyles(createStyles);
   const outcome = earningsOutcome(quarter);
   const accent = outcome === 'beat' ? colors.green : outcome === 'miss' ? colors.red : colors.muted;
   return (
     <Surface style={{ ...styles.quarter, borderColor: accent }}>
       <Text style={[styles.quarterTitle, { color: accent }]}>
-        {quarter.label} · {outcome === 'beat' ? 'Beat'
+        {quarter.label} · {outcome === 'beat' ? (sk ? 'Prekonanie odhadu' : 'Beat')
           : outcome === 'miss' ? (sk ? 'Zaostanie' : 'Miss')
             : (sk ? 'Neutrálne / neúplné' : 'In-line / incomplete')}
       </Text>
       <Row label={sk ? 'Tržby' : 'Revenue'} value={fmtRevenue(quarter.revenue, sk)} />
       <Row label={sk ? 'Tržby YoY' : 'Revenue YoY'} value={fmtPct(quarter.revenueYoY)} color={pctColor(quarter.revenueYoY)} />
-      <Row label={quarter.revenueBeatProvisional ? 'Revenue beat*' : 'Revenue beat'} value={fmtBeat(quarter.revenueBeat, sk, true)} color={pctColor(quarter.revenueBeat)} />
+      <Row label={`${sk ? 'Rozdiel tržieb oproti odhadu' : 'Revenue beat'}${quarter.revenueBeatProvisional ? '*' : ''}`} value={fmtBeat(quarter.revenueBeat, sk, true)} color={pctColor(quarter.revenueBeat)} />
       <Row label="EPS" value={fmtNum(quarter.epsActual)} />
-      <Row label="EPS beat" value={fmtBeat(quarter.epsBeat, sk)} color={pctColor(quarter.epsBeat)} />
+      <Row label={sk ? 'Rozdiel EPS oproti odhadu' : 'EPS beat'} value={fmtBeat(quarter.epsBeat, sk)} color={pctColor(quarter.epsBeat)} />
     </Surface>
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = () => StyleSheet.create({
   reportIndicators: { flexDirection: 'row', gap: 16 },
   reportIndicator: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   reportDot: { width: 7, height: 7, borderRadius: 4 },
   loader: { marginVertical: 24 },
   empty: { color: colors.muted, fontSize: 12, textAlign: 'center', marginVertical: 18, lineHeight: 18 },
-  eventCard: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 9, paddingVertical: 7, marginBottom: 4, borderRadius: 13 },
+  eventCard: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 11, paddingVertical: 9, marginBottom: 5, borderRadius: 14 },
   dateBadge: {
-    width: 34,
-    height: 38,
+    width: 38,
+    height: 42,
     borderRadius: 11,
     backgroundColor: colors.surfaceRaised,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 8,
   },
-  dateDay: { color: colors.text, fontSize: 16, fontWeight: '900' },
-  dateMonth: { color: colors.muted, fontSize: 10, fontWeight: '800', marginTop: 1 },
+  dateDay: { color: colors.text, fontSize: 17, fontWeight: '900' },
+  dateMonth: { color: colors.muted, fontSize: 11, fontWeight: '800', marginTop: 1 },
   eventAccent: { width: 3, alignSelf: 'stretch', borderRadius: 4, marginRight: 11 },
   eventBody: { flex: 1, minWidth: 0 },
   eventTopline: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 1 },
-  symbol: { color: colors.green, fontSize: 11, fontWeight: '900', letterSpacing: 0.8 },
-  category: { color: colors.muted, fontSize: 10, fontWeight: '700' },
-  eventTitle: { color: colors.text, fontSize: 13, fontWeight: '800' },
-  eventTimeText: { color: colors.muted, fontSize: 10, marginTop: 2, flexShrink: 1 },
+  symbol: { color: colors.green, fontSize: 12, fontWeight: '900', letterSpacing: 0.8 },
+  category: { color: colors.muted, fontSize: 11, fontWeight: '700' },
+  eventTitle: { color: colors.text, fontSize: 14, fontWeight: '800' },
+  eventTimeText: { color: colors.muted, fontSize: 11, marginTop: 2, flexShrink: 1 },
   reportPreview: { marginTop: 2 },
   scrim: { flex: 1, justifyContent: 'flex-end' },
   backdrop: { backgroundColor: 'rgba(0,0,0,0.55)' },

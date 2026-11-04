@@ -11,7 +11,7 @@ import { setEventPref, useEventPrefs } from '../data/event-prefs';
 import { Header, Page, Surface } from '../components/finapp';
 import { AppLanguage, useLocale } from '../context/locale';
 import { availableAssets, colors } from '../data/portfolio';
-import { getTheme, storeTheme, ThemeName } from '../data/theme';
+import { storeTheme, ThemeName, useTheme, useThemedStyles } from '../data/theme';
 import { fetchHistoricalQuoteSeries } from '../data/quotes';
 import {
   parseTransactionCsv,
@@ -46,6 +46,7 @@ function AccordionHeader({
   open: boolean;
   onPress: () => void;
 }) {
+  const styles = useThemedStyles(createStyles);
   return (
     <Pressable
       accessibilityRole="button"
@@ -81,21 +82,26 @@ async function loadUsdRates(startDate: string) {
 }
 
 export default function SettingsScreen() {
+  const styles = useThemedStyles(createStyles);
   const router = useRouter();
-  const { language, setLanguage, t } = useLocale();
+  const { language, setLanguage, t, errorText } = useLocale();
   const [openSection, setOpenSection] = useState<'language' | 'data' | 'appearance' | 'events' | null>(null);
   const eventPrefs = useEventPrefs();
-  const [themeChoice, setThemeChoice] = useState<ThemeName>(getTheme());
-  const [themeChanged, setThemeChanged] = useState(false);
+  const themeChoice = useTheme();
+  const [savingTheme, setSavingTheme] = useState(false);
+  const [themeError, setThemeError] = useState('');
 
-  const chooseTheme = (name: ThemeName) => {
-    if (name === themeChoice) return;
+  const chooseTheme = async (name: ThemeName) => {
+    if (name === themeChoice || savingTheme) return;
+    setSavingTheme(true);
+    setThemeError('');
     try {
-      storeTheme(name);
-      setThemeChoice(name);
-      setThemeChanged(name !== getTheme());
-    } catch {
-      setThemeChanged(false);
+      await storeTheme(name);
+    } catch (error) {
+      console.warn('Theme change failed:', error);
+      setThemeError(error instanceof Error ? error.message : String(error));
+    } finally {
+      setSavingTheme(false);
     }
   };
   const { transactions, importTransactions, resetPortfolio, refreshQuotes } = usePositions();
@@ -268,7 +274,7 @@ export default function SettingsScreen() {
           );
         })}
       </Surface>
-      {saveError ? <Text accessibilityRole="alert" style={styles.error}>{saveError}</Text> : null}
+      {saveError ? <Text accessibilityRole="alert" style={styles.error}>{errorText(saveError)}</Text> : null}
       </>) : null}
 
       <AccordionHeader
@@ -399,7 +405,7 @@ export default function SettingsScreen() {
       ) : null}
 
       {dataMessage ? <Text style={styles.success}>{dataMessage}</Text> : null}
-      {dataError ? <Text accessibilityRole="alert" style={styles.error}>{dataError}</Text> : null}
+      {dataError ? <Text accessibilityRole="alert" style={styles.error}>{errorText(dataError)}</Text> : null}
       </>) : null}
 
       <AccordionHeader
@@ -416,8 +422,9 @@ export default function SettingsScreen() {
               <Pressable
                 key={option.name}
                 accessibilityRole="button"
-                accessibilityState={{ selected }}
-                onPress={() => chooseTheme(option.name)}
+                accessibilityState={{ selected, disabled: savingTheme }}
+                disabled={savingTheme}
+                onPress={() => { void chooseTheme(option.name); }}
                 style={[styles.languageOption, selected && styles.languageOptionSelected]}
               >
                 <View style={styles.languageIcon}>
@@ -431,8 +438,8 @@ export default function SettingsScreen() {
             );
           })}
         </Surface>
-        {themeChanged ? (
-          <Text style={styles.success}>{t('Motív sa zmení po reštarte aplikácie. Zatvor ju a otvor znova.')}</Text>
+        {themeError ? (
+          <Text accessibilityRole="alert" style={styles.error}>{errorText(themeError)}</Text>
         ) : null}
       </>) : null}
       </View>
@@ -440,7 +447,7 @@ export default function SettingsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = () => StyleSheet.create({
   accordion: {
     flexDirection: 'row',
     alignItems: 'center',

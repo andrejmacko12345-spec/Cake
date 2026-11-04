@@ -5,6 +5,7 @@ import { Alert } from 'react-native';
 import { availableAssets, colors } from '../data/portfolio';
 import { fetchLiveQuote, LiveQuote } from '../data/quotes';
 import { isTransaction, isValidDate, sortedTransactions, validateLedger } from '../data/transaction-validation';
+import { useLocale } from '../context/locale';
 
 const STORAGE_KEY = '@portfolio-mobile/transactions-v1';
 const LEGACY_STORAGE_KEY = '@portfolio-mobile/positions-v1';
@@ -62,11 +63,6 @@ type PositionsContextValue = {
 };
 
 const PositionsContext = createContext<PositionsContextValue | null>(null);
-
-function reportStorageError(action: string, error: unknown) {
-  const message = error instanceof Error ? error.message : String(error);
-  Alert.alert(`Chyba pri ${action} transakcií`, message);
-}
 
 function quoteFromStored(value: unknown): value is LiveQuote {
   if (!value || typeof value !== 'object') return false;
@@ -149,6 +145,13 @@ export function positionCostEUR(position: Position) {
 
 export function PositionsProvider({ children }: { children: ReactNode }) {
   const AsyncStorage = useAppStorage();
+  const { t, errorText } = useLocale();
+  const localeRef = useRef({ t, errorText });
+  useEffect(() => { localeRef.current = { t, errorText }; }, [t, errorText]);
+  function reportStorageError(action: string, error: unknown) {
+    console.warn(`Transactions ${action} failed:`, error);
+    Alert.alert(localeRef.current.t('Chyba'), localeRef.current.errorText(error instanceof Error ? error.message : String(error)));
+  }
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [quotes, setQuotes] = useState<Record<string, LiveQuote>>({});
   const [loading, setLoading] = useState(true);

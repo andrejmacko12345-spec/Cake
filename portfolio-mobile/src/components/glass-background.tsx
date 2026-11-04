@@ -2,14 +2,14 @@ import { createContext, useContext } from 'react';
 import type { ComponentRef, RefObject } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { BlurView } from 'expo-blur';
-import { getTheme } from '../data/theme';
+import { useTheme } from '../data/theme';
 
 export const GlassTargetContext = createContext<RefObject<ComponentRef<typeof View> | null> | undefined>(undefined);
 export const FLOATING_NAVIGATION_GAP = 16;
 
 export function GlassBackground({ radius = 30 }: { radius?: number }) {
   const blurTarget = useContext(GlassTargetContext);
-  const light = getTheme() === 'light';
+  const light = useTheme() === 'light';
   return (
     <View
       pointerEvents="none"
@@ -17,7 +17,7 @@ export function GlassBackground({ radius = 30 }: { radius?: number }) {
         borderRadius: radius,
         overflow: 'hidden',
         borderWidth: 1,
-        borderColor: light ? 'rgba(255,255,255,0.75)' : 'rgba(220,235,255,0.38)',
+        borderColor: light ? 'rgba(227,194,142,0.75)' : 'rgba(220,235,255,0.38)',
       }]}
     >
       <BlurView
@@ -29,7 +29,7 @@ export function GlassBackground({ radius = 30 }: { radius?: number }) {
       />
       <View style={[StyleSheet.absoluteFill, {
         zIndex: 1,
-        backgroundColor: light ? 'rgba(240,245,250,0.88)' : 'rgba(44,61,82,0.88)',
+        backgroundColor: light ? 'rgba(255,240,214,0.94)' : 'rgba(44,61,82,0.88)',
       }]} />
     </View>
   );

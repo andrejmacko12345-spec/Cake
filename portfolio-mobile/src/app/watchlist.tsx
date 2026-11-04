@@ -1,3 +1,5 @@
+import { useThemedStyles } from '../data/theme';
+import { selectionHaptic } from '../data/haptics';
 import { useAppStorage } from '../data/app-storage';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ComponentRef } from 'react';
@@ -43,6 +45,7 @@ function PeriodSelector({ value, onChange }: {
   value: (typeof periods)[number]['label'];
   onChange: (value: (typeof periods)[number]['label']) => void;
 }) {
+  const styles = useThemedStyles(createStyles);
   const ref = useRef<ComponentRef<typeof View>>(null);
   const [expanded, setExpanded] = useState(false);
   const expansion = useRef(new Animated.Value(0)).current;
@@ -179,8 +182,8 @@ function getPeriodChange(
     ? (currentPrice / startPrice - 1) * 100
     : null;
 }
-function formatPrice(price: number, currency: string) {
-  return new Intl.NumberFormat('sk-SK', {
+function formatPrice(price: number, currency: string, language: 'sk' | 'en') {
+  return new Intl.NumberFormat(language === 'sk' ? 'sk-SK' : 'en-US', {
     style: 'currency',
     currency,
     maximumFractionDigits: 2,
@@ -206,7 +209,8 @@ function WatchlistPriceCard({
   last: boolean;
   editing: boolean;
 }) {
-  const { t } = useLocale();
+  const styles = useThemedStyles(createStyles);
+  const { t, language } = useLocale();
   const allPoints = entry?.history?.points ?? [];
   const points = selectedPeriod === '1D' ? lastTradingDay(allPoints).points : allPoints;
   const currentPrice = entry?.quote?.price ?? points[points.length - 1]?.price ?? null;
@@ -228,10 +232,10 @@ function WatchlistPriceCard({
     <View style={[styles.assetRow, !last && styles.assetCardDivider]}>
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={`Zobraziť detail ${asset.symbol}`}
+      accessibilityLabel={`${t('Detail akcie')} ${asset.symbol}`}
       onPress={onPress}
       onLongPress={() =>
-        Alert.alert(asset.symbol, t('Odstrániť z watchlistu?'), [
+        Alert.alert(asset.symbol, t('Odstrániť z zoznamu sledovaných?'), [
           { text: t('Zrušiť'), style: 'cancel' },
           { text: t('Odstrániť'), style: 'destructive', onPress: onRemove },
         ])}
@@ -259,14 +263,14 @@ function WatchlistPriceCard({
           <Text style={styles.periodChange}>
             {change === null
               ? entry?.loading ? '…' : '—'
-              : `${change > 0 ? '+' : ''}${change.toLocaleString('sk-SK', { maximumFractionDigits: 2 })} %`}
+              : `${change > 0 ? '+' : ''}${change.toLocaleString(language === 'sk' ? 'sk-SK' : 'en-US', { maximumFractionDigits: 2 })} %`}
           </Text>
         </View>
         {entry?.loading && currentPrice === null ? (
           <ActivityIndicator size="small" color={colors.green} style={styles.priceLoading} />
         ) : (
           <Text style={styles.currentPrice}>
-            {currentPrice === null ? '—' : formatPrice(currentPrice, currency)}
+            {currentPrice === null ? '—' : formatPrice(currentPrice, currency, language)}
           </Text>
         )}
       </View>
@@ -279,15 +283,15 @@ function WatchlistPriceCard({
     </View>
   );
 }
-function showStorageError(action: string, error: unknown) {
-  const detail = error instanceof Error ? error.message : String(error);
-  Alert.alert(`Chyba: ${action} watchlistu`, detail);
-}
-
 export default function WatchlistScreen() {
+  const styles = useThemedStyles(createStyles);
   const AsyncStorage = useAppStorage();
   const router = useRouter();
-  const { t } = useLocale();
+  const { t, errorText } = useLocale();
+  function showStorageError(action: string, error: unknown) {
+    console.warn(`Watchlist ${action} failed:`, error);
+    Alert.alert(t('Chyba'), errorText(error instanceof Error ? error.message : String(error)));
+  }
   const [watchlists, setWatchlists] = useState<WatchlistsState>(defaultWatchlists);
   const [loading, setLoading] = useState(true);
   const [showPicker, setShowPicker] = useState(false);
@@ -625,7 +629,7 @@ export default function WatchlistScreen() {
     >
       <Header
         compact
-        title={selectedWatchlist?.name ?? t('Watchlist')}
+        title={selectedWatchlist?.name ?? t('Sledované')}
         titleExpanded={showLists}
         onTitlePress={() => {
           setEditingListId(null);
@@ -639,6 +643,7 @@ export default function WatchlistScreen() {
         <Pressable accessibilityRole="button"
           accessibilityLabel={`${t('Zoradiť')}: ${t(sortOrder === 'alphabetical' ? 'A–Z' : 'Zmena %')}`}
           onPress={() => {
+            selectionHaptic();
             setSortOrder((current) => current === 'alphabetical' ? 'change' : 'alphabetical');
             setSortDirection(sortOrder === 'alphabetical' ? 'desc' : 'asc');
           }}
@@ -647,7 +652,7 @@ export default function WatchlistScreen() {
         </Pressable>
         <Pressable accessibilityRole="button"
           accessibilityLabel={t(sortDirection === 'asc' ? 'Vzostupne' : 'Zostupne')}
-          onPress={() => setSortDirection((current) => current === 'asc' ? 'desc' : 'asc')}
+          onPress={() => { selectionHaptic(); setSortDirection((current) => current === 'asc' ? 'desc' : 'asc'); }}
           style={styles.sortDirection}>
           {sortDirection === 'asc' ? <ArrowUpWideNarrow size={16} color={colors.text} />
             : <ArrowDownWideNarrow size={16} color={colors.text} />}
@@ -665,7 +670,7 @@ export default function WatchlistScreen() {
       {loading ? (
         <Surface style={styles.loadingCard}>
           <ActivityIndicator color={colors.green} />
-          <Text style={styles.loadingText}>{t('Načítavam watchlist…')}</Text>
+          <Text style={styles.loadingText}>{t('Načítavam zoznam sledovaných…')}</Text>
         </Surface>
       ) : assets.length ? (
         <Surface style={styles.assetList}>
@@ -713,7 +718,7 @@ export default function WatchlistScreen() {
           <View style={styles.modalSheet}>
             <View style={styles.modalHeader}>
               <View>
-                <Text style={styles.modalTitle}>{t('Moje watchlisty')}</Text>
+                <Text style={styles.modalTitle}>{t('Moje zoznamy sledovaných')}</Text>
                 <Text style={styles.modalSubtitle}>{t('Vyber alebo uprav svoj zoznam akcií.')}</Text>
               </View>
               <Pressable
@@ -736,7 +741,7 @@ export default function WatchlistScreen() {
                   maxLength={32}
                   onChangeText={setListNameInput}
                   onSubmitEditing={saveListName}
-                  placeholder={t('Názov watchlistu')}
+                  placeholder={t('Názov zoznamu sledovaných')}
                   placeholderTextColor={colors.muted}
                   returnKeyType="done"
                   style={styles.searchInput}
@@ -777,7 +782,7 @@ export default function WatchlistScreen() {
                         style={styles.watchlistSelect}
                       >
                         <View style={styles.optionCopy}>
-                          <Text style={styles.optionSymbol} numberOfLines={1}>{list.name}</Text>
+                          <Text style={styles.optionSymbol} numberOfLines={1}>{list.id === 'default' && list.name === 'Watchlist' ? t('Sledované') : list.name}</Text>
                           <Text style={styles.optionName}>
                             {list.symbols.length} {t('titulov')}
                           </Text>
@@ -805,7 +810,7 @@ export default function WatchlistScreen() {
                     </View>
                     {confirmDeleteListId === list.id ? (
                       <View style={styles.deleteConfirmation}>
-                        <Text style={styles.deleteConfirmationText}>{t('Odstrániť tento watchlist?')}</Text>
+                        <Text style={styles.deleteConfirmationText}>{t('Odstrániť tento zoznam sledovaných?')}</Text>
                         <Pressable onPress={() => setConfirmDeleteListId(null)} style={styles.deleteCancelButton}>
                           <Text style={styles.deleteCancelText}>{t('Zrušiť')}</Text>
                         </Pressable>
@@ -821,7 +826,7 @@ export default function WatchlistScreen() {
             {editingListId === null ? (
               <Pressable accessibilityRole="button" onPress={beginCreateList} style={styles.createListButton}>
                 <Plus size={17} color={colors.green} />
-                <Text style={styles.createListText}>{t('Vytvoriť watchlist')}</Text>
+                <Text style={styles.createListText}>{t('Vytvoriť zoznam sledovaných')}</Text>
               </Pressable>
             ) : null}
           </View>
@@ -843,7 +848,7 @@ export default function WatchlistScreen() {
           <Animated.View style={[styles.modalSheet, pickerAnimation.sheet]}>
             <View style={styles.modalHeader}>
               <View>
-                <Text style={styles.modalTitle}>{t('Pridať do watchlistu')}</Text>
+                <Text style={styles.modalTitle}>{t('Pridať do zoznamu sledovaných')}</Text>
                 <Text style={styles.modalSubtitle}>{t('Vyber titul na sledovanie')}</Text>
               </View>
               <Pressable
@@ -859,7 +864,7 @@ export default function WatchlistScreen() {
               <TextInput
                 ref={searchInputRef}
                 autoFocus
-                accessibilityLabel="Hľadať akciu"
+                accessibilityLabel={t('Hľadať akciu')}
                 autoCapitalize="characters"
                 autoCorrect={false}
                 onChangeText={setSearchQuery}
@@ -888,7 +893,7 @@ export default function WatchlistScreen() {
                   <Text style={styles.noAssets}>{t('Vyhľadávam akcie…')}</Text>
                 </View>
               ) : searchError ? (
-                <Text style={styles.noAssets}>{searchError}</Text>
+                <Text style={styles.noAssets}>{errorText(searchError)}</Text>
               ) : matchingAssets.length ? matchingAssets.map((asset) => {
                 const alreadyAdded = symbols.includes(asset.symbol);
                 return (
@@ -921,7 +926,7 @@ export default function WatchlistScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = () => StyleSheet.create({
   periodSelector: {
     flex: 1,
     flexDirection: 'row',

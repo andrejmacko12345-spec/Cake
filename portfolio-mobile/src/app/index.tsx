@@ -1,5 +1,7 @@
+import { useThemedStyles } from '../data/theme';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useAppStorage } from '../data/app-storage';
+import { useAmountVisibility } from '../context/amount-visibility';
+import { useChartHaptics } from '../hooks/use-chart-haptics';
 import { ActivityIndicator, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Defs, LinearGradient, Line, Path, Stop } from 'react-native-svg';
 import { ChartNoAxesCombined, ChevronDown, ChevronRight, ChevronUp, Eye, EyeOff, Plus, Search, TrendingUp, UserRound, Wallet } from 'lucide-react-native';
@@ -19,8 +21,6 @@ import { colors, formatMoney, formatPercent } from '../data/portfolio';
 import { Transaction, TransactionInput, positionCostEUR, positionValueEUR, usePositions } from '../hooks/use-positions';
 import { useLocale } from '../context/locale';
 import { fetchHistoricalQuoteSeries, HistoricalQuotePoint, HistoricalQuoteSeries, LiveQuote } from '../data/quotes';
-
-const HIDE_AMOUNTS_KEY = '@portfolio-mobile/hide-amounts';
 
 const chartRanges = [
   { label: '1D', days: 1 },
@@ -211,7 +211,8 @@ function InvestmentTimeline({
   currentValue: number;
   hideAmounts: boolean;
 }) {
-  const { t, language } = useLocale();
+  const styles = useThemedStyles(createStyles);
+  const { t, language, errorText } = useLocale();
   const money = (value: number) => (hideAmounts ? '•••••' : formatMoney(value));
   const [history, setHistory] = useState<PortfolioHistoryPoint[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
@@ -368,10 +369,17 @@ function InvestmentTimeline({
       }
       : null);
   }, [onLatestChange, selectedPoint, selectedIndex, range, language]);
+  const chartHaptics = useChartHaptics();
   const updateSelectedPoint = (locationX: number) => {
     if (!history.length || chartWidth <= 0) return;
     const normalized = Math.min(1, Math.max(0, locationX / chartWidth));
-    setSelectedIndex(Math.round(normalized * (history.length - 1)));
+    const index = Math.round(normalized * (history.length - 1));
+    chartHaptics(index);
+    setSelectedIndex(index);
+  };
+  const endSelection = () => {
+    chartHaptics(null);
+    setSelectedIndex(null);
   };
   const panResponder = useMemo(() => PanResponder.create({
     onStartShouldSetPanResponder: () => false,
@@ -379,13 +387,9 @@ function InvestmentTimeline({
       history.length > 0 && Math.abs(gesture.dx) > Math.abs(gesture.dy) && Math.abs(gesture.dx) > 4,
     onPanResponderGrant: (event) => updateSelectedPoint(event.nativeEvent.locationX),
     onPanResponderMove: (event) => updateSelectedPoint(event.nativeEvent.locationX),
-    onPanResponderRelease: () => {
-      setSelectedIndex(null);
-    },
-    onPanResponderTerminate: () => {
-      setSelectedIndex(null);
-    },
-  }), [history, chartWidth]);
+    onPanResponderRelease: endSelection,
+    onPanResponderTerminate: endSelection,
+  }), [history, chartWidth, chartHaptics]);
 
   return (
     <View style={styles.chartCard}>
@@ -394,12 +398,8 @@ function InvestmentTimeline({
         onTouchStart={(event) => {
           updateSelectedPoint(event.nativeEvent.locationX);
         }}
-        onTouchEnd={() => {
-          setSelectedIndex(null);
-        }}
-        onTouchCancel={() => {
-          setSelectedIndex(null);
-        }}
+        onTouchEnd={endSelection}
+        onTouchCancel={endSelection}
         onLayout={(event) => setChartWidth(event.nativeEvent.layout.width)}
         style={styles.chartWrap}
       >
@@ -453,7 +453,7 @@ function InvestmentTimeline({
         </View>
       </View>
       {historyError ? (
-        <Text accessibilityRole="alert" style={styles.chartError}>{historyError}</Text>
+        <Text accessibilityRole="alert" style={styles.chartError}>{errorText(historyError)}</Text>
       ) : null}
       <View style={styles.rangeRow}>
         {chartRanges.map((item) => (
@@ -479,7 +479,7 @@ function InvestmentTimeline({
 }
 
 export default function PortfolioScreen() {
-  const AsyncStorage = useAppStorage();
+  const styles = useThemedStyles(createStyles);
   const router = useRouter();
   const {
     positions,
@@ -497,22 +497,10 @@ export default function PortfolioScreen() {
   const [closedExpanded, setClosedExpanded] = useState(false);
   const [sparklines, setSparklines] = useState<Record<string, number[]>>({});
   const [periodReturns, setPeriodReturns] = useState<Record<string, { gainEUR: number; returnPercent: number }>>({});
-  const { t, language } = useLocale();
-  const [hideAmounts, setHideAmounts] = useState(false);
+  const { t, language, errorText } = useLocale();
+  const { hideAmounts, updating: updatingVisibility, toggleHideAmounts } = useAmountVisibility();
   const money = (value: number) => (hideAmounts ? '•••••' : formatMoney(value));
   const signedMoney = (value: number) => (hideAmounts ? '•••••' : `${value >= 0 ? '+' : ''}${formatMoney(value)}`);
-
-  useEffect(() => {
-    AsyncStorage.getItem(HIDE_AMOUNTS_KEY)
-      .then((saved) => setHideAmounts(saved === 'true'))
-      .catch(() => undefined);
-  }, []);
-
-  const toggleHideAmounts = () => {
-    const next = !hideAmounts;
-    setHideAmounts(next);
-    AsyncStorage.setItem(HIDE_AMOUNTS_KEY, String(next)).catch(() => undefined);
-  };
 
   const totals = useMemo(() => positions.reduce(
     (result, position) => {
@@ -603,7 +591,9 @@ export default function PortfolioScreen() {
                 ? (language === 'sk' ? 'Zobraziť sumy' : 'Show amounts')
                 : (language === 'sk' ? 'Skryť sumy' : 'Hide amounts')}
               accessibilityRole="button"
-              onPress={toggleHideAmounts}
+              accessibilityState={{ disabled: updatingVisibility }}
+              disabled={updatingVisibility}
+              onPress={() => { void toggleHideAmounts(); }}
               style={styles.iconButton}
             >
               {hideAmounts ? <EyeOff size={18} color={colors.green} /> : <Eye size={18} color={colors.green} />}
@@ -642,7 +632,7 @@ export default function PortfolioScreen() {
           </View>
           <View style={styles.depositsPill}>
             <Text style={styles.depositsValue}>{money(totals.openCost)}</Text>
-            <Text style={styles.depositsLabel}>Net deposits</Text>
+            <Text style={styles.depositsLabel}>{t('Čisté vklady')}</Text>
           </View>
         </View>
       <InvestmentTimeline
@@ -756,7 +746,7 @@ export default function PortfolioScreen() {
           >
             <View>
               <Text style={styles.closedTitle}>{t('Zatvorené pozície')}</Text>
-              <Text style={styles.closedSubtitle}>{closedPositions.length} predaných titulov · výnos je v celkovom výsledku</Text>
+              <Text style={styles.closedSubtitle}>{closedPositions.length}               {t('predaných titulov · výnos je v celkovom výsledku')}</Text>
             </View>
             <View style={styles.closedToggleRight}>
               <Text style={styles.closedCount}>{closedPositions.length}</Text>
@@ -784,7 +774,7 @@ export default function PortfolioScreen() {
 
       {activePositions.length > 0 ? (
         <Text style={styles.hint}>
-          Ťukni na akciu a zobraz jej graf aj kompletnú históriu nákupov a predajov.
+          {t('Ťukni na akciu a zobraz jej graf aj kompletnú históriu nákupov a predajov.')}
         </Text>
       ) : null}
 
@@ -807,7 +797,7 @@ export default function PortfolioScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = () => StyleSheet.create({
   addPositionButton: {
     width: 32, height: 32, borderRadius: 10, backgroundColor: colors.surface,
     alignItems: 'center', justifyContent: 'center',

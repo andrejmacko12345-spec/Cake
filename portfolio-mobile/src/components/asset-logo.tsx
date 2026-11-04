@@ -1,3 +1,4 @@
+import { useThemedStyles } from '../data/theme';
 import { useState } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import { colors } from '../data/portfolio';
@@ -9,6 +10,7 @@ type Props = {
 };
 
 export function AssetLogo({ symbol, color, size = 44 }: Props) {
+  const styles = useThemedStyles(createStyles);
   const [failedLogo, setFailedLogo] = useState<{ symbol: string; index: number }>({ symbol: '', index: 0 });
   const logoIndex = failedLogo.symbol === symbol ? failedLogo.index : 0;
   const encodedSymbol = encodeURIComponent(symbol);
@@ -49,7 +51,7 @@ export function AssetLogo({ symbol, color, size = 44 }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = () => StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',

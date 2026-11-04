@@ -1,3 +1,4 @@
+import { useThemedStyles } from '../data/theme';
 import { useEffect, useRef, useState } from 'react';
 import type { ComponentRef } from 'react';
 import {
@@ -80,8 +81,9 @@ export function TransactionModal({
   onSave,
   onDelete,
 }: Props) {
+  const styles = useThemedStyles(createStyles);
   const isEditing = Boolean(transaction);
-  const { t, language } = useLocale();
+  const { t, language, errorText } = useLocale();
   const { positions } = usePositions();
   const fixedSymbol = Boolean(initialSymbol || transaction);
   const [symbol, setSymbol] = useState('');
@@ -421,7 +423,7 @@ export function TransactionModal({
                         <Text style={styles.assetSearchHint}>{t('Vyhľadávam akcie…')}</Text>
                       </View>
                     ) : assetSearchError ? (
-                      <Text style={styles.assetSearchHint}>{assetSearchError}</Text>
+                      <Text style={styles.assetSearchHint}>{errorText(assetSearchError)}</Text>
                     ) : assetResults.length ? assetResults.map((asset) => (
                       <Pressable
                         key={asset.symbol}
@@ -471,7 +473,7 @@ export function TransactionModal({
             {errorMessage ? (
               <View style={styles.errorBox}>
                 <AlertCircle size={16} color={colors.red} />
-                <Text style={styles.errorText}>{errorMessage}</Text>
+                <Text style={styles.errorText}>{errorText(errorMessage)}</Text>
               </View>
             ) : null}
 
@@ -705,7 +707,7 @@ export function TransactionModal({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = () => StyleSheet.create({
   scrim: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.65)' },
   sheet: {
     maxHeight: '92%',

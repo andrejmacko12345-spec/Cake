@@ -1,3 +1,4 @@
+import { useThemedStyles } from '../data/theme';
 import { useState } from 'react';
 import { ActivityIndicator, Animated, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { ChevronRight, Search, X } from 'lucide-react-native';
@@ -10,6 +11,7 @@ export function StockSearchModal({ onClose, onSelect }: {
   onClose: () => void;
   onSelect: (symbol: string) => void;
 }) {
+  const styles = useThemedStyles(createStyles);
   const { t } = useLocale();
   const [query, setQuery] = useState('');
   const { results, loading, error } = useAssetSearch(query);
@@ -65,7 +67,7 @@ export function StockSearchModal({ onClose, onSelect }: {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = () => StyleSheet.create({
   scrim: { flex: 1, justifyContent: 'flex-end' },
   backdrop: { backgroundColor: 'rgba(0,0,0,0.55)' },
   sheet: { height: '70%', backgroundColor: colors.background, borderTopLeftRadius: 22, borderTopRightRadius: 22, padding: 16, paddingBottom: 28 },

@@ -39,7 +39,15 @@
   If a conflict occurs, Profile offers an explicit restore from the account.
 - Transactions, watchlists, language, compare settings, amount visibility, theme
   and event preferences are backed up. Quotes, caches and auth tokens are excluded.
-  The restored theme applies after restarting the app, matching the existing theme system.
+  Theme changes and restored themes apply immediately without restarting or
+  remounting screens; open forms and navigation state are preserved.
+- Account loading, first-backup choices and errors use the saved Slovak/English
+  preference, including before the main screens mount. Restoring a backup restores
+  its language too; signing out returns to the guest language.
+- The home visibility button shares one account-scoped setting with analytics,
+  forecasts, stock details, transaction history and dividends. Analytics masks monetary returns; hidden forecasts show
+  cumulative percentage returns instead of balances and cash gains. Amounts stay
+  hidden until the setting loads, and remain hidden if reading or saving fails.
 - Auth sessions use SecureStore on native and localStorage on web. User data is
   isolated by account ID; logging out returns to the guest portfolio.
 - Users can delete their account and cloud backup after confirming their password.
@@ -68,6 +76,8 @@ access backup data; do not describe the backup as end-to-end encrypted.
 - Failed/offline backup reports an error; restoring another device's newer backup
   requires the explicit restore action rather than an accidental overwrite.
 - Password recovery with email link; delete own account and verify backup cascade.
+- Check both Slovak and English for account setup, errors and transaction history.
+  `npm test` also audits translation keys, hardcoded JSX prose and localized errors.
 
 ## Google Play release gates
 

@@ -1,30 +1,20 @@
-import { useAppStorage } from '../data/app-storage';
-import { useCallback, useState } from 'react';
-import { Alert, Pressable, StyleSheet } from 'react-native';
+import { useThemedStyles } from '../data/theme';
+import { Pressable, StyleSheet } from 'react-native';
 import { ArrowLeft } from 'lucide-react-native';
-import { useFocusEffect, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { DividendOverview } from '../components/dividend-overview';
 import { Header, Page } from '../components/finapp';
 import { useLocale } from '../context/locale';
 import { colors } from '../data/portfolio';
 import { usePositions } from '../hooks/use-positions';
+import { useAmountVisibility } from '../context/amount-visibility';
 
 export default function DividendsScreen() {
-  const AsyncStorage = useAppStorage();
+  const styles = useThemedStyles(createStyles);
   const router = useRouter();
   const { t, language } = useLocale();
   const { positions, transactions } = usePositions();
-  const [hideAmounts, setHideAmounts] = useState(false);
-
-  useFocusEffect(useCallback(() => {
-    let active = true;
-    AsyncStorage.getItem('@portfolio-mobile/hide-amounts').then((value) => {
-      if (active) setHideAmounts(value === 'true');
-    }).catch((error: unknown) => {
-      if (active) Alert.alert(t('Chyba'), error instanceof Error ? error.message : String(error));
-    });
-    return () => { active = false; };
-  }, [t]));
+  const { hideAmounts } = useAmountVisibility();
 
   return (
     <Page>
@@ -40,6 +30,6 @@ export default function DividendsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = () => StyleSheet.create({
   back: { width: 39, height: 39, alignItems: 'center', justifyContent: 'center', borderRadius: 13, backgroundColor: colors.surface },
 });

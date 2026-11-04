@@ -53,6 +53,7 @@ test('guest and account storage remain isolated, including late writes and delet
   const guest = storage.useAppStorage();
   await guest.setItem('@portfolio-mobile/transactions-v1', '{"transactions":[],"quotes":{}}');
   await guest.setItem('@portfolio-mobile/language', 'en');
+  await guest.setItem('@portfolio-mobile/hide-amounts', 'true');
   const snapshot = await storage.readBackup(null);
   let releaseGuestWrite;
   writeBarrier = new Promise((resolve) => { releaseGuestWrite = resolve; });
@@ -69,9 +70,14 @@ test('guest and account storage remain isolated, including late writes and delet
   await storage.restoreBackup('alice', snapshot);
   storage.setStorageOwner('alice');
   const alice = storage.useAppStorage();
+  assert.equal(await alice.getItem('@portfolio-mobile/hide-amounts'), 'true');
   await alice.setItem('@portfolio-mobile/language', 'sk');
   storage.setStorageOwner('bob');
+  assert.equal(await storage.appStorage.getItem('@portfolio-mobile/language', 'alice'), 'sk');
+  assert.equal(await storage.appStorage.getItem('@portfolio-mobile/language', null), 'en');
+  assert.equal(await storage.appStorage.getItem('@portfolio-mobile/language'), null);
   const bob = storage.useAppStorage();
+  assert.equal(await bob.getItem('@portfolio-mobile/hide-amounts'), null);
   const resumeBob = storage.pauseAccountWrites('bob');
   await assert.rejects(() => bob.setItem('@portfolio-mobile/language', 'sk'), /changing/);
   resumeBob();
@@ -83,6 +89,7 @@ test('guest and account storage remain isolated, including late writes and delet
   assert.equal(await guest.getItem('@portfolio-mobile/language'), 'en');
   await storage.restoreBackup('alice', { version: 1, values: {} });
   assert.equal(await alice.getItem('@portfolio-mobile/language'), 'sk');
+  assert.equal(await alice.getItem('@portfolio-mobile/hide-amounts'), 'false');
   assert.deepEqual(JSON.parse(await alice.getItem('@portfolio-mobile/transactions-v1')).transactions, []);
   await assert.rejects(() => storage.restoreBackup('alice', { version: 1, values: { bad: 'value' } }));
   await storage.clearAccountData('alice');

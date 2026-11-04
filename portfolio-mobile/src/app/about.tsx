@@ -1,11 +1,13 @@
+import { useThemedStyles } from '../data/theme';
 import { Link } from 'expo-router';
 import { ArrowLeft, Briefcase, ChevronRight, Layers3, Sparkles } from 'lucide-react-native';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useLocale } from '../context/locale';
 
 const values = [
   {
-    title: 'Design-first',
+    title: 'Dizajn na prvom mieste',
     text: 'Všetko robím s dôrazom na čitateľnosť, priestor a pohyb.',
     icon: Sparkles,
   },
@@ -22,21 +24,22 @@ const values = [
 ];
 
 export default function AboutScreen() {
+  const styles = useThemedStyles(createStyles);
+  const { t } = useLocale();
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
         <Link href="/" asChild>
           <Pressable style={styles.backButton}>
             <ArrowLeft size={18} color="#dbeafe" />
-            <Text style={styles.backText}>Späť</Text>
+            <Text style={styles.backText}>{t('Späť')}</Text>
           </Pressable>
         </Link>
 
-        <Text style={styles.eyebrow}>O mne</Text>
-        <Text style={styles.title}>Vytváram riešenia, ktoré majú zmysel.</Text>
+        <Text style={styles.eyebrow}>{t('O mne')}</Text>
+        <Text style={styles.title}>{t('Vytváram riešenia, ktoré majú zmysel.')}</Text>
         <Text style={styles.description}>
-          Pomáham startupom, tímom a firmám budovať mobilné produkty, ktoré spájajú ľudský dizajn s
-          technickým výkonom. Moje projekty sú zamerané na rýchly vývoj, kvalitu UX a jasné obchodné ciele.
+          {t('Pomáham startupom, tímom a firmám budovať mobilné produkty, ktoré spájajú ľudský dizajn s technickým výkonom. Moje projekty sú zamerané na rýchly vývoj, kvalitu UX a jasné obchodné ciele.')}
         </Text>
 
         <View style={styles.cardList}>
@@ -46,8 +49,8 @@ export default function AboutScreen() {
                 <Icon size={18} color="#dbeafe" />
               </View>
               <View style={styles.cardBody}>
-                <Text style={styles.cardTitle}>{title}</Text>
-                <Text style={styles.cardText}>{text}</Text>
+                <Text style={styles.cardTitle}>{t(title)}</Text>
+                <Text style={styles.cardText}>{t(text)}</Text>
               </View>
             </View>
           ))}
@@ -55,7 +58,7 @@ export default function AboutScreen() {
 
         <Link href="/projects" asChild>
           <Pressable style={styles.linkRow}>
-            <Text style={styles.linkText}>Pozrieť projekty</Text>
+            <Text style={styles.linkText}>{t('Pozrieť projekty')}</Text>
             <ChevronRight size={18} color="#dbeafe" />
           </Pressable>
         </Link>
@@ -64,7 +67,7 @@ export default function AboutScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = () => StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#0b1021',

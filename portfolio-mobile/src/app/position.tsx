@@ -1,3 +1,4 @@
+import { useThemedStyles } from '../data/theme';
 import { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
@@ -22,6 +23,8 @@ import { Asset, availableAssets, colors, formatMoney, formatPercent } from '../d
 import { fetchLiveQuote, LiveQuote } from '../data/quotes';
 import { fetchHistoricalQuoteSeries, HistoricalQuotePoint } from '../data/quotes';
 import { useLocale } from '../context/locale';
+import { useAmountVisibility } from '../context/amount-visibility';
+import { useChartHaptics } from '../hooks/use-chart-haptics';
 import { fetchKeyStats, fetchStockEstimates, KeyStats, StockEstimates } from '../data/fundamentals';
 import { CompanyEvents, fetchCompanyEvents } from '../data/events';
 import {
@@ -109,7 +112,8 @@ function StockChart({
   range: RangeLabel;
   onRangeChange: (range: RangeLabel) => void;
 }) {
-  const { t, language } = useLocale();
+  const styles = useThemedStyles(createStyles);
+  const { t, language, errorText } = useLocale();
   const [history, setHistory] = useState<PricePoint[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -185,21 +189,26 @@ function StockChart({
   const labels = history.length > 1
     ? [history[0], history[Math.floor(history.length / 2)], history[history.length - 1]]
     : [];
+  const chartHaptics = useChartHaptics();
+  const selectPoint = (locationX: number) => {
+    if (!history.length || chartWidth <= 0) return;
+    const index = Math.round(Math.max(0, Math.min(1, locationX / chartWidth)) * (history.length - 1));
+    chartHaptics(index);
+    setSelectedIndex(index);
+  };
+  const endSelection = () => {
+    chartHaptics(null);
+    setSelectedIndex(null);
+  };
   const panResponder = useMemo(() => PanResponder.create({
     onStartShouldSetPanResponder: () => false,
     onMoveShouldSetPanResponder: (_, gesture) =>
       history.length > 0 && Math.abs(gesture.dx) > Math.abs(gesture.dy) && Math.abs(gesture.dx) > 4,
-    onPanResponderGrant: (event) => {
-      const index = Math.round(Math.max(0, Math.min(1, event.nativeEvent.locationX / chartWidth)) * (history.length - 1));
-      setSelectedIndex(index);
-    },
-    onPanResponderMove: (event) => {
-      const index = Math.round(Math.max(0, Math.min(1, event.nativeEvent.locationX / chartWidth)) * (history.length - 1));
-      setSelectedIndex(index);
-    },
-    onPanResponderRelease: () => setSelectedIndex(null),
-    onPanResponderTerminate: () => setSelectedIndex(null),
-  }), [chartWidth, history.length]);
+    onPanResponderGrant: (event) => selectPoint(event.nativeEvent.locationX),
+    onPanResponderMove: (event) => selectPoint(event.nativeEvent.locationX),
+    onPanResponderRelease: endSelection,
+    onPanResponderTerminate: endSelection,
+  }), [chartWidth, history.length, chartHaptics]);
   const timeLabel = (point: { timestamp: number }) =>
     new Date(point.timestamp * 1000).toLocaleTimeString(language === 'sk' ? 'sk-SK' : 'en-US', { hour: '2-digit', minute: '2-digit' });
   const dateLabel = (value: string) =>
@@ -260,7 +269,7 @@ function StockChart({
         {loading ? (
           <View style={styles.chartOverlay}><ActivityIndicator color={colors.green} /></View>
         ) : null}
-        {error ? <Text style={styles.chartError}>{error}</Text> : null}
+        {error ? <Text style={styles.chartError}>{errorText(error)}</Text> : null}
       </View>
       <View style={styles.chartLabels}>
         {labels.length
@@ -280,7 +289,7 @@ function StockChart({
             onPress={() => onRangeChange(item.label)}
             style={[styles.rangeButton, item.label === range && styles.rangeButtonSelected]}
           >
-            <Text style={[styles.rangeText, item.label === range && styles.rangeTextSelected]}>{item.label}</Text>
+            <Text style={[styles.rangeText, item.label === range && styles.rangeTextSelected]}>{t(item.label)}</Text>
           </Pressable>
         ))}
       </View>
@@ -295,6 +304,8 @@ function TransactionList({
   transactions: Transaction[];
   onEdit: (transaction: Transaction) => void;
 }) {
+  const styles = useThemedStyles(createStyles);
+  const { hideAmounts } = useAmountVisibility();
   const { t, language } = useLocale();
   return (
     <View style={styles.transactionList}>
@@ -317,7 +328,7 @@ function TransactionList({
                 <Text style={styles.transactionName}>{isBuy ? t('Nákup') : t('Predaj')}</Text>
               </View>
               <Text style={[styles.transactionAmount, { color: isBuy ? colors.text : colors.red }]}>
-                {formatMoney(total * transaction.fxToEur)}
+                {hideAmounts ? '•••••' : formatMoney(total * transaction.fxToEur)}
               </Text>
             </View>
             <View style={styles.transactionBottomLine}>
@@ -326,7 +337,7 @@ function TransactionList({
               </Text>
               <View style={styles.transactionPriceLine}>
                 <Text style={styles.transactionMeta}>
-                  {transaction.shares.toLocaleString(language === 'sk' ? 'sk-SK' : 'en-US')} × {transaction.price.toLocaleString(language === 'sk' ? 'sk-SK' : 'en-US', { maximumFractionDigits: 2 })} {transaction.currency}
+                  {hideAmounts ? '•••••' : `${transaction.shares.toLocaleString(language === 'sk' ? 'sk-SK' : 'en-US')} × ${transaction.price.toLocaleString(language === 'sk' ? 'sk-SK' : 'en-US', { maximumFractionDigits: 2 })} ${transaction.currency}`}
                 </Text>
                 <Pencil size={13} color={colors.muted} />
               </View>
@@ -341,11 +352,13 @@ function TransactionList({
 }
 
 export default function PositionDetailScreen() {
+  const styles = useThemedStyles(createStyles);
+  const { hideAmounts } = useAmountVisibility();
   const { symbol: symbolParam } = useLocalSearchParams<{ symbol: string }>();
   const symbol = Array.isArray(symbolParam) ? symbolParam[0] : symbolParam;
   const router = useRouter();
   const { positions, loading, saveTransaction, deleteTransaction } = usePositions();
-  const { t, language } = useLocale();
+  const { t, language, errorText } = useLocale();
   const heldPosition = positions.find((item) => item.symbol === symbol);
   const asset = availableAssets.find((item) => item.symbol === symbol) ?? (
     symbol && /^[A-Z0-9.^=-]{1,20}$/.test(symbol)
@@ -430,7 +443,8 @@ export default function PositionDetailScreen() {
         style: 'destructive',
         onPress: () => {
           void deleteTransaction(id).then(() => setFormVisible(false)).catch((error: unknown) => {
-            Alert.alert(t('Transakcia sa neodstránila'), error instanceof Error ? error.message : String(error));
+            console.warn('Transaction deletion failed:', error);
+            Alert.alert(t('Transakcia sa neodstránila'), errorText(error instanceof Error ? error.message : String(error)));
           });
         },
       },
@@ -474,7 +488,7 @@ export default function PositionDetailScreen() {
         }
       />
 
-      {quoteError && !heldPosition ? <Text accessibilityRole="alert" style={styles.summaryCaption}>{quoteError}</Text> : null}
+      {quoteError && !heldPosition ? <Text accessibilityRole="alert" style={styles.summaryCaption}>{errorText(quoteError)}</Text> : null}
       <StockChart position={position} range={range} onRangeChange={setRange} />
       <Pressable
         accessibilityRole="button"
@@ -483,7 +497,7 @@ export default function PositionDetailScreen() {
         style={styles.holdingsButton}
       >
         <Text style={styles.holdingsButtonText}>
-          {position.shares.toLocaleString(language === 'sk' ? 'sk-SK' : 'en-US')} {t('ks')}
+          {hideAmounts ? '•••••' : position.shares.toLocaleString(language === 'sk' ? 'sk-SK' : 'en-US')} {t('ks')}
         </Text>
       </Pressable>
       </View>
@@ -493,19 +507,19 @@ export default function PositionDetailScreen() {
           <View style={styles.resultHero}>
             <Text style={styles.resultCaption}>{t('Aktuálna hodnota')}</Text>
             <Text numberOfLines={1} adjustsFontSizeToFit style={styles.resultTotal}>
-              {formatMoney(currentValue)}
+              {hideAmounts ? '•••••' : formatMoney(currentValue)}
             </Text>
           </View>
           <View style={styles.resultGrid}>
             <View style={styles.resultDetails}>
               <View>
                 <Text style={styles.resultCaption}>{t('Investované · otvorená pozícia')}</Text>
-                <Text numberOfLines={1} adjustsFontSizeToFit style={styles.resultAmount}>{formatMoney(openCost)}</Text>
+                <Text numberOfLines={1} adjustsFontSizeToFit style={styles.resultAmount}>{hideAmounts ? '•••••' : formatMoney(openCost)}</Text>
               </View>
               <View>
                 <Text style={styles.resultCaption}>{t('Priemerná nákupná cena')} ({position.currency})</Text>
                 <Text numberOfLines={1} adjustsFontSizeToFit style={styles.resultAmount}>
-                  {position.averageCost.toLocaleString(language === 'sk' ? 'sk-SK' : 'en-US', { style: 'currency', currency: position.currency, minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  {hideAmounts ? '•••••' : position.averageCost.toLocaleString(language === 'sk' ? 'sk-SK' : 'en-US', { style: 'currency', currency: position.currency, minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </Text>
               </View>
             </View>
@@ -514,7 +528,7 @@ export default function PositionDetailScreen() {
                 <Text style={styles.resultCaption}>{t('Nerealizovaný výnos')}</Text>
                 <View style={styles.resultReturn}>
                   <Text numberOfLines={1} adjustsFontSizeToFit style={[styles.resultAmount, { color: unrealized >= 0 ? colors.green : colors.red }]}>
-                    {unrealized >= 0 ? '+' : ''}{formatMoney(unrealized)}
+                    {hideAmounts ? '•••••' : `${unrealized >= 0 ? '+' : ''}${formatMoney(unrealized)}`}
                   </Text>
                   {openCost > 0 ? (
                     <Text style={[styles.resultPct, { color: unrealized >= 0 ? colors.green : colors.red }]}>{formatPercent((unrealized / openCost) * 100)}</Text>
@@ -524,7 +538,7 @@ export default function PositionDetailScreen() {
               <View>
                 <Text style={styles.resultCaption}>{t('Celkový výsledok')}</Text>
                 <Text numberOfLines={1} adjustsFontSizeToFit style={[styles.resultAmount, { color: totalResult >= 0 ? colors.green : colors.red }]}>
-                  {totalResult >= 0 ? '+' : ''}{formatMoney(totalResult)}
+                  {hideAmounts ? '•••••' : `${totalResult >= 0 ? '+' : ''}${formatMoney(totalResult)}`}
                 </Text>
               </View>
             </View>
@@ -539,17 +553,17 @@ export default function PositionDetailScreen() {
             {([
               [
                 ['P/E TTM', stats?.pe != null ? stats.pe.toFixed(1) : '–'],
-                [`Forward P/E ${new Date().getFullYear()}`, estimates?.peThisYear != null ? estimates.peThisYear.toFixed(1) : '–'],
-                [`Forward P/E ${new Date().getFullYear() + 1}`, estimates?.peNextYear != null ? estimates.peNextYear.toFixed(1) : '–'],
+                [`${t('Odhad P/E')} ${new Date().getFullYear()}`, estimates?.peThisYear != null ? estimates.peThisYear.toFixed(1) : '–'],
+                [`${t('Odhad P/E')} ${new Date().getFullYear() + 1}`, estimates?.peNextYear != null ? estimates.peNextYear.toFixed(1) : '–'],
               ],
               [
                 ['EPS TTM', stats?.eps != null ? stats.eps.toFixed(2) : '–'],
-                [`Forward EPS ${new Date().getFullYear()}`, estimates?.epsThisYear != null ? estimates.epsThisYear.toFixed(2) : '–'],
-                [`Forward EPS ${new Date().getFullYear() + 1}`, estimates?.epsNextYear != null ? estimates.epsNextYear.toFixed(2) : '–'],
+                [`${t('Odhad EPS')} ${new Date().getFullYear()}`, estimates?.epsThisYear != null ? estimates.epsThisYear.toFixed(2) : '–'],
+                [`${t('Odhad EPS')} ${new Date().getFullYear() + 1}`, estimates?.epsNextYear != null ? estimates.epsNextYear.toFixed(2) : '–'],
               ],
               [
-                ['Dividend rate', stats?.dividendRate != null ? `${stats.dividendRate.toFixed(2)} ${position.currency}` : '–'],
-                [t('Dividend yield'), stats?.dividendYield != null ? `${(stats.dividendYield * 100).toFixed(2)} %` : '–'],
+                [t('Ročná dividenda na akciu'), stats?.dividendRate != null ? `${stats.dividendRate.toFixed(2)} ${position.currency}` : '–'],
+                [t('Dividendový výnos'), stats?.dividendYield != null ? `${(stats.dividendYield * 100).toFixed(2)} %` : '–'],
                 [t('Trhová kapitalizácia'), stats?.marketCap != null ? formatBigNumber(stats.marketCap) : '–'],
               ],
             ] as const).map((group, index) => (
@@ -562,12 +576,12 @@ export default function PositionDetailScreen() {
               ))}
               </View>
             ))}
-            {metricsError ? <Text accessibilityRole="alert" style={styles.metricsError}>{metricsError}</Text> : null}
+            {metricsError ? <Text accessibilityRole="alert" style={styles.metricsError}>{errorText(metricsError)}</Text> : null}
           </View>
         )}
       </Surface>
 
-      <SectionTitle title={t('Earnings reporty')} />
+      <SectionTitle title={t('Výsledkové správy')} />
       <Surface style={styles.statsCard}>
         {infoLoading ? <ActivityIndicator color={colors.green} /> : (
           <>
@@ -583,13 +597,13 @@ export default function PositionDetailScreen() {
                   <Text style={styles.reportHead}>{t('YoY tržieb')}</Text>
                 </TableColumn>
                 <TableColumn tone="cyan" header style={[styles.reportColumn, styles.colNum]}>
-                  <Text style={styles.reportHead}>{t('Revenue beat')}</Text>
+                  <Text style={styles.reportHead}>{t('Rozdiel tržieb oproti odhadu')}</Text>
                 </TableColumn>
                 <TableColumn tone="violet" header style={[styles.reportColumn, styles.colNum]}>
                   <Text style={styles.reportHead}>EPS</Text>
                 </TableColumn>
                 <TableColumn tone="violet" header style={[styles.reportColumn, styles.colNum]}>
-                  <Text style={styles.reportHead}>{t('EPS beat')}</Text>
+                  <Text style={styles.reportHead}>{t('Rozdiel EPS oproti odhadu')}</Text>
                 </TableColumn>
               </View>
             ) : null}
@@ -630,10 +644,10 @@ export default function PositionDetailScreen() {
               </Text>
             ) : null}
             <Text style={styles.reportSub}>
-              {t('Beat = výsledok − odhad. Revenue beat je v mene tržieb, EPS beat na akciu. EPS používa metodiku konsenzu (GAAP alebo upravené).')}
+              {t('Rozdiel = výsledok − odhad. Rozdiel tržieb je v mene tržieb, rozdiel EPS na akciu. EPS používa metodiku konsenzu (GAAP alebo upravené).')}
             </Text>
             {events?.quarters.slice(0, 6).some((quarter) => quarter.revenueBeatProvisional) ? (
-              <Text style={styles.reportSub}>{t('* Predbežný revenue beat z odhadu uloženého pred reportom; čaká na manuálne overenie.')}</Text>
+              <Text style={styles.reportSub}>{t('* Predbežný rozdiel tržieb z odhadu uloženého pred reportom; čaká na manuálne overenie.')}</Text>
             ) : null}
           </>
         )}
@@ -651,7 +665,7 @@ export default function PositionDetailScreen() {
             <View style={styles.holdingsSummary}>
             <AssetLogo symbol={position.symbol} color={position.color} size={44} />
             <View style={styles.holdingsSummaryCopy}>
-            <Text style={styles.holdingsShares}>{position.shares.toLocaleString(language === 'sk' ? 'sk-SK' : 'en-US')}</Text>
+            <Text style={styles.holdingsShares}>{hideAmounts ? '•••••' : position.shares.toLocaleString(language === 'sk' ? 'sk-SK' : 'en-US')}</Text>
             <Text style={styles.holdingsCaption}>{t('Počet akcií')}</Text>
             </View>
             </View>
@@ -692,7 +706,7 @@ export default function PositionDetailScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = () => StyleSheet.create({
   stockHero: { backgroundColor: colors.surface, borderRadius: 24, padding: 14, marginBottom: 12 },
   holdingsButton: { backgroundColor: colors.green, borderRadius: 24, paddingVertical: 13, alignItems: 'center', marginTop: 6 },
   holdingsButtonText: { color: colors.surface, fontSize: 15, fontWeight: '800' },

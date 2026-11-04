@@ -1,3 +1,4 @@
+import { useThemedStyles } from '../data/theme';
 import { Fragment, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import Svg, { Circle, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
@@ -15,6 +16,8 @@ import { positionCostEUR, positionValueEUR, Transaction, usePositions } from '..
 import { weightedAnnualReturn } from '../data/performance';
 import { fetchFundamentalsComparison, FundamentalMetrics } from '../data/fundamentals';
 import { useLocale } from '../context/locale';
+import { useAmountVisibility } from '../context/amount-visibility';
+import { useChartHaptics } from '../hooks/use-chart-haptics';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const YEAR_MS = 365.25 * DAY_MS;
@@ -23,7 +26,7 @@ const benchmarkAssets = [
   { symbol: '^IXIC', name: 'NASDAQ', shortName: 'NASDAQ', color: '#ff9b55' },
   { symbol: '^DJI', name: 'Dow Jones', shortName: 'DOW', color: '#b59aff' },
 ] as const;
-const portfolioSeries = { symbol: 'portfolio', name: 'Portfólio', shortName: 'PORT.', color: colors.green } as const;
+const portfolioSeries = { symbol: 'portfolio', name: 'Portfólio', shortName: 'PORT.', get color() { return colors.green; } } as const;
 
 type BenchmarkValue = {
   symbol: string;
@@ -278,6 +281,8 @@ function BenchmarkPicker({
   selectedSymbol: string;
   onSelect: (symbol: string) => void;
 }) {
+  const styles = useThemedStyles(createStyles);
+  const { t } = useLocale();
   const [isOpen, setIsOpen] = useState(false);
   const selectedBenchmark = benchmarkAssets.find((benchmark) => benchmark.symbol === selectedSymbol)
     ?? benchmarkAssets[0];
@@ -286,7 +291,7 @@ function BenchmarkPicker({
     <View style={styles.benchmarkPicker}>
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel={`Vybraný index: ${selectedBenchmark.name}`}
+        accessibilityLabel={`${t('Vybraný index')}: ${selectedBenchmark.name}`}
         accessibilityState={{ expanded: isOpen }}
         onPress={() => setIsOpen((open) => !open)}
         style={styles.benchmarkPickerButton}
@@ -369,6 +374,7 @@ function ComparisonLineChart({
   benchmark: typeof benchmarkAssets[number];
   onInteractionChange: (interacting: boolean) => void;
 }) {
+  const styles = useThemedStyles(createStyles);
   const { t, language } = useLocale();
   const { width: screenWidth } = useWindowDimensions();
   const chartWidth = Math.max(260, screenWidth - 92);
@@ -376,8 +382,10 @@ function ComparisonLineChart({
   const padding = { left: 34, right: 8, top: 16, bottom: 23 };
   const [containerWidth, setContainerWidth] = useState(chartWidth);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const chartHaptics = useChartHaptics();
   useEffect(() => () => onInteractionChange(false), [onInteractionChange]);
   const endInteraction = () => {
+    chartHaptics(null);
     setSelectedIndex(null);
     onInteractionChange(false);
   };
@@ -435,7 +443,9 @@ function ComparisonLineChart({
     const chartX = event.nativeEvent.locationX * chartWidth / Math.max(1, containerWidth);
     const plotWidth = chartWidth - padding.left - padding.right;
     const ratio = Math.max(0, Math.min(1, (chartX - padding.left) / plotWidth));
-    setSelectedIndex(Math.round(ratio * (values.length - 1)));
+    const index = Math.round(ratio * (values.length - 1));
+    chartHaptics(index);
+    setSelectedIndex(index);
   };
 
   return (
@@ -572,7 +582,8 @@ function AnnualComparisonChart({
   values: AnnualPerformance[];
   benchmark: typeof benchmarkAssets[number];
 }) {
-  const { language, t } = useLocale();
+  const styles = useThemedStyles(createStyles);
+  const { language, t, errorText } = useLocale();
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
   const viewportWidth = Math.max(280, screenWidth - 72);
   const groupWidth = 104;
@@ -715,6 +726,7 @@ function ReturnCard({
   portfolioReturn: number | null;
   indexReturns: BenchmarkValue[];
 }) {
+  const styles = useThemedStyles(createStyles);
   const { t, language } = useLocale();
   const portfolioColor = portfolioReturn === null
     ? colors.muted
@@ -757,14 +769,15 @@ function FundamentalsTable({
   market: FundamentalMetrics;
   language: 'sk' | 'en';
 }) {
+  const styles = useThemedStyles(createStyles);
   const { t } = useLocale();
   const locale = language === 'sk' ? 'sk-SK' : 'en-US';
   const year = new Date().getFullYear();
   const groups = ['P/E', t('Rast EPS'), t('Rast tržieb')];
   const rows = [
     { label: 'P/E TTM', key: 'currentPE', isPE: true, year: null },
-    { label: 'Forward P/E', key: 'peThisYear', isPE: true, year },
-    { label: 'Forward P/E', key: 'peNextYear', isPE: true, year: year + 1 },
+    { label: t('Odhad P/E'), key: 'peThisYear', isPE: true, year },
+    { label: t('Odhad P/E'), key: 'peNextYear', isPE: true, year: year + 1 },
     { label: t('EPS rast TTM'), key: 'epsGrowthTTM', isPE: false, year: null },
     { label: t('Rast EPS'), key: 'epsGrowthThisYear', isPE: false, year },
     { label: t('Rast EPS'), key: 'epsGrowthNextYear', isPE: false, year: year + 1 },
@@ -819,8 +832,10 @@ function FundamentalsTable({
 }
 
 export default function AnalyticsScreen() {
+  const styles = useThemedStyles(createStyles);
+  const { hideAmounts } = useAmountVisibility();
   const router = useRouter();
-  const { t, language } = useLocale();
+  const { t, language, errorText } = useLocale();
   const { positions, transactions, loading } = usePositions();
   const [history, setHistory] = useState<AnalyticsHistory>({
     annualPerformance: [],
@@ -980,14 +995,14 @@ export default function AnalyticsScreen() {
       <View style={styles.overviewRow}>
         <Surface style={styles.marketCard}>
           <Text style={styles.marketLabel}>{t('Celkový výnos')}</Text>
-          <Text numberOfLines={1} adjustsFontSizeToFit style={styles.marketValue}>{formatWholeEUR(totalReturnEUR, language)}</Text>
+          <Text numberOfLines={1} adjustsFontSizeToFit style={styles.marketValue}>{hideAmounts ? '•••••' : formatWholeEUR(totalReturnEUR, language)}</Text>
           <View style={styles.marketStatRow}>
             <Text style={styles.marketStatLabel}>{t('Nerealizovaný výnos')}</Text>
-            <Text numberOfLines={1} adjustsFontSizeToFit style={styles.marketStatValue}>{formatWholeEUR(unrealizedEUR, language)}</Text>
+            <Text numberOfLines={1} adjustsFontSizeToFit style={styles.marketStatValue}>{hideAmounts ? '•••••' : formatWholeEUR(unrealizedEUR, language)}</Text>
           </View>
           <View style={styles.marketStatRow}>
             <Text style={styles.marketStatLabel}>{t('Realizovaný výnos')}</Text>
-            <Text numberOfLines={1} adjustsFontSizeToFit style={styles.marketStatValue}>{formatWholeEUR(realizedEUR, language)}</Text>
+            <Text numberOfLines={1} adjustsFontSizeToFit style={styles.marketStatValue}>{hideAmounts ? '•••••' : formatWholeEUR(realizedEUR, language)}</Text>
           </View>
         </Surface>
         <ReturnCard
@@ -1017,7 +1032,7 @@ export default function AnalyticsScreen() {
         ) : historyError ? (
           <View style={styles.errorState}>
             <Info size={15} color={colors.red} />
-            <Text style={styles.errorText}>{historyError}</Text>
+            <Text style={styles.errorText}>{errorText(historyError)}</Text>
           </View>
         ) : (
           <AnnualComparisonChart values={history.annualPerformance} benchmark={annualBenchmark} />
@@ -1058,7 +1073,7 @@ export default function AnalyticsScreen() {
                   comparisonPeriod === period.label && styles.periodButtonTextSelected,
                 ]}
               >
-                {period.label}
+                {t(period.label)}
               </Text>
             </Pressable>
           ))}
@@ -1071,7 +1086,7 @@ export default function AnalyticsScreen() {
         ) : historyError ? (
           <View style={styles.errorState}>
             <Info size={15} color={colors.red} />
-            <Text style={styles.errorText}>{historyError}</Text>
+            <Text style={styles.errorText}>{errorText(historyError)}</Text>
           </View>
         ) : (
           <ComparisonLineChart
@@ -1093,7 +1108,7 @@ export default function AnalyticsScreen() {
         ) : fundamentalsError ? (
           <View style={styles.errorState}>
             <Info size={15} color={colors.red} />
-            <Text style={styles.errorText}>{fundamentalsError}</Text>
+            <Text style={styles.errorText}>{errorText(fundamentalsError)}</Text>
           </View>
         ) : (
           <View style={styles.chartLoading}>
@@ -1120,7 +1135,7 @@ export default function AnalyticsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = () => StyleSheet.create({
   marketCard: {
     flex: 1.15,
     justifyContent: 'center',

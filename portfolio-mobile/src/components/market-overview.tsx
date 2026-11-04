@@ -1,3 +1,4 @@
+import { useThemedStyles } from '../data/theme';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { ChevronDown, ChevronUp, X } from 'lucide-react-native';
@@ -10,6 +11,7 @@ type MarketIndex = (typeof marketIndices)[number];
 type Entry = { data: IndexHistory | null; error: string | null };
 
 function IndexDetail({ index, onClose }: { index: MarketIndex; onClose: () => void }) {
+  const styles = useThemedStyles(createStyles);
   const { t, language } = useLocale();
   const [range, setRange] = useState<IndexRange>('1D');
   const [entry, setEntry] = useState<{ range: IndexRange; data: IndexHistory | null; error: string | null } | null>(null);
@@ -81,7 +83,8 @@ function IndexDetail({ index, onClose }: { index: MarketIndex; onClose: () => vo
 }
 
 export function MarketOverview() {
-  const { t, language } = useLocale();
+  const styles = useThemedStyles(createStyles);
+  const { t, language, errorText } = useLocale();
   const [entries, setEntries] = useState<Record<string, Entry>>({});
   const [selected, setSelected] = useState<MarketIndex | null>(null);
   const [initialLoading, setInitialLoading] = useState(true);
@@ -136,7 +139,7 @@ export function MarketOverview() {
               <Text style={styles.cardTitle} numberOfLines={1}>{index.symbol === '^IXIC' ? 'NASDAQ' : index.name}</Text>
               <Text style={[styles.returnValue, { color }]} numberOfLines={1} adjustsFontSizeToFit>{change === null ? '—' : formatPercent(change, 2)}</Text>
               <Text style={styles.indexValue}>{last ? last.price.toLocaleString(language === 'sk' ? 'sk-SK' : 'en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—'}</Text>
-            {entry?.error ? <Text numberOfLines={1} style={styles.cardError} accessibilityRole="alert">{entry.error}</Text> : null}
+            {entry?.error ? <Text numberOfLines={1} style={styles.cardError} accessibilityRole="alert">{errorText(entry.error)}</Text> : null}
           </Pressable>
         );
       })}
@@ -149,7 +152,7 @@ export function MarketOverview() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = () => StyleSheet.create({
   heading: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 8 },
   title: { color: colors.text, fontSize: 18, fontWeight: '800' },
   note: { color: colors.muted, fontSize: 10, lineHeight: 15 },

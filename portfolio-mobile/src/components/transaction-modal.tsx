@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import type { ComponentRef } from 'react';
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -101,7 +102,7 @@ export function TransactionModal({
   const [errorMessage, setErrorMessage] = useState('');
   const [showAssetResults, setShowAssetResults] = useState(false);
   const [selectedAssetName, setSelectedAssetName] = useState('');
-  const symbolInputRef = useRef<TextInput>(null);
+  const symbolInputRef = useRef<ComponentRef<typeof TextInput>>(null);
   const dateInputRef = useRef(dateInput);
   const symbolRef = useRef(symbol);
   const historicalRequestId = useRef(0);

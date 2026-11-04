@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAppStorage } from '../data/app-storage';
 import { useCallback, useState } from 'react';
 import { Alert, Pressable, StyleSheet } from 'react-native';
 import { ArrowLeft } from 'lucide-react-native';
@@ -10,6 +10,7 @@ import { colors } from '../data/portfolio';
 import { usePositions } from '../hooks/use-positions';
 
 export default function DividendsScreen() {
+  const AsyncStorage = useAppStorage();
   const router = useRouter();
   const { t, language } = useLocale();
   const { positions, transactions } = usePositions();

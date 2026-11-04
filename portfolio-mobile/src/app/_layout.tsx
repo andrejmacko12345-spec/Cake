@@ -19,17 +19,20 @@ import { preloadCompanyEvents } from '../data/events-cache';
 import { colors } from '../data/portfolio';
 import { FLOATING_NAVIGATION_GAP, GlassBackground, GlassTargetContext } from '../components/glass-background';
 import { useLocale, LocaleProvider } from '../context/locale';
+import { AccountProvider } from '../context/account';
 
 const NAVIGATION_ROUTES = ['/', '/events', '/watchlist', '/compare', '/forecast'];
 
 export default function RootLayout() {
   return (
+    <AccountProvider>
     <PositionsProvider>
       <LocaleProvider>
         <EventDataPreloader />
         <AppTabs />
       </LocaleProvider>
     </PositionsProvider>
+    </AccountProvider>
   );
 }
 

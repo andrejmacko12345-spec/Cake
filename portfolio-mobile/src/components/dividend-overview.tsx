@@ -148,17 +148,14 @@ export function DividendOverview({
             <Text style={styles.rateLabel}>{t('Mesačne')}</Text>
             <Text style={styles.rateValue}>{money(annualEstimate / 12)}</Text>
           </View>
-          <View style={styles.rateDivider} />
           <View style={styles.rateItem}>
             <Text style={styles.rateLabel}>{t('Denne')}</Text>
             <Text style={styles.rateValue}>{money(annualEstimate / 365)}</Text>
           </View>
-          <View style={styles.rateDivider} />
           <View style={styles.rateItem}>
             <Text style={styles.rateLabel}>{t('Dividendový výnos')}</Text>
             <Text style={styles.rateValue}>{yieldOnValue.toLocaleString(language === 'sk' ? 'sk-SK' : 'en-US', { maximumFractionDigits: 2 })} %</Text>
           </View>
-          <View style={styles.rateDivider} />
           <View style={styles.rateItem}>
             <Text style={styles.rateLabel}>{t('Výnos z nákupnej ceny')}</Text>
             <Text style={styles.rateValue}>{yieldOnCost.toLocaleString(language === 'sk' ? 'sk-SK' : 'en-US', { maximumFractionDigits: 2 })} %</Text>

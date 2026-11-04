@@ -1,9 +1,10 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAppStorage } from '../data/app-storage';
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { Alert } from 'react-native';
 import { availableAssets, colors } from '../data/portfolio';
 import { fetchLiveQuote, LiveQuote } from '../data/quotes';
+import { isTransaction, isValidDate, sortedTransactions, validateLedger } from '../data/transaction-validation';
 
 const STORAGE_KEY = '@portfolio-mobile/transactions-v1';
 const LEGACY_STORAGE_KEY = '@portfolio-mobile/positions-v1';
@@ -62,51 +63,9 @@ type PositionsContextValue = {
 
 const PositionsContext = createContext<PositionsContextValue | null>(null);
 
-function isTransaction(value: unknown): value is Transaction {
-  if (!value || typeof value !== 'object') return false;
-  const item = value as Record<string, unknown>;
-  return (
-    typeof item.id === 'string' &&
-    typeof item.symbol === 'string' &&
-    typeof item.name === 'string' &&
-    (item.type === 'BUY' || item.type === 'SELL') &&
-    typeof item.shares === 'number' && Number.isFinite(item.shares) && item.shares > 0 &&
-    typeof item.price === 'number' && Number.isFinite(item.price) && item.price > 0 &&
-    (item.currency === 'EUR' || item.currency === 'USD') &&
-    typeof item.fxToEur === 'number' && Number.isFinite(item.fxToEur) && item.fxToEur > 0 &&
-    typeof item.date === 'string' && isValidDate(item.date) &&
-    typeof item.createdAt === 'string' &&
-    (item.dateEstimated === undefined || typeof item.dateEstimated === 'boolean')
-  );
-}
-
-function isValidDate(value: string) {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
-  const parsed = new Date(`${value}T00:00:00.000Z`);
-  return Number.isFinite(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
-}
-
 function reportStorageError(action: string, error: unknown) {
   const message = error instanceof Error ? error.message : String(error);
   Alert.alert(`Chyba pri ${action} transakcií`, message);
-}
-
-function sortedTransactions(transactions: Transaction[]) {
-  return [...transactions].sort((a, b) => a.date.localeCompare(b.date) || a.createdAt.localeCompare(b.createdAt));
-}
-
-function validateLedger(transactions: Transaction[]) {
-  const quantities = new Map<string, number>();
-  for (const transaction of sortedTransactions(transactions)) {
-    const current = quantities.get(transaction.symbol) ?? 0;
-    const next = current + (transaction.type === 'BUY' ? transaction.shares : -transaction.shares);
-    if (next < -1e-8) {
-      throw new Error(
-        `Predaj ${transaction.symbol} z ${transaction.date} je vyšší než počet akcií, ktoré boli k tomuto dátumu nakúpené.`,
-      );
-    }
-    quantities.set(transaction.symbol, Math.max(0, next));
-  }
 }
 
 function quoteFromStored(value: unknown): value is LiveQuote {
@@ -189,6 +148,7 @@ export function positionCostEUR(position: Position) {
 }
 
 export function PositionsProvider({ children }: { children: ReactNode }) {
+  const AsyncStorage = useAppStorage();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [quotes, setQuotes] = useState<Record<string, LiveQuote>>({});
   const [loading, setLoading] = useState(true);

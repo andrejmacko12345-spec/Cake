@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAppStorage } from '../data/app-storage';
 import { ActivityIndicator, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Defs, LinearGradient, Line, Path, Stop } from 'react-native-svg';
 import { ChartNoAxesCombined, ChevronDown, ChevronRight, ChevronUp, Eye, EyeOff, Plus, Search, TrendingUp, UserRound, Wallet } from 'lucide-react-native';
@@ -479,6 +479,7 @@ function InvestmentTimeline({
 }
 
 export default function PortfolioScreen() {
+  const AsyncStorage = useAppStorage();
   const router = useRouter();
   const {
     positions,

@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAppStorage } from '../data/app-storage';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ComponentRef } from 'react';
 import { ActivityIndicator, Alert, Animated, Modal, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
@@ -285,6 +285,7 @@ function showStorageError(action: string, error: unknown) {
 }
 
 export default function WatchlistScreen() {
+  const AsyncStorage = useAppStorage();
   const router = useRouter();
   const { t } = useLocale();
   const [watchlists, setWatchlists] = useState<WatchlistsState>(defaultWatchlists);
@@ -348,7 +349,7 @@ export default function WatchlistScreen() {
               'id' in list && typeof list.id === 'string' &&
               'name' in list && typeof list.name === 'string' &&
               'symbols' in list && Array.isArray(list.symbols) &&
-              list.symbols.every((symbol) => typeof symbol === 'string' && isValidSymbol(symbol)))
+              list.symbols.every((symbol: unknown) => typeof symbol === 'string' && isValidSymbol(symbol)))
           ) {
             const lists = parsed.lists as Watchlist[];
             const selectedId = 'selectedId' in parsed && typeof parsed.selectedId === 'string' &&
@@ -503,7 +504,7 @@ export default function WatchlistScreen() {
         pointerStart.current = {
           x: event.nativeEvent.pageX,
           y: event.nativeEvent.pageY,
-          time: event.nativeEvent.timestamp,
+          time: event.timeStamp,
         };
       }
     },
@@ -521,7 +522,7 @@ export default function WatchlistScreen() {
       pointerStart.current = null;
       if (start && event.nativeEvent.pointerType === 'mouse') {
         const dx = event.nativeEvent.pageX - start.x;
-        const elapsed = Math.max(event.nativeEvent.timestamp - start.time, 1);
+        const elapsed = Math.max(event.timeStamp - start.time, 1);
         finishSwipe(dx, dx / elapsed);
       }
     },

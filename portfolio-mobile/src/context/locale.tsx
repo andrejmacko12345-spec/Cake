@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAppStorage } from '../data/app-storage';
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert } from 'react-native';
 
@@ -7,6 +7,41 @@ export type AppLanguage = 'sk' | 'en';
 const STORAGE_KEY = '@portfolio-mobile/language';
 
 const englishTranslations: Record<string, string> = {
+  'Bez účtu zostávajú dáta iba v zariadení. Účet bez zálohy ponúkne prenos lokálnych dát alebo prázdny účet. Existujúca záloha sa obnoví automaticky.': 'Without an account, data stays on this device. An account without a backup offers importing local data or starting empty. Existing backups are restored automatically.',
+  'Potvrdzovací odkaz sme poslali na e-mail. Po potvrdení sa môžeš prihlásiť.': 'A confirmation link has been sent to your email. Sign in after confirming.',
+  'Odkaz na obnovu hesla sme poslali na e-mail. Otvor ho na tomto zariadení.': 'A password reset link has been sent to your email. Open it on this device.',
+  'Otvor potvrdzovací odkaz v e-maile. Potom sa vráť a prihlás sa.': 'Open the confirmation link in your email, then return and sign in.',
+  'Poslať odkaz': 'Send link',
+  'Poslať odkaz znova': 'Resend link',
+  'Prihlasovanie nie je nakonfigurované.': 'Sign-in is not configured.',
+  'Zadaj platný e-mail.': 'Enter a valid email address.',
+  'Heslo musí mať aspoň 8 znakov.': 'Password must contain at least 8 characters.',
+  'Overovací kód sme poslali na e-mail.': 'A verification code has been sent to your email.',
+  'Môj účet': 'My account',
+  'Účet a zálohovanie': 'Account and backup',
+  'Posledná záloha': 'Last backup',
+  'Zálohy obsahujú transakcie, watchlisty a nastavenia. Kurzy a finančné cache sa nezálohujú.': 'Backups include transactions, watchlists and settings. Quotes and financial caches are not backed up.',
+  'Obnovenie nahradí lokálne dáta prihláseného účtu dátami zo zálohy.': 'Restoring replaces this account’s local data with its cloud backup.',
+  'Obnoviť dáta z účtu': 'Restore account backup',
+  'Zálohovať teraz': 'Back up now',
+  'Odhlásiť sa': 'Sign out',
+  'Vymazať účet': 'Delete account',
+  'Účet a cloudová záloha sa natrvalo vymažú. Zadaj heslo na potvrdenie.': 'Your account and cloud backup will be permanently deleted. Enter your password to confirm.',
+  'Heslo': 'Password',
+  'Natrvalo vymazať účet': 'Permanently delete account',
+  'Prihlás sa znova.': 'Please sign in again.',
+  'Bez účtu zostávajú dáta iba v zariadení. Pri novom účte sa vytvorí prvá záloha; pri existujúcom účte sa automaticky použijú jeho dáta.': 'Without an account, data stays on this device. A new account starts with a backup of your local data; an existing account automatically restores its own data.',
+  'Vytvoriť účet': 'Create account',
+  'Overiť e-mail': 'Verify email',
+  'Obnoviť heslo': 'Reset password',
+  'Prihlásiť sa': 'Sign in',
+  'Meno': 'Name',
+  'Overovací kód': 'Verification code',
+  'Vytvorením účtu sa tvoje portfólio a nastavenia uložia do Supabase. Účet aj zálohu môžeš vymazať v Profile.': 'Creating an account stores your portfolio and settings in Supabase. You can delete your account and backup in Profile.',
+  'Poslať kód': 'Send code',
+  'Uložiť nové heslo': 'Save new password',
+  'Zabudnuté heslo': 'Forgot password',
+  'Poslať kód znova': 'Resend code',
   'Stiahnuť vzor CSV': 'Download CSV template',
   'Vzor CSV bol exportovaný. Pred importom nahraď ukážkové riadky vlastnými transakciami.': 'CSV template exported. Replace the sample rows with your own transactions before importing.',
   'Ukážkový nákup a predaj. Pred importom nahraď riadky vlastnými údajmi.': 'Sample purchase and sale. Replace the rows with your own data before importing.',
@@ -397,6 +432,7 @@ type LocaleContextValue = {
 const LocaleContext = createContext<LocaleContextValue | null>(null);
 
 export function LocaleProvider({ children }: { children: ReactNode }) {
+  const AsyncStorage = useAppStorage();
   const [language, setLanguageState] = useState<AppLanguage>('sk');
   const hasSelectedLanguage = useRef(false);
 

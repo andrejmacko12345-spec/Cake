@@ -21,6 +21,7 @@ import {
   transactionCsvTemplate,
 } from '../data/transaction-csv';
 import { Transaction, usePositions } from '../hooks/use-positions';
+import { AccountPanel } from '../components/account-panel';
 
 const languages: { code: AppLanguage; label: string; englishLabel: string }[] = [
   { code: 'sk', label: 'Slovenčina', englishLabel: 'Slovak' },
@@ -219,6 +220,7 @@ export default function SettingsScreen() {
           </Pressable>
         }
       />
+      <AccountPanel />
       <View style={styles.menuCard}>
       <AccordionHeader
         icon={<Globe2 size={17} color={colors.green} />}

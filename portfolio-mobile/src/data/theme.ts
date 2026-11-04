@@ -1,5 +1,6 @@
 import { Platform } from 'react-native';
 import { colors } from './portfolio';
+import { appStorage } from './app-storage';
 
 type FileApi = typeof import('expo-file-system');
 
@@ -52,7 +53,9 @@ export function readStoredTheme(): ThemeName {
   }
 }
 
-export function storeTheme(name: ThemeName) {
+export function storeTheme(name: ThemeName, backup = true) {
+  if (backup) void appStorage.setItem('@portfolio-mobile/theme', name)
+    .catch((error: unknown) => console.warn('Theme backup preference failed:', error));
   if (Platform.OS === 'web') {
     localStorage.setItem(STORAGE_NAME, name);
     return;

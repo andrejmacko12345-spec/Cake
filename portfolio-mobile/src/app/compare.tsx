@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAppStorage } from '../data/app-storage';
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ComponentRef } from 'react';
 import { ActivityIndicator, Animated, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
@@ -88,6 +88,7 @@ function calendarDate(data: StockEstimates | null | undefined, column: Column) {
 }
 
 export default function CompareScreen() {
+  const AsyncStorage = useAppStorage();
   const { t } = useLocale();
   const { width: screenWidth } = useWindowDimensions();
   const [viewportHeight, setViewportHeight] = useState(0);

@@ -67,20 +67,20 @@ jobs:
 
       - name: Rename APK
         run: |
-          cp android/app/build/outputs/apk/release/app-release.apk portfolio-mobile.apk
-          cp portfolio-mobile.apk portfolio-mobile-v${{ steps.ver.outputs.version }}.apk
+          cp android/app/build/outputs/apk/release/app-release.apk Fincake.apk
+          cp Fincake.apk Fincake-v${{ steps.ver.outputs.version }}.apk
 
       - uses: actions/upload-artifact@v4
         with:
-          name: portfolio-mobile-apk
-          path: portfolio-mobile/portfolio-mobile.apk
+          name: Fincake-apk
+          path: portfolio-mobile/Fincake.apk
 
       - name: Publish latest release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: apk-latest
           name: Latest APK (v${{ steps.ver.outputs.version }})
-          files: portfolio-mobile/portfolio-mobile.apk
+          files: portfolio-mobile/Fincake.apk
 
       - name: Publish versioned release
         uses: softprops/action-gh-release@v2
@@ -88,4 +88,4 @@ jobs:
           tag_name: v${{ steps.ver.outputs.version }}
           name: Verzia ${{ steps.ver.outputs.version }}
           body: "Commit ${{ github.sha }}: ${{ github.event.head_commit.message }}"
-          files: portfolio-mobile/portfolio-mobile-v${{ steps.ver.outputs.version }}.apk
+          files: portfolio-mobile/Fincake-v${{ steps.ver.outputs.version }}.apk

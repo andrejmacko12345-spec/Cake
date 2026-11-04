@@ -1,15 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ActivityIndicator, Animated, PanResponder, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
-import type { ComponentRef } from 'react';
-import type { PointerEvent } from 'react-native';
+import { ActivityIndicator, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Defs, LinearGradient, Line, Path, Stop } from 'react-native-svg';
-import { ChartNoAxesCombined, ChevronDown, ChevronRight, ChevronUp, Eye, EyeOff, TrendingUp, UserRound, Wallet } from 'lucide-react-native';
+import { ChartNoAxesCombined, ChevronDown, ChevronRight, ChevronUp, Eye, EyeOff, Plus, Search, TrendingUp, UserRound, Wallet } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { TransactionModal } from '../components/transaction-modal';
+import { StockSearchModal } from '../components/stock-search-modal';
 import {
   Header,
-  FloatingAddButton,
+  FloatingActionButton,
   Page,
   PositionRow,
   SortControl,
@@ -20,7 +19,6 @@ import { colors, formatMoney, formatPercent } from '../data/portfolio';
 import { Transaction, TransactionInput, positionCostEUR, positionValueEUR, usePositions } from '../hooks/use-positions';
 import { useLocale } from '../context/locale';
 import { fetchHistoricalQuoteSeries, HistoricalQuotePoint, HistoricalQuoteSeries, LiveQuote } from '../data/quotes';
-import { DividendOverview } from '../components/dividend-overview';
 
 const HIDE_AMOUNTS_KEY = '@portfolio-mobile/hide-amounts';
 
@@ -203,7 +201,6 @@ function InvestmentTimeline({
   onLatestChange,
   currentValue,
   hideAmounts,
-  onGestureActiveChange,
 }: {
   transactions: Transaction[];
   range: ChartRange;
@@ -213,7 +210,6 @@ function InvestmentTimeline({
   onLatestChange: (latest: ChartLatest | null) => void;
   currentValue: number;
   hideAmounts: boolean;
-  onGestureActiveChange: (active: boolean) => void;
 }) {
   const { t, language } = useLocale();
   const money = (value: number) => (hideAmounts ? '•••••' : formatMoney(value));
@@ -313,8 +309,11 @@ function InvestmentTimeline({
       ? t('celé obdobie')
       : range;
   const values = history.map((point) => point.value);
-  const min = Math.min(0, ...values);
-  const max = Math.max(1, ...values);
+  const lowest = values.length ? Math.min(...values) : 0;
+  const highest = values.length ? Math.max(...values) : 0;
+  const padding = Math.max((highest - lowest) * 0.1, Math.abs(highest) * 0.00001, 0.01);
+  const min = lowest - padding;
+  const max = highest + padding;
   const rangeValue = max - min || 1;
   const points = history.map((point, index) => ({
     x: history.length === 1 ? 160 : 8 + (index / (history.length - 1)) * 296,
@@ -380,24 +379,31 @@ function InvestmentTimeline({
       history.length > 0 && Math.abs(gesture.dx) > Math.abs(gesture.dy) && Math.abs(gesture.dx) > 4,
     onPanResponderGrant: (event) => updateSelectedPoint(event.nativeEvent.locationX),
     onPanResponderMove: (event) => updateSelectedPoint(event.nativeEvent.locationX),
-    onPanResponderRelease: () => setSelectedIndex(null),
-    onPanResponderTerminate: () => setSelectedIndex(null),
+    onPanResponderRelease: () => {
+      setSelectedIndex(null);
+    },
+    onPanResponderTerminate: () => {
+      setSelectedIndex(null);
+    },
   }), [history, chartWidth]);
 
   return (
     <View style={styles.chartCard}>
       <View
         {...panResponder.panHandlers}
-        onTouchStart={() => onGestureActiveChange(true)}
-        onTouchEnd={() => onGestureActiveChange(false)}
-        onTouchCancel={() => onGestureActiveChange(false)}
-        onPointerDown={() => onGestureActiveChange(true)}
-        onPointerUp={() => onGestureActiveChange(false)}
-        onPointerCancel={() => onGestureActiveChange(false)}
+        onTouchStart={(event) => {
+          updateSelectedPoint(event.nativeEvent.locationX);
+        }}
+        onTouchEnd={() => {
+          setSelectedIndex(null);
+        }}
+        onTouchCancel={() => {
+          setSelectedIndex(null);
+        }}
         onLayout={(event) => setChartWidth(event.nativeEvent.layout.width)}
         style={styles.chartWrap}
       >
-        <Svg width="100%" height={185} viewBox="0 0 320 145" preserveAspectRatio="none">
+        <Svg width="100%" height={155} viewBox="0 0 320 145" preserveAspectRatio="none">
           <Line x1="8" y1="126" x2="312" y2="126" stroke={colors.border} strokeWidth="1" />
           <Line x1="8" y1="18" x2="8" y2="126" stroke={colors.border} strokeWidth="1" />
           <Defs>
@@ -408,7 +414,7 @@ function InvestmentTimeline({
           </Defs>
           {areaPath ? <Path d={areaPath} fill="url(#areaFill)" /> : null}
           {path ? <Path d={path} fill="none" stroke={colors.green} strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" /> : null}
-          {selectedPoint && points[selectedIndex ?? points.length - 1] ? (
+          {selectedIndex !== null && selectedPoint && points[selectedIndex] ? (
             <>
               <Line
                 x1={points[selectedIndex ?? points.length - 1].x}
@@ -474,8 +480,6 @@ function InvestmentTimeline({
 
 export default function PortfolioScreen() {
   const router = useRouter();
-  const { width: screenWidth } = useWindowDimensions();
-  const pageScrollRef = useRef<ComponentRef<typeof ScrollView> | null>(null);
   const {
     positions,
     transactions,
@@ -483,19 +487,17 @@ export default function PortfolioScreen() {
     saveTransaction,
   } = usePositions();
   const [formVisible, setFormVisible] = useState(false);
+  const [searchVisible, setSearchVisible] = useState(false);
   const [initialType, setInitialType] = useState<'BUY' | 'SELL'>('BUY');
   const [range, setRange] = useState<ChartRange>('1D');
   const [chartLatest, setChartLatest] = useState<ChartLatest | null>(null);
   const [positionSort, setPositionSort] = useState<'value' | 'alphabetical' | 'change'>('value');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [closedExpanded, setClosedExpanded] = useState(false);
   const [sparklines, setSparklines] = useState<Record<string, number[]>>({});
   const [periodReturns, setPeriodReturns] = useState<Record<string, { gainEUR: number; returnPercent: number }>>({});
   const { t, language } = useLocale();
   const [hideAmounts, setHideAmounts] = useState(false);
-  const [dashboardPage, setDashboardPage] = useState<'portfolio' | 'dividends'>('portfolio');
-  const dashboardOffset = useRef(new Animated.Value(0)).current;
-  const pointerStart = useRef<{ x: number; y: number; time: number } | null>(null);
-  const chartGestureActive = useRef(false);
   const money = (value: number) => (hideAmounts ? '•••••' : formatMoney(value));
   const signedMoney = (value: number) => (hideAmounts ? '•••••' : `${value >= 0 ? '+' : ''}${formatMoney(value)}`);
 
@@ -531,23 +533,25 @@ export default function PortfolioScreen() {
     const cost = positionCostEUR(position);
     return cost > 0 ? ((positionValueEUR(position) - cost) / cost) * 100 : 0;
   };
-  const comparePositions = (a: (typeof positions)[number], b: (typeof positions)[number]) =>
-    positionSort === 'value'
-      ? positionValueEUR(b) - positionValueEUR(a)
+  const comparePositions = (a: (typeof positions)[number], b: (typeof positions)[number]) => {
+    const comparison = positionSort === 'value'
+      ? positionValueEUR(a) - positionValueEUR(b)
       : positionSort === 'change'
-        ? changeOf(b) - changeOf(a)
+        ? changeOf(a) - changeOf(b)
         : a.name.localeCompare(b.name, 'sk');
+    return sortDirection === 'asc' ? comparison : -comparison;
+  };
   const activePositions = useMemo(
     () => positions
       .filter((position) => position.shares > 1e-8)
       .sort(comparePositions),
-    [positions, positionSort, periodReturns, range],
+    [positions, positionSort, sortDirection, periodReturns, range],
   );
   const closedPositions = useMemo(
     () => positions
       .filter((position) => position.shares <= 1e-8)
       .sort(comparePositions),
-    [positions, positionSort, periodReturns, range],
+    [positions, positionSort, sortDirection, periodReturns, range],
   );
   const dailyGain = positions.reduce((sum, position) => {
     const dailyReturn = position.dailyChangePct;
@@ -578,88 +582,15 @@ export default function PortfolioScreen() {
     router.push({ pathname: '/position', params: { symbol } });
   const handleSaveTransaction = (input: TransactionInput, id?: string, quote?: LiveQuote) =>
     saveTransaction(input, id, quote);
-  const switchDashboard = (next: 'portfolio' | 'dividends') => {
-    if (next === dashboardPage || formVisible) return;
-    pageScrollRef.current?.scrollTo({ y: 0, animated: false });
-    const outgoingX = next === 'dividends' ? -screenWidth : screenWidth;
-    Animated.timing(dashboardOffset, {
-      toValue: outgoingX,
-      duration: 150,
-      useNativeDriver: false,
-    }).start(({ finished }) => {
-      if (!finished) return;
-      setDashboardPage(next);
-      dashboardOffset.setValue(-outgoingX);
-      requestAnimationFrame(() => {
-        Animated.spring(dashboardOffset, { toValue: 0, useNativeDriver: false, speed: 18, bounciness: 3 }).start();
-      });
-    });
-  };
-  const finishDashboardSwipe = (dx: number, velocityX = 0) => {
-    if (dx <= -28 || (dx <= -12 && velocityX <= -0.18)) switchDashboard('dividends');
-    else if (dx >= 28 || (dx >= 12 && velocityX >= 0.18)) switchDashboard('portfolio');
-    else Animated.spring(dashboardOffset, { toValue: 0, useNativeDriver: false, speed: 22, bounciness: 5 }).start();
-  };
-  const dashboardPanResponder = useMemo(() => PanResponder.create({
-    onMoveShouldSetPanResponderCapture: (_, gesture) =>
-      !formVisible && !chartGestureActive.current &&
-      Math.abs(gesture.dx) > 2 &&
-      Math.abs(gesture.dx) > Math.abs(gesture.dy) * 0.15,
-    onPanResponderTerminationRequest: () => false,
-    onPanResponderMove: (_, gesture) => {
-      if (Math.abs(gesture.dx) > Math.abs(gesture.dy) * 0.15) {
-        dashboardOffset.setValue(gesture.dx * 0.75);
-      }
-    },
-    onPanResponderRelease: (_, gesture) => finishDashboardSwipe(gesture.dx, gesture.vx),
-    onPanResponderTerminate: () => {
-      Animated.spring(dashboardOffset, { toValue: 0, useNativeDriver: false, speed: 22, bounciness: 5 }).start();
-    },
-  }), [dashboardOffset, dashboardPage, formVisible, screenWidth]);
-  const dashboardPointerHandlers = useMemo(() => ({
-    onPointerDown: (event: PointerEvent) => {
-      if (event.nativeEvent.pointerType === 'mouse' && !formVisible && !chartGestureActive.current) {
-        pointerStart.current = {
-          x: event.nativeEvent.pageX,
-          y: event.nativeEvent.pageY,
-          time: event.nativeEvent.timestamp,
-        };
-      }
-    },
-    onPointerMove: (event: PointerEvent) => {
-      const start = pointerStart.current;
-      if (!start || event.nativeEvent.pointerType !== 'mouse') return;
-      const dx = event.nativeEvent.pageX - start.x;
-      const dy = event.nativeEvent.pageY - start.y;
-      if (Math.abs(dx) > 3 && Math.abs(dx) > Math.abs(dy) * 0.15) {
-        dashboardOffset.setValue(dx * 0.75);
-      }
-    },
-    onPointerUp: (event: PointerEvent) => {
-      const start = pointerStart.current;
-      pointerStart.current = null;
-      if (!start || event.nativeEvent.pointerType !== 'mouse') return;
-      const dx = event.nativeEvent.pageX - start.x;
-      const elapsed = Math.max(event.nativeEvent.timestamp - start.time, 1);
-      finishDashboardSwipe(dx, dx / elapsed);
-    },
-    onPointerCancel: () => {
-      pointerStart.current = null;
-      Animated.spring(dashboardOffset, { toValue: 0, useNativeDriver: false, speed: 22, bounciness: 5 }).start();
-    },
-  }), [dashboardOffset, dashboardPage, formVisible, screenWidth]);
+  const searchButton = (
+    <FloatingActionButton accessibilityLabel={t('Hľadať akciu')} onPress={() => setSearchVisible(true)}>
+      <Search size={23} color={colors.green} />
+    </FloatingActionButton>
+  );
 
   return (
     <Page
-      scrollRef={pageScrollRef}
-      gestureHandlers={dashboardPanResponder.panHandlers}
-      pointerGestureHandlers={dashboardPointerHandlers}
-      floating={(
-      <FloatingAddButton
-        accessibilityLabel={t('Pridať akciu a transakciu')}
-        onPress={() => openNewTransaction('BUY')}
-      />
-    )}
+      floating={searchButton}
     >
       <Header
         compact
@@ -687,37 +618,15 @@ export default function PortfolioScreen() {
           </View>
         }
       />
-      <View style={styles.dashboardTabs}>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityState={{ selected: dashboardPage === 'portfolio' }}
-          onPress={() => switchDashboard('portfolio')}
-          style={[styles.dashboardTab, dashboardPage === 'portfolio' && styles.dashboardTabSelected]}
-        >
-          <Text style={[styles.dashboardTabText, dashboardPage === 'portfolio' && styles.dashboardTabTextSelected]}>
-            {t('Portfólio')}
-          </Text>
-        </Pressable>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityState={{ selected: dashboardPage === 'dividends' }}
-          onPress={() => switchDashboard('dividends')}
-          style={[styles.dashboardTab, dashboardPage === 'dividends' && styles.dashboardTabSelected]}
-        >
-          <Text style={[styles.dashboardTabText, dashboardPage === 'dividends' && styles.dashboardTabTextSelected]}>
-            {t('Dividendy')}
-          </Text>
-        </Pressable>
-      </View>
-      <Animated.View style={{ transform: [{ translateX: dashboardOffset }] }}>
-      {dashboardPage === 'portfolio' ? (
-      <>
       <Surface style={styles.heroCard}>
         <View style={styles.balanceCard}>
           <Text style={styles.balanceLabel}>{t('Trhová hodnota')}</Text>
           <Text style={styles.balanceValue}>{money(headlineValue)}</Text>
           <View style={styles.returnRow}>
-            <Text style={styles.headlineHint}>{chartPeriod?.label ?? `${t('Výnos za')} ${rangeText}`}</Text>
+            <Text style={styles.headlineHint}>
+              {chartPeriod?.label ?? `${t('Výnos za')} ${rangeText}`}
+              {openOnlyAll ? ` (${t('Otvorené pozície')})` : ''}
+            </Text>
             <View style={styles.returnLine}>
               <View style={styles.returnIndicator}>
                 {headlineGain >= 0 ? <TrendingUp size={16} color={colors.green} /> : null}
@@ -744,26 +653,52 @@ export default function PortfolioScreen() {
         onLatestChange={setChartLatest}
         currentValue={totals.value}
         hideAmounts={hideAmounts}
-        onGestureActiveChange={(active) => { chartGestureActive.current = active; }}
       />
       </Surface>
 
+      <View style={styles.quickActions}>
       <Pressable
         accessibilityRole="button"
         onPress={() => router.navigate('/analytics')}
         style={styles.analyticsButton}
       >
-        <ChartNoAxesCombined size={18} color={colors.green} />
-        <Text style={styles.analyticsButtonText}>{t('Analytika')}</Text>
+        <ChartNoAxesCombined size={18} color="#58b5ff" />
+        <Text style={[styles.analyticsButtonText, styles.analyticsAccent]}>{t('Analytika')}</Text>
         <ChevronRight size={18} color={colors.muted} />
       </Pressable>
 
-      <SectionTitle title={t('Moje pozície')} />
+      <Pressable
+        accessibilityRole="button"
+        onPress={() => router.navigate('/dividends')}
+        style={styles.analyticsButton}
+      >
+        <Wallet size={18} color="#ffae42" />
+        <Text style={[styles.analyticsButtonText, styles.dividendsAccent]}>{t('Dividendy')}</Text>
+        <ChevronRight size={18} color={colors.muted} />
+      </Pressable>
+      </View>
+
+      <SectionTitle title={t('Moje pozície')} action={
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('Pridať akciu a transakciu')}
+          onPress={() => openNewTransaction('BUY')}
+          style={styles.addPositionButton}
+          hitSlop={6}
+        >
+          <Plus size={20} color={colors.green} />
+        </Pressable>
+      } />
 
       {positions.length ? (
         <SortControl
           value={positionSort}
-          onChange={setPositionSort}
+          onChange={(key) => {
+            setPositionSort(key);
+            setSortDirection(key === 'alphabetical' ? 'asc' : 'desc');
+          }}
+          direction={sortDirection}
+          onToggleDirection={() => setSortDirection((current) => current === 'asc' ? 'desc' : 'asc')}
           options={[
             { key: 'value', label: 'Hodnota' },
             { key: 'change', label: 'Zmena %' },
@@ -851,16 +786,16 @@ export default function PortfolioScreen() {
           Ťukni na akciu a zobraz jej graf aj kompletnú históriu nákupov a predajov.
         </Text>
       ) : null}
-      </>
-      ) : (
-        <DividendOverview
-          positions={activePositions}
-          transactions={transactions}
-          hideAmounts={hideAmounts}
-        />
-      )}
-      </Animated.View>
 
+      {searchVisible ? (
+        <StockSearchModal
+          onClose={() => setSearchVisible(false)}
+          onSelect={(symbol) => {
+            setSearchVisible(false);
+            openPositionDetails(symbol);
+          }}
+        />
+      ) : null}
       <TransactionModal
         visible={formVisible}
         initialType={initialType}
@@ -872,24 +807,10 @@ export default function PortfolioScreen() {
 }
 
 const styles = StyleSheet.create({
-  dashboardTabs: {
-    flexDirection: 'row',
-    gap: 5,
-    padding: 4,
-    marginBottom: 12,
-    borderRadius: 16,
-    backgroundColor: colors.surface,
+  addPositionButton: {
+    width: 32, height: 32, borderRadius: 10, backgroundColor: colors.surface,
+    alignItems: 'center', justifyContent: 'center',
   },
-  dashboardTab: {
-    flex: 1,
-    minHeight: 38,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 12,
-  },
-  dashboardTabSelected: { backgroundColor: colors.surfaceRaised },
-  dashboardTabText: { color: colors.muted, fontSize: 12, fontWeight: '800' },
-  dashboardTabTextSelected: { color: colors.text },
   headerActions: { flexDirection: 'row', gap: 8 },
   iconButton: {
     width: 39, height: 39, borderRadius: 13, backgroundColor: colors.surface,
@@ -897,22 +818,24 @@ const styles = StyleSheet.create({
   },
   buttonDisabled: { opacity: 0.4 },
   heroCard: { borderRadius: 29, padding: 0, marginBottom: 13, overflow: 'hidden' },
-  balanceCard: { padding: 21, paddingBottom: 18, alignItems: 'center' },
+  balanceCard: { padding: 16, paddingBottom: 10, alignItems: 'center' },
+  quickActions: { flexDirection: 'row', gap: 8, marginTop: 4, marginBottom: 6 },
   analyticsButton: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 6,
     minHeight: 52,
-    paddingHorizontal: 16,
-    marginTop: 4,
-    marginBottom: 6,
+    paddingHorizontal: 10,
     borderRadius: 16,
     backgroundColor: colors.surface,
   },
   analyticsButtonText: { flex: 1, color: colors.text, fontSize: 14, fontWeight: '800' },
+  analyticsAccent: { color: '#58b5ff' },
+  dividendsAccent: { color: '#ffae42' },
   balanceLabel: { color: colors.muted, fontSize: 12, fontWeight: '700' },
   balanceValue: { color: colors.text, fontSize: 32, fontWeight: '900', letterSpacing: 0.2, marginTop: 5 },
-  returnRow: { alignItems: 'center', gap: 4, marginTop: 8 },
+  returnRow: { alignItems: 'center', gap: 4, marginTop: 6 },
   returnLine: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   headlineHint: { color: colors.muted, fontSize: 11, fontWeight: '700' },
   returnIndicator: { flexDirection: 'row', alignItems: 'center', gap: 5 },
@@ -924,8 +847,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    marginTop: 14,
-    paddingVertical: 9,
+    marginTop: 10,
+    paddingVertical: 6,
     paddingHorizontal: 14,
     borderRadius: 999,
     backgroundColor: colors.surfaceRaised,
@@ -935,7 +858,7 @@ const styles = StyleSheet.create({
   balanceStat: { flex: 1 },
   statLabel: { color: colors.muted, fontSize: 10, fontWeight: '600' },
   statValue: { color: colors.text, fontSize: 12, fontWeight: '800', marginTop: 5 },
-  chartCard: { paddingHorizontal: 10, paddingTop: 12, paddingBottom: 12 },
+  chartCard: { paddingHorizontal: 10, paddingTop: 6, paddingBottom: 8 },
   chartHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 2 },
   chartTitle: { color: colors.text, fontSize: 14, fontWeight: '900' },
   chartSubtitle: { color: colors.muted, fontSize: 9, marginTop: 3 },
@@ -947,7 +870,7 @@ const styles = StyleSheet.create({
   chartLabel: { color: colors.muted, fontSize: 9, fontWeight: '700', textTransform: 'capitalize' },
   chartEmptyLabel: { color: colors.muted, fontSize: 9, textAlign: 'center', flex: 1 },
   chartError: { color: colors.red, fontSize: 9, lineHeight: 14, marginTop: 3 },
-  rangeRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 },
+  rangeRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 6 },
   rangeButton: { paddingVertical: 8, paddingHorizontal: 7, borderRadius: 999 },
   rangeButtonSelected: { backgroundColor: colors.green },
   rangeText: { color: colors.muted, fontSize: 10, fontWeight: '800' },

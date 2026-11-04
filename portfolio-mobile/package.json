@@ -5,8 +5,10 @@
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",
     "expo": "~58.0.22",
+    "expo-blur": "~58.0.5",
     "expo-document-picker": "~58.0.4",
     "expo-file-system": "~58.0.13",
+    "expo-haptics": "~58.0.7",
     "expo-linking": "~58.0.15",
     "expo-router": "~58.0.29",
     "expo-sharing": "~58.0.21",
@@ -24,6 +26,8 @@
     "typescript": "~6.0.3"
   },
   "scripts": {
+    "refresh:financial-history": "node scripts/refresh-financial-history.cjs",
+    "test": "node --test",
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",

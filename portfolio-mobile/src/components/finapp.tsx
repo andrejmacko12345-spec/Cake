@@ -1,4 +1,6 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useContext, useRef, useState } from 'react';
+import { BlurTargetView } from 'expo-blur';
+import * as Haptics from 'expo-haptics';
 import type { ComponentRef, ReactNode, RefObject } from 'react';
 import {
   Animated,
@@ -13,16 +15,18 @@ import {
   View,
 } from 'react-native';
 import type { PanResponderInstance, ViewProps, ViewStyle } from 'react-native';
-import { useFocusEffect } from 'expo-router';
+import { useFocusEffect, usePathname } from 'expo-router';
+import { useBottomTabBarHeight } from 'expo-router/js-tabs';
 import Svg, { Circle, Line, Path, Rect } from 'react-native-svg';
-import { ChevronDown, Plus } from 'lucide-react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ArrowDownWideNarrow, ArrowUpWideNarrow, ChevronDown, Plus } from 'lucide-react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Asset, colors, formatMoney, formatPercent } from '../data/portfolio';
 import { getTheme } from '../data/theme';
 import type { Position } from '../hooks/use-positions';
 import { positionCostEUR, positionValueEUR, usePositions } from '../hooks/use-positions';
 import { AssetLogo } from './asset-logo';
 import { useLocale } from '../context/locale';
+import { FLOATING_NAVIGATION_GAP, GlassBackground, GlassTargetContext } from './glass-background';
 
 export function Page({
   children,
@@ -32,6 +36,7 @@ export function Page({
   animateOnFocus = false,
   gestureHandlers,
   pointerGestureHandlers,
+  scrollEnabled = true,
 }: {
   children: ReactNode;
   scrollRef?: RefObject<ComponentRef<typeof ScrollView> | null>;
@@ -40,7 +45,13 @@ export function Page({
   animateOnFocus?: boolean;
   gestureHandlers?: PanResponderInstance['panHandlers'];
   pointerGestureHandlers?: Pick<ViewProps, 'onPointerDown' | 'onPointerMove' | 'onPointerUp' | 'onPointerCancel'>;
+  scrollEnabled?: boolean;
 }) {
+  const tabBarHeight = useBottomTabBarHeight();
+  const blurTarget = useContext(GlassTargetContext);
+  const insets = useSafeAreaInsets();
+  const pathname = usePathname();
+  const navigationSpace = pathname === '/position' ? insets.bottom : tabBarHeight + insets.bottom + FLOATING_NAVIGATION_GAP;
   const entrance = useRef(new Animated.Value(animateOnFocus ? 0 : 1)).current;
   const entranceOffset = useRef(new Animated.Value(animateOnFocus ? 10 : 0)).current;
 
@@ -67,13 +78,14 @@ export function Page({
   }, [animateOnFocus, entrance, entranceOffset]));
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView edges={['top', 'left', 'right']} style={styles.safeArea}>
       <StatusBar barStyle={getTheme() === 'light' ? 'dark-content' : 'light-content'} />
-      <View style={styles.gestureLayer} {...gestureHandlers} {...pointerGestureHandlers}>
+      <BlurTargetView ref={blurTarget} style={styles.gestureLayer} {...gestureHandlers} {...pointerGestureHandlers}>
       <ScrollView
         ref={scrollRef}
-        onLayout={onScrollViewLayout ? (event) => onScrollViewLayout(event.nativeEvent.layout.height) : undefined}
-        contentContainerStyle={[styles.page, floating ? styles.pageWithFloating : undefined]}
+        scrollEnabled={scrollEnabled}
+        onLayout={onScrollViewLayout ? (event) => onScrollViewLayout(Math.max(0, event.nativeEvent.layout.height - navigationSpace)) : undefined}
+        contentContainerStyle={[styles.page, { paddingBottom: navigationSpace + (floating ? 88 : 28) }]}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
@@ -86,28 +98,47 @@ export function Page({
           {children}
         </Animated.View>
       </ScrollView>
-      </View>
-      {floating ? <View pointerEvents="box-none" style={styles.floating}>{floating}</View> : null}
+      </BlurTargetView>
+      {floating ? <View pointerEvents="box-none" style={[styles.floating, { bottom: navigationSpace + 14 }]}>{floating}</View> : null}
     </SafeAreaView>
   );
 }
 
-export function FloatingAddButton({
+export function FloatingActionButton({
   accessibilityLabel,
   onPress,
+  children,
 }: {
   accessibilityLabel: string;
   onPress: () => void;
+  children: ReactNode;
 }) {
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
-      onPress={onPress}
+      onPress={() => {
+        const feedback = Platform.OS === 'android'
+          ? Haptics.performAndroidHapticsAsync(Haptics.AndroidHaptics.Keyboard_Tap)
+          : Platform.OS === 'ios'
+            ? Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+            : Promise.resolve();
+        void feedback.catch((error: unknown) => console.warn('Floating button haptics failed:', error));
+        onPress();
+      }}
       style={styles.floatingAddButton}
     >
-      <Plus size={23} color={colors.surface} />
+      <GlassBackground radius={27} />
+      <View pointerEvents="none" style={styles.floatingIcon}>{children}</View>
     </Pressable>
+  );
+}
+
+export function FloatingAddButton(props: { accessibilityLabel: string; onPress: () => void }) {
+  return (
+    <FloatingActionButton {...props}>
+      <Plus size={23} color={colors.green} />
+    </FloatingActionButton>
   );
 }
 
@@ -115,10 +146,14 @@ export function SortControl<T extends string>({
   value,
   options,
   onChange,
+  direction,
+  onToggleDirection,
 }: {
   value: T;
   options: readonly { key: T; label: string }[];
   onChange: (key: T) => void;
+  direction: 'asc' | 'desc';
+  onToggleDirection: () => void;
 }) {
   const { t } = useLocale();
   return (
@@ -139,6 +174,16 @@ export function SortControl<T extends string>({
             </Pressable>
           );
         })}
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t(direction === 'asc' ? 'Vzostupne' : 'Zostupne')}
+          onPress={onToggleDirection}
+          style={styles.sortDirectionButton}
+        >
+          {direction === 'asc'
+            ? <ArrowUpWideNarrow size={16} color={colors.text} />
+            : <ArrowDownWideNarrow size={16} color={colors.text} />}
+        </Pressable>
       </View>
     </View>
   );
@@ -147,6 +192,7 @@ export function SortControl<T extends string>({
 export function Header({
   title,
   subtitle,
+  detail,
   action,
   brand,
   compact,
@@ -155,6 +201,7 @@ export function Header({
 }: {
   title: string;
   subtitle?: string;
+  detail?: string;
   action?: ReactNode;
   brand?: boolean;
   compact?: boolean;
@@ -184,6 +231,7 @@ export function Header({
             <ChevronDown size={16} color={colors.green} />
           </Pressable>
         ) : <Text style={styles.headerTitle}>{t(title)}</Text>}
+        {detail ? <Text style={styles.headerDetail}>{detail}</Text> : null}
       </View>
       {action}
     </View>
@@ -238,15 +286,20 @@ export function ChangeLabel({ value }: { value: number }) {
 export function PortfolioChart({
   values,
   color = colors.green,
+  height = 160,
   selectedIndex,
   onSelectPoint,
+  onSelectionEnd,
 }: {
   values: number[];
   color?: string;
+  height?: number;
   selectedIndex?: number;
   onSelectPoint?: (index: number) => void;
+  onSelectionEnd?: () => void;
 }) {
   const [chartWidth, setChartWidth] = useState(320);
+  const [touching, setTouching] = useState(false);
   const min = Math.min(...values);
   const max = Math.max(...values);
   const range = max - min || 1;
@@ -278,15 +331,26 @@ export function PortfolioChart({
       onLayout={(event) => setChartWidth(event.nativeEvent.layout.width)}
       onStartShouldSetResponder={() => Boolean(onSelectPoint && points.length > 1)}
       onMoveShouldSetResponder={() => Boolean(onSelectPoint && points.length > 1)}
-      onResponderGrant={selectNearestPoint}
+      onResponderGrant={(event) => {
+        setTouching(true);
+        selectNearestPoint(event);
+      }}
       onResponderMove={selectNearestPoint}
+      onResponderRelease={() => {
+        setTouching(false);
+        onSelectionEnd?.();
+      }}
+      onResponderTerminate={() => {
+        setTouching(false);
+        onSelectionEnd?.();
+      }}
       accessibilityLabel={onSelectPoint ? 'Potiahnutím po grafe vyber konkrétny bod projekcie.' : undefined}
     >
-      <Svg width="100%" height={160} viewBox="0 0 320 132" preserveAspectRatio="none">
+      <Svg width="100%" height={height} viewBox="0 0 320 132" preserveAspectRatio="none">
         <Line x1="8" y1="126" x2="312" y2="126" stroke={colors.border} strokeWidth="1" />
         <Path d={fillPath} fill={color} fillOpacity={0.09} />
         <Path d={path} fill="none" stroke={color} strokeWidth="3" strokeLinecap="round" />
-        {onSelectPoint && activePoint ? (
+        {touching && onSelectPoint && activePoint ? (
           <>
             <Line
               x1={activePoint.x}
@@ -307,13 +371,6 @@ export function PortfolioChart({
               strokeWidth="2"
             />
           </>
-        ) : points.length > 0 ? (
-          <Circle
-            cx={points[points.length - 1].x}
-            cy={points[points.length - 1].y}
-            r="4"
-            fill={color}
-          />
         ) : null}
       </Svg>
     </View>
@@ -536,6 +593,7 @@ const styles = StyleSheet.create({
   sortButtonSelected: { backgroundColor: colors.green },
   sortButtonText: { color: colors.muted, fontSize: 10, fontWeight: '800' },
   sortButtonTextSelected: { color: colors.surface },
+  sortDirectionButton: { width: 30, alignItems: 'center', justifyContent: 'center', borderRadius: 8 },
   rowSpark: { width: 56, height: 28, marginHorizontal: 8 },
   rowPill: { borderRadius: 7, paddingHorizontal: 8, paddingVertical: 3, minWidth: 78, alignItems: 'center' },
   rowPillText: { color: colors.background, fontSize: 14, fontWeight: '800', fontVariant: ['tabular-nums'] },
@@ -555,21 +613,20 @@ const styles = StyleSheet.create({
     width: 54,
     height: 54,
     borderRadius: 27,
-    backgroundColor: colors.green,
+    backgroundColor: 'transparent',
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 6,
     shadowColor: '#000',
     shadowOpacity: 0.22,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 4 },
   },
+  floatingIcon: { zIndex: 1 },
   page: {
     paddingHorizontal: 12,
     paddingTop: 16,
     paddingBottom: 28,
   },
-  pageWithFloating: { paddingBottom: 88 },
   gestureLayer: { flex: 1 },
   header: {
     minHeight: 52,
@@ -582,6 +639,7 @@ const styles = StyleSheet.create({
   headerCopy: {
     flex: 1,
   },
+  headerDetail: { color: colors.muted, fontSize: 11, marginTop: 4 },
   brandLine: { flexDirection: 'row', alignItems: 'center', gap: 5, marginBottom: 3 },
   brandIcon: { width: 15, height: 15, borderRadius: 5 },
   brandName: { color: colors.muted, fontSize: 10, fontWeight: '800', letterSpacing: 0.6 },

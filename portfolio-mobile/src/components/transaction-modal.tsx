@@ -26,7 +26,7 @@ import {
 } from 'lucide-react-native';
 import { availableAssets, Asset, colors } from '../data/portfolio';
 import { fetchHistoricalQuoteForDate, fetchLiveQuote, LiveQuote } from '../data/quotes';
-import { Transaction, TransactionInput } from '../hooks/use-positions';
+import { Transaction, TransactionInput, usePositions } from '../hooks/use-positions';
 import { useAssetSearch } from '../hooks/use-asset-search';
 import { useLocale } from '../context/locale';
 
@@ -81,10 +81,12 @@ export function TransactionModal({
 }: Props) {
   const isEditing = Boolean(transaction);
   const { t, language } = useLocale();
+  const { positions } = usePositions();
   const fixedSymbol = Boolean(initialSymbol || transaction);
   const [symbol, setSymbol] = useState('');
   const [type, setType] = useState<'BUY' | 'SELL'>('BUY');
   const [sharesInput, setSharesInput] = useState('');
+  const heldShares = positions.find((position) => position.symbol === symbol.trim().toUpperCase())?.shares ?? 0;
   const [priceInput, setPriceInput] = useState('');
   const [dateInput, setDateInput] = useState(today());
   const [calendarMonth, setCalendarMonth] = useState(today().slice(0, 7));
@@ -602,7 +604,18 @@ export function TransactionModal({
             </View>
 
             <View style={styles.fieldGroup}>
-              <Text style={styles.label}>{t('Počet akcií')}</Text>
+              <View style={styles.sharesHeader}>
+                <Text style={styles.label}>{t('Počet akcií')}</Text>
+                {type === 'SELL' && !isEditing && heldShares > 0 ? (
+                  <Pressable
+                    accessibilityRole="button"
+                    onPress={() => setSharesInput(String(heldShares))}
+                    style={styles.sellAllButton}
+                  >
+                    <Text style={styles.sellAllText}>{t('Predať všetko')}</Text>
+                  </Pressable>
+                ) : null}
+              </View>
               <TextInput
                 accessibilityLabel={t('Počet akcií')}
                 keyboardType="decimal-pad"
@@ -772,6 +785,9 @@ const styles = StyleSheet.create({
   },
   errorText: { color: '#ffc0c3', fontSize: 11, lineHeight: 16, flex: 1, marginLeft: 8 },
   fieldGroup: { marginBottom: 13 },
+  sharesHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  sellAllButton: { paddingHorizontal: 10, paddingVertical: 8, marginBottom: 5, borderRadius: 8, backgroundColor: colors.surfaceRaised },
+  sellAllText: { color: colors.green, fontSize: 11, fontWeight: '800' },
   datePickerButton: {
     minHeight: 46,
     flexDirection: 'row',

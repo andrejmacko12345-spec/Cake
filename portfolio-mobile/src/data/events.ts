@@ -1,9 +1,14 @@
 import { YAHOO_USER_AGENT, yahooQuoteSummary } from './fundamentals';
-import { fetchFmpQuarterly, FmpQuarterly, getFmpKey } from './fmp';
+import { fetchFmpQuarterly, getFmpKey } from './fmp';
+import { applyEarningsConsensus, combineFinancialSources, FinancialQuarter, FinancialSources, mergeQuarters, QuarterResult } from './quarterly';
+import { fetchSecQuarterly } from './sec';
+import { getFinancialHistory, saveFinancialHistory } from './earnings-history';
+import { archivedRevenueConsensus, EarningsSummary, parseEarningsConsensus, parseUpcomingEarnings, UpcomingEarningsEstimates } from './earnings-consensus';
+export type { QuarterResult } from './quarterly';
 
 type Raw = { raw?: number } | undefined;
 
-type SummaryResult = {
+type SummaryResult = EarningsSummary & {
   price?: { shortName?: string; longName?: string; currency?: string };
   calendarEvents?: {
     earnings?: {
@@ -14,29 +19,6 @@ type SummaryResult = {
     exDividendDate?: Raw;
     dividendDate?: Raw;
   };
-  earningsHistory?: {
-    history?: Array<{
-      quarter?: Raw;
-      epsActual?: Raw;
-    }>;
-  };
-  earnings?: {
-    earningsChart?: {
-      quarterly?: Array<{ date?: string }>;
-      currentQuarterEstimateDate?: string;
-      currentQuarterEstimateYear?: number;
-    };
-  };
-};
-
-export type QuarterResult = {
-  label: string;
-  periodEnd: string;
-  epsActual: number | null;
-  epsYoY: number | null;
-  revenue: number | null;
-  revenueYoY: number | null;
-  revenueQoQ: number | null;
 };
 
 export type NewsItem = { title: string; publisher: string; link: string; time: number };
@@ -44,11 +26,12 @@ export type NewsItem = { title: string; publisher: string; link: string; time: n
 export type CompanyEvents = {
   symbol: string;
   name: string;
-  financialDataIssue: 'missing-key' | 'plan-required' | 'provider-error' | null;
+  financialDataIssue: 'incomplete-data' | null;
   nextEarnings: {
     date: number;
     estimate: boolean;
     label: string | null;
+    estimates: UpcomingEarningsEstimates | null;
   } | null;
   lastReportDate: number | null;
   exDividend: number | null;
@@ -84,18 +67,19 @@ async function getJson<T>(url: string): Promise<T> {
   }
 }
 
-async function fetchTimeseries(symbol: string): Promise<{ revenue: SeriesPoint[]; eps: SeriesPoint[] }> {
+async function fetchTimeseries(symbol: string, history: boolean): Promise<{ revenue: SeriesPoint[]; eps: SeriesPoint[] }> {
   const now = Math.floor(Date.now() / 1000);
   const url = `https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/${encodeURIComponent(symbol)}`
-    + `?type=quarterlyTotalRevenue,quarterlyDilutedEPS&merge=false&period1=${now - 4 * 365 * DAY}&period2=${now}`;
+    + `?type=quarterlyTotalRevenue,quarterlyDilutedEPS&merge=false&period1=${now - (history ? 4 * 365 : 120) * DAY}&period2=${now}`;
   const data = await getJson<{
     timeseries?: { result?: Array<Record<string, unknown> & { meta: { type: string[] } }> };
   }>(url);
   const pick = (type: string): SeriesPoint[] => {
-    const entry = data.timeseries?.result?.find((item) => item.meta.type[0] === type);
-    const rows = (entry?.[type] ?? []) as Array<{ asOfDate?: string; reportedValue?: { raw?: number } }>;
+    const rows = (data.timeseries?.result?.flatMap((item) => item[type] ?? []) ?? []) as
+      Array<{ asOfDate?: string; reportedValue?: { raw?: number }; periodType?: string }>;
     return rows
-      .filter((row) => row.asOfDate && typeof row.reportedValue?.raw === 'number')
+      .filter((row) => row.asOfDate && Number.isFinite(Date.parse(row.asOfDate))
+        && num(row.reportedValue) !== null && (!row.periodType || row.periodType === '3M'))
       .map((row) => ({ time: Date.parse(`${row.asOfDate}T00:00:00Z`) / 1000, value: row.reportedValue!.raw as number }))
       .sort((a, b) => a.time - b.time);
   };
@@ -137,113 +121,86 @@ function nearest(series: SeriesPoint[], target: number, toleranceDays: number) {
   return best;
 }
 
-function growth(current: number | null, previous: number | undefined) {
-  return current !== null && previous !== undefined && previous > 0
-    ? (current / previous - 1) * 100
-    : null;
-}
-
-function fiscalLabel(date: string | undefined) {
-  const match = date?.match(/^(\d)Q(\d{4})$/);
-  return match ? `Q${match[1]} ${match[2]}` : null;
-}
-
-function buildQuarters(
-  summary: SummaryResult,
+function yahooQuarters(
   series: { revenue: SeriesPoint[]; eps: SeriesPoint[] },
-): QuarterResult[] {
-  const history = (summary.earningsHistory?.history ?? []).filter((item) => num(item.quarter) !== null);
-  const chart = summary.earnings?.earningsChart?.quarterly ?? [];
-  const aligned = chart.length === history.length;
-
-  const quarters = history.map((item, index): QuarterResult => {
-    const periodEnd = num(item.quarter) as number;
-    const epsActual = num(item.epsActual);
-    const revenuePoint = nearest(series.revenue, periodEnd, 12);
-    const revenue = revenuePoint?.value ?? null;
-    const epsPoint = nearest(series.eps, periodEnd, 12);
-    const eps = epsActual ?? epsPoint?.value ?? null;
+): FinancialQuarter[] {
+  const times = [...new Set([...series.revenue, ...series.eps].map((point) => point.time))];
+  return times.map((time): FinancialQuarter => {
     return {
-      label: (aligned ? fiscalLabel(chart[index].date) : null) ?? new Date(periodEnd * 1000).toISOString().slice(0, 10),
-      periodEnd: new Date(periodEnd * 1000).toISOString().slice(0, 10),
-      epsActual: eps,
-      epsYoY: growth(eps, nearest(series.eps, periodEnd - 365 * DAY, 20)?.value),
-      revenue,
-      revenueYoY: growth(revenue, nearest(series.revenue, periodEnd - 365 * DAY, 20)?.value),
-      revenueQoQ: growth(revenue, nearest(series.revenue, periodEnd - 91 * DAY, 20)?.value),
+      time,
+      fiscalYear: '',
+      period: '',
+      revenue: nearest(series.revenue, time, 12)?.value ?? null,
+      eps: nearest(series.eps, time, 12)?.value ?? null,
     };
   });
-  return quarters.reverse();
-}
-
-// Fetch each fiscal quarter separately to stay within FMP's five-row free limit.
-function applyFmp(fmp: FmpQuarterly): QuarterResult[] {
-  const rows = fmp.quarters;
-  return rows.map((row): QuarterResult => {
-    const priorYear = rows.find((candidate) =>
-      candidate.period === row.period && Number(candidate.fiscalYear) === Number(row.fiscalYear) - 1,
-    );
-    const previousQuarter = nearest(
-      rows.flatMap((candidate) => candidate.revenue === null ? [] : [{ time: candidate.time, value: candidate.revenue }]),
-      row.time - 91 * DAY,
-      45,
-    );
-    return {
-      label: `${row.period} ${row.fiscalYear}`,
-      periodEnd: new Date(row.time * 1000).toISOString().slice(0, 10),
-      epsActual: row.eps,
-      epsYoY: growth(row.eps, priorYear?.eps ?? undefined),
-      revenue: row.revenue,
-      revenueYoY: growth(row.revenue, priorYear?.revenue ?? undefined),
-      revenueQoQ: growth(row.revenue, previousQuarter?.value),
-    };
-  }).sort((a, b) => b.periodEnd.localeCompare(a.periodEnd));
 }
 
 export async function fetchCompanyEvents(symbol: string, force = false): Promise<CompanyEvents> {
   const cached = cache.get(symbol);
-  if (!force && cached && Date.now() - cached.at < CACHE_MS) return cached.value;
+  if (!force && cached && Date.now() - cached.at < (cached.value.financialDataIssue ? 60000 : CACHE_MS)) return cached.value;
 
-  const [summaryResult, seriesResult, dividendResult, newsResult, fmpResult] = await Promise.allSettled([
-    yahooQuoteSummary<SummaryResult>(symbol, 'price,calendarEvents,earningsHistory,earnings'),
-    fetchTimeseries(symbol),
+  const history = await getFinancialHistory(symbol);
+  const [summaryResult, seriesResult, dividendResult, newsResult, fmpResult, secResult] = await Promise.allSettled([
+    yahooQuoteSummary<SummaryResult>(symbol, 'price,calendarEvents,earningsHistory,earnings,earningsTrend'),
+    fetchTimeseries(symbol, history.needsBackfill),
     fetchDividends(symbol),
     fetchNews(symbol),
-    getFmpKey().then((key) => key ? fetchFmpQuarterly(symbol, key) : null),
+    history.needsBackfill ? getFmpKey().then((key) => key ? fetchFmpQuarterly(symbol, key) : null) : Promise.resolve(null),
+    history.needsBackfill ? fetchSecQuarterly(symbol) : Promise.resolve([]),
   ]);
-  if (summaryResult.status === 'rejected') throw summaryResult.reason;
-  const summary = summaryResult.value;
-  if (!summary) throw new Error(`Údaje pre ${symbol} sa nepodarilo nájsť.`);
+  for (const [provider, result] of [['Yahoo financials', seriesResult], ['FMP', fmpResult], ['SEC', secResult]] as const) {
+    if (result.status === 'rejected') {
+      console.warn(`${symbol}: ${provider}: ${result.reason instanceof Error ? result.reason.message : String(result.reason)}`);
+    }
+  }
+  if (fmpResult.status === 'fulfilled' && fmpResult.value?.error) {
+    console.warn(`${symbol}: ${fmpResult.value.error}`);
+  }
+  const summary = summaryResult.status === 'fulfilled' ? summaryResult.value ?? {} : {};
 
   const series = seriesResult.status === 'fulfilled' ? seriesResult.value : { revenue: [], eps: [] };
-  let quarters = buildQuarters(summary, series);
+  const sec = secResult.status === 'fulfilled' ? secResult.value : [];
+  const fmp = fmpResult.status === 'fulfilled' ? fmpResult.value?.quarters ?? [] : [];
+  const yahoo = yahooQuarters(series);
+  const yahooEarnings = parseEarningsConsensus(summary);
+  const freshSources: FinancialSources = {};
+  for (const [source, rows] of Object.entries({ sec, fmp, yahoo, 'yahoo-earnings': yahooEarnings })) {
+    if (rows.length) freshSources[source] = rows;
+  }
+  const sources = combineFinancialSources(history.sources, freshSources);
+  const quarters = applyEarningsConsensus(
+    mergeQuarters(['sec', 'fmp', 'yahoo', 'yahoo-earnings'].map((source) => sources[source] ?? [])),
+    [sources['reported-consensus'] ?? [],
+      archivedRevenueConsensus(sources['yahoo-forecast'] ?? [], sources['yahoo-earnings'] ?? []),
+      sources['yahoo-earnings'] ?? []],
+  );
+  if (Object.keys(freshSources).length) {
+    const backfilled = history.needsBackfill && (sec.length > 0 || fmp.length > 0
+      || (secResult.status === 'fulfilled' && yahoo.length > 0));
+    await saveFinancialHistory(symbol, freshSources, backfilled);
+  }
+  if (!quarters.length && !Object.keys(summary).length) {
+    throw new Error(`Údaje pre ${symbol} sa nepodarilo nájsť.`);
+  }
+  if (summaryResult.status === 'rejected') {
+    console.warn(`${symbol}: Yahoo summary: ${summaryResult.reason instanceof Error ? summaryResult.reason.message : String(summaryResult.reason)}`);
+  }
   const now = Date.now() / 1000;
   const earnings = summary.calendarEvents?.earnings;
   const nextDate = num(earnings?.earningsDate?.[0]);
   const callDate = num(earnings?.earningsCallDate?.[0]);
-  const chart = summary.earnings?.earningsChart;
-  const nextLabel = chart?.currentQuarterEstimateDate && chart.currentQuarterEstimateYear
-    ? fiscalLabel(`${chart.currentQuarterEstimateDate.replace('Q', '')}Q${chart.currentQuarterEstimateYear}`)
-    : null;
-  const upcoming = nextDate !== null && nextDate >= now - 12 * 3600;
+  const upcoming = nextDate !== null && nextDate > now;
+  const upcomingEstimates = upcoming ? parseUpcomingEarnings(summary, Object.values(sources).flat(), now) : null;
   const latestPeriod = quarters[0] ? Date.parse(`${quarters[0].periodEnd}T00:00:00Z`) / 1000 : 0;
   const reportCandidates = [callDate, upcoming ? null : nextDate]
     .filter((value): value is number => value !== null && value > latestPeriod && value <= now);
 
-  const reportedAt = reportCandidates.length ? Math.max(...reportCandidates) : null;
-
-  let financialDataIssue: CompanyEvents['financialDataIssue'] = null;
-  if (fmpResult.status === 'rejected') {
-    const message = fmpResult.reason instanceof Error ? fmpResult.reason.message : String(fmpResult.reason);
-    financialDataIssue = message.includes('HTTP 402') ? 'plan-required' : 'provider-error';
-  } else if (fmpResult.value === null) {
-    financialDataIssue = 'missing-key';
-  } else {
-    if (fmpResult.value.quarters.length) quarters = applyFmp(fmpResult.value);
-    if (fmpResult.value.error) {
-      financialDataIssue = fmpResult.value.error.includes('HTTP 402') ? 'plan-required' : 'provider-error';
-    }
-  }
+  const filedAt = sources.sec?.find((row) => Math.abs(row.time - latestPeriod) <= 14 * DAY)?.reportedAt;
+  const financialDataIssue = !quarters.length || quarters.slice(0, 6)
+    .some((row) => row.revenue === null || row.epsActual === null || row.revenueYoY === null
+      || row.revenueBeat === null || row.epsBeat === null)
+    ? 'incomplete-data' : null;
 
   const value: CompanyEvents = {
     symbol,
@@ -253,10 +210,11 @@ export async function fetchCompanyEvents(symbol: string, force = false): Promise
       ? {
         date: nextDate as number,
         estimate: earnings?.isEarningsDateEstimate ?? true,
-        label: nextLabel,
+        label: upcomingEstimates?.label ?? null,
+        estimates: upcomingEstimates,
       }
       : null,
-    lastReportDate: reportCandidates.length ? Math.max(...reportCandidates) : null,
+    lastReportDate: reportCandidates.length ? Math.max(...reportCandidates) : filedAt ?? null,
     exDividend: num(summary.calendarEvents?.exDividendDate),
     dividendPay: num(summary.calendarEvents?.dividendDate),
     dividendAmount: dividendResult.status === 'fulfilled' ? dividendResult.value.amount : null,

@@ -1,0 +1,688 @@
+{
+  "GOOGL": [
+    {
+      "source": "https://www.cnbc.com/2026/10/28/alphabet-googl-earnings-q3-2026.html",
+      "provider": "LSEG via CNBC",
+      "publishedAt": "2026-10-28T22:07:00Z",
+      "periodEnd": "2026-09-30",
+      "revenue": 127580000000,
+      "revenueEstimate": 128220000000,
+      "eps": 2.67,
+      "epsEstimate": 3.02,
+      "epsBasis": "adjusted"
+    },
+    {
+      "source": "https://www.cnbc.com/2026/07/22/google-earnings-q2-goog-live-updates.html",
+      "provider": "LSEG via CNBC",
+      "publishedAt": "2026-07-22T23:21:00Z",
+      "periodEnd": "2026-06-30",
+      "revenue": 119800000000,
+      "revenueEstimate": 116930000000,
+      "eps": 2.85,
+      "epsEstimate": 2.89,
+      "epsBasis": "adjusted"
+    },
+    {
+      "source": "https://www.cnbc.com/2026/04/29/alphabet-googl-q1-2026-earnings.html",
+      "provider": "LSEG via CNBC",
+      "publishedAt": "2026-04-30T12:12:00Z",
+      "periodEnd": "2026-03-31",
+      "revenue": 109900000000,
+      "revenueEstimate": 107200000000,
+      "eps": 2.62,
+      "epsEstimate": 2.63,
+      "epsBasis": "adjusted"
+    },
+    {
+      "source": "https://www.cnbc.com/2026/02/04/alphabet-googl-q4-2025-earnings.html",
+      "provider": "LSEG via CNBC",
+      "publishedAt": "2026-02-05T00:18:00Z",
+      "periodEnd": "2025-12-31",
+      "revenue": 113830000000,
+      "revenueEstimate": 111430000000,
+      "eps": 2.82,
+      "epsEstimate": 2.63,
+      "epsBasis": "gaap"
+    },
+    {
+      "source": "https://www.cnbc.com/2025/10/29/alphabet-google-q3-earnings.html",
+      "provider": "LSEG via CNBC",
+      "publishedAt": "2025-10-29T22:25:00Z",
+      "periodEnd": "2025-09-30",
+      "revenue": 102350000000,
+      "revenueEstimate": 99890000000,
+      "eps": 3.1,
+      "epsEstimate": 2.33,
+      "epsBasis": "adjusted"
+    },
+    {
+      "source": "https://www.cnbc.com/2025/07/23/alphabet-google-q2-earnings.html",
+      "provider": "LSEG via CNBC",
+      "publishedAt": "2025-07-23T23:15:00Z",
+      "periodEnd": "2025-06-30",
+      "revenue": 96430000000,
+      "revenueEstimate": 94000000000,
+      "eps": 2.31,
+      "epsEstimate": 2.18,
+      "epsBasis": "gaap"
+    }
+  ],
+  "AMD": [
+    {
+      "source": "https://www.cnbc.com/2026/11/03/amd-amd-q3-earnings-report-2026-.html",
+      "provider": "LSEG via CNBC",
+      "publishedAt": "2026-11-03T21:17:00Z",
+      "periodEnd": "2026-09-26",
+      "revenue": 13380000000,
+      "revenueEstimate": 13090000000,
+      "eps": 2.09,
+      "epsEstimate": 1.95,
+      "epsBasis": "adjusted"
+    },
+    {
+      "source": "https://www.cnbc.com/2026/08/04/amd-earnings-report-q2-2026.html",
+      "provider": "LSEG via CNBC",
+      "publishedAt": "2026-08-04T20:31:00Z",
+      "periodEnd": "2026-06-27",
+      "revenue": 11540000000,
+      "revenueEstimate": 11280000000,
+      "eps": 1.66,
+      "epsEstimate": 1.62,
+      "epsBasis": "adjusted"
+    },
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2026-5-5-advanced-micro-devices-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2026-05-05T23:59:59Z",
+      "periodEnd": "2026-03-28",
+      "revenue": 10250000000,
+      "revenueEstimate": 9900000000,
+      "eps": 1.37,
+      "epsEstimate": 1.29,
+      "epsBasis": "adjusted"
+    },
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2026-2-3-advanced-micro-devices-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2026-02-03T23:59:59Z",
+      "periodEnd": "2025-12-27",
+      "revenue": 10270000000,
+      "revenueEstimate": 9650000000,
+      "eps": 1.53,
+      "epsEstimate": 1.32,
+      "epsBasis": "adjusted"
+    },
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2025-11-4-advanced-micro-devices-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2025-11-04T23:59:59Z",
+      "periodEnd": "2025-09-27",
+      "revenue": 9250000000,
+      "revenueEstimate": 8760000000,
+      "eps": 1.2,
+      "epsEstimate": 1.17,
+      "epsBasis": "adjusted"
+    },
+    {
+      "source": "https://247wallst.com/companies/amd/earnings/2025/Q2/",
+      "provider": "24/7 Wall St.",
+      "publishedAt": "2025-08-05T20:16:00Z",
+      "periodEnd": "2025-06-28",
+      "revenue": 7680000000,
+      "revenueEstimate": 7430000000,
+      "eps": 0.48,
+      "epsEstimate": 0.48,
+      "epsBasis": "adjusted"
+    }
+  ],
+  "SOFI": [
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2026-10-27-sofi-technologies-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2026-10-27T23:59:59Z",
+      "periodEnd": "2026-09-30",
+      "revenue": 1370000000,
+      "revenueEstimate": 1250000000,
+      "eps": 0.18,
+      "epsEstimate": 0.17,
+      "epsBasis": "gaap"
+    },
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2026-7-29-sofi-technologies-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2026-07-29T23:59:59Z",
+      "periodEnd": "2026-06-30",
+      "revenue": 1210000000,
+      "revenueEstimate": 1110000000,
+      "eps": 0.12,
+      "epsEstimate": 0.11,
+      "epsBasis": "gaap"
+    },
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2026-4-29-sofi-technologies-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2026-04-29T23:59:59Z",
+      "periodEnd": "2026-03-31",
+      "revenue": 1090000000,
+      "revenueEstimate": 1050000000,
+      "eps": 0.12,
+      "epsEstimate": 0.12,
+      "epsBasis": "gaap"
+    },
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2026-1-30-sofi-technologies-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2026-01-30T23:59:59Z",
+      "periodEnd": "2025-12-31",
+      "revenue": 1010000000,
+      "revenueEstimate": 984750000,
+      "eps": 0.13,
+      "epsEstimate": 0.12,
+      "epsBasis": "gaap"
+    },
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2025-10-28-sofi-technologies-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2025-10-28T23:59:59Z",
+      "periodEnd": "2025-09-30",
+      "revenue": 949630000,
+      "revenueEstimate": 880330000,
+      "eps": 0.11,
+      "epsEstimate": 0.09,
+      "epsBasis": "gaap"
+    },
+    {
+      "source": "https://247wallst.com/companies/sofi/earnings/2025/Q2/",
+      "provider": "24/7 Wall St.",
+      "publishedAt": "2025-07-29T11:03:00Z",
+      "periodEnd": "2025-06-30",
+      "revenue": 854940000,
+      "revenueEstimate": 804360000,
+      "eps": 0.08,
+      "epsEstimate": 0.06,
+      "epsBasis": "gaap"
+    }
+  ],
+  "META": [
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2026-10-22-facebook-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2026-10-22T23:59:59Z",
+      "periodEnd": "2026-09-30",
+      "revenue": 64600000000,
+      "revenueEstimate": 63340000000,
+      "eps": 7.4,
+      "epsEstimate": 6.54,
+      "epsBasis": "adjusted"
+    },
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2026-7-29-facebook-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2026-07-29T23:59:59Z",
+      "periodEnd": "2026-06-30",
+      "revenue": 60800000000,
+      "revenueEstimate": 60220000000,
+      "eps": 6.18,
+      "epsEstimate": 7.19,
+      "epsBasis": "gaap"
+    },
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2026-4-29-facebook-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2026-04-29T23:59:59Z",
+      "periodEnd": "2026-03-31",
+      "revenue": 56310000000,
+      "revenueEstimate": 55560000000,
+      "eps": 10.44,
+      "epsEstimate": 6.67,
+      "epsBasis": "gaap"
+    },
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2026-1-28-facebook-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2026-01-28T23:59:59Z",
+      "periodEnd": "2025-12-31",
+      "revenue": 59890000000,
+      "revenueEstimate": 58330000000,
+      "eps": 8.88,
+      "epsEstimate": 8.16,
+      "epsBasis": "gaap"
+    },
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2025-10-29-facebook-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2025-10-29T23:59:59Z",
+      "periodEnd": "2025-09-30",
+      "revenue": 51240000000,
+      "revenueEstimate": 49340000000,
+      "eps": 7.25,
+      "epsEstimate": 6.74,
+      "epsBasis": "adjusted"
+    },
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2025-7-30-facebook-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2025-07-30T23:59:59Z",
+      "periodEnd": "2025-06-30",
+      "revenue": 47520000000,
+      "revenueEstimate": 44550000000,
+      "eps": 7.14,
+      "epsEstimate": 5.75,
+      "epsBasis": "gaap"
+    }
+  ],
+  "ELF": [
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2026-8-5-elf-beauty-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2026-08-05T23:59:59Z",
+      "periodEnd": "2026-06-30",
+      "revenue": 479370000,
+      "revenueEstimate": 431210000,
+      "eps": 1.75,
+      "epsEstimate": 0.714,
+      "epsBasis": "adjusted"
+    },
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2026-5-20-elf-beauty-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2026-05-20T23:59:59Z",
+      "periodEnd": "2026-03-31",
+      "revenue": 449290000,
+      "revenueEstimate": 423060000,
+      "eps": 0.32,
+      "epsEstimate": 0.29,
+      "epsBasis": "adjusted"
+    },
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2026-2-4-elf-beauty-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2026-02-04T23:59:59Z",
+      "periodEnd": "2025-12-31",
+      "revenue": 489510000,
+      "revenueEstimate": 461780000,
+      "eps": 1.24,
+      "epsEstimate": 0.72,
+      "epsBasis": "adjusted"
+    },
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2025-11-5-elf-beauty-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2025-11-05T23:59:59Z",
+      "periodEnd": "2025-09-30",
+      "revenue": 343940000,
+      "revenueEstimate": 367890000,
+      "eps": 0.68,
+      "epsEstimate": 0.57,
+      "epsBasis": "adjusted"
+    },
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2025-8-6-elf-beauty-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2025-08-06T23:59:59Z",
+      "periodEnd": "2025-06-30",
+      "revenue": 353740000,
+      "revenueEstimate": 348990000,
+      "eps": 0.89,
+      "epsEstimate": 0.84,
+      "epsBasis": "adjusted"
+    },
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2025-5-28-elf-beauty-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2025-05-28T23:59:59Z",
+      "periodEnd": "2025-03-31",
+      "revenue": 332650000,
+      "revenueEstimate": 327450000,
+      "eps": 0.78,
+      "epsEstimate": 0.72,
+      "epsBasis": "adjusted"
+    }
+  ],
+  "HIMS": [
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2026-8-10-hims-hers-health-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2026-08-10T23:59:59Z",
+      "periodEnd": "2026-06-30",
+      "revenue": 753210000,
+      "revenueEstimate": 698900000,
+      "eps": -0.37,
+      "epsEstimate": -0.0498,
+      "epsBasis": "gaap"
+    },
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2026-5-11-hims-hers-health-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2026-05-11T23:59:59Z",
+      "periodEnd": "2026-03-31",
+      "revenue": 608100000,
+      "revenueEstimate": 616840000,
+      "eps": -0.4,
+      "epsEstimate": 0.04,
+      "epsBasis": "gaap"
+    },
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2026-2-23-hims-hers-health-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2026-02-23T23:59:59Z",
+      "periodEnd": "2025-12-31",
+      "revenue": 617820000,
+      "revenueEstimate": 619480000,
+      "eps": 0.08,
+      "epsEstimate": 0.02,
+      "epsBasis": "gaap"
+    },
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2025-11-3-hims-hers-health-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2025-11-03T23:59:59Z",
+      "periodEnd": "2025-09-30",
+      "revenue": 598980000,
+      "revenueEstimate": 578990000,
+      "eps": 0.06,
+      "epsEstimate": 0.09,
+      "epsBasis": "gaap"
+    },
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2025-8-4-hims-hers-health-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2025-08-04T23:59:59Z",
+      "periodEnd": "2025-06-30",
+      "revenue": 544830000,
+      "revenueEstimate": 550060000,
+      "eps": 0.17,
+      "epsEstimate": 0.18,
+      "epsBasis": "gaap"
+    },
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2025-5-5-hims-hers-health-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2025-05-05T23:59:59Z",
+      "periodEnd": "2025-03-31",
+      "revenue": 586010000,
+      "revenueEstimate": 535210000,
+      "eps": 0.2,
+      "epsEstimate": 0.12,
+      "epsBasis": "gaap"
+    }
+  ],
+  "NFLX": [
+    {
+      "source": "https://www.cnbc.com/2026/10/20/netflix-nflx-earnings-q3-2026.html",
+      "provider": "LSEG via CNBC",
+      "publishedAt": "2026-10-20T23:59:59Z",
+      "periodEnd": "2026-09-30",
+      "revenue": 12870000000,
+      "revenueEstimate": 12870000000,
+      "eps": 0.87,
+      "epsEstimate": 0.82,
+      "epsBasis": "gaap"
+    },
+    {
+      "source": "https://www.cnbc.com/2026/07/16/netflix-nflx-earnings-q2-2026.html",
+      "provider": "LSEG via CNBC",
+      "publishedAt": "2026-07-16T23:59:59Z",
+      "periodEnd": "2026-06-30",
+      "revenue": 12560000000,
+      "revenueEstimate": 12590000000,
+      "eps": 0.8,
+      "epsEstimate": 0.79,
+      "epsBasis": "gaap"
+    },
+    {
+      "source": "https://www.cnbc.com/2026/04/16/netflix-nflx-earnings-q1-2026.html",
+      "provider": "LSEG via CNBC",
+      "publishedAt": "2026-04-16T23:59:59Z",
+      "periodEnd": "2026-03-31",
+      "revenue": 12250000000,
+      "revenueEstimate": 12180000000,
+      "eps": 1.23,
+      "epsEstimate": null,
+      "epsEstimateComparable": false,
+      "epsBasis": "gaap",
+      "notes": "CNBC explicitly states reported EPS is not comparable to the $0.76 consensus because it includes the WBD termination fee. Do not calculate an EPS beat from that pair or reuse an automated estimate."
+    },
+    {
+      "source": "https://www.cnbc.com/2026/01/20/netflix-nflx-earnings-q4-2025.html",
+      "provider": "LSEG via CNBC",
+      "publishedAt": "2026-01-20T23:59:59Z",
+      "periodEnd": "2025-12-31",
+      "revenue": 12050000000,
+      "revenueEstimate": 11970000000,
+      "eps": 0.56,
+      "epsEstimate": 0.55,
+      "epsBasis": "gaap"
+    },
+    {
+      "source": "https://www.cnbc.com/2025/10/21/netflix-nflx-earnings-q3-2025.html",
+      "provider": "LSEG via CNBC",
+      "publishedAt": "2025-10-21T23:59:59Z",
+      "periodEnd": "2025-09-30",
+      "revenue": 11510000000,
+      "revenueEstimate": 11510000000,
+      "eps": 0.587,
+      "epsEstimate": 0.697,
+      "epsBasis": "gaap",
+      "notes": "Both EPS values divided by 10 for Netflix's November 2025 ten-for-one split; source quotes $5.87 actual and $6.97 estimate."
+    },
+    {
+      "source": "https://www.cnbc.com/2025/07/17/netflix-nflx-earnings-q2-2025.html",
+      "provider": "LSEG via CNBC",
+      "publishedAt": "2025-07-17T23:59:59Z",
+      "periodEnd": "2025-06-30",
+      "revenue": 11080000000,
+      "revenueEstimate": 11070000000,
+      "eps": 0.719,
+      "epsEstimate": 0.708,
+      "epsBasis": "gaap",
+      "notes": "Both EPS values divided by 10 for Netflix's November 2025 ten-for-one split; source quotes $7.19 actual and $7.08 estimate."
+    }
+  ],
+  "CELH": [
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2026-8-6-celsius-holdings-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2026-08-06T23:59:59Z",
+      "periodEnd": "2026-06-30",
+      "revenue": 817930000,
+      "revenueEstimate": 870080000,
+      "eps": 0.36,
+      "epsEstimate": 0.4139,
+      "epsBasis": "adjusted"
+    },
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2026-5-7-celsius-holdings-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2026-05-07T23:59:59Z",
+      "periodEnd": "2026-03-31",
+      "revenue": 782620000,
+      "revenueEstimate": 763080000,
+      "eps": 0.41,
+      "epsEstimate": 0.29,
+      "epsBasis": "adjusted"
+    },
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2026-2-26-celsius-holdings-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2026-02-26T23:59:59Z",
+      "periodEnd": "2025-12-31",
+      "revenue": 721630000,
+      "revenueEstimate": 638170000,
+      "eps": 0.26,
+      "epsEstimate": 0.19,
+      "epsBasis": "adjusted"
+    },
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2025-11-6-celsius-holdings-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2025-11-06T23:59:59Z",
+      "periodEnd": "2025-09-30",
+      "revenue": 725110000,
+      "revenueEstimate": 703680000,
+      "eps": 0.42,
+      "epsEstimate": 0.28,
+      "epsBasis": "adjusted"
+    },
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2025-8-7-celsius-holdings-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2025-08-07T23:59:59Z",
+      "periodEnd": "2025-06-30",
+      "revenue": 739300000,
+      "revenueEstimate": 632130000,
+      "eps": 0.47,
+      "epsEstimate": 0.23,
+      "epsBasis": "adjusted"
+    },
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2025-5-6-celsius-holdings-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2025-05-06T23:59:59Z",
+      "periodEnd": "2025-03-31",
+      "revenue": 329280000,
+      "revenueEstimate": 349090000,
+      "eps": 0.18,
+      "epsEstimate": 0.2,
+      "epsBasis": "adjusted"
+    }
+  ],
+  "NKE": [
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2026-10-1-nike-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2026-10-01T23:59:59Z",
+      "periodEnd": "2026-08-31",
+      "revenue": 11210000000,
+      "revenueEstimate": 11320000000,
+      "eps": 0.48,
+      "epsEstimate": 0.4331,
+      "epsBasis": "gaap"
+    },
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2026-6-30-nike-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2026-06-30T23:59:59Z",
+      "periodEnd": "2026-05-31",
+      "revenue": 10970000000,
+      "revenueEstimate": 10850000000,
+      "eps": 0.2,
+      "epsEstimate": 0.11,
+      "epsBasis": "adjusted"
+    },
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2026-3-31-nike-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2026-03-31T23:59:59Z",
+      "periodEnd": "2026-02-28",
+      "revenue": 11280000000,
+      "revenueEstimate": 11230000000,
+      "eps": 0.35,
+      "epsEstimate": 0.29,
+      "epsBasis": "gaap"
+    },
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2025-12-18-nike-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2025-12-18T23:59:59Z",
+      "periodEnd": "2025-11-30",
+      "revenue": 12430000000,
+      "revenueEstimate": 12190000000,
+      "eps": 0.53,
+      "epsEstimate": 0.37,
+      "epsBasis": "gaap"
+    },
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2025-9-30-nike-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2025-09-30T23:59:59Z",
+      "periodEnd": "2025-08-31",
+      "revenue": 11720000000,
+      "revenueEstimate": 10960000000,
+      "eps": 0.49,
+      "epsEstimate": 0.27,
+      "epsBasis": "gaap"
+    },
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2025-6-26-nike-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2025-06-26T23:59:59Z",
+      "periodEnd": "2025-05-31",
+      "revenue": 11100000000,
+      "revenueEstimate": 10690000000,
+      "eps": 0.14,
+      "epsEstimate": 0.12,
+      "epsBasis": "gaap"
+    }
+  ],
+  "NOW": [
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2026-10-28-servicenow-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2026-10-28T23:59:59Z",
+      "periodEnd": "2026-09-30",
+      "revenue": 4110000000,
+      "revenueEstimate": 4090000000,
+      "eps": 1,
+      "epsEstimate": 1.02,
+      "epsBasis": "adjusted"
+    },
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2026-7-22-servicenow-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2026-07-22T23:59:59Z",
+      "periodEnd": "2026-06-30",
+      "revenue": 3990000000,
+      "revenueEstimate": 3930000000,
+      "eps": 0.9,
+      "epsEstimate": 0.86,
+      "epsBasis": "adjusted"
+    },
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2026-4-22-servicenow-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2026-04-22T23:59:59Z",
+      "periodEnd": "2026-03-31",
+      "revenue": 3770000000,
+      "revenueEstimate": 3750000000,
+      "eps": 0.97,
+      "epsEstimate": 0.97,
+      "epsBasis": "adjusted"
+    },
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2026-1-28-servicenow-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2026-01-28T23:59:59Z",
+      "periodEnd": "2025-12-31",
+      "revenue": 3570000000,
+      "revenueEstimate": 3530000000,
+      "eps": 0.92,
+      "epsEstimate": 0.89,
+      "epsBasis": "adjusted"
+    },
+    {
+      "source": "https://www.cnbc.com/2025/10/29/servicenow-now-earnings-q3-2025.html",
+      "provider": "LSEG via CNBC",
+      "publishedAt": "2025-10-29T23:59:59Z",
+      "periodEnd": "2025-09-30",
+      "revenue": 3410000000,
+      "revenueEstimate": 3350000000,
+      "eps": 0.964,
+      "epsEstimate": 0.854,
+      "epsBasis": "adjusted",
+      "notes": "Both EPS values divided by 5 for ServiceNow's December 2025 five-for-one split; source quotes $4.82 actual and $4.27 estimate."
+    },
+    {
+      "source": "https://www.marketbeat.com/earnings/reports/2025-7-23-servicenow-inc-stock/",
+      "provider": "MarketBeat",
+      "publishedAt": "2025-07-23T23:59:59Z",
+      "periodEnd": "2025-06-30",
+      "revenue": 3220000000,
+      "revenueEstimate": 3120000000,
+      "eps": 0.818,
+      "epsEstimate": 0.714,
+      "epsBasis": "adjusted",
+      "notes": "MarketBeat already quotes both reported and consensus EPS on the five-for-one split-adjusted basis."
+    }
+  ]
+}

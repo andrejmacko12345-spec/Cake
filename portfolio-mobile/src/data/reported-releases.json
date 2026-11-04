@@ -1,0 +1,28 @@
+{
+  "AMD": {
+    "source": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000188/q32026991.htm",
+    "publishedAt": "2026-11-03T21:15:00Z",
+    "quarters": [
+      {
+        "periodEnd": "2026-09-26",
+        "fiscalYear": "2026",
+        "period": "Q3",
+        "revenue": 13377000000,
+        "eps": 1.46
+      }
+    ]
+  },
+  "SOFI": {
+    "source": "https://markets.ft.com/data/announce/detail?dockey=600-202610270700BIZWIRE_USPRX____20261027_BW171879-1",
+    "publishedAt": "2026-10-27T11:00:00Z",
+    "quarters": [
+      {
+        "periodEnd": "2026-09-30",
+        "fiscalYear": "2026",
+        "period": "Q3",
+        "revenue": 1385099000,
+        "eps": 0.18
+      }
+    ]
+  }
+}

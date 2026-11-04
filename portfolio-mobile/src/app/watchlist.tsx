@@ -1,12 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ComponentRef } from 'react';
-import { ActivityIndicator, Alert, Animated, Modal, PanResponder, Pressable, ScrollView, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
+import { ActivityIndicator, Alert, Animated, Modal, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import type { PointerEvent } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
-import { Check, Pencil, Plus, Search, Trash2, X } from 'lucide-react-native';
+import { ArrowDownWideNarrow, ArrowUpWideNarrow, Check, ChevronDown, Pencil, Plus, Search, Trash2, X } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
-import { FloatingAddButton, Header, Page, SortControl, Surface } from '../components/finapp';
+import { FloatingAddButton, Header, Page, Surface } from '../components/finapp';
 import { Asset, availableAssets, colors } from '../data/portfolio';
 import {
   fetchHistoricalQuoteSeries,
@@ -16,7 +17,9 @@ import {
 } from '../data/quotes';
 import { usePositions } from '../hooks/use-positions';
 import { AssetLogo } from '../components/asset-logo';
+import { MarketOverview } from '../components/market-overview';
 import { useAssetSearch } from '../hooks/use-asset-search';
+import { usePopupAnimation } from '../hooks/use-popup-animation';
 import { useLocale } from '../context/locale';
 
 const STORAGE_KEY = '@portfolio-mobile/watchlist';
@@ -35,6 +38,101 @@ const periods = [
   { label: '1Y', amount: 12, unit: 'month', interval: '1d' },
   { label: '5Y', amount: 60, unit: 'month', interval: '1d' },
 ] as const;
+
+function PeriodSelector({ value, onChange }: {
+  value: (typeof periods)[number]['label'];
+  onChange: (value: (typeof periods)[number]['label']) => void;
+}) {
+  const ref = useRef<ComponentRef<typeof View>>(null);
+  const [expanded, setExpanded] = useState(false);
+  const expansion = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    const animation = Animated.timing(expansion, {
+      toValue: expanded ? 1 : 0, duration: 200, useNativeDriver: false,
+    });
+    animation.start();
+    return () => animation.stop();
+  }, [expanded, expansion]);
+  const selectedRef = useRef(value);
+  const dragging = useRef(false);
+  const moved = useRef(false);
+  const select = useCallback((next: (typeof periods)[number]['label']) => {
+    if (selectedRef.current === next) return;
+    selectedRef.current = next;
+    onChange(next);
+    const feedback = Platform.OS === 'android'
+      ? Haptics.performAndroidHapticsAsync(Haptics.AndroidHaptics.Keyboard_Tap)
+      : Platform.OS === 'ios'
+        ? Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+        : Promise.resolve();
+    void feedback.catch((error: unknown) => console.warn('Watchlist period haptics failed:', error));
+  }, [onChange]);
+  const selectAt = useCallback((pageX: number) => {
+    ref.current?.measureInWindow((left, _top, width) => {
+      if (width <= 0) return;
+      const index = Math.max(0, Math.min(periods.length - 1, Math.floor((pageX - left) / width * periods.length)));
+      select(periods[index].label);
+    });
+  }, [select]);
+  const responder = useMemo(() => PanResponder.create({
+    onMoveShouldSetPanResponder: (_, gesture) => Math.abs(gesture.dx) > 5 && Math.abs(gesture.dx) > Math.abs(gesture.dy),
+    onPanResponderGrant: (event) => selectAt(event.nativeEvent.pageX),
+    onPanResponderMove: (event) => selectAt(event.nativeEvent.pageX),
+    onPanResponderRelease: () => setExpanded(false),
+    onPanResponderTerminate: () => setExpanded(false),
+    onPanResponderTerminationRequest: () => false,
+  }), [selectAt]);
+  return (
+    <Animated.View style={[styles.periodContainer, { flexGrow: expansion }]}>
+    <Animated.View pointerEvents={expanded ? 'none' : 'auto'} aria-hidden={expanded} accessibilityElementsHidden={expanded}
+      importantForAccessibility={expanded ? 'no-hide-descendants' : 'auto'}
+      style={[StyleSheet.absoluteFill, {
+        opacity: expansion.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }),
+        transform: [{ translateY: expansion.interpolate({ inputRange: [0, 1], outputRange: [0, -6] }) }],
+      }]}>
+    <Pressable accessibilityRole="button" accessibilityState={{ expanded }}
+      onPress={() => setExpanded(true)} style={styles.periodCollapsed}>
+      <Text style={styles.periodTextSelected}>{value}</Text>
+      <ChevronDown size={14} color={colors.muted} />
+    </Pressable>
+    </Animated.View>
+    <Animated.View pointerEvents={expanded ? 'auto' : 'none'} aria-hidden={!expanded} accessibilityElementsHidden={!expanded}
+      importantForAccessibility={expanded ? 'auto' : 'no-hide-descendants'}
+      style={[StyleSheet.absoluteFill, {
+        opacity: expansion,
+        transform: [{ translateY: expansion.interpolate({ inputRange: [0, 1], outputRange: [6, 0] }) }],
+      }]}>
+    <View ref={ref} style={styles.periodSelector} {...responder.panHandlers}
+      onPointerDown={(event) => {
+        moved.current = false;
+        if (event.nativeEvent.pointerType === 'mouse') dragging.current = true;
+      }}
+      onPointerMove={(event) => {
+        if (dragging.current && event.nativeEvent.pointerType === 'mouse') {
+          moved.current = true;
+          selectAt(event.nativeEvent.pageX);
+        }
+      }}
+      onPointerUp={() => {
+        dragging.current = false;
+        if (moved.current) setExpanded(false);
+      }}
+      onPointerCancel={() => { dragging.current = false; }}>
+      {periods.map((item) => (
+        <Pressable key={item.label} accessibilityRole="button"
+          accessibilityState={{ selected: value === item.label }} onPress={() => {
+            select(item.label);
+            setExpanded(false);
+          }}
+          style={[styles.periodButton, value === item.label && styles.periodButtonSelected]}>
+          <Text numberOfLines={1} style={[styles.periodText, value === item.label && styles.periodTextSelected]}>{item.label}</Text>
+        </Pressable>
+      ))}
+    </View>
+    </Animated.View>
+    </Animated.View>
+  );
+}
 
 function isValidSymbol(value: string) {
   return /^[A-Z0-9.^=-]{1,20}$/.test(value);
@@ -97,6 +195,7 @@ function WatchlistPriceCard({
   onRemove,
   onPress,
   last,
+  editing,
 }: {
   asset: Asset;
   entry: WatchEntry | undefined;
@@ -105,6 +204,7 @@ function WatchlistPriceCard({
   onRemove: () => void;
   onPress: () => void;
   last: boolean;
+  editing: boolean;
 }) {
   const { t } = useLocale();
   const allPoints = entry?.history?.points ?? [];
@@ -125,6 +225,7 @@ function WatchlistPriceCard({
   const tone = change === null ? colors.muted : isPositive ? colors.green : colors.red;
 
   return (
+    <View style={[styles.assetRow, !last && styles.assetCardDivider]}>
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={`Zobraziť detail ${asset.symbol}`}
@@ -134,9 +235,9 @@ function WatchlistPriceCard({
           { text: t('Zrušiť'), style: 'cancel' },
           { text: t('Odstrániť'), style: 'destructive', onPress: onRemove },
         ])}
-      style={[styles.assetCard, !last && styles.assetCardDivider]}
+      style={[styles.assetCard, styles.assetMain]}
     >
-      <AssetLogo symbol={asset.symbol} color={asset.color} size={48} />
+      <AssetLogo symbol={asset.symbol} color={asset.color} size={42} />
       <View style={styles.assetCopy}>
         <Text style={styles.assetSymbol} numberOfLines={1}>{asset.symbol}</Text>
         <Text style={styles.assetName} numberOfLines={1}>{asset.name}</Text>
@@ -170,6 +271,12 @@ function WatchlistPriceCard({
         )}
       </View>
     </Pressable>
+    {editing ? <Pressable accessibilityRole="button"
+      accessibilityLabel={`${t('Odstrániť')} ${asset.symbol}`}
+      onPress={onRemove} style={styles.removeAssetButton}>
+      <X size={18} color={colors.red} />
+    </Pressable> : null}
+    </View>
   );
 }
 function showStorageError(action: string, error: unknown) {
@@ -183,6 +290,7 @@ export default function WatchlistScreen() {
   const [watchlists, setWatchlists] = useState<WatchlistsState>(defaultWatchlists);
   const [loading, setLoading] = useState(true);
   const [showPicker, setShowPicker] = useState(false);
+  const pickerAnimation = usePopupAnimation(showPicker);
   const [showLists, setShowLists] = useState(false);
   const [editingListId, setEditingListId] = useState<string | null>(null);
   const [listNameInput, setListNameInput] = useState('');
@@ -190,6 +298,8 @@ export default function WatchlistScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPeriod, setSelectedPeriod] = useState<(typeof periods)[number]['label']>('1D');
   const [sortOrder, setSortOrder] = useState<'alphabetical' | 'change'>('alphabetical');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [editingAssets, setEditingAssets] = useState(false);
   const [watchData, setWatchData] = useState<Record<string, WatchEntry>>({});
   const requestId = useRef(0);
   const swipeX = useRef(new Animated.Value(0)).current;
@@ -332,10 +442,10 @@ export default function WatchlistScreen() {
       const changeB = getPeriodChange(watchData[b.symbol], selectedPeriod);
       if (changeA === null && changeB !== null) return 1;
       if (changeA !== null && changeB === null) return -1;
-      if (changeA !== null && changeB !== null && changeA !== changeB) return changeB - changeA;
+      if (changeA !== null && changeB !== null && changeA !== changeB) return sortDirection === 'asc' ? changeA - changeB : changeB - changeA;
     }
-    return a.name.localeCompare(b.name, 'sk');
-  }), [assets, selectedPeriod, sortOrder, watchData]);
+    return a.name.localeCompare(b.name, 'sk') * (sortOrder === 'alphabetical' && sortDirection === 'desc' ? -1 : 1);
+  }), [assets, selectedPeriod, sortOrder, sortDirection, watchData]);
   const saveWatchlists = async (next: WatchlistsState) => {
     setWatchlists(next);
     try {
@@ -486,9 +596,13 @@ export default function WatchlistScreen() {
         list.id === watchlists.selectedId ? { ...list, symbols: [...symbols, symbol] } : list,
       ),
     });
+    closePicker();
+  };
+
+  const closePicker = () => pickerAnimation.close(() => {
     setShowPicker(false);
     setSearchQuery('');
-  };
+  });
 
   const removeAsset = (symbol: string) => {
     void saveWatchlists({
@@ -501,8 +615,6 @@ export default function WatchlistScreen() {
 
   return (
     <Page
-      gestureHandlers={swipeResponder.panHandlers}
-      pointerGestureHandlers={pointerGestureHandlers}
       floating={(
       <FloatingAddButton
         accessibilityLabel={t('Pridať akciu')}
@@ -510,7 +622,6 @@ export default function WatchlistScreen() {
       />
     )}
     >
-      <Animated.View style={{ transform: [{ translateX: swipeX }] }}>
       <Header
         compact
         title={selectedWatchlist?.name ?? t('Watchlist')}
@@ -519,43 +630,36 @@ export default function WatchlistScreen() {
           setEditingListId(null);
           setShowLists(true);
         }}
-        action={(
-          <View style={styles.countPill}>
-            <Text style={styles.countValue}>{assets.length}</Text>
-            <Text style={styles.countLabel}>{t('titulov')}</Text>
-          </View>
-        )}
       />
 
+      <MarketOverview />
+      {assets.length ? <View style={styles.filterRow}>
+        <PeriodSelector value={selectedPeriod} onChange={setSelectedPeriod} />
+        <Pressable accessibilityRole="button"
+          accessibilityLabel={`${t('Zoradiť')}: ${t(sortOrder === 'alphabetical' ? 'A–Z' : 'Zmena %')}`}
+          onPress={() => {
+            setSortOrder((current) => current === 'alphabetical' ? 'change' : 'alphabetical');
+            setSortDirection(sortOrder === 'alphabetical' ? 'desc' : 'asc');
+          }}
+          style={styles.sortToggle}>
+          <Text style={styles.sortText}>{t(sortOrder === 'alphabetical' ? 'A–Z' : 'Zmena %')}</Text>
+        </Pressable>
+        <Pressable accessibilityRole="button"
+          accessibilityLabel={t(sortDirection === 'asc' ? 'Vzostupne' : 'Zostupne')}
+          onPress={() => setSortDirection((current) => current === 'asc' ? 'desc' : 'asc')}
+          style={styles.sortDirection}>
+          {sortDirection === 'asc' ? <ArrowUpWideNarrow size={16} color={colors.text} />
+            : <ArrowDownWideNarrow size={16} color={colors.text} />}
+        </Pressable>
+        <Pressable accessibilityRole="button" accessibilityState={{ selected: editingAssets }}
+          onPress={() => setEditingAssets((current) => !current)}
+          style={[styles.editAssetsButton, editingAssets && styles.periodButtonSelected]}>
+          <Text style={styles.sortText}>{t('Upraviť')}</Text>
+        </Pressable>
+      </View> : null}
+      <Animated.View {...(editingAssets ? {} : swipeResponder.panHandlers)} {...(editingAssets ? {} : pointerGestureHandlers)}
+        style={{ transform: [{ translateX: swipeX }] }}>
       <View>
-      {assets.length ? (
-        <>
-          <View style={styles.periodSelector}>
-            {periods.map((item) => {
-              const selected = selectedPeriod === item.label;
-              return (
-                <Pressable
-                  key={item.label}
-                  accessibilityRole="button"
-                  accessibilityState={{ selected }}
-                  onPress={() => setSelectedPeriod(item.label)}
-                  style={[styles.periodButton, selected && styles.periodButtonSelected]}
-                >
-                  <Text style={[styles.periodText, selected && styles.periodTextSelected]}>{item.label}</Text>
-                </Pressable>
-              );
-            })}
-          </View>
-          <SortControl
-            value={sortOrder}
-            onChange={setSortOrder}
-            options={[
-              { key: 'change', label: 'Zmena %' },
-              { key: 'alphabetical', label: 'A–Z' },
-            ]}
-          />
-        </>
-      ) : null}
 
       {loading ? (
         <Surface style={styles.loadingCard}>
@@ -574,6 +678,7 @@ export default function WatchlistScreen() {
               onRemove={() => removeAsset(asset.symbol)}
               onPress={() => router.push({ pathname: '/position', params: { symbol: asset.symbol } })}
               last={index === sortedAssets.length - 1}
+              editing={editingAssets}
             />
           ))}
         </Surface>
@@ -723,23 +828,18 @@ export default function WatchlistScreen() {
       </Modal>
 
       <Modal
-        animationType="slide"
+        animationType="none"
         transparent
         visible={showPicker}
-        onRequestClose={() => {
-          setShowPicker(false);
-          setSearchQuery('');
-        }}
+        onRequestClose={closePicker}
       >
-        <View style={styles.modalScrim}>
+        <View style={[styles.modalScrim, { backgroundColor: 'transparent' }]}>
+          <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.modalScrim, pickerAnimation.backdrop]} />
           <Pressable
             style={StyleSheet.absoluteFill}
-            onPress={() => {
-              setShowPicker(false);
-              setSearchQuery('');
-            }}
+            onPress={closePicker}
           />
-          <View style={styles.modalSheet}>
+          <Animated.View style={[styles.modalSheet, pickerAnimation.sheet]}>
             <View style={styles.modalHeader}>
               <View>
                 <Text style={styles.modalTitle}>{t('Pridať do watchlistu')}</Text>
@@ -747,10 +847,7 @@ export default function WatchlistScreen() {
               </View>
               <Pressable
                 accessibilityLabel={t('Zavrieť')}
-                onPress={() => {
-                  setShowPicker(false);
-                  setSearchQuery('');
-                }}
+                onPress={closePicker}
                 style={styles.closeButton}
               >
                 <X size={18} color={colors.text} />
@@ -816,7 +913,7 @@ export default function WatchlistScreen() {
                 <Text style={styles.noAssets}>{t('Nenašli sa žiadne akcie. Skús iný názov alebo symbol.')}</Text>
               )}
             </ScrollView>
-          </View>
+          </Animated.View>
         </View>
       </Modal>
     </Page>
@@ -824,27 +921,21 @@ export default function WatchlistScreen() {
 }
 
 const styles = StyleSheet.create({
-  countPill: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    gap: 6,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 10,
-    backgroundColor: colors.surface,
-  },
-  countValue: { color: colors.text, fontSize: 13, fontWeight: '900' },
-  countLabel: { color: colors.muted, fontSize: 9, fontWeight: '700' },
   periodSelector: {
+    flex: 1,
     flexDirection: 'row',
     padding: 3,
-    marginBottom: 6,
     borderRadius: 12,
     backgroundColor: colors.surface,
   },
+  periodContainer: { flexBasis: 72, height: 36, overflow: 'hidden', borderRadius: 10 },
+  periodCollapsed: {
+    flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    minHeight: 36, paddingHorizontal: 12, borderRadius: 10, backgroundColor: colors.surface,
+  },
   periodButton: {
     flex: 1,
-    minHeight: 32,
+    minHeight: 30,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 9,
@@ -854,12 +945,23 @@ const styles = StyleSheet.create({
   },
   periodText: {
     color: colors.muted,
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '700',
   },
   periodTextSelected: {
     color: colors.text,
   },
+  filterRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 6 },
+  sortToggle: {
+    marginLeft: 'auto',
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4,
+    minWidth: 68, minHeight: 36, paddingHorizontal: 6, borderRadius: 10, backgroundColor: colors.surface,
+  },
+  sortText: { color: colors.text, fontSize: 10, fontWeight: '700' },
+  sortDirection: { width: 32, height: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 10, backgroundColor: colors.surface },
+  editAssetsButton: { minWidth: 38, height: 36, paddingHorizontal: 6, alignItems: 'center', justifyContent: 'center', borderRadius: 10, backgroundColor: colors.surface },
+  assetRow: { flexDirection: 'row', alignItems: 'center' },
+  removeAssetButton: { width: 32, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
   assetList: {
     paddingVertical: 2,
     paddingHorizontal: 10,
@@ -871,9 +973,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 4,
-    paddingVertical: 7,
-    minHeight: 62,
-    gap: 10,
+    paddingVertical: 8,
+    minHeight: 58,
   },
   assetCardDivider: {
     borderBottomWidth: StyleSheet.hairlineWidth,
@@ -994,13 +1095,13 @@ const styles = StyleSheet.create({
   },
   assetSymbol: {
     color: colors.text,
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '800',
   },
   assetName: {
     color: colors.muted,
-    fontSize: 12,
-    marginTop: 1,
+    fontSize: 10,
+    marginTop: 3,
   },
   priceRow: {
     flexDirection: 'row',
@@ -1024,11 +1125,12 @@ const styles = StyleSheet.create({
     fontVariant: ['tabular-nums'],
   },
   priceLoading: {
-    marginTop: 0,
-    alignSelf: 'flex-start',
+    marginTop: 4,
+    alignSelf: 'flex-end',
   },
   changeBlock: {
     alignItems: 'flex-end',
+    marginRight: 8,
   },
   changePill: {
     borderRadius: 7,
@@ -1046,6 +1148,7 @@ const styles = StyleSheet.create({
   sparkline: {
     width: 56,
     height: 28,
+    marginHorizontal: 8,
   },
   removeButton: {
     padding: 4,

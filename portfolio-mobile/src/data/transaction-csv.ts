@@ -5,6 +5,15 @@ export const CSV_HEADER = [
   'Fees Percentage', 'Fees Amount', 'Fees Currency', 'To Cash',
 ];
 
+export function transactionCsvTemplate() {
+  return [
+    CSV_HEADER.join(','),
+    'AAPL,2025-01-15,2,200,USD,0,0,EUR,FALSE',
+    'AAPL,2025-02-20,-1,220,USD,0,0,EUR,TRUE',
+    'SAP,2025-03-10,1.5,250,EUR,0,0,EUR,FALSE',
+  ].join('\n') + '\n';
+}
+
 export type ImportRow = {
   line: number;
   symbol: string;

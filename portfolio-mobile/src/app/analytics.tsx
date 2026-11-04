@@ -324,6 +324,7 @@ const comparisonPeriods = [
   { label: '3M', days: 91 },
   { label: '6M', days: 183 },
   { label: '1Y', days: 365 },
+  { label: '3Y', days: 1095 },
   { label: 'Všetko', days: null },
 ] as const;
 
@@ -334,7 +335,7 @@ function getComparisonForPeriod(
   period: ComparisonPeriod,
   benchmarkSymbol: string,
 ) {
-  const selectedPeriod = comparisonPeriods.find((item) => item.label === period) ?? comparisonPeriods[4];
+  const selectedPeriod = comparisonPeriods.find((item) => item.label === period) ?? comparisonPeriods[comparisonPeriods.length - 1];
   const latestDate = values[values.length - 1]?.date;
   const cutoff = selectedPeriod.days !== null && latestDate
     ? new Date(`${latestDate}T00:00:00.000Z`).getTime() - selectedPeriod.days * DAY_MS
@@ -362,9 +363,11 @@ function getComparisonForPeriod(
 function ComparisonLineChart({
   values,
   benchmark,
+  onInteractionChange,
 }: {
   values: ComparisonPoint[];
   benchmark: typeof benchmarkAssets[number];
+  onInteractionChange: (interacting: boolean) => void;
 }) {
   const { t, language } = useLocale();
   const { width: screenWidth } = useWindowDimensions();
@@ -373,6 +376,11 @@ function ComparisonLineChart({
   const padding = { left: 34, right: 8, top: 16, bottom: 23 };
   const [containerWidth, setContainerWidth] = useState(chartWidth);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  useEffect(() => () => onInteractionChange(false), [onInteractionChange]);
+  const endInteraction = () => {
+    setSelectedIndex(null);
+    onInteractionChange(false);
+  };
   const allValues = values.flatMap((point) => [
     point.portfolioReturn,
     point.benchmarks[benchmark.symbol] ?? null,
@@ -435,8 +443,15 @@ function ComparisonLineChart({
       onLayout={(event) => setContainerWidth(event.nativeEvent.layout.width)}
       onStartShouldSetResponder={() => values.length > 1}
       onMoveShouldSetResponder={() => values.length > 1}
-      onResponderGrant={selectNearestPoint}
+      onResponderGrant={(event) => {
+        onInteractionChange(true);
+        selectNearestPoint(event);
+      }}
       onResponderMove={selectNearestPoint}
+      onResponderTerminationRequest={() => false}
+      onResponderRelease={endInteraction}
+      onResponderTerminate={endInteraction}
+      onTouchCancel={endInteraction}
       accessibilityLabel={t('Graf výnosu v čase. Potiahnite prstom po grafe pre výber dátumu.')}
     >
       {values.length > 1 ? (
@@ -476,7 +491,7 @@ function ComparisonLineChart({
               />
             ) : null;
           })}
-          {activePoint ? (
+          {selectedIndex !== null && activePoint ? (
             <>
               <Line
                 x1={x(activeIndex)}
@@ -526,13 +541,13 @@ function ComparisonLineChart({
       )}
       {activePoint ? (
         <View style={styles.selectedPoint}>
-          <Text style={styles.selectedPointDate}>
+          {selectedIndex !== null ? <Text style={styles.selectedPointDate}>
             {new Date(`${activePoint.date}T12:00:00`).toLocaleDateString(language === 'sk' ? 'sk-SK' : 'en-US', {
               day: 'numeric',
               month: 'long',
               year: 'numeric',
             })}
-          </Text>
+          </Text> : null}
           {series.map((item) => (
             <View key={`value-${item.symbol}`} style={styles.selectedPointRow}>
               <View style={[styles.legendSwatch, { backgroundColor: item.color }]} />
@@ -546,17 +561,6 @@ function ComparisonLineChart({
           ))}
         </View>
       ) : null}
-      <View style={styles.legend}>
-        {series.map((item) => {
-          const label = item.symbol === portfolioSeries.symbol ? portfolioSeries.name : benchmark.name;
-          return (
-            <View key={item.symbol} style={styles.legendItem}>
-              <View style={[styles.legendSwatch, { backgroundColor: item.color }]} />
-              <Text style={styles.legendText}>{label}</Text>
-            </View>
-          );
-        })}
-      </View>
     </View>
   );
 }
@@ -569,13 +573,11 @@ function AnnualComparisonChart({
   benchmark: typeof benchmarkAssets[number];
 }) {
   const { language, t } = useLocale();
-  const { width: screenWidth } = useWindowDimensions();
+  const { width: screenWidth, height: screenHeight } = useWindowDimensions();
   const viewportWidth = Math.max(280, screenWidth - 72);
   const groupWidth = 104;
   const chartWidth = Math.max(viewportWidth, values.length * groupWidth);
-  const chartHeight = 250;
-  const baseline = 132;
-  const verticalSpace = 82;
+  const chartHeight = Math.round(Math.max(145, Math.min(190, screenHeight * 0.22)));
   const displayedValues = [...values].reverse();
   const series = [
     portfolioSeries,
@@ -590,7 +592,12 @@ function AnnualComparisonChart({
     item.portfolioReturn,
     item.benchmarks[benchmark.symbol] ?? null,
   ]).filter((value): value is number => value !== null);
-  const maxAbs = Math.max(5, ...returns.map(Math.abs));
+  const max = Math.max(0, ...returns);
+  const min = Math.min(0, ...returns);
+  const spread = max - min || 1;
+  const plotTop = 26;
+  const plotHeight = chartHeight - plotTop - 38;
+  const baseline = plotTop + (max === min ? 1 : max / spread) * plotHeight;
   const groupCenter = (index: number) => index * groupWidth + groupWidth / 2;
   const barWidth = 30;
   const barGap = 14;
@@ -641,7 +648,7 @@ function AnnualComparisonChart({
               <Fragment key={year.year}>
                 {annualReturns.map((value, seriesIndex) => {
                   if (value === null) return null;
-                  const height = Math.max(1.5, Math.abs(value) / maxAbs * verticalSpace);
+                  const height = Math.max(1.5, Math.abs(value) / spread * plotHeight);
                   const x = startX + seriesIndex * (barWidth + barGap);
                   return (
                     <Fragment key={series[seriesIndex].symbol}>
@@ -752,23 +759,18 @@ function FundamentalsTable({
 }) {
   const { t } = useLocale();
   const locale = language === 'sk' ? 'sk-SK' : 'en-US';
-  const fiscalYear = (end: string | null) => {
-    if (!end) return '';
-    const date = new Date(`${end}T12:00:00`);
-    return Number.isNaN(date.getTime())
-      ? ''
-      : ` ${date.getFullYear()}`;
-  };
-  const fy0 = fiscalYear(portfolio.fy0End ?? market.fy0End);
-  const fy1 = fiscalYear(portfolio.fy1End ?? market.fy1End);
+  const year = new Date().getFullYear();
+  const groups = ['P/E', t('Rast EPS'), t('Rast tržieb')];
   const rows = [
-    { label: t('Aktuálne P/E'), key: 'trailingPE', isPE: true },
-    { label: `Forward P/E${fy0}`, key: 'peFY0', isPE: true },
-    { label: `Forward P/E${fy1}`, key: 'peFY1', isPE: true },
-    { label: `${t('Rast tržieb')}${fy0}`, key: 'revGrowthFY0', isPE: false },
-    { label: `${t('Rast tržieb')}${fy1}`, key: 'revGrowthFY1', isPE: false },
-    { label: `${t('Rast EPS')}${fy0}`, key: 'epsGrowthFY0', isPE: false },
-    { label: `${t('Rast EPS')}${fy1}`, key: 'epsGrowthFY1', isPE: false },
+    { label: 'P/E TTM', key: 'currentPE', isPE: true, year: null },
+    { label: 'Forward P/E', key: 'peThisYear', isPE: true, year },
+    { label: 'Forward P/E', key: 'peNextYear', isPE: true, year: year + 1 },
+    { label: t('EPS rast TTM'), key: 'epsGrowthTTM', isPE: false, year: null },
+    { label: t('Rast EPS'), key: 'epsGrowthThisYear', isPE: false, year },
+    { label: t('Rast EPS'), key: 'epsGrowthNextYear', isPE: false, year: year + 1 },
+    { label: t('Rast tržieb TTM'), key: 'revenueGrowthTTM', isPE: false, year: null },
+    { label: t('Rast tržieb'), key: 'revenueGrowthThisYear', isPE: false, year },
+    { label: t('Rast tržieb'), key: 'revenueGrowthNextYear', isPE: false, year: year + 1 },
   ] as const;
   return (
     <View style={styles.fundTable}>
@@ -792,16 +794,24 @@ function FundamentalsTable({
           ? '—'
           : `${diff > 0 ? '+' : ''}${diff.toLocaleString(locale, { maximumFractionDigits: 1 })}${row.isPE ? '' : ' pp'}`;
         return (
-          <View key={row.key} style={[styles.fundRow, index % 2 === 1 && styles.fundAlternateRow]}>
-            <View style={styles.fundLabelBox}>
-              <Text style={styles.fundLabel}>{row.label}</Text>
+          <Fragment key={row.key}>
+            {index % 3 === 0 ? (
+              <View style={[styles.fundGroupHeader, index > 0 && styles.fundGroupSpacing]}>
+                <Text style={styles.fundGroupTitle}>{groups[index / 3]}</Text>
+              </View>
+            ) : null}
+            <View style={[styles.fundRow, index % 3 === 1 && styles.fundAlternateRow]}>
+              <View style={styles.fundLabelBox}>
+                <Text style={styles.fundLabel}>{row.label}</Text>
+                {row.year !== null ? <Text style={styles.fundDate}>31.12.{row.year}</Text> : null}
+              </View>
+              <TableColumn tone="green" style={styles.fundColumn}><Text style={styles.fundCell}>{format(p)}</Text></TableColumn>
+              <TableColumn tone="cyan" style={styles.fundColumn}><Text style={styles.fundCell}>{format(m)}</Text></TableColumn>
+              <TableColumn tone="violet" style={styles.fundColumn}>
+                <Text style={[styles.fundCell, { color: good === null ? colors.muted : good ? colors.green : colors.red }]}>{diffText}</Text>
+              </TableColumn>
             </View>
-            <TableColumn tone="green" style={styles.fundColumn}><Text style={styles.fundCell}>{format(p)}</Text></TableColumn>
-            <TableColumn tone="cyan" style={styles.fundColumn}><Text style={styles.fundCell}>{format(m)}</Text></TableColumn>
-            <TableColumn tone="violet" style={styles.fundColumn}>
-              <Text style={[styles.fundCell, { color: good === null ? colors.muted : good ? colors.green : colors.red }]}>{diffText}</Text>
-            </TableColumn>
-          </View>
+          </Fragment>
         );
       })}
     </View>
@@ -827,10 +837,10 @@ export default function AnalyticsScreen() {
   const [fundamentalsLoading, setFundamentalsLoading] = useState(false);
   const [fundamentalsError, setFundamentalsError] = useState('');
   const [comparisonPeriod, setComparisonPeriod] = useState<ComparisonPeriod>('Všetko');
+  const [chartInteracting, setChartInteracting] = useState(false);
   const [lineBenchmarkSymbol, setLineBenchmarkSymbol] = useState<string>(benchmarkAssets[0].symbol);
   const [annualBenchmarkSymbol, setAnnualBenchmarkSymbol] = useState<string>(benchmarkAssets[0].symbol);
   const totalValue = positions.reduce((sum, position) => sum + positionValueEUR(position), 0);
-  const totalInvested = positions.reduce((sum, position) => sum + position.totalInvestedEUR, 0);
   const openCostEUR = positions.reduce((sum, position) => sum + positionCostEUR(position), 0);
   const realizedEUR = positions.reduce((sum, position) => sum + position.realizedProfitEUR, 0);
   const unrealizedEUR = totalValue - openCostEUR;
@@ -838,7 +848,6 @@ export default function AnalyticsScreen() {
     (sum, position) => sum + positionValueEUR(position) - positionCostEUR(position) + position.realizedProfitEUR,
     0,
   );
-  const totalReturnPct = totalInvested > 0 ? totalReturnEUR / totalInvested * 100 : 0;
   const startDate = getEarliestTransactionDate(transactions);
   const weightedAnnualReturnValue = useMemo(
     () => weightedAnnualReturn(transactions, totalValue),
@@ -953,7 +962,7 @@ export default function AnalyticsScreen() {
     [startDate, transactions.length],
   );
   return (
-    <Page animateOnFocus>
+    <Page animateOnFocus scrollEnabled={!chartInteracting}>
       <Header
         title={t('Analytika portfólia')}
         subtitle={t('Porovnanie od prvej investície')}
@@ -970,34 +979,15 @@ export default function AnalyticsScreen() {
       />
       <View style={styles.overviewRow}>
         <Surface style={styles.marketCard}>
-          <Text style={styles.marketLabel}>{t('Trhová hodnota')}</Text>
-          <Text numberOfLines={1} adjustsFontSizeToFit style={styles.marketValue}>{formatWholeEUR(totalValue, language)}</Text>
-          <View style={styles.marketStatRow}>
-            <Text style={styles.marketStatLabel}>{t('Investované')}</Text>
-            <Text numberOfLines={1} adjustsFontSizeToFit style={styles.marketStatValue}>{formatWholeEUR(totalInvested, language)}</Text>
-          </View>
+          <Text style={styles.marketLabel}>{t('Celkový výnos')}</Text>
+          <Text numberOfLines={1} adjustsFontSizeToFit style={styles.marketValue}>{formatWholeEUR(totalReturnEUR, language)}</Text>
           <View style={styles.marketStatRow}>
             <Text style={styles.marketStatLabel}>{t('Nerealizovaný výnos')}</Text>
-            <Text numberOfLines={1} adjustsFontSizeToFit style={[styles.marketStatValue, { color: unrealizedEUR >= 0 ? colors.green : colors.red }]}>
-              {formatWholeEUR(unrealizedEUR, language)}
-            </Text>
+            <Text numberOfLines={1} adjustsFontSizeToFit style={styles.marketStatValue}>{formatWholeEUR(unrealizedEUR, language)}</Text>
           </View>
           <View style={styles.marketStatRow}>
             <Text style={styles.marketStatLabel}>{t('Realizovaný výnos')}</Text>
-            <Text numberOfLines={1} adjustsFontSizeToFit style={[styles.marketStatValue, { color: realizedEUR >= 0 ? colors.green : colors.red }]}>
-              {formatWholeEUR(realizedEUR, language)}
-            </Text>
-          </View>
-          <View style={styles.marketStatRow}>
-            <Text style={styles.marketStatLabel}>{t('Celkový výnos')}</Text>
-            <View style={styles.marketReturnValues}>
-              <Text numberOfLines={1} adjustsFontSizeToFit style={[styles.marketStatValue, { color: totalReturnEUR >= 0 ? colors.green : colors.red }]}>
-                {formatWholeEUR(totalReturnEUR, language)}
-              </Text>
-              <Text style={[styles.marketReturnPercent, { color: totalReturnEUR >= 0 ? colors.green : colors.red }]}>
-                {totalReturnPct >= 0 ? '+' : ''}{totalReturnPct.toFixed(1)}%
-              </Text>
-            </View>
+            <Text numberOfLines={1} adjustsFontSizeToFit style={styles.marketStatValue}>{formatWholeEUR(realizedEUR, language)}</Text>
           </View>
         </Surface>
         <ReturnCard
@@ -1088,6 +1078,7 @@ export default function AnalyticsScreen() {
             key={`${lineBenchmark.symbol}-${comparisonPeriod}-${periodComparison.length}`}
             values={periodComparison}
             benchmark={lineBenchmark}
+            onInteractionChange={setChartInteracting}
           />
         )}
       </Surface>
@@ -1132,22 +1123,25 @@ export default function AnalyticsScreen() {
 const styles = StyleSheet.create({
   marketCard: {
     flex: 1.15,
+    justifyContent: 'center',
     minWidth: 0,
     paddingHorizontal: 12,
-    paddingVertical: 13,
+    paddingVertical: 10,
     borderWidth: 1,
     borderColor: colors.border,
-    marginBottom: 8,
+    marginBottom: 4,
   },
   marketValue: {
-    color: colors.text,
+    textAlign: 'center',
+    color: colors.green,
     fontSize: 29,
     fontWeight: '900',
     marginTop: 6,
-    marginBottom: 12,
+    marginBottom: 8,
     fontVariant: ['tabular-nums'],
   },
   marketLabel: {
+    textAlign: 'center',
     color: colors.muted,
     fontSize: 11,
     fontWeight: '800',
@@ -1164,40 +1158,30 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     gap: 4,
-    paddingTop: 7,
-    marginTop: 5,
+    paddingTop: 5,
+    marginTop: 4,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: colors.border,
   },
   marketStatLabel: {
     color: colors.muted,
     fontSize: 11,
-    fontWeight: '800',
+    fontWeight: '600',
     flexShrink: 1,
   },
   marketStatValue: {
-    color: colors.text,
-    fontSize: 13,
-    fontWeight: '900',
+    color: colors.muted,
+    fontSize: 11,
+    fontWeight: '600',
     fontVariant: ['tabular-nums'],
     textAlign: 'right',
-  },
-  marketReturnValues: {
-    flex: 1,
-    alignItems: 'flex-end',
-    minWidth: 0,
-  },
-  marketReturnPercent: {
-    fontSize: 11,
-    fontWeight: '800',
-    marginTop: 1,
   },
   returnCard: {
     flex: 0.85,
     minWidth: 0,
     paddingHorizontal: 12,
-    paddingVertical: 13,
-    marginBottom: 8,
+    paddingVertical: 10,
+    marginBottom: 4,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: 18,
@@ -1223,6 +1207,8 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   indexReturns: {
+    flex: 1,
+    justifyContent: 'space-between',
     gap: 5,
   },
   indexReturn: {
@@ -1262,6 +1248,10 @@ const styles = StyleSheet.create({
   fundTable: { overflow: 'hidden', borderRadius: 10 },
   fundHeaderRow: { minHeight: 34, backgroundColor: colors.surfaceRaised },
   fundAlternateRow: { backgroundColor: colors.surfaceRaised },
+  fundGroupHeader: { paddingHorizontal: 6, paddingVertical: 7, backgroundColor: colors.surfaceRaised, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border },
+  fundGroupSpacing: { marginTop: 10 },
+  fundGroupTitle: { color: colors.muted, fontSize: 10, fontWeight: '900' },
+  fundDate: { color: colors.muted, fontSize: 8, marginTop: 2 },
   fundLabel: {
     color: colors.text,
     fontSize: 10,
@@ -1422,13 +1412,6 @@ const styles = StyleSheet.create({
     fontSize: 9,
     lineHeight: 14,
   },
-  legend: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    gap: 10,
-    marginTop: 6,
-  },
   selectedPoint: {
     paddingHorizontal: 9,
     paddingVertical: 7,
@@ -1455,7 +1438,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   selectedPointValue: {
-    fontSize: 10,
+    fontSize: 13,
     fontWeight: '900',
   },
   annualLegend: {

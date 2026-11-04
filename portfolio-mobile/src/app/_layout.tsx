@@ -1,6 +1,10 @@
 import '../data/theme-init';
-import { Tabs } from 'expo-router';
-import { useEffect, useMemo } from 'react';
+import { Tabs, usePathname } from 'expo-router';
+import { createRef, useEffect, useMemo, useRef } from 'react';
+import type { ComponentRef } from 'react';
+import { Animated, Easing, Platform, StyleSheet, useWindowDimensions, View } from 'react-native';
+import * as Haptics from 'expo-haptics';
+import type { LucideIcon, LucideProps } from 'lucide-react-native';
 import {
   Bookmark,
   CalendarDays,
@@ -13,7 +17,10 @@ import { PositionsProvider } from '../hooks/use-positions';
 import { usePositions } from '../hooks/use-positions';
 import { preloadCompanyEvents } from '../data/events-cache';
 import { colors } from '../data/portfolio';
+import { FLOATING_NAVIGATION_GAP, GlassBackground, GlassTargetContext } from '../components/glass-background';
 import { useLocale, LocaleProvider } from '../context/locale';
+
+const NAVIGATION_ROUTES = ['/', '/events', '/watchlist', '/compare', '/forecast'];
 
 export default function RootLayout() {
   return (
@@ -41,49 +48,130 @@ function EventDataPreloader() {
   return null;
 }
 
+function TabIcon({ icon: Icon, color, focused }: { icon: LucideIcon; color: LucideProps['color']; focused: boolean }) {
+  return (
+    <View style={styles.tabIcon}>
+      <Icon color={color} size={23} strokeWidth={focused ? 2.4 : 1.8} />
+    </View>
+  );
+}
+
 function AppTabs() {
   const { t } = useLocale();
   const insets = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
+  const barWidth = Math.min(width - 64, 304);
+  const pathname = usePathname();
+  const activeIndex = NAVIGATION_ROUTES.indexOf(pathname);
+  const slotWidth = (barWidth - 12) / NAVIGATION_ROUTES.length;
+  const highlightPosition = useRef(new Animated.Value(Math.max(0, activeIndex) * slotWidth)).current;
+  const highlightScale = useRef(new Animated.Value(1)).current;
+  useEffect(() => {
+    if (activeIndex < 0) return undefined;
+    const animation = Animated.parallel([
+      Animated.timing(highlightPosition, {
+        toValue: activeIndex * slotWidth,
+        duration: 240,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+      Animated.sequence([
+        Animated.timing(highlightScale, { toValue: 0.94, duration: 80, useNativeDriver: true }),
+        Animated.timing(highlightScale, { toValue: 1, duration: 160, useNativeDriver: true }),
+      ]),
+    ]);
+    animation.start();
+    return () => animation.stop();
+  }, [activeIndex, slotWidth, highlightPosition, highlightScale]);
+  const blurTargets = useRef(new Map<string, ReturnType<typeof createRef<ComponentRef<typeof View>>>>());
+  const targetFor = (key: string) => {
+    let target = blurTargets.current.get(key);
+    if (!target) {
+      target = createRef<ComponentRef<typeof View>>();
+      blurTargets.current.set(key, target);
+    }
+    return target;
+  };
   return (
+    <View style={styles.navigation}>
       <Tabs
         backBehavior="history"
-        screenOptions={{
+        screenListeners={({ route }) => ({
+          tabPress: () => {
+            const target = route.name === 'index' ? '/' : `/${route.name}`;
+            if (pathname === target) return;
+            const feedback = Platform.OS === 'android'
+              ? Haptics.performAndroidHapticsAsync(Haptics.AndroidHaptics.Keyboard_Tap)
+              : Platform.OS === 'ios'
+                ? Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+                : Promise.resolve();
+            void feedback.catch((error: unknown) => console.warn('Navigation haptics failed:', error));
+          },
+        })}
+        screenLayout={({ route, children }) => (
+          <GlassTargetContext.Provider value={targetFor(route.name)}>
+            {children}
+          </GlassTargetContext.Provider>
+        )}
+        screenOptions={({ route }) => ({
           headerShown: false,
+          animation: 'fade',
+          transitionSpec: { animation: 'timing', config: { duration: 180 } },
           sceneStyle: { backgroundColor: colors.background },
           tabBarActiveTintColor: colors.green,
           tabBarInactiveTintColor: colors.muted,
+          tabBarShowLabel: false,
+          tabBarBackground: () => (
+            <GlassTargetContext.Provider value={targetFor(route.name)}>
+              <GlassBackground />
+              {activeIndex >= 0 ? (
+                <Animated.View pointerEvents="none" style={[styles.tabHighlight, {
+                  left: 6 + (slotWidth - 44) / 2,
+                  transform: [{ translateX: highlightPosition }, { scale: highlightScale }],
+                }]} />
+              ) : null}
+            </GlassTargetContext.Provider>
+          ),
           tabBarStyle: {
-            backgroundColor: colors.surface,
-            borderTopColor: colors.border,
-            paddingTop: 5,
-            paddingBottom: insets.bottom + 14,
-            height: 52 + insets.bottom + 14,
+            position: 'absolute',
+            start: (width - barWidth) / 2,
+            end: (width - barWidth) / 2,
+            bottom: insets.bottom + FLOATING_NAVIGATION_GAP,
+            backgroundColor: 'transparent',
+            borderTopWidth: 0,
+            borderRadius: 30,
+            paddingHorizontal: 6,
+            paddingTop: 8,
+            paddingBottom: 8,
+            height: 60,
+            elevation: 0,
           },
-          tabBarLabelStyle: {
-            fontSize: 9,
-            fontWeight: '700',
-          },
-        }}
+          tabBarItemStyle: { borderRadius: 18, height: 44, padding: 0, alignItems: 'center', justifyContent: 'center' },
+          tabBarIconStyle: { position: 'absolute', top: 0, width: 44, height: 44, margin: 0 },
+        })}
       >
         <Tabs.Screen
           name="index"
           options={{
             title: t('Portfólio'),
-            tabBarIcon: ({ color }) => <House color={color} size={21} />,
+            tabBarAccessibilityLabel: t('Portfólio'),
+            tabBarIcon: ({ color, focused }) => <TabIcon icon={House} color={color} focused={focused} />,
           }}
         />
         <Tabs.Screen
           name="events"
           options={{
             title: t('Udalosti'),
-            tabBarIcon: ({ color }) => <CalendarDays color={color} size={21} />,
+            tabBarAccessibilityLabel: t('Udalosti'),
+            tabBarIcon: ({ color, focused }) => <TabIcon icon={CalendarDays} color={color} focused={focused} />,
           }}
         />
         <Tabs.Screen
           name="watchlist"
           options={{
             title: 'Watchlist',
-            tabBarIcon: ({ color }) => <Bookmark color={color} size={21} />,
+            tabBarAccessibilityLabel: 'Watchlist',
+            tabBarIcon: ({ color, focused }) => <TabIcon icon={Bookmark} color={color} focused={focused} />,
           }}
         />
         <Tabs.Screen
@@ -93,18 +181,24 @@ function AppTabs() {
             tabBarItemStyle: { display: 'none' },
           }}
         />
+        <Tabs.Screen name="dividends" options={{
+          title: t('Dividendy'),
+          tabBarItemStyle: { display: 'none' },
+        }} />
         <Tabs.Screen
           name="compare"
           options={{
             title: t('Porovnanie'),
-            tabBarIcon: ({ color }) => <Scale color={color} size={21} />,
+            tabBarAccessibilityLabel: t('Porovnanie'),
+            tabBarIcon: ({ color, focused }) => <TabIcon icon={Scale} color={color} focused={focused} />,
           }}
         />
         <Tabs.Screen
           name="forecast"
           options={{
             title: t('Výhľad'),
-            tabBarIcon: ({ color }) => <Sparkles color={color} size={21} />,
+            tabBarAccessibilityLabel: t('Výhľad'),
+            tabBarIcon: ({ color, focused }) => <TabIcon icon={Sparkles} color={color} focused={focused} />,
           }}
         />
         <Tabs.Screen name="about" options={{ href: null }} />
@@ -128,5 +222,28 @@ function AppTabs() {
           }}
         />
       </Tabs>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  navigation: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  tabIcon: {
+    width: 44,
+    height: 40,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  tabHighlight: {
+    position: 'absolute',
+    top: 10,
+    width: 44,
+    height: 40,
+    borderRadius: 16,
+    backgroundColor: `${colors.green}18`,
+  },
+});

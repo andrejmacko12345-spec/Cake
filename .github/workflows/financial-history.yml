@@ -1,0 +1,53 @@
+name: Refresh financial history
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 5 1 * *'
+    - cron: '17 */6 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: financial-history
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: portfolio-mobile/package-lock.json
+      - run: npm ci
+        working-directory: portfolio-mobile
+      - run: npm test
+        working-directory: portfolio-mobile
+      - name: Fetch public financial statements
+        working-directory: portfolio-mobile
+        env:
+          FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ] && [ "${{ github.event.schedule }}" != "17 5 1 * *" ]; then
+            npm run refresh:financial-history -- --earnings-only
+          else
+            npm run refresh:financial-history
+          fi
+      - run: npm test
+        working-directory: portfolio-mobile
+      - name: Publish updated snapshot
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add portfolio-mobile/src/data/financial-history.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Update public quarterly financial history" -m "Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>"
+            git push origin HEAD:main
+          fi

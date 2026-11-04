@@ -1,16 +1,18 @@
 import type { ComponentRef } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useFocusEffect } from 'expo-router';
-import { ActivityIndicator, Linking, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { ActivityIndicator, Animated, Linking, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Bell, ChevronRight, X } from 'lucide-react-native';
 import { AssetLogo } from '../components/asset-logo';
 import { Header, Page, SectionTitle, Surface } from '../components/finapp';
 import { useLocale } from '../context/locale';
 import { CompanyEvents, QuarterResult } from '../data/events';
+import { earningsOutcome } from '../data/quarterly';
 import { getEventsCacheSnapshot, preloadCompanyEvents, subscribeToEventsCache } from '../data/events-cache';
 import { useEventPrefs } from '../data/event-prefs';
 import { colors } from '../data/portfolio';
 import { usePositions } from '../hooks/use-positions';
+import { usePopupAnimation } from '../hooks/use-popup-animation';
 
 type Category = 'Výsledky' | 'Dividendy' | 'Správy';
 
@@ -23,6 +25,8 @@ type EventItem = {
   lines: string[];
   link?: string;
   company?: CompanyEvents;
+  report?: QuarterResult;
+  upcoming?: boolean;
   color: string;
 };
 
@@ -52,6 +56,11 @@ function fmtRevenue(value: number | null, sk: boolean) {
   return value.toFixed(0);
 }
 
+function fmtBeat(value: number | null, sk: boolean, revenue = false) {
+  if (value === null || !Number.isFinite(value)) return '—';
+  return `${value > 0 ? '+' : ''}${revenue ? fmtRevenue(value, sk) : fmtNum(value)}`;
+}
+
 // Čas zverejnenia výsledkov: pred otvorením / po zatvorení trhu podľa newyorského času.
 function earningsTime(ms: number, sk: boolean) {
   try {
@@ -71,12 +80,19 @@ function earningsTime(ms: number, sk: boolean) {
 }
 
 export default function EventsScreen() {
+  const router = useRouter();
   const { language, t } = useLocale();
   const sk = language === 'sk';
   const { positions } = usePositions();
   const prefs = useEventPrefs();
   const [cache, setCache] = useState(getEventsCacheSnapshot);
   const [detail, setDetail] = useState<CompanyEvents | null>(null);
+  const detailPosition = positions.find((position) => position.symbol === detail?.symbol);
+  const dailyChange = detailPosition?.hasMarketQuote && Number.isFinite(detailPosition.dailyChangePct)
+    ? detailPosition.dailyChangePct : null;
+  const detailAnimation = usePopupAnimation(detail !== null);
+  const closeDetail = () => detailAnimation.close(() => setDetail(null));
+  const [detailUpcoming, setDetailUpcoming] = useState(false);
   const [screenFocused, setScreenFocused] = useState(false);
   const [scrollHeight, setScrollHeight] = useState(0);
   const [todayPosition, setTodayPosition] = useState<{ y: number; height: number } | null>(null);
@@ -95,9 +111,12 @@ export default function EventsScreen() {
   useEffect(() => {
     const unsubscribe = subscribeToEventsCache(setCache);
     setCache(getEventsCacheSnapshot());
-    if (symbols.length) void preloadCompanyEvents(symbols);
     return unsubscribe;
   }, [symbolKey]);
+
+  useFocusEffect(useCallback(() => {
+    if (symbols.length) void preloadCompanyEvents(symbols);
+  }, [symbolKey]));
 
   const data = useMemo(
     () => Object.fromEntries(symbols.flatMap((symbol) => cache.data[symbol] ? [[symbol, cache.data[symbol]]] : [])),
@@ -124,6 +143,7 @@ export default function EventsScreen() {
         if (next.estimate) lines.push(sk ? 'Dátum je orientačný' : 'Date is an estimate');
         list.push({
           key: `${symbol}-next`,
+          upcoming: true,
           symbol,
           category: 'Výsledky',
           date: ms,
@@ -144,22 +164,17 @@ export default function EventsScreen() {
           ? company.lastReportDate * 1000
           : new Date(quarter.periodEnd).getTime() + lag;
         if (!reportedMs || reportedMs > now) return;
-        const lines: string[] = [];
-        if (quarter.revenue !== null) {
-          lines.push(`${sk ? 'Tržby' : 'Revenue'}: ${fmtRevenue(quarter.revenue, sk)}${quarter.revenueYoY !== null ? ` (${fmtPct(quarter.revenueYoY)} YoY)` : ''}`);
-        }
-        if (quarter.epsActual !== null) lines.push(`EPS: ${fmtNum(quarter.epsActual)}`);
         list.push({
           key: `${symbol}-q-${quarter.label}`,
           symbol,
           category: 'Výsledky',
           date: reportedMs,
           title: `${sk ? 'Výsledky' : 'Earnings'} ${quarter.label}`,
-          lines,
+          lines: [],
+          report: quarter,
           company,
-          color: quarter.revenueYoY === null
-            ? colors.muted
-            : quarter.revenueYoY >= 0 ? colors.green : colors.red,
+          color: earningsOutcome(quarter) === 'beat' ? colors.green
+            : earningsOutcome(quarter) === 'miss' ? colors.red : colors.muted,
         });
       });
       const dividendLine = company.dividendAmount !== null
@@ -219,7 +234,10 @@ export default function EventsScreen() {
     const reported = item.category === 'Výsledky' && item.date <= Date.now();
     const onPress = () => {
       if (item.link) void Linking.openURL(item.link).catch(() => undefined);
-      else if (item.company) setDetail(item.company);
+      else if (item.company) {
+        setDetailUpcoming(item.upcoming === true);
+        setDetail(item.company);
+      }
     };
     return (
       <Pressable key={item.key} disabled={!clickable} onPress={onPress}>
@@ -228,17 +246,33 @@ export default function EventsScreen() {
             <Text style={styles.dateDay}>{String(date.getDate()).padStart(2, '0')}</Text>
             <Text style={styles.dateMonth}>{months[date.getMonth()]}</Text>
           </View>
-          <AssetLogo symbol={item.symbol} color={item.color} size={40} />
+          <AssetLogo symbol={item.symbol} color={item.color} size={32} />
           <View style={styles.eventBody}>
             <View style={styles.eventTopline}>
               <Text style={styles.symbol}>{item.symbol}</Text>
-              <Text style={styles.category}>{t(item.category)}</Text>
+              <Text style={styles.category}>{item.report ? item.report.label : t(item.category)}</Text>
             </View>
-            <Text style={styles.eventTitle} numberOfLines={item.category === 'Správy' ? 2 : 1}>
+            {!item.report ? <Text style={styles.eventTitle} numberOfLines={item.category === 'Správy' ? 2 : 1}>
               {item.category === 'Výsledky'
                 ? item.title.replace(/^(Výsledky|Earnings)\s*/, '')
                 : item.title}
-            </Text>
+            </Text> : null}
+            {item.report ? (
+              <View style={styles.reportPreview}>
+                <View style={styles.reportIndicators}>
+                  {([
+                    [sk ? 'Tržby' : 'Revenue', item.report.revenueBeat],
+                    ['EPS', item.report.epsBeat],
+                  ] as const).map(([label, beat]) => (
+                    <View key={label} style={styles.reportIndicator} accessible
+                      accessibilityLabel={`${label}: ${beat === null || !Number.isFinite(beat) ? (sk ? 'Odhad nedostupný' : 'Estimate unavailable') : beat > 0 ? 'Beat' : beat < 0 ? 'Miss' : (sk ? 'V súlade s odhadom' : 'In line')}`}>
+                      <Text style={styles.eventTimeText}>{label}</Text>
+                      <View style={[styles.reportDot, { backgroundColor: pctColor(beat) }]} />
+                    </View>
+                  ))}
+                </View>
+              </View>
+            ) : null}
             {item.lines.length ? (
               <Text style={styles.eventTimeText} numberOfLines={1}>{item.lines.join(' · ')}</Text>
             ) : null}
@@ -274,41 +308,79 @@ export default function EventsScreen() {
       ) : null}
       {timelineFuture.map(renderItem)}
 
-      <Modal visible={detail !== null} animationType="slide" transparent onRequestClose={() => setDetail(null)}>
+      <Modal visible={detail !== null} animationType="none" transparent onRequestClose={closeDetail}>
         <View style={styles.scrim}>
-          <View style={styles.sheet}>
+          <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.backdrop, detailAnimation.backdrop]} />
+          <Pressable style={StyleSheet.absoluteFill} onPress={closeDetail} accessibilityRole="button" accessibilityLabel={t('Zavrieť')} />
+          <Animated.View style={[styles.sheet, detailAnimation.sheet]}>
             <View style={styles.sheetHeader}>
-              <View style={styles.sheetCopy}>
-                <Text style={styles.sheetTitle}>{detail?.symbol}</Text>
-                <Text style={styles.sheetSubtitle} numberOfLines={1}>{detail?.name}</Text>
-              </View>
-              <Pressable onPress={() => setDetail(null)} accessibilityRole="button" style={styles.closeButton}>
+              <Pressable style={({ pressed }) => [styles.sheetCopy, styles.stockLink, pressed && { opacity: 0.65 }]} accessibilityRole="button"
+                accessibilityLabel={`${t('Detail akcie')} ${detail?.symbol ?? ''}`}
+                onPress={() => {
+                  if (!detail) return;
+                  const symbol = detail.symbol;
+                  detailAnimation.close(() => {
+                    setDetail(null);
+                    router.push({ pathname: '/position', params: { symbol } });
+                  });
+                }}>
+                <View style={styles.stockLinkCopy}>
+                  <View style={styles.stockLinkTitle}>
+                    <Text style={styles.sheetTitle}>{detail?.symbol}</Text>
+                    <Text style={[styles.dailyChange, { color: pctColor(dailyChange) }]}>{fmtPct(dailyChange)}</Text>
+                  </View>
+                  <Text style={styles.sheetSubtitle} numberOfLines={1}>{detail?.name}</Text>
+                </View>
+                <ChevronRight size={20} color={colors.muted} />
+              </Pressable>
+              <Pressable onPress={closeDetail} accessibilityRole="button" accessibilityLabel={t('Zavrieť')} style={styles.closeButton}>
                 <X size={18} color={colors.text} />
               </Pressable>
             </View>
             <ScrollView>
-              {detail?.nextEarnings && !(detail.lastReportDate
-                && detail.lastReportDate * 1000 > Date.now() - 90 * DAY
-                && detail.lastReportDate * 1000 <= Date.now()
-                && detail.quarters.length) ? <UpcomingCard company={detail} sk={sk} /> : null}
+              {detailUpcoming && detail?.nextEarnings ? (
+                <Surface style={styles.upcoming}>
+                  <Text style={[styles.quarterTitle, { color: colors.violet }]}>
+                    {detail.nextEarnings.label ? `${detail.nextEarnings.label} · ` : ''}{t('Očakávané výsledky')}
+                  </Text>
+                  {detail.nextEarnings.estimates?.revenueCurrency ? (
+                    <Text style={styles.metricCurrency}>
+                      {sk ? 'Tržby' : 'Revenue'}: {detail.nextEarnings.estimates.revenueCurrency}
+                      {detail.nextEarnings.estimates.epsCurrency ? ` · EPS: ${detail.nextEarnings.estimates.epsCurrency}` : ''}
+                    </Text>
+                  ) : null}
+                  <Row label={sk ? 'Tržby' : 'Revenue'}
+                    value={fmtRevenue(detail.nextEarnings.estimates?.revenue ?? null, sk)} />
+                  <Row label={sk ? 'Tržby YoY' : 'Revenue YoY'} value={fmtPct(detail.nextEarnings.estimates?.revenueYoY ?? null)}
+                    color={pctColor(detail.nextEarnings.estimates?.revenueYoY ?? null)} />
+                  <Row label="EPS"
+                    value={fmtNum(detail.nextEarnings.estimates?.eps ?? null)} />
+                  <Row label="EPS YoY" value={fmtPct(detail.nextEarnings.estimates?.epsYoY ?? null)}
+                    color={pctColor(detail.nextEarnings.estimates?.epsYoY ?? null)} />
+                  <Text style={styles.sheetNote}>{t('Odhady analytikov, nie zverejnené výsledky. Chýbajúci alebo nejednoznačný odhad je označený pomlčkou.')}</Text>
+                </Surface>
+              ) : null}
+              {detailUpcoming && detail?.quarters.length ? <SectionTitle title={t('Zverejnené výsledky')} /> : null}
               {detail?.quarters.length ? (
-                detail.quarters.slice(0, 4).map((quarter, index) => (
-                  <QuarterCard key={quarter.label} quarter={quarter} first={index === 0} sk={sk} />
+                detail.quarters.slice(0, 4).map((quarter) => (
+                  <QuarterCard key={quarter.label} quarter={quarter} sk={sk} />
                 ))
               ) : (
                 <Text style={styles.empty}>{t('Výsledky zatiaľ nie sú dostupné.')}</Text>
               )}
               {detail?.financialDataIssue ? (
                 <Text style={styles.sheetNote}>
-                  {t(detail.financialDataIssue === 'missing-key'
-                    ? 'FMP API kľúč sa nenačítal. Skontroluj .env v koreňovom priečinku a reštartuj Expo.'
-                    : detail.financialDataIssue === 'plan-required'
-                      ? 'FMP odmietlo prístup k historickým finančným výkazom (HTTP 402). Tvoj plán API tento endpoint nepovoľuje.'
-                      : 'FMP sa nepodarilo načítať kvartálne finančné údaje. Skús to neskôr.')}
+                  {t('Niektoré výsledky alebo historické odhady analytikov nie sú dostupné.')}
                 </Text>
               ) : null}
+              <Text style={styles.sheetNote}>
+                {t('Beat = výsledok − odhad. Revenue beat je v mene tržieb, EPS beat na akciu. EPS používa metodiku konsenzu (GAAP alebo upravené).')}
+              </Text>
+              {detail?.quarters.some((quarter) => quarter.revenueBeatProvisional) ? (
+                <Text style={styles.sheetNote}>{t('* Predbežný revenue beat z odhadu uloženého pred reportom; čaká na manuálne overenie.')}</Text>
+              ) : null}
             </ScrollView>
-          </View>
+          </Animated.View>
         </View>
       </Modal>
     </Page>
@@ -324,44 +396,35 @@ function Row({ label, value, color }: { label: string; value: string; color?: st
   );
 }
 
-function UpcomingCard({ company, sk }: { company: CompanyEvents; sk: boolean }) {
-  const next = company.nextEarnings;
-  if (!next) return null;
-  const ms = next.date * 1000;
-  const time = earningsTime(ms, sk);
+function QuarterCard({ quarter, sk }: { quarter: QuarterResult; sk: boolean }) {
+  const outcome = earningsOutcome(quarter);
+  const accent = outcome === 'beat' ? colors.green : outcome === 'miss' ? colors.red : colors.muted;
   return (
-    <Surface style={styles.upcoming}>
-      <Text style={styles.quarterTitle}>
-        {sk ? 'Nadchádzajúci report' : 'Upcoming report'}{next.label ? ` · ${next.label}` : ''}
+    <Surface style={{ ...styles.quarter, borderColor: accent }}>
+      <Text style={[styles.quarterTitle, { color: accent }]}>
+        {quarter.label} · {outcome === 'beat' ? 'Beat'
+          : outcome === 'miss' ? (sk ? 'Zaostanie' : 'Miss')
+            : (sk ? 'Neutrálne / neúplné' : 'In-line / incomplete')}
       </Text>
-      <Row
-        label={sk ? 'Dátum výsledkov' : 'Report date'}
-        value={`${new Date(ms).toLocaleDateString(sk ? 'sk-SK' : 'en-US')}${next.estimate ? (sk ? ' (orientačne)' : ' (est.)') : ''}`}
-      />
-      {time ? <Row label={sk ? 'Čas' : 'Time'} value={time} /> : null}
-    </Surface>
-  );
-}
-
-function QuarterCard({ quarter, first, sk }: { quarter: QuarterResult; first: boolean; sk: boolean }) {
-  return (
-    <Surface style={first ? styles.quarterFirst : styles.quarter}>
-      <Text style={styles.quarterTitle}>{quarter.label}</Text>
       <Row label={sk ? 'Tržby' : 'Revenue'} value={fmtRevenue(quarter.revenue, sk)} />
-      <Row label={sk ? 'Tržby r/r' : 'Revenue YoY'} value={fmtPct(quarter.revenueYoY)} color={pctColor(quarter.revenueYoY)} />
+      <Row label={sk ? 'Tržby YoY' : 'Revenue YoY'} value={fmtPct(quarter.revenueYoY)} color={pctColor(quarter.revenueYoY)} />
+      <Row label={quarter.revenueBeatProvisional ? 'Revenue beat*' : 'Revenue beat'} value={fmtBeat(quarter.revenueBeat, sk, true)} color={pctColor(quarter.revenueBeat)} />
       <Row label="EPS" value={fmtNum(quarter.epsActual)} />
-      <Row label={sk ? 'EPS r/r' : 'EPS YoY'} value={fmtPct(quarter.epsYoY)} color={pctColor(quarter.epsYoY)} />
+      <Row label="EPS beat" value={fmtBeat(quarter.epsBeat, sk)} color={pctColor(quarter.epsBeat)} />
     </Surface>
   );
 }
 
 const styles = StyleSheet.create({
+  reportIndicators: { flexDirection: 'row', gap: 16 },
+  reportIndicator: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  reportDot: { width: 7, height: 7, borderRadius: 4 },
   loader: { marginVertical: 24 },
   empty: { color: colors.muted, fontSize: 12, textAlign: 'center', marginVertical: 18, lineHeight: 18 },
-  eventCard: { flexDirection: 'row', alignItems: 'center', padding: 10, marginBottom: 5, borderRadius: 15 },
+  eventCard: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 9, paddingVertical: 7, marginBottom: 4, borderRadius: 13 },
   dateBadge: {
-    width: 38,
-    height: 44,
+    width: 34,
+    height: 38,
     borderRadius: 11,
     backgroundColor: colors.surfaceRaised,
     alignItems: 'center',
@@ -371,13 +434,15 @@ const styles = StyleSheet.create({
   dateDay: { color: colors.text, fontSize: 16, fontWeight: '900' },
   dateMonth: { color: colors.muted, fontSize: 10, fontWeight: '800', marginTop: 1 },
   eventAccent: { width: 3, alignSelf: 'stretch', borderRadius: 4, marginRight: 11 },
-  eventBody: { flex: 1 },
+  eventBody: { flex: 1, minWidth: 0 },
   eventTopline: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 1 },
   symbol: { color: colors.green, fontSize: 11, fontWeight: '900', letterSpacing: 0.8 },
   category: { color: colors.muted, fontSize: 10, fontWeight: '700' },
   eventTitle: { color: colors.text, fontSize: 13, fontWeight: '800' },
   eventTimeText: { color: colors.muted, fontSize: 10, marginTop: 2, flexShrink: 1 },
-  scrim: { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', justifyContent: 'flex-end' },
+  reportPreview: { marginTop: 2 },
+  scrim: { flex: 1, justifyContent: 'flex-end' },
+  backdrop: { backgroundColor: 'rgba(0,0,0,0.55)' },
   sheet: {
     maxHeight: '85%',
     backgroundColor: colors.background,
@@ -387,6 +452,10 @@ const styles = StyleSheet.create({
   },
   sheetHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
   sheetCopy: { flex: 1 },
+  stockLink: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 12, paddingVertical: 8, marginRight: 10, borderRadius: 14, backgroundColor: colors.surfaceRaised, borderWidth: 1, borderColor: colors.border },
+  stockLinkCopy: { flex: 1, minWidth: 0 },
+  stockLinkTitle: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', columnGap: 10 },
+  dailyChange: { fontSize: 13, fontWeight: '700', fontVariant: ['tabular-nums'] },
   sheetTitle: { color: colors.text, fontSize: 20, fontWeight: '900' },
   sheetSubtitle: { color: colors.muted, fontSize: 12, marginTop: 2 },
   closeButton: {
@@ -398,12 +467,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   sheetNote: { color: colors.muted, fontSize: 11, marginVertical: 8, lineHeight: 16 },
-  quarter: { marginBottom: 10 },
+  quarter: { marginBottom: 10, borderWidth: 1 },
   todayRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginVertical: 8 },
   todayLine: { flex: 1, height: 1, backgroundColor: colors.green },
   todayText: { color: colors.green, fontSize: 11, fontWeight: '900', letterSpacing: 1 },
-  upcoming: { marginBottom: 10, borderWidth: 1, borderColor: colors.violet },
-  quarterFirst: { marginBottom: 10, borderWidth: 1, borderColor: colors.green },
+  upcoming: { marginBottom: 10, borderWidth: 1, borderColor: colors.violet, backgroundColor: 'rgba(100,121,255,0.07)' },
+  metricCurrency: { color: colors.muted, fontSize: 10, marginBottom: 6 },
   quarterTitle: { color: colors.text, fontSize: 14, fontWeight: '900', marginBottom: 8 },
   row: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 4 },
   rowLabel: { color: colors.muted, fontSize: 12 },

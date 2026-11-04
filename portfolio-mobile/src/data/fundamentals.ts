@@ -1,54 +1,15 @@
-export type Fundamentals = {
+export type FundamentalMetrics = Pick<StockEstimates,
+  'currentPE' | 'peThisYear' | 'peNextYear' |
+  'epsGrowthTTM' | 'epsGrowthThisYear' | 'epsGrowthNextYear' |
+  'revenueGrowthTTM' | 'revenueGrowthThisYear' | 'revenueGrowthNextYear'
+>;
+
+export type Fundamentals = FundamentalMetrics & {
   symbol: string;
   marketCap: number | null;
-  trailingPE: number | null;
-  forwardPE: number | null;
-  revenueGrowth: number | null;
-  epsGrowth: number | null;
-  peFY0: number | null;
-  peFY1: number | null;
-  revGrowthFY0: number | null;
-  revGrowthFY1: number | null;
-  epsGrowthFY0: number | null;
-  epsGrowthFY1: number | null;
-  fy0End: string | null;
-  fy1End: string | null;
-};
-
-export type FundamentalMetrics = {
-  trailingPE: number | null;
-  forwardPE: number | null;
-  revenueGrowth: number | null;
-  epsGrowth: number | null;
-  peFY0: number | null;
-  peFY1: number | null;
-  revGrowthFY0: number | null;
-  revGrowthFY1: number | null;
-  epsGrowthFY0: number | null;
-  epsGrowthFY1: number | null;
-  fy0End: string | null;
-  fy1End: string | null;
 };
 
 type RawValue = { raw?: number } | undefined;
-
-type QuoteSummaryResponse = {
-  quoteSummary?: {
-    result?: Array<{
-      price?: { regularMarketPrice?: RawValue };
-      summaryDetail?: { trailingPE?: RawValue; forwardPE?: RawValue; marketCap?: RawValue };
-      defaultKeyStatistics?: { forwardPE?: RawValue };
-      earningsTrend?: {
-        trend?: Array<{
-          period?: string;
-          endDate?: string;
-          revenueEstimate?: { growth?: RawValue };
-          earningsEstimate?: { avg?: RawValue; growth?: RawValue };
-        }>;
-      };
-    }> | null;
-  };
-};
 
 // Yahoo neposkytuje fundamenty indexu, preto trh aproximujeme veľkými firmami S&P 500.
 export const marketBasket = [
@@ -117,92 +78,120 @@ function finite(value: RawValue) {
 }
 
 export async function fetchFundamentals(symbol: string): Promise<Fundamentals> {
-  const crumb = await getCrumb();
-  const url = `https://query2.finance.yahoo.com/v10/finance/quoteSummary/${encodeURIComponent(symbol)}`
-    + `?modules=price,summaryDetail,defaultKeyStatistics,earningsTrend&crumb=${encodeURIComponent(crumb)}`;
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 15000);
-  try {
-    const response = await fetch(url, {
-      headers: { 'User-Agent': USER_AGENT, Accept: 'application/json' },
-      signal: controller.signal,
-    });
-    if (response.status === 401) {
-      crumbPromise = null;
-    }
-    if (!response.ok) {
-      throw new Error(`Zdroj fundamentov vrátil HTTP ${response.status}.`);
-    }
-    const data = await response.json() as QuoteSummaryResponse;
-    const result = data.quoteSummary?.result?.[0];
-    const trend = result?.earningsTrend?.trend ?? [];
-    const thisYear = trend.find((item) => item.period === '0y');
-    const nextYear = trend.find((item) => item.period === '+1y');
-    const price = finite(result?.price?.regularMarketPrice);
-    const peFrom = (eps: number | null) => (price !== null && eps !== null && eps > 0 ? price / eps : null);
-    return {
-      symbol,
-      peFY0: peFrom(finite(thisYear?.earningsEstimate?.avg)),
-      peFY1: peFrom(finite(nextYear?.earningsEstimate?.avg)),
-      revGrowthFY0: finite(thisYear?.revenueEstimate?.growth),
-      revGrowthFY1: finite(nextYear?.revenueEstimate?.growth),
-      epsGrowthFY0: finite(thisYear?.earningsEstimate?.growth),
-      epsGrowthFY1: finite(nextYear?.earningsEstimate?.growth),
-      fy0End: thisYear?.endDate ?? null,
-      fy1End: nextYear?.endDate ?? null,
-      marketCap: finite(result?.summaryDetail?.marketCap),
-      trailingPE: finite(result?.summaryDetail?.trailingPE),
-      forwardPE: finite(result?.summaryDetail?.forwardPE) ?? finite(result?.defaultKeyStatistics?.forwardPE),
-      revenueGrowth: finite(nextYear?.revenueEstimate?.growth),
-      epsGrowth: finite(nextYear?.earningsEstimate?.growth),
-    };
-  } finally {
-    clearTimeout(timeout);
-  }
+  return fetchStockEstimates(symbol);
 }
 
 export type StockEstimates = {
   symbol: string;
   name: string;
+  marketCap: number | null;
   currentPE: number | null;
   forwardPE: number | null;
   peThisYear: number | null;
   peNextYear: number | null;
+  epsThisYear: number | null;
+  epsNextYear: number | null;
   revenueGrowthThisYear: number | null;
   revenueGrowthNextYear: number | null;
   epsGrowthThisYear: number | null;
   epsGrowthNextYear: number | null;
+  revenueGrowthTTM: number | null;
+  epsGrowthTTM: number | null;
+  grossMargin: number | null;
+  netMargin: number | null;
+  priceToSalesTTM: number | null;
+  cy0End: string;
+  cy1End: string;
+  calendarApproximate: boolean;
 };
 
 type EstimatesResponse = {
   quoteSummary?: {
     result?: Array<{
       price?: { regularMarketPrice?: RawValue; shortName?: string; longName?: string };
-      summaryDetail?: { trailingPE?: RawValue; forwardPE?: RawValue };
+      summaryDetail?: { trailingPE?: RawValue; forwardPE?: RawValue; priceToSalesTrailing12Months?: RawValue; marketCap?: RawValue };
       defaultKeyStatistics?: { forwardPE?: RawValue };
+      financialData?: { grossMargins?: RawValue; profitMargins?: RawValue };
       earningsTrend?: {
         trend?: Array<{
           period?: string;
-          revenueEstimate?: { growth?: RawValue };
-          earningsEstimate?: { avg?: RawValue; growth?: RawValue };
+          endDate?: string;
+          revenueEstimate?: { avg?: RawValue; growth?: RawValue; yearAgoRevenue?: RawValue };
+          earningsEstimate?: { avg?: RawValue; growth?: RawValue; yearAgoEps?: RawValue };
         }>;
       };
     }> | null;
   };
 };
 
+async function fetchTrailingGrowth(symbol: string, signal: AbortSignal) {
+  const now = Math.floor(Date.now() / 1000);
+  const types = ['trailingTotalRevenue', 'trailingDilutedEPS', 'annualTotalRevenue', 'annualDilutedEPS'] as const;
+  const response = await fetch(
+    `https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/${encodeURIComponent(symbol)}`
+    + `?type=${types.join(',')}&period1=${now - 3 * 366 * 86400}&period2=${now}`,
+    { headers: { 'User-Agent': USER_AGENT, Accept: 'application/json' }, signal },
+  );
+  if (!response.ok) throw new Error(`Zdroj TTM dát vrátil HTTP ${response.status}.`);
+  type Row = { asOfDate?: string; reportedValue?: RawValue };
+  const data = await response.json() as {
+    timeseries?: { result?: Array<Partial<Record<typeof types[number], Row[]>>> };
+  };
+  const growth = (type: typeof types[number]) => {
+    const rows = (data.timeseries?.result?.flatMap((entry) => entry[type] ?? []) ?? [])
+      .filter((row) => row.asOfDate && finite(row.reportedValue) !== null)
+      .sort((a, b) => String(b.asOfDate).localeCompare(String(a.asOfDate)));
+    const latest = rows[0];
+    if (!latest?.asOfDate) return null;
+    const target = new Date(`${latest.asOfDate}T00:00:00Z`);
+    target.setUTCFullYear(target.getUTCFullYear() - 1);
+    const previous = rows.find((row) =>
+      Math.abs(Date.parse(`${row.asOfDate}T00:00:00Z`) - target.getTime()) < 45 * 86400000);
+    const base = finite(previous?.reportedValue);
+    const value = finite(latest.reportedValue);
+    return base !== null && base > 0 && value !== null ? value / base - 1 : null;
+  };
+  const annual = (type: typeof types[number]) =>
+    (data.timeseries?.result?.flatMap((entry) => entry[type] ?? []) ?? [])
+      .flatMap((row) => {
+        const value = finite(row.reportedValue);
+        return row.asOfDate && value !== null ? [{ date: row.asOfDate, value }] : [];
+      });
+  return {
+    revenueGrowthTTM: growth(types[0]),
+    epsGrowthTTM: growth(types[1]),
+    annualRevenue: annual('annualTotalRevenue'),
+    annualEPS: annual('annualDilutedEPS'),
+  };
+}
+
+export function calendarYearEstimate(
+  annual: Array<{ date: string; value: number }>,
+  year: number,
+  fiscalEndMonth: number,
+): number | null {
+  const ending = (endYear: number) => annual.find((row) =>
+    row.date.startsWith(`${endYear}-`) && Number(row.date.slice(5, 7)) === fiscalEndMonth)?.value;
+  const first = ending(year);
+  if (fiscalEndMonth === 12) return first ?? null;
+  const second = ending(year + 1);
+  if (first === undefined || second === undefined) return null;
+  // Calendar year spans the end of one fiscal year and the start of the next.
+  return first * fiscalEndMonth / 12 + second * (12 - fiscalEndMonth) / 12;
+}
+
 // Yahoo zverejňuje odhady len pre aktuálny (0y) a nasledujúci (+1y) fiškálny rok.
 export async function fetchStockEstimates(symbol: string): Promise<StockEstimates> {
   const crumb = await getCrumb();
   const url = `https://query2.finance.yahoo.com/v10/finance/quoteSummary/${encodeURIComponent(symbol)}`
-    + `?modules=price,summaryDetail,defaultKeyStatistics,earningsTrend&crumb=${encodeURIComponent(crumb)}`;
+    + `?modules=price,summaryDetail,defaultKeyStatistics,financialData,earningsTrend&crumb=${encodeURIComponent(crumb)}`;
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 15000);
   try {
-    const response = await fetch(url, {
+    const [response, trailing] = await Promise.all([fetch(url, {
       headers: { 'User-Agent': USER_AGENT, Accept: 'application/json' },
       signal: controller.signal,
-    });
+    }), fetchTrailingGrowth(symbol, controller.signal)]);
     if (response.status === 401) crumbPromise = null;
     if (!response.ok) throw new Error(`Zdroj fundamentov vrátil HTTP ${response.status}.`);
     const data = await response.json() as EstimatesResponse;
@@ -213,17 +202,58 @@ export async function fetchStockEstimates(symbol: string): Promise<StockEstimate
     const nextYear = trend.find((item) => item.period === '+1y');
     const price = finite(result.price?.regularMarketPrice);
     const peFrom = (eps: number | null) => (price !== null && eps !== null && eps > 0 ? price / eps : null);
+    const annualRevenue = [...trailing.annualRevenue];
+    const annualEPS = [...trailing.annualEPS];
+    const upsert = (rows: Array<{ date: string; value: number }>, date: string, value: number | null) => {
+      if (value === null) return;
+      const existing = rows.find((row) => row.date === date);
+      if (existing) existing.value = value;
+      else rows.push({ date, value });
+    };
+    for (const estimate of [thisYear, nextYear]) {
+      if (!estimate?.endDate || !/^\d{4}-\d{2}-\d{2}$/.test(estimate.endDate)) continue;
+      const previousDate = `${Number(estimate.endDate.slice(0, 4)) - 1}${estimate.endDate.slice(4)}`;
+      const addIfMissing = (rows: Array<{ date: string; value: number }>, value: number | null) => {
+        if (!rows.some((row) => row.date === previousDate)) upsert(rows, previousDate, value);
+      };
+      addIfMissing(annualRevenue, finite(estimate.revenueEstimate?.yearAgoRevenue));
+      addIfMissing(annualEPS, finite(estimate.earningsEstimate?.yearAgoEps));
+      upsert(annualRevenue, estimate.endDate, finite(estimate.revenueEstimate?.avg));
+      upsert(annualEPS, estimate.endDate, finite(estimate.earningsEstimate?.avg));
+    }
+    const fiscalMonth = thisYear?.endDate ? Number(thisYear.endDate.slice(5, 7)) : null;
+    const year = new Date().getFullYear();
+    const calendar = (rows: Array<{ date: string; value: number }>, targetYear: number) =>
+      fiscalMonth !== null && fiscalMonth >= 1 && fiscalMonth <= 12
+        ? calendarYearEstimate(rows, targetYear, fiscalMonth)
+        : null;
+    const growth = (rows: Array<{ date: string; value: number }>, targetYear: number) => {
+      const current = calendar(rows, targetYear);
+      const previous = calendar(rows, targetYear - 1);
+      return current !== null && previous !== null && previous > 0 ? current / previous - 1 : null;
+    };
     return {
       symbol,
       name: result.price?.shortName ?? result.price?.longName ?? symbol,
+      marketCap: finite(result.summaryDetail?.marketCap),
+      revenueGrowthTTM: trailing.revenueGrowthTTM,
+      epsGrowthTTM: trailing.epsGrowthTTM,
+      grossMargin: finite(result.financialData?.grossMargins),
+      netMargin: finite(result.financialData?.profitMargins),
+      priceToSalesTTM: finite(result.summaryDetail?.priceToSalesTrailing12Months),
+      cy0End: `${year}-12-31`,
+      cy1End: `${year + 1}-12-31`,
+      calendarApproximate: fiscalMonth !== null && fiscalMonth !== 12,
       currentPE: finite(result.summaryDetail?.trailingPE),
       forwardPE: finite(result.summaryDetail?.forwardPE) ?? finite(result.defaultKeyStatistics?.forwardPE),
-      peThisYear: peFrom(finite(thisYear?.earningsEstimate?.avg)),
-      peNextYear: peFrom(finite(nextYear?.earningsEstimate?.avg)),
-      revenueGrowthThisYear: finite(thisYear?.revenueEstimate?.growth),
-      revenueGrowthNextYear: finite(nextYear?.revenueEstimate?.growth),
-      epsGrowthThisYear: finite(thisYear?.earningsEstimate?.growth),
-      epsGrowthNextYear: finite(nextYear?.earningsEstimate?.growth),
+      peThisYear: peFrom(calendar(annualEPS, year)),
+      peNextYear: peFrom(calendar(annualEPS, year + 1)),
+      epsThisYear: calendar(annualEPS, year),
+      epsNextYear: calendar(annualEPS, year + 1),
+      revenueGrowthThisYear: growth(annualRevenue, year),
+      revenueGrowthNextYear: growth(annualRevenue, year + 1),
+      epsGrowthThisYear: growth(annualEPS, year),
+      epsGrowthNextYear: growth(annualEPS, year + 1),
     };
   } finally {
     clearTimeout(timeout);
@@ -248,34 +278,23 @@ function aggregate(
   return valid.reduce((sum, item) => sum + (item.weight / totalWeight) * (item.value as number), 0);
 }
 
-type NumericMetric = Exclude<keyof FundamentalMetrics, 'fy0End' | 'fy1End'>;
-
-// Dátum konca fiškálneho roka: berie sa od najväčšej váhy, kde je dostupný.
-function pickEnd(items: Array<{ weight: number; fundamentals: Fundamentals | null }>, key: 'fy0End' | 'fy1End') {
-  const sorted = [...items].sort((a, b) => b.weight - a.weight);
-  return sorted.find((item) => item.fundamentals?.[key])?.fundamentals?.[key] ?? null;
-}
-
 export function aggregateFundamentals(
   items: Array<{ weight: number; fundamentals: Fundamentals | null }>,
 ): FundamentalMetrics {
-  const pick = (key: NumericMetric) => items.map((item) => ({
+  const pick = (key: keyof FundamentalMetrics) => items.map((item) => ({
     weight: item.weight,
     value: item.fundamentals?.[key] ?? null,
   }));
   return {
-    trailingPE: aggregate(pick('trailingPE'), true),
-    forwardPE: aggregate(pick('forwardPE'), true),
-    revenueGrowth: aggregate(pick('revenueGrowth'), false),
-    epsGrowth: aggregate(pick('epsGrowth'), false),
-    peFY0: aggregate(pick('peFY0'), true),
-    peFY1: aggregate(pick('peFY1'), true),
-    revGrowthFY0: aggregate(pick('revGrowthFY0'), false),
-    revGrowthFY1: aggregate(pick('revGrowthFY1'), false),
-    epsGrowthFY0: aggregate(pick('epsGrowthFY0'), false),
-    epsGrowthFY1: aggregate(pick('epsGrowthFY1'), false),
-    fy0End: pickEnd(items, 'fy0End'),
-    fy1End: pickEnd(items, 'fy1End'),
+    currentPE: aggregate(pick('currentPE'), true),
+    peThisYear: aggregate(pick('peThisYear'), true),
+    peNextYear: aggregate(pick('peNextYear'), true),
+    epsGrowthTTM: aggregate(pick('epsGrowthTTM'), false),
+    epsGrowthThisYear: aggregate(pick('epsGrowthThisYear'), false),
+    epsGrowthNextYear: aggregate(pick('epsGrowthNextYear'), false),
+    revenueGrowthTTM: aggregate(pick('revenueGrowthTTM'), false),
+    revenueGrowthThisYear: aggregate(pick('revenueGrowthThisYear'), false),
+    revenueGrowthNextYear: aggregate(pick('revenueGrowthNextYear'), false),
   };
 }
 
@@ -314,22 +333,26 @@ export async function fetchFundamentalsComparison(
 
 export type KeyStats = {
   eps: number | null;
+  forwardEPS: number | null;
   pe: number | null;
   forwardPE: number | null;
   dividendYield: number | null;
+  dividendRate: number | null;
   marketCap: number | null;
 };
 
 export async function fetchKeyStats(symbol: string): Promise<KeyStats> {
   const result = await yahooQuoteSummary<{
-    summaryDetail?: { trailingPE?: RawValue; forwardPE?: RawValue; marketCap?: RawValue; dividendYield?: RawValue };
-    defaultKeyStatistics?: { trailingEps?: RawValue; forwardPE?: RawValue };
+    summaryDetail?: { trailingPE?: RawValue; forwardPE?: RawValue; marketCap?: RawValue; dividendYield?: RawValue; dividendRate?: RawValue };
+    defaultKeyStatistics?: { trailingEps?: RawValue; forwardEps?: RawValue; forwardPE?: RawValue };
   }>(symbol, 'summaryDetail,defaultKeyStatistics');
   return {
     eps: finite(result?.defaultKeyStatistics?.trailingEps),
+    forwardEPS: finite(result?.defaultKeyStatistics?.forwardEps),
     pe: finite(result?.summaryDetail?.trailingPE),
     forwardPE: finite(result?.summaryDetail?.forwardPE) ?? finite(result?.defaultKeyStatistics?.forwardPE),
     dividendYield: finite(result?.summaryDetail?.dividendYield),
+    dividendRate: finite(result?.summaryDetail?.dividendRate),
     marketCap: finite(result?.summaryDetail?.marketCap),
   };
 }

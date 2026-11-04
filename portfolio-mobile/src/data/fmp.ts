@@ -1,15 +1,11 @@
+import { FinancialQuarter } from './quarterly';
+
 // Kľúč sa číta z lokálneho súboru .env (EXPO_PUBLIC_FMP_API_KEY), ktorý nie je v gite.
 export async function getFmpKey() {
   return process.env.EXPO_PUBLIC_FMP_API_KEY?.trim() || null;
 }
 
-export type FmpQuarter = {
-  time: number;
-  fiscalYear: string;
-  period: string;
-  revenue: number | null;
-  eps: number | null;
-};
+export type FmpQuarter = FinancialQuarter;
 
 export type FmpQuarterly = {
   quarters: FmpQuarter[];
@@ -23,7 +19,8 @@ async function getArray<T>(url: string): Promise<T[]> {
     const response = await fetch(url, { headers: { Accept: 'application/json' }, signal: controller.signal });
     if (!response.ok) throw new Error(`FMP vrátilo HTTP ${response.status}.`);
     const data = await response.json() as unknown;
-    return Array.isArray(data) ? data as T[] : [];
+    if (!Array.isArray(data)) throw new Error('FMP nevrátilo platné finančné výkazy.');
+    return data as T[];
   } finally {
     clearTimeout(timeout);
   }

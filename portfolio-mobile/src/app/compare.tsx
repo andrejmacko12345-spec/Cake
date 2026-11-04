@@ -1,9 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ComponentRef } from 'react';
-import { ActivityIndicator, Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
+import { ActivityIndicator, Animated, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
 import { ChartNoAxesCombined, Plus, Search, X } from 'lucide-react-native';
-import { Header, Page, SectionTitle, Surface } from '../components/finapp';
+import { Header, Page, Surface } from '../components/finapp';
 import { TableColumn, type TableColumnTone } from '../components/table-column';
 import { colors } from '../data/portfolio';
 import { fetchStockEstimates, StockEstimates } from '../data/fundamentals';
@@ -14,16 +14,19 @@ const STORAGE_KEY = '@portfolio-mobile/compare-symbols';
 const METRICS_KEY = '@portfolio-mobile/compare-metrics';
 const MAX_SYMBOLS = 3;
 const LABEL_WIDTH = 108;
-const MIN_CELL_WIDTH = 66;
 const ADD_COLUMN_WIDTH = 32;
-const GROUP_GAP_HEIGHT = 30;
+const GROUP_GAP_HEIGHT = 24;
 const DEFAULT_METRICS = [
+  'currentPE',
+  'peThisYear',
+  'peNextYear',
   'revenueGrowthThisYear',
   'revenueGrowthNextYear',
   'epsGrowthThisYear',
   'epsGrowthNextYear',
-  'peThisYear',
-  'peNextYear',
+  'grossMargin',
+  'netMargin',
+  'priceToSalesTTM',
 ] as const;
 
 type Entry = { data: StockEstimates | null; loading: boolean; error: string };
@@ -31,53 +34,72 @@ type Entry = { data: StockEstimates | null; loading: boolean; error: string };
 type Column = {
   key: keyof StockEstimates;
   label: string;
-  kind: 'pe' | 'growth';
-  group: 'revenue' | 'eps' | 'pe';
+  kind: 'pe' | 'growth' | 'margin';
+  group: 'revenue' | 'eps' | 'pe' | 'profitability';
   year?: 'current' | 'next';
 };
 
 const columns: Column[] = [
+  { key: 'currentPE', label: 'P/E TTM', kind: 'pe', group: 'pe' },
+  { key: 'peThisYear', label: 'P/E', kind: 'pe', group: 'pe', year: 'current' },
+  { key: 'peNextYear', label: 'P/E', kind: 'pe', group: 'pe', year: 'next' },
   { key: 'revenueGrowthThisYear', label: 'Rast tržieb', kind: 'growth', group: 'revenue', year: 'current' },
   { key: 'revenueGrowthNextYear', label: 'Rast tržieb', kind: 'growth', group: 'revenue', year: 'next' },
   { key: 'epsGrowthThisYear', label: 'EPS rast', kind: 'growth', group: 'eps', year: 'current' },
   { key: 'epsGrowthNextYear', label: 'EPS rast', kind: 'growth', group: 'eps', year: 'next' },
-  { key: 'peThisYear', label: 'P/E', kind: 'pe', group: 'pe', year: 'current' },
-  { key: 'peNextYear', label: 'P/E', kind: 'pe', group: 'pe', year: 'next' },
+  { key: 'grossMargin', label: 'Hrubá marža', kind: 'margin', group: 'profitability' },
+  { key: 'netMargin', label: 'Čistá marža', kind: 'margin', group: 'profitability' },
+  { key: 'priceToSalesTTM', label: 'P/S TTM', kind: 'pe', group: 'profitability' },
 ];
 
 function formatValue(value: number | null, kind: Column['kind']) {
   if (value === null) return '—';
   if (kind === 'pe') return `${value.toFixed(1)}x`;
   const percent = value * 100;
-  return `${percent > 0 ? '+' : ''}${percent.toFixed(1)}%`;
+  return `${kind === 'growth' && percent > 0 ? '+' : ''}${percent.toFixed(1)}%`;
 }
 
 function groupDividerStyle(group: Column['group']) {
   if (group === 'revenue') return styles.groupDividerRevenue;
   if (group === 'eps') return styles.groupDividerEps;
+  if (group === 'profitability') return styles.groupDividerProfitability;
   return styles.groupDividerPe;
 }
 
 function groupIndicatorStyle(group: Column['group']) {
   if (group === 'revenue') return styles.groupIndicatorRevenue;
   if (group === 'eps') return styles.groupIndicatorEps;
+  if (group === 'profitability') return styles.groupIndicatorProfitability;
   return styles.groupIndicatorPe;
 }
 
-function metricLabel(column: Column, year: number, translate: (key: string) => string) {
+function metricLabel(column: Column, translate: (key: string) => string) {
   if (!column.year) return translate(column.label);
-  return `${translate(column.label)} ${year + (column.year === 'next' ? 1 : 0)}`;
+  const year = new Date().getFullYear() + (column.year === 'next' ? 1 : 0);
+  return `${translate(column.label)} · ${year}`;
+}
+
+function calendarDate(data: StockEstimates | null | undefined, column: Column) {
+  const date = column.year === 'current' ? data?.cy0End : column.year === 'next' ? data?.cy1End : null;
+  if (!column.year) return null;
+  if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return '—';
+  const [year, month] = date.split('-');
+  return `${month}.${year}`;
 }
 
 export default function CompareScreen() {
   const { t } = useLocale();
   const { width: screenWidth } = useWindowDimensions();
+  const [viewportHeight, setViewportHeight] = useState(0);
+  const [tableLayout, setTableLayout] = useState({ width: screenWidth - 24, y: 60 });
+  const [tableHeaderHeight, setTableHeaderHeight] = useState(48);
   const pageScrollRef = useRef<ComponentRef<typeof ScrollView>>(null);
   const searchInputRef = useRef<ComponentRef<typeof TextInput>>(null);
   const [symbols, setSymbols] = useState<string[]>([]);
   const [loadedStorage, setLoadedStorage] = useState(false);
   const [entries, setEntries] = useState<Record<string, Entry>>({});
   const [showSearch, setShowSearch] = useState(false);
+  const searchReveal = useRef(new Animated.Value(0)).current;
   const [metricsOpen, setMetricsOpen] = useState(false);
   const [query, setQuery] = useState('');
   const { results, loading: searching, error: searchError } = useAssetSearch(query);
@@ -85,22 +107,31 @@ export default function CompareScreen() {
   const pendingMetrics = useRef<string[] | null>(null);
   const [selectedKeys, setSelectedKeys] = useState<string[]>([...DEFAULT_METRICS]);
   const [loadedMetrics, setLoadedMetrics] = useState(false);
-  const currentYear = new Date().getFullYear();
-  const tableWidth = Math.max(0, screenWidth - 24);
+  const tableWidth = Math.max(0, tableLayout.width - 2);
   const addColumnWidth = symbols.length >= MAX_SYMBOLS
     ? 0
     : symbols.length
       ? ADD_COLUMN_WIDTH
       : Math.max(ADD_COLUMN_WIDTH, tableWidth - LABEL_WIDTH);
   const cellWidth = symbols.length
-    ? Math.max(MIN_CELL_WIDTH, (tableWidth - LABEL_WIDTH - addColumnWidth) / symbols.length)
-    : MIN_CELL_WIDTH;
+    ? Math.max(0, (tableWidth - LABEL_WIDTH - addColumnWidth) / symbols.length)
+    : 0;
 
   useEffect(() => {
     if (!showSearch) return;
+    searchReveal.setValue(0);
+    const animation = Animated.timing(searchReveal, {
+      toValue: 1,
+      duration: 180,
+      useNativeDriver: true,
+    });
+    animation.start();
     const timer = setTimeout(() => searchInputRef.current?.focus(), 100);
-    return () => clearTimeout(timer);
-  }, [showSearch]);
+    return () => {
+      clearTimeout(timer);
+      animation.stop();
+    };
+  }, [showSearch, searchReveal]);
 
   useEffect(() => {
     AsyncStorage.getItem(METRICS_KEY)
@@ -109,7 +140,7 @@ export default function CompareScreen() {
         const parsed = JSON.parse(saved) as unknown;
         if (parsed && typeof parsed === 'object' && 'version' in parsed) {
           const savedMetrics = parsed as { version?: unknown; keys?: unknown; extra?: unknown };
-          if (savedMetrics.version === 5 && Array.isArray(savedMetrics.keys)) {
+          if (savedMetrics.version === 6 && Array.isArray(savedMetrics.keys)) {
             setSelectedKeys([...new Set(savedMetrics.keys.filter((item): item is string =>
               typeof item === 'string' && columns.some((column) => column.key === item),
             ))]);
@@ -137,7 +168,7 @@ export default function CompareScreen() {
         if (pendingMetrics.current) {
           AsyncStorage.setItem(
             METRICS_KEY,
-            JSON.stringify({ version: 5, keys: pendingMetrics.current }),
+            JSON.stringify({ version: 6, keys: pendingMetrics.current }),
           ).catch(() => undefined);
           pendingMetrics.current = null;
         }
@@ -147,7 +178,7 @@ export default function CompareScreen() {
   const saveMetrics = (next: string[]) => {
     setSelectedKeys(next);
     if (loadedMetrics) {
-      AsyncStorage.setItem(METRICS_KEY, JSON.stringify({ version: 5, keys: next })).catch(() => undefined);
+      AsyncStorage.setItem(METRICS_KEY, JSON.stringify({ version: 6, keys: next })).catch(() => undefined);
     } else {
       pendingMetrics.current = next;
     }
@@ -157,7 +188,7 @@ export default function CompareScreen() {
     if (selectedKeys.includes(key)) return;
     const newColumn = columns.find((column) => column.key === key);
     if (!newColumn) return;
-    const groupOrder = { revenue: 0, eps: 1, pe: 2 };
+    const groupOrder = { pe: 0, revenue: 1, eps: 2, profitability: 3 };
     const insertionIndex = selectedKeys.findIndex((selectedKey) => {
       const selectedColumn = columns.find((column) => column.key === selectedKey);
       return selectedColumn !== undefined && groupOrder[selectedColumn.group] > groupOrder[newColumn.group];
@@ -166,10 +197,16 @@ export default function CompareScreen() {
     next.splice(insertionIndex < 0 ? next.length : insertionIndex, 0, key);
     saveMetrics(next);
   };
-  const visibleColumns = selectedKeys
-    .map((key) => columns.find((column) => column.key === key))
-    .filter((column): column is Column => column !== undefined);
+  const visibleColumns = columns.filter((column) => selectedKeys.includes(column.key));
   const optionalColumns = columns.filter((column) => !selectedKeys.includes(column.key));
+  const groupCount = visibleColumns.filter((column, index) => column.group !== visibleColumns[index - 1]?.group).length;
+  const rowHeight = viewportHeight && visibleColumns.length
+    ? Math.max(26, Math.floor(
+      (viewportHeight - 16 - tableLayout.y - 28 - (symbols.length >= MAX_SYMBOLS ? 20 : 0)
+        - 2 - tableHeaderHeight - groupCount * GROUP_GAP_HEIGHT
+        - (optionalColumns.length ? 36 : 0)) / visibleColumns.length,
+    ))
+    : 36;
   useEffect(() => {
     AsyncStorage.getItem(STORAGE_KEY)
       .then((saved) => {
@@ -181,13 +218,6 @@ export default function CompareScreen() {
       })
       .catch(() => undefined)
       .finally(() => setLoadedStorage(true));
-  }, []);
-
-  useEffect(() => {
-    const subscription = Keyboard.addListener('keyboardDidShow', () => {
-      pageScrollRef.current?.scrollToEnd({ animated: true });
-    });
-    return () => subscription.remove();
   }, []);
 
   const saveSymbols = useCallback((next: string[]) => {
@@ -249,7 +279,7 @@ export default function CompareScreen() {
     for (const column of columns) {
       const values = symbols
         .map((symbol) => entries[symbol]?.data?.[column.key])
-        .filter((value): value is number => typeof value === 'number' && (column.kind === 'growth' || value > 0));
+        .filter((value): value is number => typeof value === 'number' && (column.kind !== 'pe' || value > 0));
       if (values.length > 1) {
         result[column.key] = column.kind === 'pe' ? Math.min(...values) : Math.max(...values);
       }
@@ -263,22 +293,19 @@ export default function CompareScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 84 : 0}
     >
-    <Page scrollRef={pageScrollRef}>
+    <Page scrollRef={pageScrollRef} onScrollViewLayout={setViewportHeight}>
       <Header
         title={t('Porovnanie akcií')}
-        subtitle={t('Fundamenty')}
+        compact
       />
 
-      <View style={styles.tableSectionHeader}>
-        <Text style={styles.tableSectionTitle}>{t('Ukazovatele')}</Text>
-        <View style={styles.metricCount}>
-          <Text style={styles.metricCountText}>{selectedKeys.length}</Text>
-        </View>
-      </View>
+      <View onLayout={({ nativeEvent: { layout } }) => setTableLayout({ width: layout.width, y: layout.y })}>
       <Surface style={styles.tableCard}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <View>
-            <View style={[styles.row, styles.tableHeader]}>
+          <View style={{ width: tableWidth }}>
+            <View
+              style={[styles.row, styles.tableHeader]}
+              onLayout={({ nativeEvent: { layout } }) => setTableHeaderHeight(layout.height)}
+            >
               <View style={styles.metricHeader}>
                 <Text style={styles.headerLabel}>{t('Ukazovatele')}</Text>
               </View>
@@ -312,6 +339,42 @@ export default function CompareScreen() {
               </Pressable> : null}
             </View>
 
+            {showSearch ? (
+              <Animated.View style={[
+                styles.inlineSearch,
+                {
+                  width: LABEL_WIDTH + cellWidth * symbols.length + addColumnWidth,
+                  opacity: searchReveal,
+                  transform: [{ translateY: searchReveal.interpolate({ inputRange: [0, 1], outputRange: [-6, 0] }) }],
+                },
+              ]}>
+                <View style={styles.searchBox}>
+                  <Search size={16} color={colors.muted} />
+                  <TextInput
+                    ref={searchInputRef}
+                    autoCapitalize="characters"
+                    autoCorrect={false}
+                    onChangeText={setQuery}
+                    placeholder={t('Hľadať akciu')}
+                    placeholderTextColor={colors.muted}
+                    style={styles.searchInput}
+                    value={query}
+                  />
+                  {searching ? <ActivityIndicator size="small" color={colors.green} /> : null}
+                </View>
+                {searchError ? <Text style={styles.errorText}>{searchError}</Text> : null}
+                {results.filter((asset) => !symbols.includes(asset.symbol)).slice(0, 5).map((asset) => (
+                  <Pressable key={asset.symbol} onPress={() => addSymbol(asset.symbol)} style={styles.resultRow}>
+                    <View style={styles.resultCopy}>
+                      <Text style={styles.resultSymbol}>{asset.symbol}</Text>
+                      <Text style={styles.resultName} numberOfLines={1}>{asset.name}</Text>
+                    </View>
+                    <Plus size={17} color={colors.green} />
+                  </Pressable>
+                ))}
+              </Animated.View>
+            ) : null}
+
             {visibleColumns.map((column, index) => {
             const previous = visibleColumns[index - 1];
             return (
@@ -328,14 +391,14 @@ export default function CompareScreen() {
                     </View>
                   )
                   : null}
-                <View style={[styles.row, styles.bodyRow]}>
+                <View style={[styles.row, styles.bodyRow, { minHeight: rowHeight }]}>
                   <View style={[styles.labelCell, { width: LABEL_WIDTH }]}>
-                    <Text style={styles.labelText} numberOfLines={2}>{metricLabel(column, currentYear, t)}</Text>
+                    <Text style={styles.labelText} numberOfLines={2}>{metricLabel(column, t)}</Text>
                   </View>
                     {symbols.length ? symbols.map((symbol, symbolIndex) => {
                       const entry = entries[symbol];
                       const stockTone = stockColumnTone(symbolIndex);
-                      const stockCellStyle = [styles.valueCell, { width: cellWidth, minHeight: 48 }];
+                      const stockCellStyle = [styles.valueCell, { width: cellWidth, minHeight: rowHeight - StyleSheet.hairlineWidth }];
                       if (entry?.loading && !entry.data) {
                         return (
                           <TableColumn key={symbol} tone={stockTone} style={{ width: cellWidth }}>
@@ -357,6 +420,7 @@ export default function CompareScreen() {
                       const isBest = numeric !== null && best[column.key] === numeric;
                       return (
                         <TableColumn key={symbol} tone={stockTone} style={{ width: cellWidth }}>
+                          <View style={styles.metricValue}>
                           <Text
                             style={[
                               styles.valueText,
@@ -369,9 +433,11 @@ export default function CompareScreen() {
                           >
                             {formatValue(numeric, column.kind)}
                           </Text>
+                          {column.year ? <Text style={styles.calendarDate}>{calendarDate(entry?.data, column)}</Text> : null}
+                          </View>
                         </TableColumn>
                       );
-                    }) : <View style={[styles.emptyValueCell, { width: addColumnWidth }]} />}
+                    }) : <View style={{ width: addColumnWidth, minHeight: rowHeight - StyleSheet.hairlineWidth }} />}
                   </View>
                 </Fragment>
               );
@@ -406,50 +472,20 @@ export default function CompareScreen() {
               >
                 <View style={styles.metricOptionLabel}>
                   <Plus size={14} color={colors.green} />
-                  <Text style={styles.metricOptionText}>{metricLabel(column, currentYear, t)}</Text>
+                  <Text style={styles.metricOptionText}>{metricLabel(column, t)}</Text>
                 </View>
                 {symbols.length ? symbols.map((symbol, symbolIndex) => (
                   <TableColumn
                     key={symbol}
                     tone={stockColumnTone(symbolIndex)}
                     style={{ width: cellWidth, minHeight: 45 }}
-                  />
+                  >{null}</TableColumn>
                 )) : <View style={[styles.emptyValueCell, { width: addColumnWidth }]} />}
               </Pressable>
             )) : null}
           </View>
-        </ScrollView>
-
-        {showSearch ? (
-          <View style={styles.inlineSearch}>
-            <View style={styles.searchBox}>
-              <Search size={16} color={colors.muted} />
-              <TextInput
-                ref={searchInputRef}
-                autoCapitalize="characters"
-                autoCorrect={false}
-                onChangeText={setQuery}
-                placeholder={t('Hľadať akciu')}
-                placeholderTextColor={colors.muted}
-                style={styles.searchInput}
-                value={query}
-                onFocus={() => setTimeout(() => pageScrollRef.current?.scrollToEnd({ animated: true }), 250)}
-              />
-              {searching ? <ActivityIndicator size="small" color={colors.green} /> : null}
-            </View>
-            {searchError ? <Text style={styles.errorText}>{searchError}</Text> : null}
-            {results.filter((asset) => !symbols.includes(asset.symbol)).slice(0, 5).map((asset) => (
-              <Pressable key={asset.symbol} onPress={() => addSymbol(asset.symbol)} style={styles.resultRow}>
-                <View style={styles.resultCopy}>
-                  <Text style={styles.resultSymbol}>{asset.symbol}</Text>
-                  <Text style={styles.resultName} numberOfLines={1}>{asset.name}</Text>
-                </View>
-                <Plus size={17} color={colors.green} />
-              </Pressable>
-            ))}
-          </View>
-        ) : null}
       </Surface>
+      </View>
 
       {!symbols.length ? (
         <View style={styles.emptyCompare}>
@@ -465,14 +501,6 @@ export default function CompareScreen() {
 
       {symbols.length >= MAX_SYMBOLS ? <Text style={styles.limitNote}>{t('Porovnať možno najviac 3 akcie.')}</Text> : null}
 
-      {symbols.length ? (
-        <>
-          <SectionTitle title={t('Poznámky')} />
-          <Text style={styles.note}>
-            {t('Roky označujú aktuálny a nasledujúci fiškálny rok. P/E a rast tržieb sú odhady. Tučná hodnota je najlepšia v stĺpci. Zdroj: Yahoo Finance.')}
-          </Text>
-        </>
-      ) : null}
     </Page>
     </KeyboardAvoidingView>
   );
@@ -480,26 +508,9 @@ export default function CompareScreen() {
 
 const styles = StyleSheet.create({
   keyboardAvoiding: { flex: 1 },
-  tableSectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginTop: 1,
-    marginBottom: 9,
-  },
-  tableSectionTitle: { color: colors.text, fontSize: 16, fontWeight: '800' },
-  metricCount: {
-    minWidth: 22,
-    height: 22,
-    paddingHorizontal: 6,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 11,
-    backgroundColor: colors.surfaceRaised,
-  },
-  metricCountText: { color: colors.muted, fontSize: 10, fontWeight: '800' },
   tableCard: {
     padding: 0,
+    marginBottom: 0,
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: colors.border,
@@ -531,7 +542,7 @@ const styles = StyleSheet.create({
   metricHeader: {
     width: LABEL_WIDTH,
     paddingHorizontal: 8,
-    paddingVertical: 12,
+    paddingVertical: 8,
     borderRightWidth: 1,
     borderRightColor: colors.border,
   },
@@ -558,7 +569,7 @@ const styles = StyleSheet.create({
   resultSymbol: { color: colors.text, fontSize: 13, fontWeight: '800', width: 58 },
   resultName: { flex: 1, color: colors.muted, fontSize: 12 },
   row: { flexDirection: 'row', alignItems: 'center' },
-  bodyRow: { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border, minHeight: 48 },
+  bodyRow: { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border },
   groupDivider: {
     height: GROUP_GAP_HEIGHT,
     flexDirection: 'row',
@@ -572,22 +583,24 @@ const styles = StyleSheet.create({
   groupDividerRevenue: { backgroundColor: 'rgba(120,216,79,0.08)', borderLeftColor: colors.green },
   groupDividerEps: { backgroundColor: 'rgba(22,196,216,0.08)', borderLeftColor: colors.cyan },
   groupDividerPe: { backgroundColor: 'rgba(100,121,255,0.09)', borderLeftColor: colors.violet },
+  groupDividerProfitability: { backgroundColor: 'rgba(255,180,90,0.08)', borderLeftColor: '#ffb45a' },
   groupIndicator: { width: 6, height: 6, borderRadius: 3 },
   groupIndicatorRevenue: { backgroundColor: colors.green },
   groupIndicatorEps: { backgroundColor: colors.cyan },
   groupIndicatorPe: { backgroundColor: colors.violet },
-  groupDividerText: { color: colors.text, fontSize: 10, fontWeight: '900', letterSpacing: 0.8, textTransform: 'uppercase' },
+  groupIndicatorProfitability: { backgroundColor: '#ffb45a' },
+  groupDividerText: { color: colors.text, fontSize: 11, fontWeight: '900', letterSpacing: 0.8, textTransform: 'uppercase' },
   labelCell: { paddingHorizontal: 8, flexDirection: 'row', alignItems: 'center', gap: 3 },
-  labelText: { flex: 1, color: colors.muted, fontSize: 11, fontWeight: '700' },
+  labelText: { flex: 1, color: colors.muted, fontSize: 12, lineHeight: 15, fontWeight: '700' },
   stockHead: {
     alignItems: 'center',
-    paddingVertical: 10,
+    paddingVertical: 6,
     paddingHorizontal: 4,
     gap: 2,
   },
   stockTitle: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   addStockHead: {
-    minHeight: 56,
+    minHeight: 48,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -601,10 +614,12 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
   },
   emptyValueCell: { minHeight: 48 },
-  valueText: { color: colors.text, fontSize: 13, fontWeight: '700' },
-  bestValue: { fontWeight: '900', textDecorationLine: 'underline' },
+  valueText: { color: colors.text, fontSize: 13, lineHeight: 15, fontWeight: '700' },
+  metricValue: { alignItems: 'center', justifyContent: 'center', paddingVertical: 1 },
+  calendarDate: { color: colors.muted, fontSize: 9, lineHeight: 9 },
+  bestValue: { fontWeight: '900' },
   addMetricRow: {
-    minHeight: 45,
+    minHeight: 36,
     paddingHorizontal: 8,
     gap: 8,
     borderBottomWidth: 1,
@@ -623,7 +638,6 @@ const styles = StyleSheet.create({
   symbolText: { color: colors.text, fontSize: 14, fontWeight: '800' },
   nameText: { color: colors.muted, fontSize: 9 },
   errorText: { color: colors.red, fontSize: 11 },
-  note: { color: colors.muted, fontSize: 10, lineHeight: 15 },
   limitNote: { color: colors.muted, fontSize: 10, textAlign: 'right', marginTop: 2, marginBottom: 4 },
 });
 
@@ -636,5 +650,6 @@ function stockColumnTone(index: number): TableColumnTone {
 function groupLabel(group: Column['group']) {
   if (group === 'revenue') return 'Rast tržieb';
   if (group === 'eps') return 'EPS rast';
+  if (group === 'profitability') return 'Ziskovosť a P/S';
   return 'P/E';
 }

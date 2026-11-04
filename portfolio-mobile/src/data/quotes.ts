@@ -10,6 +10,7 @@ type YahooChartResponse = {
         shortName?: string;
         longName?: string;
         regularMarketPrice?: number;
+        regularMarketTime?: number;
         chartPreviousClose?: number;
         previousClose?: number;
       };
@@ -119,8 +120,8 @@ function isValidPrice(value: unknown): value is number {
   return typeof value === 'number' && Number.isFinite(value) && value > 0;
 }
 
-async function fetchChart(symbol: string): Promise<YahooChartResponse> {
-  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=1d&interval=1m`;
+async function fetchChart(symbol: string, range = '1d', interval = '1m'): Promise<YahooChartResponse> {
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=${range}&interval=${interval}`;
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 12000);
   try {
@@ -135,6 +136,35 @@ async function fetchChart(symbol: string): Promise<YahooChartResponse> {
   } finally {
     clearTimeout(timeout);
   }
+}
+
+export const marketIndices = [
+  { symbol: '^DJI', name: 'Dow Jones' },
+  { symbol: '^GSPC', name: 'S&P 500' },
+  { symbol: '^IXIC', name: 'NASDAQ Composite' },
+] as const;
+export const indexRanges = ['1D', '1W', '1M', '3M', '1Y', '5Y', 'MAX'] as const;
+export type IndexRange = (typeof indexRanges)[number];
+export type IndexHistory = {
+  points: HistoricalQuotePoint[];
+  baseline: number;
+  timestamp: number;
+};
+
+export async function fetchIndexHistory(symbol: string, range: IndexRange): Promise<IndexHistory> {
+  if (!marketIndices.some((index) => index.symbol === symbol)) throw new Error(`Neplatný index: ${symbol}.`);
+  const ranges = { '1D': '1d', '1W': '5d', '1M': '1mo', '3M': '3mo', '1Y': '1y', '5Y': '5y', MAX: 'max' } as const;
+  const response = await fetchChart(symbol, ranges[range], range === '1D' || range === '1W' ? '5m' : range === 'MAX' ? '1mo' : range === '5Y' ? '1wk' : '1d');
+  const result = response.chart?.result?.[0];
+  if (!result || response.chart?.error) throw new Error(response.chart?.error?.description ?? `Údaje pre ${symbol} nie sú dostupné.`);
+  const closes = result.indicators?.quote?.[0]?.close ?? [];
+  const points = (result.timestamp ?? []).flatMap((timestamp, index) =>
+    Number.isFinite(timestamp) && isValidPrice(closes[index]) ? [{ timestamp, price: closes[index] }] : [],
+  ).sort((a, b) => a.timestamp - b.timestamp);
+  if (!points.length) throw new Error(`Údaje pre ${symbol} nie sú dostupné.`);
+  const baseline = range === '1D' ? result.meta?.previousClose ?? result.meta?.chartPreviousClose : points[0].price;
+  if (!isValidPrice(baseline)) throw new Error(`Predchádzajúce uzavretie pre ${symbol} nie je dostupné.`);
+  return { points, baseline, timestamp: points[points.length - 1].timestamp };
 }
 
 export async function fetchHistoricalQuoteSeries(

@@ -27,7 +27,9 @@ export function getEventsCacheSnapshot() {
 
 export function subscribeToEventsCache(listener: (snapshot: EventsCacheSnapshot) => void) {
   listeners.add(listener);
-  return () => listeners.delete(listener);
+  return () => {
+    listeners.delete(listener);
+  };
 }
 
 export async function preloadCompanyEvents(symbols: string[], force = false) {
@@ -36,7 +38,7 @@ export async function preloadCompanyEvents(symbols: string[], force = false) {
   const worker = async () => {
     while (index < requested.length) {
       const symbol = requested[index++];
-      if ((!force && data[symbol]) || inFlight.has(symbol)) continue;
+      if (inFlight.has(symbol)) continue;
       loading.add(symbol);
       delete errors[symbol];
       notify();

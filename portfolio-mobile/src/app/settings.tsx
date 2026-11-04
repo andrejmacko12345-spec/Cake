@@ -18,6 +18,7 @@ import {
   reconcileOversells,
   rowsToTransactions,
   transactionsToCsv,
+  transactionCsvTemplate,
 } from '../data/transaction-csv';
 import { Transaction, usePositions } from '../hooks/use-positions';
 
@@ -99,7 +100,7 @@ export default function SettingsScreen() {
   const { transactions, importTransactions, resetPortfolio, refreshQuotes } = usePositions();
   const [savingLanguage, setSavingLanguage] = useState(false);
   const [saveError, setSaveError] = useState('');
-  const [busy, setBusy] = useState<'import' | 'export' | 'reset' | null>(null);
+  const [busy, setBusy] = useState<'import' | 'export' | 'template' | 'reset' | null>(null);
   const [dataMessage, setDataMessage] = useState('');
   const [dataError, setDataError] = useState('');
   const [pending, setPending] = useState<PendingImport | null>(null);
@@ -159,13 +160,13 @@ export default function SettingsScreen() {
     }
   };
 
-  const exportCsv = async () => {
+  const exportCsv = async (template = false) => {
     setDataMessage('');
     setDataError('');
-    setBusy('export');
+    setBusy(template ? 'template' : 'export');
     try {
-      const csv = transactionsToCsv(transactions);
-      const fileName = `transactions-${new Date().toISOString().slice(0, 10)}.csv`;
+      const csv = template ? transactionCsvTemplate() : transactionsToCsv(transactions);
+      const fileName = template ? 'transactions-template.csv' : `transactions-${new Date().toISOString().slice(0, 10)}.csv`;
       if (Platform.OS === 'web') {
         const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
         const link = document.createElement('a');
@@ -178,9 +179,9 @@ export default function SettingsScreen() {
         const file = new File(Paths.cache, fileName);
         file.create({ overwrite: true });
         await file.write(csv);
-        await Sharing.shareAsync(file.uri, { mimeType: 'text/csv', dialogTitle: t('Exportovať transakcie') });
+        await Sharing.shareAsync(file.uri, { mimeType: 'text/csv', dialogTitle: t(template ? 'Stiahnuť vzor CSV' : 'Exportovať transakcie') });
       }
-      setDataMessage(`${t('Exportované transakcie')}: ${transactions.length}`);
+      setDataMessage(template ? t('Vzor CSV bol exportovaný. Pred importom nahraď ukážkové riadky vlastnými transakciami.') : `${t('Exportované transakcie')}: ${transactions.length}`);
     } catch (error) {
       setDataError(error instanceof Error ? error.message : t('Export zlyhal.'));
     } finally {
@@ -324,7 +325,7 @@ export default function SettingsScreen() {
         <Pressable
           accessibilityRole="button"
           disabled={busy !== null || !transactions.length}
-          onPress={exportCsv}
+          onPress={() => exportCsv()}
           style={[styles.languageOption, !transactions.length && styles.disabled]}
         >
           <View style={styles.languageIcon}><Download size={17} color={colors.green} /></View>
@@ -333,6 +334,16 @@ export default function SettingsScreen() {
             <Text style={styles.languageNative}>{`${transactions.length} ${t('transakcií')}`}</Text>
           </View>
           {busy === 'export' ? <ActivityIndicator size="small" color={colors.green} /> : null}
+        </Pressable>
+        <Pressable accessibilityRole="button" disabled={busy !== null}
+          onPress={() => exportCsv(true)} style={styles.languageOption}>
+          <View style={styles.languageIcon}><Download size={17} color={colors.green} /></View>
+          <View style={styles.languageCopy}>
+            <Text style={styles.languageName}>{t('Stiahnuť vzor CSV')}</Text>
+            <Text style={styles.languageNative}>{t('Ukážkový nákup a predaj. Pred importom nahraď riadky vlastnými údajmi.')}</Text>
+            <Text style={styles.languageNative}>{t('Dátum YYYY-MM-DD, desatinná bodka, mena EUR alebo USD. Quantity: kladné = nákup, záporné = predaj. To Cash: TRUE = ponechať výnos predaja v hotovosti. Poplatky sa zatiaľ neimportujú.')}</Text>
+          </View>
+          {busy === 'template' ? <ActivityIndicator size="small" color={colors.green} /> : null}
         </Pressable>
         <Pressable
           accessibilityRole="button"

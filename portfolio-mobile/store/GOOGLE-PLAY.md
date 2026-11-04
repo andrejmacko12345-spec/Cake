@@ -89,8 +89,8 @@ npm run store:pages
 
 Vzniknú samostatné dvojjazyčné HTML súbory v `store/generated/`:
 `privacy.html` a `delete-account.html`. Verejná verzia sa automaticky nasadzuje
-cez GitHub Pages na `https://andrejmacko12345-spec.github.io/cake/privacy.html`
-a `https://andrejmacko12345-spec.github.io/cake/delete-account.html`.
+cez GitHub Pages na `https://andrejmacko12345-spec.github.io/Cake/privacy.html`
+a `https://andrejmacko12345-spec.github.io/Cake/delete-account.html`.
 Návrhový režim zreteľne označuje DRAFT a nesmie sa zverejniť.
 Finálne stránky ani aplikácia nesmú uvádzať nedoplnené údaje.
 Po každej zmene skontroluj zásady aj listing a prestavaj aplikáciu.

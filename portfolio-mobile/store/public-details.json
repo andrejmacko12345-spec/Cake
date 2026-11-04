@@ -1,8 +1,8 @@
 {
   "operatorName": "Andrej Macko",
   "supportEmail": "support@fincake.eu",
-  "privacyUrl": "https://andrejmacko12345-spec.github.io/cake/privacy.html",
-  "deletionUrl": "https://andrejmacko12345-spec.github.io/cake/delete-account.html",
+  "privacyUrl": "https://andrejmacko12345-spec.github.io/Cake/privacy.html",
+  "deletionUrl": "https://andrejmacko12345-spec.github.io/Cake/delete-account.html",
   "hostingRegion": "Portfolio data stays on the device; market-data providers process online requests under their own policies.",
   "backupRetention": "The app creates no cloud portfolio backups. Local data remains until app data is cleared or the app is uninstalled.",
   "logRetention": "",

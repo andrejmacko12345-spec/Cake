@@ -22,7 +22,7 @@
       },
       {
         "title": "Externé zdroje a sieťové údaje",
-        "body": "Aplikácia načítava trhové a firemné údaje z Yahoo Finance, SEC a podľa konfigurácie Financial Modeling Prep. Finančná história sa aktualizuje z GitHubu. Logá sa môžu načítavať z Financial Modeling Prep a Parqet. Tieto služby pri priamych požiadavkách dostávajú IP adresu, technické údaje požiadavky a vyhľadávaný text alebo symbol podľa funkcie; neposielame im e-mail ani celý zoznam transakcií ako trhový dopyt. Otvorené externé správy sa riadia pravidlami cieľového webu. IP adresy a prevádzkové záznamy môžu uchovávať poskytovatelia podľa svojich pravidiel."
+        "body": "Aplikácia načítava trhové a firemné údaje z Yahoo Finance, SEC a podľa konfigurácie Financial Modeling Prep. Finančná história sa aktualizuje z GitHubu. Logá sa môžu načítavať z Financial Modeling Prep a Parqet. Tieto služby pri priamych požiadavkách dostávajú IP adresu, technické údaje požiadavky a vyhľadávaný text alebo symbol podľa funkcie; neposielame im e-mail ani celý zoznam transakcií ako trhový dopyt. Fincake neprevádzkuje vlastné serverové zaznamenávanie požiadaviek ani analytickú službu. Externí poskytovatelia môžu uchovávať IP adresy a záznamy požiadaviek podľa vlastných pravidiel; lehoty sa líšia a Fincake ich neurčuje."
       },
       {
         "title": "Účely a právny základ",
@@ -71,7 +71,7 @@
       },
       {
         "title": "External sources and network data",
-        "body": "The app retrieves market and company data from Yahoo Finance, SEC and, depending on configuration, Financial Modeling Prep. Financial history is updated from GitHub. Logos may load from Financial Modeling Prep and Parqet. Direct requests disclose your IP address, technical request information and search text or symbols as required by the feature; we do not send your email or entire transaction history as a market query. External news links follow the destination website's policies. Providers may retain IP addresses and operational logs under their policies."
+        "body": "The app retrieves market and company data from Yahoo Finance, SEC and, depending on configuration, Financial Modeling Prep. Financial history is updated from GitHub. Logos may load from Financial Modeling Prep and Parqet. Direct requests disclose your IP address, technical request information and search text or symbols as required by the feature; we do not send your email or entire transaction history as a market query. External news links follow the destination website's policies. Fincake does not operate its own server-side request logging or analytics service. External providers may retain IP addresses and request logs under their own policies; periods vary and are not controlled by Fincake."
       },
       {
         "title": "Purposes and legal basis",

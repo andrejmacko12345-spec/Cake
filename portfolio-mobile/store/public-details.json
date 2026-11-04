@@ -5,7 +5,7 @@
   "deletionUrl": "https://andrejmacko12345-spec.github.io/Cake/delete-account.html",
   "hostingRegion": "Portfolio data stays on the device; market-data providers process online requests under their own policies.",
   "backupRetention": "The app creates no cloud portfolio backups. Local data remains until app data is cleared or the app is uninstalled.",
-  "logRetention": "",
-  "policyReviewedOn": "",
+  "logRetention": "Fincake does not operate a server-side request-log or analytics service. External providers may retain IP addresses and request logs under their own policies; retention periods vary and are not controlled by Fincake.",
+  "policyReviewedOn": "2026-11-04",
   "dataProviderRightsConfirmed": false
 }

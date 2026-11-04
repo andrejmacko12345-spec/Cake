@@ -49,10 +49,10 @@ test('store metadata respects exact Google Play field lengths in both languages'
 
 test('store readiness rejects incomplete publisher, insecure links, missing rights and invalid retention dates', () => {
   assert.deepEqual(publicDetailsErrors(valid), []);
-  const missingDetails = publicDetailsErrors(details);
-  assert.ok(missingDetails.some((error) => error.includes('logRetention')));
+  const missingDetails = publicDetailsErrors({ ...details, policyReviewedOn: '' });
   assert.ok(missingDetails.some((error) => error.includes('policyReviewedOn')));
   assert.ok(missingDetails.some((error) => error.includes('distribution rights')));
+  assert.match(details.logRetention, /retention periods vary/i);
   assert.equal(details.supportEmail, 'support@fincake.eu');
   for (const change of [
     { supportEmail: 'invalid' }, { operatorName: 'TODO' }, { privacyUrl: 'http://fincake.test/privacy' },

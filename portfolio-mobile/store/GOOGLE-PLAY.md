@@ -48,18 +48,22 @@ s iným balíkom. Názov balíka po publikovaní nemožno zmeniť.
 4. **HTTPS web** pre privacy policy a žiadosti o ochranu údajov.
    Stránky nesmú byť za prihlásením, geoblokom, v PDF ani vyžadovať editovateľný dokument.
    Musia jasne uvádzať Fincake/prevádzkovateľa a kontaktný spôsob vybavenia.
-   Kontrola 4. 11. 2026: oba endpointy vracajú HTTP 200, ale TLS certifikát je
-   po expirácii; obnov ho a over v bežnom HTTPS klientovi pred odoslaním.
+   Kontrola 4. 11. 2026: obe GitHub Pages URL vracajú HTTP 200 cez HTTPS
+   s platným certifikátom; v ceste použi veľké `Cake`.
 5. **Externí poskytovatelia:** over ich podmienky, spracúvanie, prenosy mimo EHP
-   a uchovávanie požiadavkových/prevádzkových záznamov. Portfólio sa neukladá v cloude.
-   Neuvádzaj vymyslené lehoty; stanov a dodržiavaj postup vybavenia žiadostí.
-6. **Práva k dátam:** over povolenie používať a distribuovať Yahoo/FMP údaje,
-   logá FMP/Parqet a ostatný obsah verejnou aplikáciou. Verejný endpoint ani
-   neplatená aplikácia automaticky neznamená právo na redistribúciu.
-   Ak licencie nestačia, treba poskytovateľa alebo architektúru zmeniť ešte pred vydaním.
+   a uchovávanie požiadavkových/prevádzkových záznamov. Fincake neprevádzkuje
+   vlastné serverové zaznamenávanie požiadaviek ani analytiku; externí poskytovatelia
+   majú vlastné, rozdielne lehoty, ktoré Fincake neurčuje. Portfólio sa neukladá v cloude.
+6. **Práva k dátam:** `dataProviderRightsConfirmed` zostáva `false`. FMP výslovne
+   vyžaduje samostatnú Data Display and Licensing Agreement na verejné zobrazovanie
+   alebo redistribúciu. Aplikácia volá Yahoo Finance endpointy priamo; v kóde nie je
+   Yahoo-issued API credential ani licencia. Logá FMP/Parqet sa načítavajú z ich CDN
+   bez doloženej licencie. Verejný endpoint ani neplatená aplikácia práva nedokazujú.
+   Získaj písomné povolenia alebo odstráň/zmeň dotknuté zdroje pred vydaním.
    Privátny API kľúč sa nesmie zabaliť ako `EXPO_PUBLIC_*`; do klienta len
    poskytovateľom výslovne povolené verejné hodnoty.
-7. **Expo účet/projekt, produkčný podpis a AAB.** Aktuálne nie je prepojený Expo projekt.
+7. **Expo účet/projekt, produkčný podpis a AAB.** Expo projekt už je prepojený;
+   produkčný AAB ešte treba zostaviť a overiť.
 8. **Skutočné screenshoty** zo zostavy a pre-launch/device testy; nikdy vlastné súkromné portfólio.
 
 ## 3. Kontakty a verejné stránky

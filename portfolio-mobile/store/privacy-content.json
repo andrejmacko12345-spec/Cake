@@ -1,0 +1,102 @@
+{
+  "sk": {
+    "title": "Súkromie a informácie o aplikácii",
+    "privacyTitle": "Ochrana osobných údajov",
+    "deletionTitle": "Vymazanie údajov Fincake",
+    "draft": "NÁVRH — údaje prevádzkovateľa a prevádzkové pravidlá ešte nie sú dokončené. Nie je pripravené na verejné vydanie.",
+    "operator": "Prevádzkovateľ",
+    "contact": "Podpora a otázky k údajom",
+    "region": "Externé online služby",
+    "backups": "Uchovávanie miestnych dát",
+    "logs": "Uchovávanie prevádzkových záznamov",
+    "response": "Lehota vybavenia žiadosti (dni)",
+    "updated": "Posledná kontrola zásad",
+    "missing": "Zatiaľ nedoplnené",
+    "sections": [
+      {
+        "title": "Účel aplikácie",
+        "body": "Fincake slúži na evidenciu vlastného investičného portfólia a informačné výpočty. Tlačidlá Nákup a Predaj zapisujú záznamy; nevykonávajú obchody. Aplikácia nespravuje peniaze, nepripája sa k brokerskému účtu a neposkytuje personalizované investičné odporúčania. Prognózy a projekcie sú modelové scenáre, nie záruka výnosu. Údaje môžu byť oneskorené, neúplné alebo nesprávne. Pred rozhodnutím ich over z nezávislého zdroja. Investovanie môže viesť k strate kapitálu."
+      },
+      {
+        "title": "Dáta v zariadení",
+        "body": "Transakcie, portfólio, zoznamy sledovaných a nastavenia v tejto verzii sa ukladajú iba v zariadení. Aplikácia nevytvára používateľské účty ani cloudové zálohy týchto údajov. Testovacie záznamy zo starších verzií môžu zostať v pôvodnom serverovom projekte; táto verzia k nim nepristupuje a ich vymazanie nie je automatické. Ak si používal staršiu testovaciu verziu, kontaktuj podporu so žiadosťou o vymazanie. Voliteľná prenosová záloha sa vytvára a šifruje v zariadení; obnovovací kód sa zobrazí samostatne a aplikácia ho neukladá. Zálohu uložíš cez systémové zdieľanie súborov alebo stiahnutie v prehliadači; vybraný cieľ je mimo kontroly aplikácie. Súbor bez obnovovacieho kódu nemožno obnoviť; kód a súbor uchovávaj oddelene. Obnovenie nahradí aktuálne miestne dáta. Vymazanie dát aplikácie alebo jej odinštalovanie odstráni miestne dáta; systémové zálohovanie Androidu je vypnuté. Načítanie cien, vyhľadávanie a ďalšie online funkcie komunikujú s externými službami. CSV import spracúva vybraný súbor v aplikácii; CSV export obsahuje iba transakcie. Vytvorené súbory a kópie zostávajú mimo kontroly aplikácie."
+      },
+      {
+        "title": "Externé zdroje a sieťové údaje",
+        "body": "Aplikácia načítava trhové a firemné údaje z Yahoo Finance, SEC a podľa konfigurácie Financial Modeling Prep. Finančná história sa aktualizuje z GitHubu. Logá sa môžu načítavať z Financial Modeling Prep a Parqet. Tieto služby pri priamych požiadavkách dostávajú IP adresu, technické údaje požiadavky a vyhľadávaný text alebo symbol podľa funkcie; neposielame im e-mail ani celý zoznam transakcií ako trhový dopyt. Otvorené externé správy sa riadia pravidlami cieľového webu. IP adresy a prevádzkové záznamy môžu uchovávať poskytovatelia podľa svojich pravidiel."
+      },
+      {
+        "title": "Účely a právny základ",
+        "body": "Miestne údaje slúžia na zobrazenie portfólia a nastavení v aplikácii. Keď použiješ online vyhľadávanie alebo trhové funkcie, aplikácia odošle príslušnému poskytovateľovi potrebný dopyt a technické údaje; celý zoznam transakcií sa ako trhový dopyt neposiela. Externí poskytovatelia spracúvajú technické a prevádzkové záznamy podľa vlastných pravidiel. Aplikácia nemá reklamný SDK ani implementovanú behaviorálnu analytiku či sledovanie medzi aplikáciami. Toto vydanie neobsahuje reklamy ani platené funkcie."
+      },
+      {
+        "title": "Uchovávanie, vymazanie a tvoje práva",
+        "body": "Miestne portfólio a nastavenia tejto verzie zostávajú v zariadení, kým nevymažeš dáta aplikácie alebo ju neodinštaluješ. Aktuálna verzia ich neukladá na serveri. Testovacie záznamy zo starších verzií však môžu zostať v pôvodnom serverovom projekte, kým nepožiadaš podporu o ich vymazanie. Exportované CSV súbory, šifrované zálohy, obnovovacie kódy a kópie v iných zariadeniach spravuješ a odstraňuješ samostatne. Prevádzkové záznamy externých poskytovateľov podliehajú ich pravidlám a lehotám. Podľa príslušného práva môžeš požiadať o prístup, opravu, vymazanie či obmedzenie údajov, namietať oprávnený záujem a podať sťažnosť dozornému orgánu. Kontaktuj podporu; neposielaj heslá ani finančné údaje."
+      }
+    ],
+    "deletion": [
+      {
+        "title": "Vymazanie v zariadení",
+        "body": "Aktuálna verzia Fincake nemá používateľské účty ani neprenáša portfólio na server. Miestne údaje odstrániš vymazaním dát aplikácie v nastaveniach zariadenia alebo odinštalovaním aplikácie. Testovacie záznamy zo starších verzií môžu zostať v pôvodnom serverovom projekte; o ich vymazanie požiadaj podporu. Reset portfólia v aplikácii vymaže transakcie, nie všetky nastavenia."
+      },
+      {
+        "title": "Bez nainštalovanej aplikácie",
+        "body": "Pri otázke týkajúcej sa osobných údajov alebo záznamov zo staršej testovacej verzie pošli žiadosť na e-mail podpory. Aplikácia nemá e-mailové účty a podpora nemôže na diaľku vymazať miestne portfólio ani súbory, ktoré si exportoval. Neposielaj heslá, doklady totožnosti ani finančné údaje."
+      },
+      {
+        "title": "Rozsah a termín",
+        "body": "Aktuálna verzia neuchováva portfóliové údaje na serveri. Testovacie záznamy zo starších verzií môžu zostať v pôvodnom serverovom projekte; o ich vymazanie požiadaj podporu. Miestne dáta odstrániš v nastaveniach zariadenia; exportované súbory a kópie v iných zariadeniach odstráň samostatne. Žiadosti o osobné údaje vybavujeme podľa príslušných právnych predpisov; prevádzkové záznamy externých poskytovateľov sa riadia ich pravidlami."
+      }
+    ]
+  },
+  "en": {
+    "title": "Privacy and app information",
+    "privacyTitle": "Privacy policy",
+    "deletionTitle": "Delete Fincake data",
+    "draft": "DRAFT — operator details and operating policies are incomplete. Not ready for public release.",
+    "operator": "Data controller",
+    "contact": "Support and data enquiries",
+    "region": "External online services",
+    "backups": "Local data retention",
+    "logs": "Operational log retention",
+    "response": "Request handling time (days)",
+    "updated": "Policy last reviewed",
+    "missing": "Not yet provided",
+    "sections": [
+      {
+        "title": "Purpose of the app",
+        "body": "Fincake records your own investment portfolio and provides informational calculations. Buy and Sell buttons record entries; they do not execute trades. The app does not handle funds, connect to a brokerage account or provide personalized investment recommendations. Forecasts and projections are hypothetical scenarios, not guaranteed returns. Data may be delayed, incomplete or incorrect. Verify it independently before making decisions. Investing can result in loss of capital."
+      },
+      {
+        "title": "On-device data",
+        "body": "Transactions, portfolios, watchlists and settings in this version are stored only on your device. The app does not create user accounts or cloud backups of this information. Test records from older versions may remain in the original server project; this version does not access them and they are not automatically deleted. If you used an older test version, contact support to request deletion. An optional transfer backup is created and encrypted on the device; its recovery code is shown separately and is not stored by the app. Save the backup through system file sharing or a browser download; the chosen destination is outside the app's control. The file cannot be restored without its recovery code; keep them separate. Restoring replaces current local data. Clearing app data or uninstalling the app removes local data; Android system backup is disabled. Quotes, search and other online features communicate with external services. CSV import processes the selected file in the app; CSV export contains transactions only. Files and copies you create are outside the app's control."
+      },
+      {
+        "title": "External sources and network data",
+        "body": "The app retrieves market and company data from Yahoo Finance, SEC and, depending on configuration, Financial Modeling Prep. Financial history is updated from GitHub. Logos may load from Financial Modeling Prep and Parqet. Direct requests disclose your IP address, technical request information and search text or symbols as required by the feature; we do not send your email or entire transaction history as a market query. External news links follow the destination website's policies. Providers may retain IP addresses and operational logs under their policies."
+      },
+      {
+        "title": "Purposes and legal basis",
+        "body": "On-device information is used to display your portfolio and settings in the app. When you use online search or market-data features, the app sends the relevant provider the necessary query and technical request information; your full transaction history is not sent as a market query. External providers process technical and operational records under their own policies. The app has no advertising SDK or implemented behavioral analytics or cross-app tracking. This release has no advertising or paid features."
+      },
+      {
+        "title": "Retention, deletion and your rights",
+        "body": "Your local portfolio and settings in this version remain on the device until you clear app data or uninstall the app. The current version does not store them on a server. Test records from older versions may remain in the original server project until you request deletion from support. Exported CSV files, encrypted backups, recovery codes and copies on other devices must be managed and deleted separately. External providers' operational records follow their policies and retention periods. Subject to applicable law, you may request access, correction, erasure or restriction, object to legitimate-interest processing and complain to a supervisory authority. Contact support; do not send passwords or financial data."
+      }
+    ],
+    "deletion": [
+      {
+        "title": "Delete data on your device",
+        "body": "The current Fincake version has no user accounts and does not upload portfolios to a server. Remove local data by clearing the app's data in your device settings or uninstalling the app. Test records from older versions may remain in the original server project; contact support to request deletion. Reset portfolio in the app deletes transactions, not all settings."
+      },
+      {
+        "title": "Without the app installed",
+        "body": "For a question about personal data or records from an older test version, email the support address below. The app has no email accounts and support cannot remotely delete a local portfolio or files you exported. Do not send passwords, identity documents or financial data."
+      },
+      {
+        "title": "Scope and timing",
+        "body": "The current version does not store portfolio data on a server. Test records from older versions may remain in the original server project; contact support to request deletion. Remove local data in your device settings; delete exported files and copies on other devices separately. We handle personal data requests under applicable law; external providers' operational records follow their own policies."
+      }
+    ]
+  }
+}

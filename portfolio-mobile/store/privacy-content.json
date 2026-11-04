@@ -9,7 +9,6 @@
     "region": "Externé online služby",
     "backups": "Uchovávanie miestnych dát",
     "logs": "Uchovávanie prevádzkových záznamov",
-    "response": "Lehota vybavenia žiadosti (dni)",
     "updated": "Posledná kontrola zásad",
     "missing": "Zatiaľ nedoplnené",
     "sections": [
@@ -59,7 +58,6 @@
     "region": "External online services",
     "backups": "Local data retention",
     "logs": "Operational log retention",
-    "response": "Request handling time (days)",
     "updated": "Policy last reviewed",
     "missing": "Not yet provided",
     "sections": [

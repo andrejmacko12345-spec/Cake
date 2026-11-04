@@ -17,7 +17,7 @@ const valid = {
   operatorName: 'Fincake Test Operator', supportEmail: 'support@fincake.test',
   privacyUrl: 'https://fincake.test/privacy.html', deletionUrl: 'https://fincake.test/delete-account.html',
   hostingRegion: 'Test region', backupRetention: 'Test retention', logRetention: 'Test retention',
-  deletionResponseDays: 30, policyReviewedOn: '2026-01-01', dataProviderRightsConfirmed: true,
+  policyReviewedOn: '2026-01-01', dataProviderRightsConfirmed: true,
 };
 
 test('Play artwork has exact required dimensions, PNG color format and icon size', () => {
@@ -49,12 +49,15 @@ test('store metadata respects exact Google Play field lengths in both languages'
 
 test('store readiness rejects incomplete publisher, insecure links, missing rights and invalid retention dates', () => {
   assert.deepEqual(publicDetailsErrors(valid), []);
-  assert.ok(publicDetailsErrors(details).length >= 4);
+  const missingDetails = publicDetailsErrors(details);
+  assert.ok(missingDetails.some((error) => error.includes('logRetention')));
+  assert.ok(missingDetails.some((error) => error.includes('policyReviewedOn')));
+  assert.ok(missingDetails.some((error) => error.includes('distribution rights')));
   assert.equal(details.supportEmail, 'support@fincake.eu');
   for (const change of [
     { supportEmail: 'invalid' }, { operatorName: 'TODO' }, { privacyUrl: 'http://fincake.test/privacy' },
     { deletionUrl: 'https://user:password@fincake.test/delete' },
-    { deletionUrl: valid.privacyUrl }, { deletionResponseDays: 0 }, { deletionResponseDays: 31 },
+    { deletionUrl: valid.privacyUrl },
     { policyReviewedOn: '2099-01-01' }, { policyReviewedOn: '2026-02-31' }, { dataProviderRightsConfirmed: false },
   ]) assert.ok(publicDetailsErrors({ ...valid, ...change }).length, JSON.stringify(change));
 });

@@ -72,9 +72,13 @@ na zverejnenie, nie heslá, adresu bydliska, signing kľúče ani tokeny.
 - `privacyUrl`, `deletionUrl`: reálne verejné HTTPS adresy stránok.
 - `hostingRegion`: potvrdenie, že portfólio je lokálne, a online poskytovatelia.
 - `backupRetention`, `logRetention`: overené pravidlá lokálneho uchovávania a poskytovateľov.
-- `deletionResponseDays`: reálne podporovaná lehota 1–30 dní; skript ju nevymýšľa.
 - `policyReviewedOn`: dátum skutočnej kontroly zásad, `YYYY-MM-DD`.
 - `dataProviderRightsConfirmed`: nastav na `true` až po overení práv.
+
+Aplikácia nevytvára používateľské účty. Povinnosť ponúknuť zmazanie účtu v aplikácii
+a na webe sa týka aplikácií, ktoré umožňujú vytvorenie účtu; Fincake preto nesľubuje
+lehotu na zmazanie účtu. Samostatná stránka vysvetľuje vymazanie lokálnych dát
+a kontaktovanie podpory v súvislosti so záznamami zo starších testovacích verzií.
 
 `support@fincake.eu` is an inbound support address. Supabase SMTP is no longer
 used by the app; do not configure authentication secrets in EAS or builds.

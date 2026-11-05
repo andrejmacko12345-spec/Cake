@@ -55,7 +55,7 @@ test('delivered assets include twelve portrait PNGs at exactly 1080 x 1920', () 
       COPY[language].map(([feature]) => feature));
   }
   for (const image of manifest.images) {
-    const bytes = fs.readFileSync(path.join(directory, image.file));
+    const bytes = fs.readFileSync(path.join(directory, ...image.file.split(/[\\/]/)));
     assert.equal(bytes.subarray(1, 4).toString(), 'PNG');
     assert.equal(bytes.readUInt32BE(16), 1080);
     assert.equal(bytes.readUInt32BE(20), 1920);

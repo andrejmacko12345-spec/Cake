@@ -271,7 +271,7 @@ async function main() {
         const filename = `${String(index + 1).padStart(2, '0')}-${feature}.png`;
         await art.screenshot({ path: path.join(directory, filename) });
         await art.close();
-        results.push({ language, feature, file: path.relative(OUTPUT, path.join(directory, filename)),
+        results.push({ language, feature, file: path.relative(OUTPUT, path.join(directory, filename)).split(path.sep).join('/'),
           width: 1080, height: 1920, capturedAt: new Date().toISOString() });
         console.log(`Captured ${language}/${feature}`);
       }

@@ -160,7 +160,7 @@ for (const locale of ['sk', 'en']) {
       assert.match(segment, /^.*?<\/span><span>•••••<\/span>/, translated);
     }
     assert.match(privateView, /120 EUR/);
-    assert.match(privateView, /20,0 %/);
+    assert.match(privateView, /20,00 %/);
     assert.doesNotMatch(privateView, /1[,\s\u00a0]?[02]00\s*€|250\s*€|200\s*€/);
   });
 }

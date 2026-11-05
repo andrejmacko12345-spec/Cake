@@ -1,4 +1,5 @@
 import { useThemedStyles } from '../data/theme';
+import { selectionHaptic } from '../data/haptics';
 import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import Svg, { Line, Rect } from 'react-native-svg';
@@ -29,6 +30,8 @@ export function DividendOverview({
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
   const [period, setPeriod] = useState<'annual' | number>('annual');
+  const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
+  useEffect(() => setSelectedMonth(null), [period]);
   const symbols = useMemo(
     () => positions.filter((position) => position.shares > 1e-8).map((position) => position.symbol),
     [positions],
@@ -156,11 +159,11 @@ export function DividendOverview({
           </View>
           <View style={styles.rateItem}>
             <Text style={styles.rateLabel}>{t('Dividendový výnos')}</Text>
-            <Text style={styles.rateValue}>{yieldOnValue.toLocaleString(language === 'sk' ? 'sk-SK' : 'en-US', { maximumFractionDigits: 2 })} %</Text>
+            <Text style={styles.rateValue}>{yieldOnValue.toLocaleString(language === 'sk' ? 'sk-SK' : 'en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} %</Text>
           </View>
           <View style={styles.rateItem}>
             <Text style={styles.rateLabel}>{t('Výnos z nákupnej ceny')}</Text>
-            <Text style={styles.rateValue}>{yieldOnCost.toLocaleString(language === 'sk' ? 'sk-SK' : 'en-US', { maximumFractionDigits: 2 })} %</Text>
+            <Text style={styles.rateValue}>{yieldOnCost.toLocaleString(language === 'sk' ? 'sk-SK' : 'en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} %</Text>
           </View>
         </View>
       </Surface>
@@ -176,6 +179,13 @@ export function DividendOverview({
           {loading ? <ActivityIndicator size="small" color={chartAccent} /> : null}
         </View>
         <View style={styles.chartPlot}>
+          {selectedMonth !== null ? (
+            <View pointerEvents="none" style={styles.monthTooltip}>
+              <Text style={styles.monthTooltipText}>
+                {monthlyAmounts[selectedMonth].label} · {money(monthlyAmounts[selectedMonth].amount)}
+              </Text>
+            </View>
+          ) : null}
           <Svg width="100%" height={chartHeight} viewBox={`0 0 ${chartWidth} ${chartHeight}`} preserveAspectRatio="none">
             <Line x1="0" y1={baseline} x2={chartWidth} y2={baseline} stroke={colors.border} strokeWidth="1" />
             {monthlyAmounts.map((item, index) => {
@@ -190,14 +200,23 @@ export function DividendOverview({
                   height={height}
                   rx={barWidth / 2}
                   fill={chartAccent}
-                  opacity={item.amount > 0 ? 1 : 0.15}
+                  opacity={selectedMonth !== null && selectedMonth !== index ? 0.3 : item.amount > 0 ? 1 : 0.15}
                 />
               );
             })}
           </Svg>
           {!loading && !chartPayments.length ? (
-            <Text style={styles.chartEmptyMessage}>{t('V tomto období nemáš zaznamenané dividendy.')}</Text>
+            <Text pointerEvents="none" style={styles.chartEmptyMessage}>{t('V tomto období nemáš zaznamenané dividendy.')}</Text>
           ) : null}
+          <View style={styles.monthTouchTargets}>
+            {monthlyAmounts.map((item, index) => (
+              <Pressable key={item.label} style={styles.monthTouchTarget}
+                accessibilityRole="button" accessibilityLabel={`${item.label} · ${money(item.amount)}`}
+                onPressIn={() => setSelectedMonth(index)}
+                onPressOut={() => setSelectedMonth(null)}
+              />
+            ))}
+          </View>
         </View>
         <View style={styles.monthLabels}>
           {monthlyAmounts.map((item) => (
@@ -272,7 +291,10 @@ function PeriodButton({
     <Pressable
       accessibilityRole="button"
       accessibilityState={{ selected }}
-      onPress={onPress}
+      onPress={() => {
+        if (!selected) selectionHaptic();
+        onPress();
+      }}
       style={[styles.periodButton, selected && styles.periodButtonSelected]}
     >
       <Text style={[styles.periodText, selected && styles.periodTextSelected]}>{label}</Text>
@@ -292,6 +314,10 @@ const createStyles = () => StyleSheet.create({
   chartCard: { padding: 16, backgroundColor: colors.surface, borderRadius: 22, marginTop: 12 },
   chartHeading: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   chartPlot: { position: 'relative' },
+  monthTouchTargets: { ...StyleSheet.absoluteFill, flexDirection: 'row' },
+  monthTouchTarget: { flex: 1 },
+  monthTooltip: { position: 'absolute', top: 5, left: 0, right: 0, alignItems: 'center', zIndex: 1 },
+  monthTooltipText: { color: colors.text, backgroundColor: colors.surfaceRaised, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4, fontSize: 12, fontWeight: '800', fontVariant: ['tabular-nums'] },
   sectionTitle: { color: colors.text, fontSize: 15, fontWeight: '900' },
   sectionSubtitle: { color: colors.muted, fontSize: 10, marginTop: 4 },
   chartEmptyMessage: { color: colors.muted, fontSize: 10, textAlign: 'center', position: 'absolute', top: 47, left: 0, right: 0 },

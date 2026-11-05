@@ -1,8 +1,8 @@
 import { useThemedStyles } from '../data/theme';
 import { useEffect, useRef, useState } from 'react';
-import type { ComponentRef } from 'react';
 import {
   ActivityIndicator,
+  Animated,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -26,10 +26,13 @@ import {
   Search,
   X,
 } from 'lucide-react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { availableAssets, Asset, colors } from '../data/portfolio';
 import { fetchHistoricalQuoteForDate, fetchLiveQuote, LiveQuote } from '../data/quotes';
 import { Transaction, TransactionInput, usePositions } from '../hooks/use-positions';
 import { useAssetSearch } from '../hooks/use-asset-search';
+import { useModalInputFocus } from '../hooks/use-modal-input-focus';
+import { usePopupAnimation } from '../hooks/use-popup-animation';
 import { useLocale } from '../context/locale';
 
 type Props = {
@@ -69,7 +72,11 @@ function dateKey(year: number, month: number, day: number) {
   return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 }
 
-export function TransactionModal({
+export function TransactionModal(props: Props) {
+  return props.visible ? <TransactionForm {...props} /> : null;
+}
+
+function TransactionForm({
   visible,
   transaction,
   initialSymbol,
@@ -77,7 +84,7 @@ export function TransactionModal({
   initialCurrency,
   initialFxToEur,
   initialType = 'BUY',
-  onClose,
+  onClose: onClosed,
   onSave,
   onDelete,
 }: Props) {
@@ -86,6 +93,8 @@ export function TransactionModal({
   const { t, language, errorText } = useLocale();
   const { positions } = usePositions();
   const fixedSymbol = Boolean(initialSymbol || transaction);
+  const animation = usePopupAnimation(true);
+  const onClose = () => animation.close(onClosed);
   const [symbol, setSymbol] = useState('');
   const [type, setType] = useState<'BUY' | 'SELL'>('BUY');
   const [sharesInput, setSharesInput] = useState('');
@@ -104,7 +113,9 @@ export function TransactionModal({
   const [errorMessage, setErrorMessage] = useState('');
   const [showAssetResults, setShowAssetResults] = useState(false);
   const [selectedAssetName, setSelectedAssetName] = useState('');
-  const symbolInputRef = useRef<ComponentRef<typeof TextInput>>(null);
+  const { inputRef: symbolInputRef, onShow: focusSymbolInput } = useModalInputFocus(visible, !fixedSymbol);
+  const { inputRef: sharesInputRef, onShow: focusSharesInput } = useModalInputFocus(visible, fixedSymbol && !isEditing);
+  const { bottom: bottomInset } = useSafeAreaInsets();
   const dateInputRef = useRef(dateInput);
   const symbolRef = useRef(symbol);
   const historicalRequestId = useRef(0);
@@ -135,12 +146,6 @@ export function TransactionModal({
     setSelectedAssetName('');
     historicalRequestId.current += 1;
   }, [visible, transaction, initialSymbol, initialType, initialCurrency, initialFxToEur]);
-
-  useEffect(() => {
-    if (!visible || transaction || initialSymbol) return;
-    const timer = setTimeout(() => symbolInputRef.current?.focus(), 250);
-    return () => clearTimeout(timer);
-  }, [visible, transaction, initialSymbol]);
 
   useEffect(() => {
     if (!visible || transaction || !initialSymbol) return;
@@ -327,10 +332,10 @@ export function TransactionModal({
   };
 
   return (
-    <Modal animationType="slide" transparent visible={visible} onRequestClose={onClose} statusBarTranslucent>
-      <KeyboardAvoidingView style={styles.scrim} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <Modal animationType="none" transparent visible={visible} onShow={() => { focusSymbolInput(); focusSharesInput(); }} onRequestClose={onClose} statusBarTranslucent>
+      <KeyboardAvoidingView style={styles.scrim} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
-        <View style={styles.sheet}>
+        <Animated.View style={[styles.sheet, { paddingBottom: Math.max(SHEET_BOTTOM_PADDING, bottomInset + 6) }, animation.sheet]}>
           <View style={styles.header}>
             <View style={styles.headingIcon}>
               {isEditing ? <Pencil size={17} color={colors.green} /> : <Search size={17} color={colors.green} />}
@@ -376,7 +381,7 @@ export function TransactionModal({
                     accessibilityLabel={t('Burzový symbol')}
                     autoCapitalize="characters"
                     autoCorrect={false}
-                    autoFocus
+                    autoFocus={Platform.OS === 'web'}
                     onChangeText={(text) => {
                       const nextSymbol = text.toUpperCase();
                       setSymbol(nextSymbol);
@@ -620,6 +625,8 @@ export function TransactionModal({
                 ) : null}
               </View>
               <TextInput
+                ref={sharesInputRef}
+                autoFocus={Platform.OS === 'web' && fixedSymbol && !isEditing}
                 accessibilityLabel={t('Počet akcií')}
                 keyboardType="decimal-pad"
                 onChangeText={setSharesInput}
@@ -701,11 +708,13 @@ export function TransactionModal({
               </Pressable>
             </View>
           </ScrollView>
-        </View>
+        </Animated.View>
       </KeyboardAvoidingView>
     </Modal>
   );
 }
+
+const SHEET_BOTTOM_PADDING = Platform.OS === 'ios' ? 18 : 10;
 
 const createStyles = () => StyleSheet.create({
   scrim: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.65)' },
@@ -714,30 +723,30 @@ const createStyles = () => StyleSheet.create({
     backgroundColor: colors.background,
     borderTopLeftRadius: 26,
     borderTopRightRadius: 26,
-    paddingTop: 20,
-    paddingHorizontal: 20,
-    paddingBottom: Platform.OS === 'ios' ? 22 : 14,
+    paddingTop: 16,
+    paddingHorizontal: 18,
+    paddingBottom: SHEET_BOTTOM_PADDING,
   },
   header: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
   headingIcon: {
-    width: 38, height: 38, borderRadius: 13, backgroundColor: colors.surface,
+    width: 34, height: 34, borderRadius: 12, backgroundColor: colors.surface,
     alignItems: 'center', justifyContent: 'center', marginRight: 11,
   },
   headingCopy: { flex: 1 },
-  title: { color: colors.text, fontSize: 18, fontWeight: '900' },
+  title: { color: colors.text, fontSize: 17, fontWeight: '900' },
   subtitle: { color: colors.muted, fontSize: 10, marginTop: 3 },
   closeButton: {
     width: 34, height: 34, borderRadius: 11, backgroundColor: colors.surface,
     alignItems: 'center', justifyContent: 'center',
   },
-  content: { paddingTop: 12, paddingBottom: 10 },
-  label: { color: colors.muted, fontSize: 11, fontWeight: '700', marginBottom: 7 },
+  content: { paddingTop: 8, paddingBottom: 6 },
+  label: { color: colors.muted, fontSize: 11, fontWeight: '700', marginBottom: 5 },
   input: {
-    minHeight: 46, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border,
+    minHeight: 42, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border,
     borderRadius: 13, color: colors.text, fontSize: 14, fontWeight: '700', paddingHorizontal: 13,
   },
-  typeRow: { flexDirection: 'row', backgroundColor: colors.surface, borderRadius: 13, padding: 4, marginBottom: 15 },
-  typeButton: { flex: 1, alignItems: 'center', borderRadius: 10, paddingVertical: 10 },
+  typeRow: { flexDirection: 'row', backgroundColor: colors.surface, borderRadius: 13, padding: 4, marginBottom: 11 },
+  typeButton: { flex: 1, alignItems: 'center', borderRadius: 10, paddingVertical: 8 },
   typeButtonSelected: { backgroundColor: colors.surfaceRaised },
   typeText: { color: colors.muted, fontSize: 12, fontWeight: '800' },
   typeTextSelected: { color: colors.green },
@@ -772,11 +781,11 @@ const createStyles = () => StyleSheet.create({
   assetResultName: { color: colors.muted, fontSize: 9, marginTop: 2 },
   assetSearchHint: { color: colors.muted, fontSize: 10, lineHeight: 15, padding: 11 },
   assetSearchStatus: { flexDirection: 'row', alignItems: 'center' },
-  fixedSymbol: { marginBottom: 12 },
+  fixedSymbol: { marginBottom: 9 },
   fixedSymbolText: { color: colors.text, fontWeight: '800', fontSize: 14 },
   quoteCard: {
     flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface,
-    borderRadius: 14, padding: 12, marginBottom: 14,
+    borderRadius: 14, padding: 10, marginBottom: 10,
   },
   quoteCopy: { flex: 1 },
   quoteName: { color: colors.text, fontSize: 12, fontWeight: '800' },
@@ -787,12 +796,12 @@ const createStyles = () => StyleSheet.create({
     borderRadius: 12, padding: 10, marginBottom: 12,
   },
   errorText: { color: '#ffc0c3', fontSize: 11, lineHeight: 16, flex: 1, marginLeft: 8 },
-  fieldGroup: { marginBottom: 13 },
+  fieldGroup: { marginBottom: 10 },
   sharesHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  sellAllButton: { paddingHorizontal: 10, paddingVertical: 8, marginBottom: 5, borderRadius: 8, backgroundColor: colors.surfaceRaised },
+  sellAllButton: { paddingHorizontal: 10, paddingVertical: 6, marginBottom: 4, borderRadius: 8, backgroundColor: colors.surfaceRaised },
   sellAllText: { color: colors.green, fontSize: 11, fontWeight: '800' },
   datePickerButton: {
-    minHeight: 46,
+    minHeight: 42,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
@@ -892,24 +901,24 @@ const createStyles = () => StyleSheet.create({
   priceRow: { flexDirection: 'row', alignItems: 'center' },
   priceInput: { flex: 1, marginRight: 9 },
   currencyToggle: { flexDirection: 'row', borderRadius: 12, backgroundColor: colors.surface, padding: 3 },
-  currencyButton: { paddingVertical: 10, paddingHorizontal: 10, borderRadius: 9 },
+  currencyButton: { paddingVertical: 9, paddingHorizontal: 10, borderRadius: 9 },
   currencyButtonSelected: { backgroundColor: colors.surfaceRaised },
   currencyText: { color: colors.muted, fontSize: 10, fontWeight: '800' },
   currencyTextSelected: { color: colors.green },
   fieldHint: { color: colors.muted, fontSize: 9, lineHeight: 13, marginTop: 6 },
-  formFooter: { flexDirection: 'row', marginTop: 4, gap: 9 },
+  formFooter: { flexDirection: 'row', marginTop: 2, gap: 9 },
   deleteButton: {
-    minHeight: 47, backgroundColor: 'rgba(255,90,98,0.12)', borderRadius: 13,
+    minHeight: 44, backgroundColor: 'rgba(255,90,98,0.12)', borderRadius: 13,
     alignItems: 'center', justifyContent: 'center', paddingHorizontal: 12,
   },
   deleteText: { color: colors.red, fontSize: 11, fontWeight: '800' },
   cancelButton: {
-    flex: 1, minHeight: 47, backgroundColor: colors.surface, borderRadius: 13,
+    flex: 1, minHeight: 44, backgroundColor: colors.surface, borderRadius: 13,
     alignItems: 'center', justifyContent: 'center',
   },
   cancelText: { color: colors.text, fontSize: 12, fontWeight: '800' },
   saveButton: {
-    flex: 1.5, minHeight: 47, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    flex: 1.5, minHeight: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
     backgroundColor: colors.green, borderRadius: 13, gap: 7,
   },
   saveText: { color: colors.surface, fontSize: 12, fontWeight: '900' },

@@ -31,8 +31,100 @@ required for SEC/Yahoo. Provider access/rate limits still apply.
 
 ## App behavior
 
+### Coverage expansion (November 5, 2026)
+
+The shared universe and offline snapshot now contain 85 tickers (previously 65).
+This batch adds MU, MRK, AMAT, RTX, PANW, LRCX, CRWD, AXP, GILD, DELL, GEV,
+ANET, C, PEP, VZ, ADI, BLK, APH, DE and UNP. These were the next uncovered
+constituents in the descending [S&P 500 index-weight list](https://www.slickcharts.com/sp500),
+used as a float-adjusted size priority, not an exact total-market-cap ranking.
+The universe still includes non-S&P companies and is not a full constituent list.
+
+All 20 imports succeeded using SEC companyfacts and Yahoo statements/earnings.
+Each added ticker has six recent reported quarters and at least four EPS
+actual/consensus comparisons. Historical revenue consensus was unavailable
+in these automated feeds: revenue beat remains unavailable, not inferred from
+current forecasts. Eligible future estimates are archived separately.
+Existing companies' observations were retained unchanged.
+
+### Complete-consensus expansion (November 5, 2026)
+
+A further **50 companies** bring the shared universe to **135 tickers**:
+PFE, ISRG, TJX, VRTX, LMT, MDT, BMY, SYK, LOW, COF, MCK, NEM, ADP, CME, HCA,
+CVS, VLO, GD, MRNA, WM, ELV, CSX, UPS, REGN, ADBE, MNST, FTNT, MCO, CMCSA,
+MSI, TT, CDNS, SHW, MDLZ, SNPS, HWM, CEG, ITW, PWR, CL, GM, ROST, NSC, NOC,
+SLB, DASH, AJG, TGT, AON and HOOD.
+
+All six displayed reports for each of these 50 companies have paired historical
+Revenue beat and EPS beat (**300 reports, 600 comparisons**), tested through
+`fetchCompanyEvents` with networking disabled. This does **not** make the older
+85 tickers complete: their existing missing comparisons remain unchanged.
+
+`node scripts/expand-earnings-history.cjs --limit=50 TICKER ...` processes explicit
+candidate tickers in the supplied size-priority order. It reads the public
+MarketBeat historical earnings table and records the source report URL,
+table URL, publication date and original actual/estimate pair in
+`reported-consensus.json`. SEC statements independently validate period ends
+and reported revenue (within 2% to allow published rounding). Actuals and
+estimates for a beat always come from the same MarketBeat row, never mixed
+with Yahoo's different consensus. These are automated source checks, not a
+claim that every underlying provider observation has been manually reviewed.
+Reported EPS uses the table's consensus-comparable series; differences from
+the table's GAAP EPS are labeled adjusted.
+
+The importer accepts a company only when the exact screen merge has six finite
+beats of each kind. Missing history, mismatched revenue/periods, suspicious
+EPS split scales and known REIT FFO/EPS ambiguities are rejected, not filled
+with zeros or forecasts. It continues to smaller companies when a larger
+candidate fails; rejected companies are logged and cause a nonzero exit even
+when other valid imports were saved. REIT coverage needs explicit methodology
+review before extending the current exclusion list. Original companies are
+never overwritten by this expansion command. Future new reports still require
+new consensus observations; this snapshot is not a permanent completeness guarantee.
+
+### Full-index audit (November 5, 2026)
+
+`node scripts/expand-earnings-history.cjs --sp500` discovers current constituents
+from [Wikipedia's S&P 500 table](https://en.wikipedia.org/wiki/List_of_S%26P_500_companies)
+and checks existing histories as well as missing companies. Complete existing
+histories are retained. Incomplete existing histories are updated only if all
+six displayed reports pass the same checks; old observations remain archived.
+Explicitly reviewed non-comparable EPS entries are never overwritten.
+
+The two-pass audit produced **274 total dataset tickers**, including **239 of
+503 S&P constituent tickers with complete six-report comparisons**. The other
+**264 constituents remain incomplete or absent**, so this is not full-index
+coverage. Share classes count separately. The dataset also retains non-index
+companies from earlier batches.
+
+Machine-readable `src/data/sp500-earnings-coverage.json` records membership
+source, timestamp, completeness and rejection reason for each constituent.
+This is a maintenance audit, not a new app screen. The checks reject missing
+estimates, questionable EPS split scales, REIT FFO/EPS ambiguities, unmatched
+periods and conflicting revenue definitions. A rejection is not a claim that
+the company has no earnings reports.
+
+When SEC has not yet published a matching recent period, the alternative pass
+can validate against Yahoo's latest reported financial statement, still requiring
+revenue agreement within 2%. It cannot pick an older quarter merely because its
+value happens to match. New source pairs record `validationSource` (`sec` or
+`yahoo`). MarketBeat still supplies both sides of each beat; the independent
+statement only validates the reported period and revenue. No current forecast
+is used to fill a missing historical consensus. Rounded source revenue retains
+its published precision. Date-only report dates use end-of-day UTC.
+
 - The bundled snapshot is immediately available; AsyncStorage retains subsequent
   shared updates and live observations across restarts.
+- Stock detail reads local earnings reports without waiting for the shared
+  snapshot download, news, dividends or Yahoo fundamentals. Live reports refresh
+  independently and replace local results only after success; errors remain
+  visible. Metrics and annual estimates also render independently, rather than
+  waiting for the slowest request across all three sections.
+- Successful historical chart/index requests are reused for 60 seconds;
+  key metrics and stock estimates for five minutes. These bounded in-memory
+  caches share concurrent identical requests, expire automatically and never
+  cache failures. They reset when the app process restarts. A first uncached
+  chart or metric still depends on the upstream service.
 - The public `raw.githubusercontent.com` snapshot is checked at most once per
   hour after a successful download (or the bundled snapshot's date on a
   fresh install). Failures retain local/bundled history

@@ -1,4 +1,5 @@
 import { useThemedStyles } from '../data/theme';
+import { selectionHaptic } from '../data/haptics';
 import { Fragment, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import Svg, { Circle, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
@@ -263,7 +264,7 @@ function calculateComparison(
 
 function formatCompactPercent(value: number | null, language: 'sk' | 'en' = 'sk') {
   if (value === null || !Number.isFinite(value)) return '—';
-  return `${value > 0 ? '+' : ''}${value.toLocaleString(language === 'sk' ? 'sk-SK' : 'en-US', { maximumFractionDigits: 1 })}%`;
+  return formatDetailedPercent(value, language);
 }
 
 function formatDetailedPercent(value: number | null, language: 'sk' | 'en' = 'sk') {
@@ -615,7 +616,7 @@ function AnnualComparisonChart({
   const clusterWidth = series.length * barWidth + (series.length - 1) * barGap;
   const formatValue = (value: number | null) => value === null
     ? '—'
-    : `${value > 0 ? '+' : ''}${value.toLocaleString(language === 'sk' ? 'sk-SK' : 'en-US', { maximumFractionDigits: 1 })}%`;
+    : formatDetailedPercent(value, language);
 
   return values.length ? (
     <View>
@@ -1061,7 +1062,10 @@ export default function AnalyticsScreen() {
               key={period.label}
               accessibilityRole="button"
               accessibilityState={{ selected: comparisonPeriod === period.label }}
-              onPress={() => setComparisonPeriod(period.label)}
+              onPress={() => {
+                if (period.label !== comparisonPeriod) selectionHaptic();
+                setComparisonPeriod(period.label);
+              }}
               style={[
                 styles.periodButton,
                 comparisonPeriod === period.label && styles.periodButtonSelected,

@@ -1,4 +1,5 @@
 import { useThemedStyles } from '../data/theme';
+import { selectionHaptic } from '../data/haptics';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { ChevronDown, ChevronUp, X } from 'lucide-react-native';
@@ -27,9 +28,9 @@ function IndexDetail({ index, onClose }: { index: MarketIndex; onClose: () => vo
     return () => { active = false; };
   }, [index.symbol, range, retry]);
   const current = entry?.range === range ? entry : null;
-  const data = current?.data;
-  const point = data?.points[selected ?? data.points.length - 1];
-  const change = data && point ? (point.price / data.baseline - 1) * 100 : null;
+  const data = current ? current.data : entry?.data;
+  const point = current?.data?.points[selected ?? current.data.points.length - 1];
+  const change = current?.data && point ? (point.price / current.data.baseline - 1) * 100 : null;
   const color = change !== null && change < 0 ? colors.red : colors.green;
   return (
     <Modal visible transparent animationType="slide" onRequestClose={onClose}>
@@ -51,20 +52,21 @@ function IndexDetail({ index, onClose }: { index: MarketIndex; onClose: () => vo
                 <Pressable key={item} accessibilityRole="button" accessibilityState={{ selected: item === range }}
                   onPress={() => {
                     if (item === range) return;
-                    setSelected(null); setEntry(null); setRange(item);
+                    selectionHaptic();
+                    setSelected(null); setRange(item);
                   }} style={[styles.range, item === range && styles.rangeSelected]}>
                   <Text style={[styles.rangeText, item === range && { color: colors.background }]}>{item}</Text>
                 </Pressable>
               ))}
             </View>
-            {!current ? <ActivityIndicator style={styles.loader} color={colors.green} /> : null}
+            <View style={styles.chartArea} accessibilityState={{ busy: !current }}>
             {current?.error ? <>
               <Text style={styles.error} accessibilityRole="alert">{current.error}</Text>
               <Pressable accessibilityRole="button" onPress={() => { setEntry(null); setRetry((value) => value + 1); }} style={styles.retry}>
                 <Text style={styles.retryText}>{t('Skúsiť znova')}</Text>
               </Pressable>
             </> : null}
-            {data ? <>
+            {data ? <View pointerEvents={current ? 'auto' : 'none'} style={!current ? styles.loadingChart : undefined}>
               <PortfolioChart values={data.points.map((item) => item.price)} color={color} height={210}
                 selectedIndex={selected ?? data.points.length - 1} onSelectPoint={setSelected} onSelectionEnd={() => setSelected(null)} />
               <View style={styles.heading}>
@@ -72,7 +74,11 @@ function IndexDetail({ index, onClose }: { index: MarketIndex; onClose: () => vo
                   <Text key={index} style={styles.note}>{new Date(item.timestamp * 1000).toLocaleDateString(language === 'sk' ? 'sk-SK' : 'en-US')}</Text>
                 ))}
               </View>
-            </> : null}
+            </View> : null}
+            {!current ? <View pointerEvents="none" style={styles.loadingOverlay}>
+              <ActivityIndicator accessibilityLabel={t('Načítavam…')} color={colors.green} />
+            </View> : null}
+            </View>
             <Text style={styles.note}>{t('Hodnota indexu v bodoch. Denná zmena je voči predchádzajúcemu uzavretiu; ostatné obdobia voči prvému bodu grafu.')}</Text>
             <Text style={styles.note}>{t('Zdroj: Yahoo Finance. Údaje môžu byť oneskorené.')}</Text>
           </ScrollView>
@@ -178,7 +184,9 @@ const createStyles = () => StyleSheet.create({
   range: { flex: 1, alignItems: 'center', paddingVertical: 9, borderRadius: 9, backgroundColor: colors.surfaceRaised },
   rangeSelected: { backgroundColor: colors.green },
   rangeText: { color: colors.muted, fontSize: 11, fontWeight: '800' },
-  loader: { marginVertical: 70 },
+  chartArea: { height: 245 },
+  loadingChart: { opacity: 0.35 },
+  loadingOverlay: { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, alignItems: 'center', justifyContent: 'center' },
   retry: { alignItems: 'center', padding: 12 },
   retryText: { color: colors.green, fontWeight: '700' },
 });

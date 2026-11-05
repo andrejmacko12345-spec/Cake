@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { Asset } from '../data/portfolio';
+import { AssetCategory, filterAssetsByCategory } from '../data/asset-discovery';
 import { searchAssets } from '../data/quotes';
 
-export function useAssetSearch(query: string) {
+export function useAssetSearch(query: string, category?: AssetCategory | 'all') {
   const [results, setResults] = useState<Asset[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -18,12 +19,19 @@ export function useAssetSearch(query: string) {
       return;
     }
 
+    setResults([]);
     setLoading(true);
     setError('');
     const timeout = setTimeout(() => {
       void searchAssets(normalizedQuery)
         .then((matches) => {
-          if (requestId.current === currentRequestId) setResults(matches);
+          if (requestId.current === currentRequestId) {
+            setResults(category === 'all'
+              ? matches
+              : category
+              ? filterAssetsByCategory(matches, category)
+              : matches.filter((asset) => asset.category !== 'indexes'));
+          }
         })
         .catch((reason: unknown) => {
           if (requestId.current !== currentRequestId) return;
@@ -39,7 +47,7 @@ export function useAssetSearch(query: string) {
       clearTimeout(timeout);
       requestId.current += 1;
     };
-  }, [query]);
+  }, [query, category]);
 
   return { results, loading, error };
 }

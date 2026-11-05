@@ -1,3 +1,5 @@
+import { createRequestCache } from './request-cache';
+
 export type FundamentalMetrics = Pick<StockEstimates,
   'currentPE' | 'peThisYear' | 'peNextYear' |
   'epsGrowthTTM' | 'epsGrowthThisYear' | 'epsGrowthNextYear' |
@@ -181,7 +183,12 @@ export function calendarYearEstimate(
 }
 
 // Yahoo zverejňuje odhady len pre aktuálny (0y) a nasledujúci (+1y) fiškálny rok.
-export async function fetchStockEstimates(symbol: string): Promise<StockEstimates> {
+const estimatesRequest = createRequestCache<StockEstimates>(5 * 60 * 1000);
+export function fetchStockEstimates(symbol: string): Promise<StockEstimates> {
+  return estimatesRequest(symbol, () => loadStockEstimates(symbol));
+}
+
+async function loadStockEstimates(symbol: string): Promise<StockEstimates> {
   const crumb = await getCrumb();
   const url = `https://query2.finance.yahoo.com/v10/finance/quoteSummary/${encodeURIComponent(symbol)}`
     + `?modules=price,summaryDetail,defaultKeyStatistics,financialData,earningsTrend&crumb=${encodeURIComponent(crumb)}`;
@@ -341,7 +348,12 @@ export type KeyStats = {
   marketCap: number | null;
 };
 
-export async function fetchKeyStats(symbol: string): Promise<KeyStats> {
+const statsRequest = createRequestCache<KeyStats>(5 * 60 * 1000);
+export function fetchKeyStats(symbol: string): Promise<KeyStats> {
+  return statsRequest(symbol, () => loadKeyStats(symbol));
+}
+
+async function loadKeyStats(symbol: string): Promise<KeyStats> {
   const result = await yahooQuoteSummary<{
     summaryDetail?: { trailingPE?: RawValue; forwardPE?: RawValue; marketCap?: RawValue; dividendYield?: RawValue; dividendRate?: RawValue };
     defaultKeyStatistics?: { trailingEps?: RawValue; forwardEps?: RawValue; forwardPE?: RawValue };

@@ -3,7 +3,7 @@ export type Watchlist = { id: string; name: string; symbols: string[] };
 export type WatchlistsState = { selectedId: string; lists: Watchlist[] };
 export const defaultWatchlists: WatchlistsState = {
   selectedId: 'default',
-  lists: [{ id: 'default', name: 'Watchlist', symbols: ['NVDA', 'AMZN'] }],
+  lists: [{ id: 'default', name: 'Watchlist', symbols: [] }],
 };
 export const isValidSymbol = (value: string) => /^[A-Z0-9.^=-]{1,20}$/.test(value);
 

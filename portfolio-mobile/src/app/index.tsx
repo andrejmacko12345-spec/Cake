@@ -1,7 +1,10 @@
 import { useThemedStyles } from '../data/theme';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { selectionHaptic } from '../data/haptics';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useAmountVisibility } from '../context/amount-visibility';
 import { useChartHaptics } from '../hooks/use-chart-haptics';
+import { useFrameSelection } from '../hooks/use-frame-selection';
+import { RangeSwipeRow } from '../components/range-swipe-row';
 import { ActivityIndicator, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Defs, LinearGradient, Line, Path, Stop } from 'react-native-svg';
 import { ChartNoAxesCombined, ChevronDown, ChevronRight, ChevronUp, Eye, EyeOff, Plus, Search, TrendingUp, UserRound, Wallet } from 'lucide-react-native';
@@ -36,6 +39,7 @@ const chartRanges = [
 ] as const;
 
 type ChartRange = (typeof chartRanges)[number]['label'];
+const chartRangeLabels = chartRanges.map((item) => item.label);
 
 type PortfolioHistoryPoint = {
   timestamp: number;
@@ -192,7 +196,26 @@ function createPortfolioHistory(
 
 type ChartLatest = { range: ChartRange; value: number; gainEUR: number; returnPercent: number; label: string | null };
 
-function InvestmentTimeline({
+const TimelineCurve = memo(function TimelineCurve({ path, areaPath, border, color }: {
+  path: string; areaPath: string; border: string; color: string;
+}) {
+  return (
+    <Svg pointerEvents="none" width="100%" height={155} viewBox="0 0 320 145" preserveAspectRatio="none">
+      <Line x1="8" y1="126" x2="312" y2="126" stroke={border} strokeWidth="1" />
+      <Line x1="8" y1="18" x2="8" y2="126" stroke={border} strokeWidth="1" />
+      <Defs>
+        <LinearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
+          <Stop offset="0" stopColor={color} stopOpacity="0.28" />
+          <Stop offset="1" stopColor={color} stopOpacity="0" />
+        </LinearGradient>
+      </Defs>
+      {areaPath ? <Path d={areaPath} fill="url(#areaFill)" /> : null}
+      {path ? <Path d={path} fill="none" stroke={color} strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" /> : null}
+    </Svg>
+  );
+});
+
+const InvestmentTimeline = memo(function InvestmentTimeline({
   transactions,
   range,
   onRangeChange,
@@ -309,25 +332,28 @@ function InvestmentTimeline({
     : range === 'Všetko'
       ? t('celé obdobie')
       : range;
-  const values = history.map((point) => point.value);
-  const lowest = values.length ? Math.min(...values) : 0;
-  const highest = values.length ? Math.max(...values) : 0;
-  const padding = Math.max((highest - lowest) * 0.1, Math.abs(highest) * 0.00001, 0.01);
-  const min = lowest - padding;
-  const max = highest + padding;
-  const rangeValue = max - min || 1;
-  const points = history.map((point, index) => ({
-    x: history.length === 1 ? 160 : 8 + (index / (history.length - 1)) * 296,
-    y: 122 - ((point.value - min) / rangeValue) * 98,
-  }));
-  const path = points.reduce((result, point, index) => {
-    if (index === 0) return `M ${point.x} ${point.y}`;
-    return `${result} L ${point.x} ${point.y}`;
-  }, '');
-  const areaPath = points.length > 1 ? `${path} L ${points[points.length - 1].x} 126 L ${points[0].x} 126 Z` : '';
-  const labels = history.length > 1
-    ? [history[0].date, history[Math.floor(history.length / 2)].date, history[history.length - 1].date]
-    : [];
+  const { points, path, areaPath, labels } = useMemo(() => {
+    const values = history.map((point) => point.value);
+    const lowest = values.length ? Math.min(...values) : 0;
+    const highest = values.length ? Math.max(...values) : 0;
+    const padding = Math.max((highest - lowest) * 0.1, Math.abs(highest) * 0.00001, 0.01);
+    const min = lowest - padding;
+    const max = highest + padding;
+    const rangeValue = max - min || 1;
+    const points = history.map((point, index) => ({
+      x: history.length === 1 ? 160 : 8 + (index / (history.length - 1)) * 296,
+      y: 122 - ((point.value - min) / rangeValue) * 98,
+    }));
+    const path = points.reduce((result, point, index) => {
+      if (index === 0) return `M ${point.x} ${point.y}`;
+      return `${result} L ${point.x} ${point.y}`;
+    }, '');
+    const areaPath = points.length > 1 ? `${path} L ${points[points.length - 1].x} 126 L ${points[0].x} 126 Z` : '';
+    const labels = history.length > 1
+      ? [history[0].date, history[Math.floor(history.length / 2)].date, history[history.length - 1].date]
+      : [];
+    return { points, path, areaPath, labels };
+  }, [history]);
   const monthLabel = (point: PortfolioHistoryPoint) => range === '1D'
     ? new Date(point.timestamp * 1000).toLocaleTimeString(language === 'sk' ? 'sk-SK' : 'en-US', {
       hour: '2-digit',
@@ -370,17 +396,21 @@ function InvestmentTimeline({
       : null);
   }, [onLatestChange, selectedPoint, selectedIndex, range, language]);
   const chartHaptics = useChartHaptics();
-  const updateSelectedPoint = (locationX: number) => {
-    if (!history.length || chartWidth <= 0) return;
-    const normalized = Math.min(1, Math.max(0, locationX / chartWidth));
-    const index = Math.round(normalized * (history.length - 1));
+  const selectPoint = useFrameSelection((index) => {
     chartHaptics(index);
     setSelectedIndex(index);
+  });
+  const updateSelectedPoint = (locationX: number) => {
+    if (!history.length || chartWidth <= 0) return;
+    const chartX = locationX * 320 / chartWidth;
+    const normalized = Math.min(1, Math.max(0, (chartX - 8) / 296));
+    const index = Math.round(normalized * (history.length - 1));
+    selectPoint(index);
   };
   const endSelection = () => {
-    chartHaptics(null);
-    setSelectedIndex(null);
+    selectPoint(null);
   };
+  useEffect(() => { selectPoint(null); }, [history, range, selectPoint]);
   const panResponder = useMemo(() => PanResponder.create({
     onStartShouldSetPanResponder: () => false,
     onMoveShouldSetPanResponder: (_, gesture) =>
@@ -389,7 +419,7 @@ function InvestmentTimeline({
     onPanResponderMove: (event) => updateSelectedPoint(event.nativeEvent.locationX),
     onPanResponderRelease: endSelection,
     onPanResponderTerminate: endSelection,
-  }), [history, chartWidth, chartHaptics]);
+  }), [history, chartWidth, selectPoint]);
 
   return (
     <View style={styles.chartCard}>
@@ -403,17 +433,9 @@ function InvestmentTimeline({
         onLayout={(event) => setChartWidth(event.nativeEvent.layout.width)}
         style={styles.chartWrap}
       >
+        <TimelineCurve path={path} areaPath={areaPath} border={colors.border} color={colors.green} />
+        <View pointerEvents="none" style={StyleSheet.absoluteFill}>
         <Svg width="100%" height={155} viewBox="0 0 320 145" preserveAspectRatio="none">
-          <Line x1="8" y1="126" x2="312" y2="126" stroke={colors.border} strokeWidth="1" />
-          <Line x1="8" y1="18" x2="8" y2="126" stroke={colors.border} strokeWidth="1" />
-          <Defs>
-            <LinearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
-              <Stop offset="0" stopColor={colors.green} stopOpacity="0.28" />
-              <Stop offset="1" stopColor={colors.green} stopOpacity="0" />
-            </LinearGradient>
-          </Defs>
-          {areaPath ? <Path d={areaPath} fill="url(#areaFill)" /> : null}
-          {path ? <Path d={path} fill="none" stroke={colors.green} strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" /> : null}
           {selectedIndex !== null && selectedPoint && points[selectedIndex] ? (
             <>
               <Line
@@ -436,6 +458,7 @@ function InvestmentTimeline({
             </>
           ) : null}
         </Svg>
+        </View>
         <View style={styles.chartLabels}>
           {labels.map((date, index) => (
             <Text key={`${date}-${index}`} style={styles.chartLabel}>
@@ -455,28 +478,20 @@ function InvestmentTimeline({
       {historyError ? (
         <Text accessibilityRole="alert" style={styles.chartError}>{errorText(historyError)}</Text>
       ) : null}
-      <View style={styles.rangeRow}>
-        {chartRanges.map((item) => (
-          <Pressable
-            key={item.label}
-            accessibilityRole="button"
-            accessibilityState={{ selected: range === item.label }}
-            onPress={() => onRangeChange(item.label)}
-            style={[styles.rangeButton, range === item.label && styles.rangeButtonSelected]}
-          >
-            <Text style={[styles.rangeText, range === item.label && styles.rangeTextSelected]}>
-              {item.label === '1T' && language === 'en'
-                ? '1W'
-                : item.label === 'Všetko'
-                  ? t(item.label)
-                  : item.label}
-            </Text>
-          </Pressable>
-        ))}
-      </View>
+      <RangeSwipeRow
+        labels={chartRangeLabels}
+        selected={range}
+        onChange={onRangeChange}
+        renderLabel={(label) => label === '1T' && language === 'en' ? '1W' : label === 'Všetko' ? t(label) : label}
+        style={styles.rangeRow}
+        buttonStyle={styles.rangeButton}
+        indicatorStyle={styles.rangeButtonSelected}
+        textStyle={styles.rangeText}
+        selectedTextStyle={styles.rangeTextSelected}
+      />
     </View>
   );
-}
+});
 
 export default function PortfolioScreen() {
   const styles = useThemedStyles(createStyles);
@@ -563,6 +578,7 @@ export default function PortfolioScreen() {
   const rangeText = range === 'Všetko' ? t('Všetko') : range === '1T' && language === 'en' ? '1W' : range;
 
   const openNewTransaction = (type: 'BUY' | 'SELL' = 'BUY') => {
+    selectionHaptic();
     setInitialType(type);
     setFormVisible(true);
   };
@@ -650,7 +666,7 @@ export default function PortfolioScreen() {
       <View style={styles.quickActions}>
       <Pressable
         accessibilityRole="button"
-        onPress={() => router.navigate('/analytics')}
+        onPress={() => { selectionHaptic(); router.navigate('/analytics'); }}
         style={styles.analyticsButton}
       >
         <ChartNoAxesCombined size={18} color="#58b5ff" />
@@ -660,7 +676,7 @@ export default function PortfolioScreen() {
 
       <Pressable
         accessibilityRole="button"
-        onPress={() => router.navigate('/dividends')}
+        onPress={() => { selectionHaptic(); router.navigate('/dividends'); }}
         style={styles.analyticsButton}
       >
         <Wallet size={18} color="#ffae42" />
@@ -746,7 +762,7 @@ export default function PortfolioScreen() {
           >
             <View>
               <Text style={styles.closedTitle}>{t('Zatvorené pozície')}</Text>
-              <Text style={styles.closedSubtitle}>{closedPositions.length}               {t('predaných titulov · výnos je v celkovom výsledku')}</Text>
+              <Text style={styles.closedSubtitle}>{closedPositions.length} {t('predaných titulov · výnos je v celkovom výsledku')}</Text>
             </View>
             <View style={styles.closedToggleRight}>
               <Text style={styles.closedCount}>{closedPositions.length}</Text>
@@ -863,7 +879,7 @@ const createStyles = () => StyleSheet.create({
   chartError: { color: colors.red, fontSize: 9, lineHeight: 14, marginTop: 3 },
   rangeRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 6 },
   rangeButton: { paddingVertical: 8, paddingHorizontal: 7, borderRadius: 999 },
-  rangeButtonSelected: { backgroundColor: colors.green },
+  rangeButtonSelected: { backgroundColor: colors.green, borderRadius: 999 },
   rangeText: { color: colors.muted, fontSize: 10, fontWeight: '800' },
   rangeTextSelected: { color: colors.surface },
   closedSection: { marginTop: 8 },
@@ -878,7 +894,7 @@ const createStyles = () => StyleSheet.create({
     paddingVertical: 10,
   },
   closedTitle: { color: colors.text, fontSize: 12, fontWeight: '900' },
-  closedSubtitle: { color: colors.muted, fontSize: 8, marginTop: 4 },
+  closedSubtitle: { color: colors.muted, fontSize: 12, marginTop: 4 },
   closedToggleRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   closedCount: { color: colors.green, fontSize: 11, fontWeight: '900' },
   assetsCard: { paddingVertical: 4, paddingHorizontal: 10, backgroundColor: colors.surface, borderRadius: 18 },

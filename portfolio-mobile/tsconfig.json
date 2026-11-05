@@ -3,6 +3,15 @@
   "compilerOptions": {
     "strict": true
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "*.ts", "*.tsx", ".expo/types/**/*.ts"],
-  "exclude": ["node_modules", "dist", "dist-*"]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "*.ts",
+    "*.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "dist-*"
+  ]
 }

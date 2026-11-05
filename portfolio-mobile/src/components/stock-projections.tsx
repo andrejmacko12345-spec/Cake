@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Keyboard, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
-import { ArrowLeft, Bookmark, BriefcaseBusiness, Check, ChevronDown, Search, X } from 'lucide-react-native';
+import { ArrowLeft, Bookmark, BriefcaseBusiness, Check, ChevronDown, Info, Search, X } from 'lucide-react-native';
 import { Header, Page, Surface } from '../components/finapp';
 import { TableColumn } from '../components/table-column';
 import type { TableColumnTone } from '../components/table-column';
@@ -22,6 +22,11 @@ const fields: Array<{ key: keyof Draft; label: string; percent: boolean }> = [
   { key: 'peLow', label: 'Dolné P/E', percent: false },
   { key: 'peHigh', label: 'Horné P/E', percent: false },
 ];
+const defaultsInfo: Array<{ title: string; text: string }> = [
+  { title: 'Rast tržieb', text: 'Vážený priemer: 50 % medziročný rast tržieb posledného štvrťroka, 30 % medziročný rast tržieb za posledných 12 mesiacov (TTM) a 20 % priemerný ročný rast (CAGR) za posledné 3 roky.' },
+  { title: 'Rast čistého zisku', text: 'Priemer medziročných zmien čistého zisku za posledné najviac 3 fiškálne roky. Ak ročné údaje chýbajú, použije sa história za posledných 12 mesiacov (TTM).' },
+  { title: 'Dolné a horné P/E', text: 'Priemerné historické P/E za posledné 3 roky (cena v deň výsledkov / zriedený EPS za 12 mesiacov). Dolné P/E je 75 % a horné P/E 125 % tohto priemeru.' },
+];
 const emptyDraft = (): Draft => ({
   revenueGrowth: '', incomeGrowth: '', peLow: '', peHigh: '',
 });
@@ -41,6 +46,7 @@ export default function StockProjections({ embedded = false }: { embedded?: bool
   const [portfolioOpen, setPortfolioOpen] = useState(false);
   const [tableTop, setTableTop] = useState(0);
   const [watchlistsOpen, setWatchlistsOpen] = useState(false);
+  const [infoOpen, setInfoOpen] = useState(false);
   const watchlists = useWatchlists();
   const rowHeight = availableHeight && tableTop
     ? Math.max(26, Math.floor((availableHeight - tableTop - 16 - 28 - 8 - 18) / 9)) : 38;
@@ -243,6 +249,11 @@ export default function StockProjections({ embedded = false }: { embedded?: bool
           </Pressable>
         </Surface> : null}
         <>
+          <Pressable accessibilityRole="button" accessibilityLabel={t('Ako predvypĺňame hodnoty')}
+            hitSlop={8} onPress={() => { selectionHaptic(); Keyboard.dismiss(); setInfoOpen(true); }} style={styles.inputsHeading}>
+            <Text style={styles.inputsHeadingText}>{t('Predpoklady')}</Text>
+            <Info size={13} color={colors.muted} />
+          </Pressable>
           <View style={styles.inputs}>
             {fields.map((field) => <View key={field.key} style={styles.inputField}>
               <Text style={styles.inputLabel}>{t(field.label)}{field.percent ? ' %' : ''}</Text>
@@ -253,6 +264,23 @@ export default function StockProjections({ embedded = false }: { embedded?: bool
                 onChangeText={(value) => setDraft((previous) => ({ ...previous, [field.key]: value }))} />
             </View>)}
           </View>
+          {infoOpen ? <Modal visible transparent animationType="fade" onRequestClose={() => setInfoOpen(false)}>
+            <Pressable style={styles.menuScrim} onPress={() => setInfoOpen(false)} accessibilityRole="button" accessibilityLabel={t('Zavrieť')}>
+              <Pressable style={styles.infoCard} onPress={() => undefined}>
+                <View style={styles.menuHeading}>
+                  <Text style={styles.infoTitle}>{t('Ako predvypĺňame hodnoty')}</Text>
+                  <Pressable accessibilityRole="button" accessibilityLabel={t('Zavrieť')} onPress={() => setInfoOpen(false)} style={styles.searchClose}>
+                    <X size={18} color={colors.text} />
+                  </Pressable>
+                </View>
+                {defaultsInfo.map((item) => <View key={item.title} style={styles.infoItem}>
+                  <Text style={styles.infoItemTitle}>{t(item.title)}</Text>
+                  <Text style={styles.infoText}>{t(item.text)}</Text>
+                </View>)}
+                <Text style={styles.infoNote}>{t('Hodnoty sú len východiskový odhad z údajov Yahoo Finance. Môžeš ich kedykoľvek prepísať.')}</Text>
+              </Pressable>
+            </Pressable>
+          </Modal> : null}
           {base?.peHistoryUnavailable ? <Text accessibilityRole="alert" style={styles.hint}>
             {t('Historické P/E nie je dostupné. Zadaj P/E ručne.')}
           </Text> : null}
@@ -332,7 +360,15 @@ const createStyles = () => StyleSheet.create({
   heading: { color: colors.text, fontSize: 12, fontWeight: '800', textAlign: 'center' },
   labelText: { color: colors.muted, fontSize: 12 },
   value: { color: colors.text, fontSize: 13, fontWeight: '700', textAlign: 'right', fontVariant: ['tabular-nums'] },
+  inputsHeading: { flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-start', gap: 5, minHeight: 24, marginBottom: 2 },
+  inputsHeadingText: { color: colors.muted, fontSize: 11, fontWeight: '800' },
   inputs: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+  infoCard: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: 16, paddingBottom: 14 },
+  infoTitle: { flex: 1, color: colors.text, fontSize: 15, fontWeight: '800' },
+  infoItem: { paddingHorizontal: 14, paddingTop: 8 },
+  infoItemTitle: { color: colors.green, fontSize: 12, fontWeight: '800', marginBottom: 3 },
+  infoText: { color: colors.text, fontSize: 12, lineHeight: 17 },
+  infoNote: { color: colors.muted, fontSize: 11, lineHeight: 16, paddingHorizontal: 14, paddingTop: 12 },
   inputField: { flexBasis: '47%', flexGrow: 1, flexDirection: 'row', alignItems: 'center', gap: 4 },
   inputLabel: { flex: 1, color: colors.muted, fontSize: 10 },
   input: { width: 62, color: colors.text, backgroundColor: colors.surfaceRaised, borderColor: colors.border, borderWidth: 1, borderRadius: 8, padding: 6, minHeight: 36, textAlign: 'right', fontSize: 13 },

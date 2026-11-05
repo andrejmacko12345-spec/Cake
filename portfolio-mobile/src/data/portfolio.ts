@@ -4,6 +4,7 @@ export type Asset = {
   price: number;
   change: number;
   color: string;
+  category?: 'stocks' | 'etfs' | 'indexes';
 };
 
 export const colors = {
@@ -29,16 +30,16 @@ export const availableAssets: Asset[] = [
   { symbol: 'AAPL', name: 'Apple', price: 0, change: 0, color: '#d3d9e2' },
 ];
 
-export const formatMoney = (value: number, compact = false) =>
-  new Intl.NumberFormat('sk-SK', {
+export const formatMoney = (value: number, compact = false, language: 'sk' | 'en' = 'sk') =>
+  new Intl.NumberFormat(language === 'sk' ? 'sk-SK' : 'en-US', {
     style: 'currency',
     currency: 'EUR',
       maximumFractionDigits: compact ? 2 : Number.isInteger(value) ? 0 : 2,
     notation: compact ? 'compact' : 'standard',
   }).format(value);
 
-export const formatPercent = (value: number, digits = 1) =>
-  `${value > 0 ? '+' : ''}${value.toLocaleString('sk-SK', {
+export const formatPercent = (value: number, digits = 2, language: 'sk' | 'en' = 'sk') =>
+  `${value > 0 ? '+' : ''}${value.toLocaleString(language === 'sk' ? 'sk-SK' : 'en-US', {
     minimumFractionDigits: digits,
     maximumFractionDigits: digits,
   })} %`;

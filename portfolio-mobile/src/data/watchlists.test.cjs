@@ -9,7 +9,8 @@ new Function('exports', ts.transpileModule(fs.readFileSync(require.resolve('./wa
 const { parseWatchlists } = exportsObject;
 
 test('shared watchlist parser preserves every group, custom name, empty list and legacy ticker', () => {
-  assert.deepEqual(parseWatchlists(null).lists[0].symbols, ['NVDA', 'AMZN']);
+  assert.deepEqual(parseWatchlists(null).lists[0].symbols, []);
+  assert.deepEqual(parseWatchlists('["NVDA","AMZN"]').lists[0].symbols, ['NVDA', 'AMZN']);
   assert.deepEqual(parseWatchlists('["AAPL","BRK-B"]').lists[0].symbols, ['AAPL', 'BRK-B']);
   const saved = { selectedId: 'income', lists: [
     { id: 'growth', name: 'Growth Picks', symbols: ['NVDA', 'AMD'] },

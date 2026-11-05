@@ -79,11 +79,11 @@ export default function AnalyseScreen() {
             feedbackIndex.current = index;
           }
         }} style={styles.pager}>
-        <View style={{ width }} accessibilityElementsHidden={active !== 0}
+        <View style={{ width, height: '100%' }} accessibilityElementsHidden={active !== 0}
           importantForAccessibility={active === 0 ? 'auto' : 'no-hide-descendants'}>
           <StockProjections embedded />
         </View>
-        <View style={{ width }} accessibilityElementsHidden={active !== 1}
+        <View style={{ width, height: '100%' }} accessibilityElementsHidden={active !== 1}
           importantForAccessibility={active === 1 ? 'auto' : 'no-hide-descendants'}>
           <StockCompare />
         </View>

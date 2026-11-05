@@ -1,4 +1,5 @@
 import { useThemedStyles } from '../data/theme';
+import { selectionHaptic } from '../data/haptics';
 import { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
@@ -25,8 +26,11 @@ import { fetchHistoricalQuoteSeries, HistoricalQuotePoint } from '../data/quotes
 import { useLocale } from '../context/locale';
 import { useAmountVisibility } from '../context/amount-visibility';
 import { useChartHaptics } from '../hooks/use-chart-haptics';
+import { RangeSwipeRow } from '../components/range-swipe-row';
+import { getFeaturedAssetBySymbol } from '../data/asset-discovery';
+import { recordAssetView } from '../data/asset-discovery-history';
 import { fetchKeyStats, fetchStockEstimates, KeyStats, StockEstimates } from '../data/fundamentals';
-import { CompanyEvents, fetchCompanyEvents } from '../data/events';
+import { CompanyEvents, fetchCompanyEvents, getLocalCompanyReports } from '../data/events';
 import {
   Position,
   positionCostEUR,
@@ -49,6 +53,7 @@ const ranges = [
 ] as const;
 
 type RangeLabel = (typeof ranges)[number]['label'];
+const rangeLabels = ranges.map((item) => item.label);
 
 type PricePoint = HistoricalQuotePoint & { date: string };
 
@@ -274,25 +279,27 @@ function StockChart({
       <View style={styles.chartLabels}>
         {labels.length
           ? labels.map((point, index) => (
-              <Text key={`${point.timestamp}-${index}`} style={styles.chartLabel}>
+              <Text
+                key={`${point.timestamp}-${index}`}
+                numberOfLines={1}
+                style={[styles.chartLabel, { textAlign: index === 0 ? 'left' : index === labels.length - 1 ? 'right' : 'center' }]}
+              >
                 {range === '1D' ? timeLabel(point) : dateLabel(point.date)}
               </Text>
             ))
           : <Text style={styles.chartHint}>{t('Potiahni prstom po grafe pre zobrazenie ceny v daný deň.')}</Text>}
       </View>
-      <View style={styles.rangeRow}>
-        {ranges.map((item) => (
-          <Pressable
-            key={item.label}
-            accessibilityRole="button"
-            accessibilityState={{ selected: item.label === range }}
-            onPress={() => onRangeChange(item.label)}
-            style={[styles.rangeButton, item.label === range && styles.rangeButtonSelected]}
-          >
-            <Text style={[styles.rangeText, item.label === range && styles.rangeTextSelected]}>{t(item.label)}</Text>
-          </Pressable>
-        ))}
-      </View>
+      <RangeSwipeRow
+        labels={rangeLabels}
+        selected={range}
+        onChange={onRangeChange}
+        renderLabel={(label) => t(label)}
+        style={styles.rangeRow}
+        buttonStyle={styles.rangeButton}
+        indicatorStyle={styles.rangeButtonSelected}
+        textStyle={styles.rangeText}
+        selectedTextStyle={styles.rangeTextSelected}
+      />
     </Surface>
   );
 }
@@ -360,11 +367,17 @@ export default function PositionDetailScreen() {
   const { positions, loading, saveTransaction, deleteTransaction } = usePositions();
   const { t, language, errorText } = useLocale();
   const heldPosition = positions.find((item) => item.symbol === symbol);
-  const asset = availableAssets.find((item) => item.symbol === symbol) ?? (
+  const isHeld = Boolean(heldPosition);
+  // Memoized so the quote effect does not refetch (and flicker the name) on every render.
+  const asset = useMemo(() => availableAssets.find((item) => item.symbol === symbol) ?? getFeaturedAssetBySymbol(symbol) ?? (
     symbol && /^[A-Z0-9.^=-]{1,20}$/.test(symbol)
       ? { symbol, name: symbol, price: 0, change: 0, color: colors.violet }
       : undefined
-  );
+  ), [symbol]);
+  const hasAsset = Boolean(asset);
+  useEffect(() => {
+    if (symbol && hasAsset) recordAssetView(symbol);
+  }, [symbol, hasAsset]);
   const [marketQuote, setMarketQuote] = useState<LiveQuote | null>(null);
   const [quoteError, setQuoteError] = useState('');
   const [range, setRange] = useState<RangeLabel>('1D');
@@ -373,34 +386,56 @@ export default function PositionDetailScreen() {
   const [stats, setStats] = useState<KeyStats | null>(null);
   const [estimates, setEstimates] = useState<StockEstimates | null>(null);
   const [metricsError, setMetricsError] = useState('');
-  const [events, setEvents] = useState<CompanyEvents | null>(null);
-  const [infoLoading, setInfoLoading] = useState(true);
+  const [events, setEvents] = useState<Pick<CompanyEvents, 'quarters' | 'financialDataIssue'> | null>(null);
+  const [statsLoading, setStatsLoading] = useState(true);
+  const [estimatesLoading, setEstimatesLoading] = useState(true);
+  const [reportsLoading, setReportsLoading] = useState(true);
+  const [reportsError, setReportsError] = useState('');
 
   useEffect(() => {
     if (!symbol) return;
     let active = true;
-    setInfoLoading(true);
+    setStatsLoading(true);
+    setEstimatesLoading(true);
+    setReportsLoading(true);
     setStats(null);
     setEstimates(null);
     setMetricsError('');
     setEvents(null);
-    Promise.allSettled([fetchKeyStats(symbol), fetchCompanyEvents(symbol), fetchStockEstimates(symbol)]).then(([s, e, forecast]) => {
-      if (!active) return;
-      if (s.status === 'fulfilled') setStats(s.value);
-      if (e.status === 'fulfilled') setEvents(e.value);
-      if (forecast.status === 'fulfilled') setEstimates(forecast.value);
-      const failures = [s, forecast].flatMap((result) =>
-        result.status === 'rejected' ? [result.reason instanceof Error ? result.reason.message : String(result.reason)] : []);
-      setMetricsError(failures.join(' '));
-      setInfoLoading(false);
+    setReportsError('');
+    let liveReportsLoaded = false;
+    const message = (error: unknown) => error instanceof Error ? error.message : String(error);
+    const metricsFailure = (error: unknown) => {
+      console.warn('Position metrics could not be loaded:', error);
+      if (active) setMetricsError((previous) => [previous, message(error)].filter(Boolean).join(' '));
+    };
+    void fetchKeyStats(symbol).then((value) => { if (active) setStats(value); })
+      .catch(metricsFailure).finally(() => { if (active) setStatsLoading(false); });
+    void fetchStockEstimates(symbol).then((value) => { if (active) setEstimates(value); })
+      .catch(metricsFailure).finally(() => { if (active) setEstimatesLoading(false); });
+    void getLocalCompanyReports(symbol).then((value) => {
+      if (active && !liveReportsLoaded && value.quarters.length) {
+        setEvents(value);
+        setReportsLoading(false);
+      }
+    }).catch((error: unknown) => {
+      console.warn('Local company reports could not be loaded:', error);
+      if (active) setReportsError(message(error));
     });
+    void fetchCompanyEvents(symbol).then((value) => {
+      liveReportsLoaded = true;
+      if (active) { setEvents(value); setReportsError(''); }
+    }).catch((error: unknown) => {
+      console.warn('Company reports could not be refreshed:', error);
+      if (active) setReportsError(message(error));
+    }).finally(() => { if (active) setReportsLoading(false); });
     return () => { active = false; };
   }, [symbol]);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | undefined>();
   const [initialType, setInitialType] = useState<'BUY' | 'SELL'>('BUY');
 
   useEffect(() => {
-    if (heldPosition || !symbol || !asset) return;
+    if (isHeld || !symbol || !hasAsset) return;
     let active = true;
     setMarketQuote(null);
     setQuoteError('');
@@ -414,7 +449,7 @@ export default function PositionDetailScreen() {
     return () => {
       active = false;
     };
-  }, [asset, heldPosition, symbol]);
+  }, [hasAsset, isHeld, symbol]);
 
   const position = heldPosition ?? (asset ? createAssetPosition(asset, marketQuote) : undefined);
   const currentValue = position ? positionValueEUR(position) : 0;
@@ -423,14 +458,13 @@ export default function PositionDetailScreen() {
   const totalResult = unrealized + (position?.realizedProfitEUR ?? 0);
 
   const addTransaction = (type: 'BUY' | 'SELL') => {
-    setMovementsOpen(false);
+    selectionHaptic();
     setEditingTransaction(undefined);
     setInitialType(type);
     setFormVisible(true);
   };
 
   const editTransaction = (transaction: Transaction) => {
-    setMovementsOpen(false);
     setEditingTransaction(transaction);
     setFormVisible(true);
   };
@@ -493,7 +527,7 @@ export default function PositionDetailScreen() {
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={t('Moje pohyby')}
-        onPress={() => setMovementsOpen(true)}
+        onPress={() => { selectionHaptic(); setMovementsOpen(true); }}
         style={styles.holdingsButton}
       >
         <Text style={styles.holdingsButtonText}>
@@ -548,7 +582,7 @@ export default function PositionDetailScreen() {
 
       <SectionTitle title={t('Ukazovatele')} />
       <Surface style={styles.statsCard}>
-        {infoLoading ? <ActivityIndicator color={colors.green} /> : (
+        {statsLoading && estimatesLoading ? <ActivityIndicator color={colors.green} /> : (
           <View>
             {([
               [
@@ -583,7 +617,7 @@ export default function PositionDetailScreen() {
 
       <SectionTitle title={t('Výsledkové správy')} />
       <Surface style={styles.statsCard}>
-        {infoLoading ? <ActivityIndicator color={colors.green} /> : (
+        {reportsLoading ? <ActivityIndicator color={colors.green} /> : (
           <>
             {events?.quarters?.length ? (
               <View style={styles.reportRow}>
@@ -614,21 +648,21 @@ export default function PositionDetailScreen() {
                     <Text style={styles.reportTitle}>{quarter.label}</Text>
                   </TableColumn>
                   <TableColumn tone="cyan" style={[styles.reportColumn, styles.colNum]}>
-                    <Text style={styles.reportCell}>{quarter.revenue != null ? formatBigNumber(quarter.revenue) : '–'}</Text>
+                    <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.65} style={styles.reportCell}>{quarter.revenue != null ? formatBigNumber(quarter.revenue) : '–'}</Text>
                   </TableColumn>
                   <TableColumn tone="cyan" style={[styles.reportColumn, styles.colNum]}>
-                    <Text style={styles.reportCell}>{quarter.revenueYoY != null ? `${quarter.revenueYoY.toFixed(1)}%` : '–'}</Text>
+                    <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.65} style={styles.reportCell}>{quarter.revenueYoY != null ? `${quarter.revenueYoY.toFixed(1)}%` : '–'}</Text>
                   </TableColumn>
                   <TableColumn tone="cyan" style={[styles.reportColumn, styles.colNum]}>
-                    <Text style={[styles.reportCell, quarter.revenueBeat != null ? { color: quarter.revenueBeat >= 0 ? colors.green : colors.red } : null]}>
+                    <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.65} style={[styles.reportCell, quarter.revenueBeat != null ? { color: quarter.revenueBeat >= 0 ? colors.green : colors.red } : null]}>
                       {quarter.revenueBeat != null ? `${quarter.revenueBeat > 0 ? '+' : ''}${formatBigNumber(quarter.revenueBeat)}${quarter.revenueBeatProvisional ? '*' : ''}` : '–'}
                     </Text>
                   </TableColumn>
                   <TableColumn tone="violet" style={[styles.reportColumn, styles.colNum]}>
-                    <Text style={styles.reportCell}>{quarter.epsActual != null ? quarter.epsActual.toFixed(2) : '–'}</Text>
+                    <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.65} style={styles.reportCell}>{quarter.epsActual != null ? quarter.epsActual.toFixed(2) : '–'}</Text>
                   </TableColumn>
                   <TableColumn tone="violet" style={[styles.reportColumn, styles.colNum]}>
-                    <Text style={[styles.reportCell, quarter.epsBeat != null ? { color: quarter.epsBeat >= 0 ? colors.green : colors.red } : null]}>
+                    <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.65} style={[styles.reportCell, quarter.epsBeat != null ? { color: quarter.epsBeat >= 0 ? colors.green : colors.red } : null]}>
                       {quarter.epsBeat != null ? `${quarter.epsBeat > 0 ? '+' : ''}${quarter.epsBeat.toFixed(2)}` : '–'}
                     </Text>
                   </TableColumn>
@@ -638,6 +672,7 @@ export default function PositionDetailScreen() {
             {!(events?.quarters?.length) ? (
               <Text style={styles.emptyTable}>{t('Žiadne reporty')}</Text>
             ) : null}
+            {reportsError ? <Text accessibilityRole="alert" style={styles.metricsError}>{errorText(reportsError)}</Text> : null}
             {events?.financialDataIssue ? (
               <Text style={styles.reportSub}>
                 {t('Niektoré výsledky alebo historické odhady analytikov nie sú dostupné.')}
@@ -653,30 +688,34 @@ export default function PositionDetailScreen() {
         )}
       </Surface>
 
-      <Modal visible={movementsOpen} animationType="slide" onRequestClose={() => setMovementsOpen(false)}>
+      <Modal visible={movementsOpen} animationType="fade" hardwareAccelerated
+        backdropColor={colors.background} onRequestClose={() => setMovementsOpen(false)}>
         <SafeAreaView style={styles.holdingsScreen}>
           <View style={styles.holdingsHeader}>
             <Pressable accessibilityRole="button" accessibilityLabel={t('Zavrieť')} onPress={() => setMovementsOpen(false)} style={styles.backButton}>
               <ArrowLeft size={20} color={colors.text} />
             </Pressable>
-            <Text style={styles.holdingsSymbol}>{position.symbol}</Text>
-          </View>
-          <ScrollView contentContainerStyle={styles.holdingsContent}>
-            <View style={styles.holdingsSummary}>
-            <AssetLogo symbol={position.symbol} color={position.color} size={44} />
+            <AssetLogo symbol={position.symbol} color={position.color} size={32} />
             <View style={styles.holdingsSummaryCopy}>
-            <Text style={styles.holdingsShares}>{hideAmounts ? '•••••' : position.shares.toLocaleString(language === 'sk' ? 'sk-SK' : 'en-US')}</Text>
-            <Text style={styles.holdingsCaption}>{t('Počet akcií')}</Text>
+              <Text style={styles.holdingsSymbol}>{position.symbol}</Text>
+              <Text style={styles.holdingsCaption} numberOfLines={1}>{position.name}</Text>
             </View>
+            <View style={styles.holdingsBalance}>
+              <Text style={styles.holdingsCaption}>{t('Počet akcií')}</Text>
+              <Text style={styles.holdingsShares} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
+                {hideAmounts ? '•••••' : position.shares.toLocaleString(language === 'sk' ? 'sk-SK' : 'en-US')}
+              </Text>
             </View>
+          </View>
+          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.holdingsContent}>
             <View style={styles.holdingsActions}>
               <Pressable accessibilityRole="button" accessibilityLabel={t('Pridať nákup')} onPress={() => addTransaction('BUY')} style={styles.holdingsAction}>
-                <Plus size={22} color={colors.surface} />
+                <Plus size={18} color={colors.surface} />
                 <Text style={[styles.holdingsActionText, { color: colors.surface }]}>{t('Nákup')}</Text>
               </Pressable>
               {position.shares > 0 ? (
                 <Pressable accessibilityRole="button" accessibilityLabel={t('Pridať predaj')} onPress={() => addTransaction('SELL')} style={[styles.holdingsAction, styles.holdingsSellAction]}>
-                  <Minus size={22} color={colors.green} />
+                  <Minus size={18} color={colors.text} />
                   <Text style={styles.holdingsActionText}>{t('Predaj')}</Text>
                 </Pressable>
               ) : null}
@@ -688,20 +727,19 @@ export default function PositionDetailScreen() {
             <TransactionList transactions={position.transactions} onEdit={editTransaction} />
           </ScrollView>
         </SafeAreaView>
+        <TransactionModal
+          visible={formVisible}
+          transaction={editingTransaction}
+          initialSymbol={editingTransaction ? undefined : position.symbol}
+          initialName={editingTransaction ? undefined : position.name}
+          initialCurrency={editingTransaction ? undefined : position.currency}
+          initialFxToEur={editingTransaction ? undefined : position.fxToEur}
+          initialType={initialType}
+          onClose={() => setFormVisible(false)}
+          onSave={save}
+          onDelete={removeTransaction}
+        />
       </Modal>
-
-      <TransactionModal
-        visible={formVisible}
-        transaction={editingTransaction}
-        initialSymbol={editingTransaction ? undefined : position.symbol}
-        initialName={editingTransaction ? undefined : position.name}
-        initialCurrency={editingTransaction ? undefined : position.currency}
-        initialFxToEur={editingTransaction ? undefined : position.fxToEur}
-        initialType={initialType}
-        onClose={() => setFormVisible(false)}
-        onSave={save}
-        onDelete={removeTransaction}
-      />
     </Page>
   );
 }
@@ -711,29 +749,29 @@ const createStyles = () => StyleSheet.create({
   holdingsButton: { backgroundColor: colors.green, borderRadius: 24, paddingVertical: 13, alignItems: 'center', marginTop: 6 },
   holdingsButtonText: { color: colors.surface, fontSize: 15, fontWeight: '800' },
   holdingsScreen: { flex: 1, backgroundColor: colors.background },
-  holdingsHeader: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 16 },
-  holdingsSymbol: { color: colors.text, fontSize: 21, fontWeight: '800' },
+  holdingsHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 16, paddingVertical: 14 },
+  holdingsSymbol: { color: colors.text, fontSize: 17, fontWeight: '800' },
   holdingsContent: { paddingHorizontal: 16, paddingBottom: 32 },
-  holdingsSummary: { backgroundColor: colors.surface, borderRadius: 20, padding: 14, flexDirection: 'row', alignItems: 'center', gap: 14 },
   holdingsSummaryCopy: { flex: 1, minWidth: 0 },
-  holdingsShares: { color: colors.text, fontSize: 32, fontWeight: '800', fontVariant: ['tabular-nums'] },
-  holdingsCaption: { color: colors.muted, fontSize: 14 },
-  holdingsActions: { flexDirection: 'row', gap: 12, marginTop: 10, marginBottom: 18 },
-  holdingsAction: { flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 8, minHeight: 46, borderRadius: 14, backgroundColor: colors.green },
+  holdingsBalance: { alignItems: 'flex-end', maxWidth: '40%', gap: 2 },
+  holdingsShares: { color: colors.text, fontSize: 18, fontWeight: '700', fontVariant: ['tabular-nums'] },
+  holdingsCaption: { color: colors.muted, fontSize: 11 },
+  holdingsActions: { flexDirection: 'row', gap: 10, marginTop: 2, marginBottom: 22 },
+  holdingsAction: { flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 6, minHeight: 44, borderRadius: 12, backgroundColor: colors.green },
   holdingsSellAction: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border },
-  holdingsActionText: { color: colors.green, fontSize: 16, fontWeight: '700' },
-  holdingsTransactionsHeader: { gap: 3, marginBottom: 10 },
-  holdingsTransactionsTitle: { color: colors.text, fontSize: 21, fontWeight: '800' },
+  holdingsActionText: { color: colors.text, fontSize: 13, fontWeight: '700' },
+  holdingsTransactionsHeader: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 6, marginBottom: 12 },
+  holdingsTransactionsTitle: { color: colors.text, fontSize: 16, fontWeight: '700' },
   transactionList: { gap: 7 },
-  transactionItem: { backgroundColor: colors.surface, borderRadius: 16, paddingHorizontal: 12, paddingVertical: 10, gap: 6 },
+  transactionItem: { backgroundColor: colors.surface, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 12, gap: 5 },
   transactionTopLine: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
   transactionType: { flexDirection: 'row', alignItems: 'center', gap: 9 },
   transactionIcon: { width: 26, height: 26, borderRadius: 9, alignItems: 'center', justifyContent: 'center' },
-  transactionName: { color: colors.text, fontSize: 16, fontWeight: '700' },
-  transactionAmount: { flexShrink: 1, fontSize: 17, fontWeight: '800', fontVariant: ['tabular-nums'], textAlign: 'right' },
+  transactionName: { color: colors.text, fontSize: 13, fontWeight: '600' },
+  transactionAmount: { flexShrink: 1, fontSize: 14, fontWeight: '700', fontVariant: ['tabular-nums'], textAlign: 'right' },
   transactionBottomLine: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 6 },
   transactionPriceLine: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  transactionMeta: { color: colors.muted, fontSize: 13, lineHeight: 19 },
+  transactionMeta: { color: colors.muted, fontSize: 11, lineHeight: 17 },
   detailHeader: { flexDirection: 'row', alignItems: 'center' },
   backButton: { width: 38, height: 38, borderRadius: 13, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' },
   summaryCaption: { color: colors.muted, fontSize: 9, marginTop: 4 },
@@ -759,14 +797,14 @@ const createStyles = () => StyleSheet.create({
   chartOverlay: { ...StyleSheet.absoluteFill, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(29,38,52,0.45)' },
   chartError: { position: 'absolute', left: 8, right: 8, top: 12, color: colors.red, fontSize: 10, textAlign: 'center' },
   chartLabels: { flexDirection: 'row', justifyContent: 'space-between', gap: 4, minHeight: 17 },
-  chartLabel: { color: colors.muted, fontSize: 8 },
+  chartLabel: { flex: 1, minWidth: 0, color: colors.muted, fontSize: 8 },
   chartHint: { color: colors.muted, fontSize: 8, textAlign: 'center', flex: 1 },
   rangeRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 },
   rangeButton: { borderRadius: 999, paddingVertical: 8, paddingHorizontal: 6 },
-  rangeButtonSelected: { backgroundColor: colors.green },
+  rangeButtonSelected: { backgroundColor: colors.green, borderRadius: 999 },
   rangeText: { color: colors.muted, fontSize: 9, fontWeight: '800' },
   rangeTextSelected: { color: colors.surface },
-  transactionCount: { color: colors.muted, fontSize: 14 },
+  transactionCount: { color: colors.muted, fontSize: 11 },
   tableCard: { paddingHorizontal: 10, paddingVertical: 6 },
   tableHeader: { flexDirection: 'row', alignItems: 'stretch', paddingHorizontal: 3, paddingVertical: 8, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border },
   tableHeaderCell: { justifyContent: 'center', alignSelf: 'stretch' },

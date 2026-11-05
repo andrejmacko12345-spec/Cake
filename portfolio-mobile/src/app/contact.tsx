@@ -1,20 +1,25 @@
+import { useState } from 'react';
 import { useThemedStyles } from '../data/theme';
 import { Link } from 'expo-router';
-import { ArrowLeft, Briefcase, Code2, Mail, MapPin } from 'lucide-react-native';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ArrowLeft, Mail } from 'lucide-react-native';
+import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocale } from '../context/locale';
-
-const contactMethods = [
-  { label: 'Email', value: 'hello@andrej.dev', icon: Mail },
-  { label: 'GitHub', value: '@andrej-dev', icon: Code2 },
-  { label: 'Portfólio projektov', value: 'projektový stack', icon: Briefcase },
-  { label: 'Lokalita', value: 'Bratislava, SK', icon: MapPin },
-];
+import details from '../../store/public-details.json';
 
 export default function ContactScreen() {
   const styles = useThemedStyles(createStyles);
   const { t } = useLocale();
+  const [linkError, setLinkError] = useState(false);
+  const openSupportEmail = async () => {
+    setLinkError(false);
+    try {
+      await Linking.openURL(`mailto:${details.supportEmail}`);
+    } catch (error) {
+      console.warn('Support email link failed:', error);
+      setLinkError(true);
+    }
+  };
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
@@ -26,26 +31,29 @@ export default function ContactScreen() {
         </Link>
 
         <Text style={styles.eyebrow}>{t('Kontakt')}</Text>
-        <Text style={styles.title}>{t('Nechajme z projektu niečo výnimočné.')}</Text>
+        <Text style={styles.title}>{t('Pomoc s Fincake')}</Text>
         <Text style={styles.description}>
-          {t('Ak potrebuješ partnera na vývoj mobilných produktov, rozšírenie funkcionality alebo redesign produktu, rád pomôžem.')}
+          {t('Ak máš otázku alebo problém s aplikáciou, kontaktuj podporu.')}
         </Text>
 
         <View style={styles.contactList}>
-          {contactMethods.map(({ label, value, icon: Icon }) => (
-            <View key={label} style={styles.contactCard}>
-              <View style={styles.iconWrap}>
-                <Icon size={18} color="#dbeafe" />
-              </View>
-              <View style={styles.contactBody}>
-                <Text style={styles.label}>{t(label)}</Text>
-                <Text style={styles.value}>{t(value)}</Text>
-              </View>
+          <Pressable accessibilityRole="link" onPress={() => { void openSupportEmail(); }}
+            style={styles.contactCard}>
+            <View style={styles.iconWrap}>
+              <Mail size={18} color="#dbeafe" />
             </View>
-          ))}
+            <View style={styles.contactBody}>
+              <Text style={styles.label}>{t('Kontaktovať podporu')}</Text>
+              <Text style={styles.value}>{details.supportEmail}</Text>
+            </View>
+          </Pressable>
         </View>
 
-        <Pressable style={styles.primaryButton}>
+        {linkError ? <Text accessibilityRole="alert" style={styles.error}>
+          {t('Odkaz sa nepodarilo otvoriť. Skús to znova.')}
+        </Text> : null}
+        <Pressable accessibilityRole="link" onPress={() => { void openSupportEmail(); }}
+          style={styles.primaryButton}>
           <Mail size={18} color="#08111f" />
           <Text style={styles.primaryButtonText}>{t('Napísať mail')}</Text>
         </Pressable>
@@ -105,6 +113,11 @@ const createStyles = () => StyleSheet.create({
   },
   contactList: {
     marginBottom: 22,
+  },
+  error: {
+    color: '#f87171',
+    fontSize: 13,
+    marginBottom: 14,
   },
   contactCard: {
     flexDirection: 'row',

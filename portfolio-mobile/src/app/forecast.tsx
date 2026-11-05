@@ -1,8 +1,8 @@
 import { useThemedStyles } from '../data/theme';
+import { selectionHaptic } from '../data/haptics';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { ComponentRef } from 'react';
 import { Check, ChevronDown, Settings2, X } from 'lucide-react-native';
-import * as Haptics from 'expo-haptics';
 import { Animated, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import {
   Header,
@@ -10,7 +10,7 @@ import {
   PortfolioChart,
   Surface,
 } from '../components/finapp';
-import { colors, formatMoney, formatPercent } from '../data/portfolio';
+import { colors, formatMoney as portfolioMoney, formatPercent as portfolioPercent } from '../data/portfolio';
 import { weightedAnnualReturn } from '../data/performance';
 import { ForecastBasis, marketAnnualReturn, marketPeriod, smoothedPortfolioReturn } from '../data/forecast-model';
 import { positionValueEUR, usePositions } from '../hooks/use-positions';
@@ -36,7 +36,9 @@ export default function ForecastScreen() {
   const styles = useThemedStyles(createStyles);
   const { hideAmounts } = useAmountVisibility();
   const { t, language, errorText } = useLocale();
-  const { positions, transactions } = usePositions();
+  const formatMoney = (value: number, compact = false) => portfolioMoney(value, compact, language);
+  const formatPercent = (value: number, digits = 2) => portfolioPercent(value, digits, language);
+  const { positions, transactions, loading: positionsLoading } = usePositions();
   const [horizon, setHorizon] = useState<(typeof horizons)[number]>(3);
   const horizonRef = useRef<(typeof horizons)[number]>(3);
   const [viewportHeight, setViewportHeight] = useState(0);
@@ -64,7 +66,7 @@ export default function ForecastScreen() {
     catch (error) { return { rate: null, error: error instanceof Error ? error.message : String(error) }; }
   }, [currentYear]);
   useEffect(() => {
-    if (basis !== 'smoothed' && !basisSettingsOpen) return;
+    if (positionsLoading) return;
     let active = true;
     smoothedPortfolioReturn(transactions, currentYear)
       .then(({ rate, years }) => {
@@ -75,7 +77,7 @@ export default function ForecastScreen() {
           error: error instanceof Error ? error.message : String(error) });
       });
     return () => { active = false; };
-  }, [basis, basisSettingsOpen, transactions, currentYear]);
+  }, [positionsLoading, transactions, currentYear]);
   const currentModel = modelResult?.transactions === transactions && modelResult.year === currentYear ? modelResult : null;
   const basisLoading = basis === 'smoothed' && !currentModel;
   const basisError = basis === 'market' ? market.error : basis === 'smoothed' ? currentModel?.error : null;
@@ -117,14 +119,7 @@ export default function ForecastScreen() {
     horizonRef.current = next;
     setHorizon(next);
     setSelectedChartIndex(null);
-    const feedback = Platform.OS === 'android'
-      ? Haptics.performAndroidHapticsAsync(Haptics.AndroidHaptics.Keyboard_Tap)
-      : Platform.OS === 'ios'
-        ? Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
-        : Promise.resolve();
-    void feedback.catch((error: unknown) => {
-      console.warn('Forecast slider haptics failed:', error);
-    });
+    selectionHaptic();
   };
   const selectHorizonAt = (x: number) => {
     const ratio = Math.max(0, Math.min(1, (x - 12) / Math.max(1, sliderWidth - 24)));
@@ -349,11 +344,11 @@ export default function ForecastScreen() {
               <View style={[styles.scenarioDot, { backgroundColor: item.color }]} />
               <View style={styles.scenarioCopy}>
                 <Text style={styles.scenarioTitle}>{t(item.title)}</Text>
-                <Text style={styles.scenarioSub}>{calculatedAnnualReturn === null ? '—' : formatPercent(item.rate, 1)} / {t('rok')}</Text>
+                <Text style={styles.scenarioSub}>{calculatedAnnualReturn === null ? '—' : formatPercent(item.rate)} / {t('rok')}</Text>
               </View>
               <View style={styles.scenarioNumbers}>
                 <Text style={styles.scenarioAmount}>{calculatedAnnualReturn === null ? '—'
-                  : hideAmounts ? formatPercent(((1 + item.rate / 100) ** horizon - 1) * 100, 1)
+                  : hideAmounts ? formatPercent(((1 + item.rate / 100) ** horizon - 1) * 100)
                     : formatMoney(value, true)}</Text>
                 <Text style={[styles.scenarioProfit, { color: gain >= 0 ? colors.green : colors.red }]}>
                   {calculatedAnnualReturn === null ? '—' : hideAmounts ? t('za celé obdobie')
@@ -370,7 +365,7 @@ export default function ForecastScreen() {
       <Surface style={{ ...styles.projectionCard, height: Math.max(120, viewportHeight - 16 - projectionTop - 28 - 28) }}>
         <View style={styles.chartHeader}>
           <Text style={styles.chartTitle}>{t('Odhadovaný vývoj')}</Text>
-          <Text style={[styles.chartRate, { color: scenario.color }]}>{calculatedAnnualReturn === null ? '—' : formatPercent(scenario.rate, 1)}</Text>
+          <Text style={[styles.chartRate, { color: scenario.color }]}>{calculatedAnnualReturn === null ? '—' : formatPercent(scenario.rate)}</Text>
         </View>
         <View style={[styles.selectedProjection, compact && styles.selectedProjectionCompact]}>
           <Text style={[styles.selectedProjectionTime, compact && { lineHeight: 11 }]}>{selectedTimeLabel}</Text>

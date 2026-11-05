@@ -1,6 +1,8 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const Module = require('node:module');
+const path = require('node:path');
+const vm = require('node:vm');
 const { test } = require('node:test');
 const ts = require('typescript');
 
@@ -102,4 +104,114 @@ test('sort taps give one native selection pulse per tap and do not vibrate on we
   platform.OS = 'web';
   selectionHaptic();
   assert.equal(calls.length, 3);
+});
+
+function pressHandler(file, marker, context) {
+  const filename = path.resolve(__dirname, '..', file);
+  const source = ts.createSourceFile(filename, fs.readFileSync(filename, 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+  let handler;
+  const visit = (node) => {
+    if (ts.isJsxAttribute(node) && node.name.text === 'onPress' &&
+        node.initializer?.expression && node.initializer.expression.getText(source).includes(marker)) {
+      handler = node.initializer.expression.getText(source);
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(source);
+  assert.ok(handler, `${file}: ${marker}`);
+  const { outputText } = ts.transpileModule(`const handler = ${handler};`, {
+    compilerOptions: { target: ts.ScriptTarget.ES2022 },
+  });
+  return vm.runInNewContext(`${outputText}\nhandler;`, context);
+}
+
+test('home add-position, analytics and dividend actions emit one soft tap and retain their action', () => {
+  platform.OS = 'android';
+  calls.length = 0;
+  const filename = path.resolve(__dirname, '..', 'app', 'index.tsx');
+  const source = ts.createSourceFile(filename, fs.readFileSync(filename, 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+  let open;
+  const visit = (node) => {
+    if (ts.isVariableDeclaration(node) && node.name.getText(source) === 'openNewTransaction') open = node.initializer.getText(source);
+    ts.forEachChild(node, visit);
+  };
+  visit(source);
+  assert.ok(open);
+  const updates = [];
+  const { outputText } = ts.transpileModule(`const open = ${open};`, { compilerOptions: { target: ts.ScriptTarget.ES2022 } });
+  vm.runInNewContext(`${outputText}\nopen();`, {
+    selectionHaptic,
+    setInitialType: (type) => updates.push(type),
+    setFormVisible: (visible) => updates.push(visible),
+  });
+  assert.deepEqual(updates, ['BUY', true]);
+  const routes = [];
+  for (const route of ['/analytics', '/dividends']) {
+    pressHandler('app/index.tsx', `router.navigate('${route}')`, {
+      selectionHaptic, router: { navigate: (value) => routes.push(value) },
+    })();
+  }
+  assert.deepEqual(routes, ['/analytics', '/dividends']);
+  assert.deepEqual(calls, ['tap', 'tap', 'tap']);
+});
+
+test('stock Buy, Sell and share-count actions give one soft tap and retain their action', () => {
+  platform.OS = 'android';
+  calls.length = 0;
+  const filename = path.resolve(__dirname, '..', 'app', 'position.tsx');
+  const source = ts.createSourceFile(filename, fs.readFileSync(filename, 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+  let handler;
+  const visit = (node) => {
+    if (ts.isVariableDeclaration(node) && node.name.getText(source) === 'addTransaction') handler = node.initializer.getText(source);
+    ts.forEachChild(node, visit);
+  };
+  visit(source);
+  assert.ok(handler);
+  const updates = [];
+  const { outputText } = ts.transpileModule(`const add = ${handler};`, { compilerOptions: { target: ts.ScriptTarget.ES2022 } });
+  const context = {
+    selectionHaptic,
+    setEditingTransaction: (value) => updates.push(value),
+    setInitialType: (value) => updates.push(value),
+    setFormVisible: (value) => updates.push(value),
+  };
+  vm.runInNewContext(`${outputText}\nadd('BUY'); add('SELL');`, context);
+  assert.deepEqual(updates, [undefined, 'BUY', true, undefined, 'SELL', true]);
+  let historyOpen = false;
+  pressHandler('app/position.tsx', 'setMovementsOpen(true)', {
+    selectionHaptic, setMovementsOpen: (value) => { historyOpen = value; },
+  })();
+  assert.equal(historyOpen, true);
+  assert.deepEqual(calls, ['tap', 'tap', 'tap']);
+});
+
+test('chart range buttons tap once on changes, not when the selected period is pressed again', () => {
+  platform.OS = 'android';
+  for (const file of ['components/range-swipe-row.tsx', 'app/analytics.tsx', 'components/market-overview.tsx', 'components/dividend-overview.tsx']) {
+    for (const same of [false, true]) {
+      calls.length = 0;
+      const updates = [];
+      const context = {
+        selectionHaptic,
+        item: file.includes('market-overview') ? '1M' : { label: '1M' },
+        period: { label: '1M' },
+        range: same ? '1M' : '1D',
+        comparisonPeriod: same ? '1M' : '1D',
+        selected: file.includes('range-swipe-row') ? (same ? '1M' : '1D') : same,
+        label: '1M',
+        onChange: (value) => updates.push(value),
+        onRangeChange: (value) => updates.push(value),
+        setComparisonPeriod: (value) => updates.push(value),
+        setSelected() {}, setEntry() {},
+        setRange: (value) => updates.push(value),
+        onPress: () => updates.push('dividend-period'),
+      };
+      const marker = file.includes('analytics') ? 'setComparisonPeriod' :
+        file.includes('market-overview') ? 'setRange(item)' :
+        file.includes('dividend-overview') ? 'onPress()' : 'onChange(label)';
+      pressHandler(file, marker, context)();
+      assert.equal(calls.length, same ? 0 : 1, `${file}, selected=${same}`);
+      if (!same) assert.equal(updates.length, 1, file);
+    }
+  }
 });

@@ -1,4 +1,4 @@
-import { useAppStorage } from '../data/app-storage';
+import { onBulkStorageChange, useAppStorage } from '../data/app-storage';
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { Alert } from 'react-native';
@@ -158,11 +158,15 @@ export function PositionsProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let active = true;
+    let request = 0;
     const load = async () => {
+      const current = ++request;
       try {
         const saved = await AsyncStorage.getItem(STORAGE_KEY);
+        if (!active || current !== request) return;
         if (saved === null) {
           const legacy = await AsyncStorage.getItem(LEGACY_STORAGE_KEY);
+          if (!active || current !== request) return;
           if (legacy === null) return;
           const parsedLegacy: unknown = JSON.parse(legacy);
           if (
@@ -224,7 +228,7 @@ export function PositionsProvider({ children }: { children: ReactNode }) {
             quotes: migratedQuotes,
           }));
           await AsyncStorage.removeItem(LEGACY_STORAGE_KEY);
-          if (active) {
+          if (active && current === request) {
             setTransactions(migratedTransactions);
             setQuotes(migratedQuotes);
           }
@@ -244,19 +248,22 @@ export function PositionsProvider({ children }: { children: ReactNode }) {
           Object.entries(stored.quotes).filter(([, quote]) => quoteFromStored(quote)),
         );
         validateLedger(stored.transactions);
-        if (active) {
+        if (active && current === request) {
           setTransactions(stored.transactions);
           setQuotes(validQuotes);
         }
       } catch (error) {
-        reportStorageError('načítaní', error);
+        if (active && current === request) reportStorageError('načítaní', error);
       } finally {
-        if (active) setLoading(false);
+        if (active && current === request) setLoading(false);
       }
     };
+    const unsubscribe = onBulkStorageChange(() => { void load(); });
     void load();
     return () => {
       active = false;
+      request += 1;
+      unsubscribe();
     };
   }, []);
 

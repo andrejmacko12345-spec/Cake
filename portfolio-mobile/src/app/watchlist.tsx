@@ -3,8 +3,7 @@ import { selectionHaptic } from '../data/haptics';
 import { useAppStorage } from '../data/app-storage';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ComponentRef } from 'react';
-import { ActivityIndicator, Alert, Animated, Modal, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
-import * as Haptics from 'expo-haptics';
+import { ActivityIndicator, Alert, Animated, KeyboardAvoidingView, Modal, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
 import type { PointerEvent } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { ArrowDownWideNarrow, ArrowUpWideNarrow, Check, ChevronDown, Pencil, Plus, Search, Trash2, X } from 'lucide-react-native';
@@ -19,10 +18,12 @@ import {
 } from '../data/quotes';
 import { usePositions } from '../hooks/use-positions';
 import { AssetLogo } from '../components/asset-logo';
+import { AssetDiscoveryList } from '../components/asset-discovery-list';
 import { MarketOverview } from '../components/market-overview';
 import { useAssetSearch } from '../hooks/use-asset-search';
 import { usePopupAnimation } from '../hooks/use-popup-animation';
 import { useLocale } from '../context/locale';
+import { AssetCategory, assetCategories, getFeaturedAssetBySymbol } from '../data/asset-discovery';
 
 import { WATCHLIST_KEY as STORAGE_KEY, defaultWatchlists, isValidSymbol, parseWatchlists } from '../data/watchlists';
 import type { Watchlist, WatchlistsState } from '../data/watchlists';
@@ -57,12 +58,7 @@ function PeriodSelector({ value, onChange }: {
     if (selectedRef.current === next) return;
     selectedRef.current = next;
     onChange(next);
-    const feedback = Platform.OS === 'android'
-      ? Haptics.performAndroidHapticsAsync(Haptics.AndroidHaptics.Keyboard_Tap)
-      : Platform.OS === 'ios'
-        ? Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
-        : Promise.resolve();
-    void feedback.catch((error: unknown) => console.warn('Watchlist period haptics failed:', error));
+    selectionHaptic();
   }, [onChange]);
   const selectAt = useCallback((pageX: number) => {
     ref.current?.measureInWindow((left, _top, width) => {
@@ -254,7 +250,7 @@ function WatchlistPriceCard({
           <Text style={styles.periodChange}>
             {change === null
               ? entry?.loading ? '…' : '—'
-              : `${change > 0 ? '+' : ''}${change.toLocaleString(language === 'sk' ? 'sk-SK' : 'en-US', { maximumFractionDigits: 2 })} %`}
+              : `${change > 0 ? '+' : ''}${change.toLocaleString(language === 'sk' ? 'sk-SK' : 'en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} %`}
           </Text>
         </View>
         {entry?.loading && currentPrice === null ? (
@@ -286,12 +282,10 @@ export default function WatchlistScreen() {
   const [watchlists, setWatchlists] = useState<WatchlistsState>(defaultWatchlists);
   const [loading, setLoading] = useState(true);
   const [showPicker, setShowPicker] = useState(false);
-  const pickerAnimation = usePopupAnimation(showPicker);
   const [showLists, setShowLists] = useState(false);
   const [editingListId, setEditingListId] = useState<string | null>(null);
   const [listNameInput, setListNameInput] = useState('');
   const [confirmDeleteListId, setConfirmDeleteListId] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
   const [selectedPeriod, setSelectedPeriod] = useState<(typeof periods)[number]['label']>('1D');
   const [sortOrder, setSortOrder] = useState<'alphabetical' | 'change'>('alphabetical');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
@@ -301,17 +295,9 @@ export default function WatchlistScreen() {
   const swipeX = useRef(new Animated.Value(0)).current;
   const pointerStart = useRef<{ x: number; y: number; time: number } | null>(null);
   const { width: screenWidth } = useWindowDimensions();
-  const searchInputRef = useRef<ComponentRef<typeof TextInput>>(null);
   const listNameInputRef = useRef<ComponentRef<typeof TextInput>>(null);
-  const { results: matchingAssets, loading: searching, error: searchError } = useAssetSearch(searchQuery);
   const selectedWatchlist = watchlists.lists.find((list) => list.id === watchlists.selectedId) ?? watchlists.lists[0];
   const symbols = selectedWatchlist?.symbols ?? [];
-
-  useEffect(() => {
-    if (!showPicker) return;
-    const timer = setTimeout(() => searchInputRef.current?.focus(), 250);
-    return () => clearTimeout(timer);
-  }, [showPicker]);
 
   useEffect(() => {
     if (!showLists || editingListId === null) return;
@@ -395,7 +381,7 @@ export default function WatchlistScreen() {
 
   const assets = useMemo(
     () => symbols.map((symbol) =>
-      availableAssets.find((asset) => asset.symbol === symbol) ?? {
+      availableAssets.find((asset) => asset.symbol === symbol) ?? getFeaturedAssetBySymbol(symbol) ?? {
         symbol,
         name: symbol,
         price: 0,
@@ -565,13 +551,7 @@ export default function WatchlistScreen() {
         list.id === watchlists.selectedId ? { ...list, symbols: [...symbols, symbol] } : list,
       ),
     });
-    closePicker();
   };
-
-  const closePicker = () => pickerAnimation.close(() => {
-    setShowPicker(false);
-    setSearchQuery('');
-  });
 
   const removeAsset = (symbol: string) => {
     void saveWatchlists({
@@ -797,13 +777,37 @@ export default function WatchlistScreen() {
         </View>
       </Modal>
 
+      {showPicker ? (
+        <WatchlistPicker symbols={symbols} onSelect={addAsset} onClose={() => setShowPicker(false)} />
+      ) : null}
+    </Page>
+  );
+}
+
+function WatchlistPicker({ symbols, onSelect, onClose }: {
+  symbols: string[];
+  onSelect: (symbol: string) => void;
+  onClose: () => void;
+}) {
+  const styles = useThemedStyles(createStyles);
+  const { t, errorText } = useLocale();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [category, setCategory] = useState<AssetCategory | undefined>();
+  const { results: matchingAssets, loading: searching, error: searchError } = useAssetSearch(searchQuery, category ?? 'all');
+  const pickerAnimation = usePopupAnimation(true);
+  const closePicker = () => pickerAnimation.close(onClose);
+
+  return (
       <Modal
         animationType="none"
         transparent
-        visible={showPicker}
+        visible
         onRequestClose={closePicker}
       >
-        <View style={[styles.modalScrim, { backgroundColor: 'transparent' }]}>
+        <KeyboardAvoidingView
+          style={[styles.modalScrim, { backgroundColor: 'transparent' }]}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
           <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.modalScrim, pickerAnimation.backdrop]} />
           <Pressable
             style={StyleSheet.absoluteFill}
@@ -826,8 +830,6 @@ export default function WatchlistScreen() {
             <View style={styles.searchBox}>
               <Search size={17} color={colors.muted} />
               <TextInput
-                ref={searchInputRef}
-                autoFocus
                 accessibilityLabel={t('Hľadať akciu')}
                 autoCapitalize="characters"
                 autoCorrect={false}
@@ -849,44 +851,25 @@ export default function WatchlistScreen() {
               showsVerticalScrollIndicator={false}
               style={styles.searchResultsList}
             >
-              {searchQuery.trim().length < 2 ? (
-                <Text style={styles.noAssets}>{t('Začni písať aspoň 2 znaky názvu alebo symbolu akcie.')}</Text>
-              ) : searching ? (
-                <View style={styles.searchStatus}>
-                  <ActivityIndicator size="small" color={colors.green} />
-                  <Text style={styles.noAssets}>{t('Vyhľadávam akcie…')}</Text>
-                </View>
-              ) : searchError ? (
-                <Text style={styles.noAssets}>{errorText(searchError)}</Text>
-              ) : matchingAssets.length ? matchingAssets.map((asset) => {
-                const alreadyAdded = symbols.includes(asset.symbol);
-                return (
-                  <Pressable
-                    key={asset.symbol}
-                    accessibilityRole="button"
-                    accessibilityState={{ disabled: alreadyAdded }}
-                    disabled={alreadyAdded}
-                    onPress={() => addAsset(asset.symbol)}
-                    style={[styles.optionRow, alreadyAdded && styles.optionRowDisabled]}
-                  >
-                    <View style={[styles.optionMark, { backgroundColor: asset.color }]} />
-                    <View style={styles.optionCopy}>
-                      <Text style={styles.optionSymbol}>{asset.symbol}</Text>
-                      <Text style={styles.optionName}>{asset.name}</Text>
-                    </View>
-                    {alreadyAdded
-                      ? <Check size={17} color={colors.muted} />
-                      : <Plus size={17} color={colors.green} />}
-                  </Pressable>
-                );
-              }) : (
-                <Text style={styles.noAssets}>{t('Nenašli sa žiadne akcie. Skús iný názov alebo symbol.')}</Text>
-              )}
+              <AssetDiscoveryList
+                category={category}
+                categories={assetCategories}
+                onCategoryChange={setCategory}
+                query={searchQuery}
+                results={matchingAssets}
+                loading={searching}
+                error={searchError}
+                selectedSymbols={symbols}
+                action="add"
+                onSelect={(asset) => pickerAnimation.close(() => {
+                  onSelect(asset.symbol);
+                  onClose();
+                })}
+              />
             </ScrollView>
           </Animated.View>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
-    </Page>
   );
 }
 

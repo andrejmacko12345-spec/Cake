@@ -1,0 +1,144 @@
+{
+  "transactions": [
+    {
+      "id": "store-demo-AAPL",
+      "symbol": "AAPL",
+      "name": "Apple Inc.",
+      "type": "BUY",
+      "shares": 40,
+      "price": 245,
+      "currency": "USD",
+      "fxToEur": 0.9703700002035918,
+      "date": "2025-01-06",
+      "createdAt": "2025-01-06T21:00:00.000Z"
+    },
+    {
+      "id": "store-demo-MSFT",
+      "symbol": "MSFT",
+      "name": "Microsoft Corporation",
+      "type": "BUY",
+      "shares": 20,
+      "price": 427.8500061035156,
+      "currency": "USD",
+      "fxToEur": 0.9703700002035918,
+      "date": "2025-01-06",
+      "createdAt": "2025-01-06T21:00:00.000Z"
+    },
+    {
+      "id": "store-demo-NVDA",
+      "symbol": "NVDA",
+      "name": "NVIDIA Corporation",
+      "type": "BUY",
+      "shares": 80,
+      "price": 149.42999267578125,
+      "currency": "USD",
+      "fxToEur": 0.9703700002035918,
+      "date": "2025-01-06",
+      "createdAt": "2025-01-06T21:00:00.000Z"
+    },
+    {
+      "id": "store-demo-AMZN",
+      "symbol": "AMZN",
+      "name": "Amazon.com, Inc.",
+      "type": "BUY",
+      "shares": 35,
+      "price": 227.61000061035156,
+      "currency": "USD",
+      "fxToEur": 0.9703700002035918,
+      "date": "2025-01-06",
+      "createdAt": "2025-01-06T21:00:00.000Z"
+    },
+    {
+      "id": "store-demo-GOOG",
+      "symbol": "GOOG",
+      "name": "Alphabet Inc.",
+      "type": "BUY",
+      "shares": 40,
+      "price": 197.9600067138672,
+      "currency": "USD",
+      "fxToEur": 0.9703700002035918,
+      "date": "2025-01-06",
+      "createdAt": "2025-01-06T21:00:00.000Z"
+    },
+    {
+      "id": "store-demo-KO",
+      "symbol": "KO",
+      "name": "The Coca-Cola Company",
+      "type": "BUY",
+      "shares": 60,
+      "price": 60.810001373291016,
+      "currency": "USD",
+      "fxToEur": 0.9703700002035918,
+      "date": "2025-01-06",
+      "createdAt": "2025-01-06T21:00:00.000Z"
+    }
+  ],
+  "quotes": {
+    "AAPL": {
+      "symbol": "AAPL",
+      "name": "Apple Inc.",
+      "price": 345.407,
+      "currency": "USD",
+      "fxToEur": 0.8907098957869422,
+      "change": -1.1739292151869751,
+      "color": "#78d84f",
+      "updatedAt": "2026-11-05T20:41:01.000Z",
+      "isMarketQuote": true
+    },
+    "MSFT": {
+      "symbol": "MSFT",
+      "name": "Microsoft Corporation",
+      "price": 534.235,
+      "currency": "USD",
+      "fxToEur": 0.8907098957869422,
+      "change": -3.8799928031665987,
+      "color": "#78d84f",
+      "updatedAt": "2026-11-05T20:41:01.000Z",
+      "isMarketQuote": true
+    },
+    "NVDA": {
+      "symbol": "NVDA",
+      "name": "NVIDIA Corporation",
+      "price": 182.405,
+      "currency": "USD",
+      "fxToEur": 0.8907098957869422,
+      "change": -8.856743116973965,
+      "color": "#78d84f",
+      "updatedAt": "2026-11-05T20:41:01.000Z",
+      "isMarketQuote": true
+    },
+    "AMZN": {
+      "symbol": "AMZN",
+      "name": "Amazon.com, Inc.",
+      "price": 259.08,
+      "currency": "USD",
+      "fxToEur": 0.8907098957869422,
+      "change": -2.6124873134608873,
+      "color": "#78d84f",
+      "updatedAt": "2026-11-05T20:41:01.000Z",
+      "isMarketQuote": true
+    },
+    "GOOG": {
+      "symbol": "GOOG",
+      "name": "Alphabet Inc.",
+      "price": 283.19,
+      "currency": "USD",
+      "fxToEur": 0.8907098957869422,
+      "change": -1.4305603898364105,
+      "color": "#78d84f",
+      "updatedAt": "2026-11-05T20:41:02.000Z",
+      "isMarketQuote": true
+    },
+    "KO": {
+      "symbol": "KO",
+      "name": "The Coca-Cola Company",
+      "price": 95.725,
+      "currency": "USD",
+      "fxToEur": 0.8907098957869422,
+      "change": -0.07828810020876764,
+      "color": "#78d84f",
+      "updatedAt": "2026-11-05T20:41:02.000Z",
+      "isMarketQuote": true
+    }
+  }
+}

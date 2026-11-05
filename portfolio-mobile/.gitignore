@@ -39,3 +39,7 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# Local signing material and generated store pages
+credentials.json
+/store/generated/

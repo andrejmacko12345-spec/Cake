@@ -145,6 +145,11 @@ export async function getFinancialHistory(symbol: string) {
   };
 }
 
+export async function getLocalFinancialHistory(symbol: string) {
+  await hydrate();
+  return state.snapshot.companies[symbol.toUpperCase()]?.sources ?? {};
+}
+
 export async function saveFinancialHistory(symbol: string, sources: FinancialSources, backfilled: boolean) {
   await hydrate();
   const key = symbol.toUpperCase();

@@ -97,11 +97,8 @@ test('legacy route data is translated too, while proper names stay unchanged', (
   assert.equal(translateText('Apple Inc.', 'en', translations), 'Apple Inc.');
 });
 
-test('account, financial and history labels select one language without bilingual fallbacks', () => {
+test('financial and history labels select one language without bilingual fallbacks', () => {
   for (const [sk, en] of [
-    ['Prvá záloha účtu', 'First account backup'],
-    ['Načítavam účet…', 'Loading account…'],
-    ['Pokračovať bez účtu', 'Continue without an account'],
     ['Čisté vklady', 'Net deposits'],
     ['Výhľad', 'Forecast'],
     ['Sledované', 'Watchlist'],
@@ -111,8 +108,7 @@ test('account, financial and history labels select one language without bilingua
     assert.equal(translateText(sk, 'en', translations), en);
     assert.equal(translateText(en, 'sk', translations), sk);
   }
-  const accountSource = fs.readFileSync(path.join(root, 'context', 'account.tsx'), 'utf8');
-  assert.doesNotMatch(accountSource, /\/ (?:Retry|Continue without account|Loading account|Backup failed|Prvá záloha|Začať s)/);
+  assert.equal(fs.existsSync(path.join(root, 'context', 'account.tsx')), false);
 });
 
 test('validation messages survive language changes and preserve actionable CSV and ledger details', () => {
@@ -129,12 +125,9 @@ test('validation messages survive language changes and preserve actionable CSV a
   assert.equal(localizedError('Zdroj cien vrátil HTTP 429.', 'en'), 'The data source returned HTTP 429.');
 });
 
-test('authentication, network and unknown provider errors never leak the other language', () => {
-  assert.equal(localizedError('Invalid login credentials', 'sk'), 'Nesprávny e-mail alebo heslo.');
-  assert.equal(localizedError('Email not confirmed', 'en'), 'Confirm your email address first.');
-  assert.match(localizedError('Email rate limit exceeded', 'sk'), /Príliš veľa pokusov/);
-  assert.match(localizedError('Token has expired or is invalid', 'sk'), /Odkaz už nie je platný/);
-  assert.match(localizedError('Password should be at least 6 characters.', 'sk'), /Heslo je príliš slabé/);
+test('network and unknown provider errors never leak the other language', () => {
+  assert.match(localizedError('HTTP 429', 'sk'), /HTTP 429/);
+  assert.match(localizedError('Request rate limit exceeded', 'sk'), /Príliš veľa pokusov/);
   assert.match(localizedError('Unknown provider exception', 'sk'), /^Operácia zlyhala/);
   assert.match(localizedError('Neznáma chyba poskytovateľa', 'en'), /^The operation failed/);
   assert.equal(translateText('toString', 'en', translations), 'toString');

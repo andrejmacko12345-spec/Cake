@@ -12,7 +12,7 @@ require.extensions['.ts'] = (module, filename) => {
 };
 const platform = { OS: 'web' };
 const stored = new Map();
-const accountWrites = [];
+const storageWrites = [];
 let storageFailure = null;
 let memo = null;
 let subscriber = null;
@@ -35,7 +35,7 @@ try {
     if (id === './app-storage') return { appStorage: {
       setItem: async (key, value) => {
         if (storageFailure) throw storageFailure;
-        accountWrites.push([key, value]);
+        storageWrites.push([key, value]);
       },
     } };
     return originalLoad.call(this, id, ...args);
@@ -87,7 +87,7 @@ test('switching theme updates subscribed styles immediately without replacing co
   subscriber();
 });
 
-test('theme preference persists to scoped backup and device before application; failures are explicit', async () => {
+test('theme preference persists locally before application; failures are explicit', async () => {
   const descriptor = Object.getOwnPropertyDescriptor(globalThis, 'localStorage');
   Object.defineProperty(globalThis, 'localStorage', { configurable: true, value: {
     getItem: (key) => stored.get(key) ?? null,
@@ -97,14 +97,14 @@ test('theme preference persists to scoped backup and device before application; 
     await theme.storeTheme('light');
     assert.equal(theme.getTheme(), 'light');
     assert.equal(theme.readStoredTheme(), 'light');
-    assert.deepEqual(accountWrites, [['@portfolio-mobile/theme', 'light']]);
+    assert.deepEqual(storageWrites, [['@portfolio-mobile/theme', 'light']]);
     storageFailure = new Error('Storage write failed');
     await assert.rejects(() => theme.storeTheme('dark'), /Storage write failed/);
     assert.equal(theme.getTheme(), 'light');
     storageFailure = null;
-    await theme.storeTheme('dark', false);
+    await theme.storeTheme('dark');
     assert.equal(theme.getTheme(), 'dark');
-    assert.equal(accountWrites.length, 1);
+    assert.equal(storageWrites.length, 2);
     assert.equal(stored.get('theme.txt'), 'dark');
   } finally {
     storageFailure = null;
@@ -132,14 +132,14 @@ test('native theme storage applies immediately and file failures do not report s
     return load.call(this, id, ...args);
   };
   try {
-    await theme.storeTheme('light', false);
+    await theme.storeTheme('light');
     assert.equal(theme.getTheme(), 'light');
     assert.equal(theme.readStoredTheme(), 'light');
     writeFailure = new Error('Native file write failed');
-    await assert.rejects(() => theme.storeTheme('dark', false), /Native file write failed/);
+    await assert.rejects(() => theme.storeTheme('dark'), /Native file write failed/);
     assert.equal(theme.getTheme(), 'light');
     writeFailure = null;
-    await theme.storeTheme('dark', false);
+    await theme.storeTheme('dark');
     assert.equal(theme.getTheme(), 'dark');
   } finally {
     Module._load = load;

@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import type { ReactNode } from 'react';
-import { ActivityIndicator, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as DocumentPicker from 'expo-document-picker';
+import * as Clipboard from 'expo-clipboard';
 import { File, Paths } from 'expo-file-system';
 import { readAsStringAsync } from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
@@ -10,6 +11,7 @@ import { ArrowLeft, Bell, Check, ChevronDown, ChevronRight, Download, Globe2, Mo
 import { setEventPref, useEventPrefs } from '../data/event-prefs';
 import { Header, Page, Surface } from '../components/finapp';
 import { AppLanguage, useLocale } from '../context/locale';
+import { createEncryptedBackup, decryptBackup, getBackupTransactions, LocalBackup, restoreLocalBackup } from '../data/local-backup';
 import { availableAssets, colors } from '../data/portfolio';
 import { storeTheme, ThemeName, useTheme, useThemedStyles } from '../data/theme';
 import { fetchHistoricalQuoteSeries } from '../data/quotes';
@@ -21,7 +23,6 @@ import {
   transactionCsvTemplate,
 } from '../data/transaction-csv';
 import { Transaction, usePositions } from '../hooks/use-positions';
-import { AccountPanel } from '../components/account-panel';
 
 const languages: { code: AppLanguage; label: string; englishLabel: string }[] = [
   { code: 'sk', label: 'Slovenčina', englishLabel: 'Slovak' },
@@ -107,11 +108,15 @@ export default function SettingsScreen() {
   const { transactions, importTransactions, resetPortfolio, refreshQuotes } = usePositions();
   const [savingLanguage, setSavingLanguage] = useState(false);
   const [saveError, setSaveError] = useState('');
-  const [busy, setBusy] = useState<'import' | 'export' | 'template' | 'reset' | null>(null);
+  const [busy, setBusy] = useState<'import' | 'export' | 'template' | 'reset' | 'backup-export' | 'backup-import' | 'backup-restore' | null>(null);
   const [dataMessage, setDataMessage] = useState('');
   const [dataError, setDataError] = useState('');
   const [pending, setPending] = useState<PendingImport | null>(null);
   const [confirmReset, setConfirmReset] = useState(false);
+  const [backupRecoveryCode, setBackupRecoveryCode] = useState('');
+  const [createdRecoveryCode, setCreatedRecoveryCode] = useState('');
+  const [backupContent, setBackupContent] = useState('');
+  const [pendingBackup, setPendingBackup] = useState<LocalBackup | null>(null);
 
   const startImport = async () => {
     setDataMessage('');
@@ -196,6 +201,107 @@ export default function SettingsScreen() {
     }
   };
 
+  const exportEncryptedBackup = async () => {
+    setDataMessage('');
+    setDataError('');
+    setCreatedRecoveryCode('');
+    setBusy('backup-export');
+    try {
+      const backup = await createEncryptedBackup();
+      const fileName = `fincake-backup-${new Date().toISOString().slice(0, 10)}.fincake-backup`;
+      if (Platform.OS === 'web') {
+        const url = URL.createObjectURL(new Blob([backup.content], { type: 'application/octet-stream' }));
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        link.click();
+        URL.revokeObjectURL(url);
+      } else {
+        if (!(await Sharing.isAvailableAsync())) throw new Error(t('Zdieľanie súborov nie je na tomto zariadení dostupné.'));
+        const file = new File(Paths.cache, fileName);
+        file.create({ overwrite: true });
+        await file.write(backup.content);
+        await Sharing.shareAsync(file.uri, { mimeType: 'application/octet-stream', dialogTitle: t('Uložiť šifrovanú zálohu') });
+      }
+      setCreatedRecoveryCode(backup.recoveryCode);
+      setDataMessage(t('Záloha je pripravená. Súbor a obnovovací kód ulož oddelene.'));
+    } catch (error) {
+      setDataError(error instanceof Error ? error.message : t('Export zálohy zlyhal.'));
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const copyRecoveryCode = async () => {
+    try {
+      await Clipboard.setStringAsync(createdRecoveryCode);
+      setDataMessage(t('Obnovovací kód bol skopírovaný.'));
+    } catch (error) {
+      setDataError(error instanceof Error ? error.message : t('Kód sa nepodarilo skopírovať.'));
+    }
+  };
+
+  const pickEncryptedBackup = async () => {
+    setDataMessage('');
+    setDataError('');
+    setPendingBackup(null);
+    setBusy('backup-import');
+    try {
+      const picked = await DocumentPicker.getDocumentAsync({
+        type: ['application/json', 'application/octet-stream', '*/*'],
+        copyToCacheDirectory: true,
+        multiple: false,
+      });
+      if (picked.canceled || !picked.assets?.[0]) return;
+      const asset = picked.assets[0];
+      if (asset.size !== undefined && asset.size > 16 * 1024 * 1024) throw new Error(t('Backup file is too large.'));
+      setBackupContent(await readPickedFile(asset));
+      setBackupRecoveryCode('');
+      setCreatedRecoveryCode('');
+    } catch (error) {
+      setDataError(error instanceof Error ? error.message : t('Načítanie zálohy zlyhalo.'));
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const inspectEncryptedBackup = async () => {
+    setDataMessage('');
+    setDataError('');
+    setBusy('backup-import');
+    try {
+      const backup = await decryptBackup(backupContent, backupRecoveryCode);
+      setPendingBackup(backup);
+      setDataMessage(`${t('Záloha obsahuje transakcie')}: ${getBackupTransactions(backup).length}`);
+    } catch (error) {
+      setPendingBackup(null);
+      setDataError(error instanceof Error ? error.message : t('Obnovenie zálohy zlyhalo.'));
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const restoreBackup = async () => {
+    if (!pendingBackup) return;
+    setBusy('backup-restore');
+    setDataMessage('');
+    setDataError('');
+    try {
+      await restoreLocalBackup(pendingBackup);
+      await setLanguage(pendingBackup.values['@portfolio-mobile/language'] as AppLanguage);
+      await storeTheme(pendingBackup.values['@portfolio-mobile/theme'] as ThemeName);
+      setPendingBackup(null);
+      setBackupContent('');
+      setBackupRecoveryCode('');
+      setCreatedRecoveryCode('');
+      setDataMessage(t('Záloha bola obnovená. Existujúce dáta boli nahradené.'));
+    } catch (error) {
+      setDataError(error instanceof Error ? error.message : t('Obnovenie zálohy zlyhalo.'));
+    } finally {
+      setBusy(null);
+    }
+  };
+
   const reset = async () => {
     setBusy('reset');
     setDataMessage('');
@@ -226,7 +332,10 @@ export default function SettingsScreen() {
           </Pressable>
         }
       />
-      <AccountPanel />
+      <Pressable accessibilityRole="link" style={styles.accordion} onPress={() => router.push('/legal')}>
+        <Text style={styles.accordionTitle}>{t('Súkromie a podpora')}</Text>
+        <ChevronRight size={18} color={colors.muted} />
+      </Pressable>
       <View style={styles.menuCard}>
       <AccordionHeader
         icon={<Globe2 size={17} color={colors.green} />}
@@ -296,7 +405,10 @@ export default function SettingsScreen() {
                 key={option.key}
                 accessibilityRole="switch"
                 accessibilityState={{ checked: selected }}
-                onPress={() => void setEventPref(option.key, !selected)}
+                onPress={() => void setEventPref(option.key, !selected).catch((error: unknown) => {
+                  console.warn('Event preferences could not be saved:', error);
+                  Alert.alert(t('Chyba'), errorText(error instanceof Error ? error.message : String(error)));
+                })}
                 style={[styles.languageOption, selected && styles.languageOptionSelected]}
               >
                 <View style={styles.languageCopy}>
@@ -355,6 +467,32 @@ export default function SettingsScreen() {
         </Pressable>
         <Pressable
           accessibilityRole="button"
+          disabled={busy !== null}
+          onPress={exportEncryptedBackup}
+          style={styles.languageOption}
+        >
+          <View style={styles.languageIcon}><Download size={17} color={colors.green} /></View>
+          <View style={styles.languageCopy}>
+            <Text style={styles.languageName}>{t('Vytvoriť šifrovanú zálohu')}</Text>
+            <Text style={styles.languageNative}>{t('Obsahuje transakcie, zoznamy akcií a nastavenia. Obnovovací kód ulož oddelene od súboru.')}</Text>
+          </View>
+          {busy === 'backup-export' ? <ActivityIndicator size="small" color={colors.green} /> : null}
+        </Pressable>
+        <Pressable
+          accessibilityRole="button"
+          disabled={busy !== null}
+          onPress={pickEncryptedBackup}
+          style={styles.languageOption}
+        >
+          <View style={styles.languageIcon}><Upload size={17} color={colors.green} /></View>
+          <View style={styles.languageCopy}>
+            <Text style={styles.languageName}>{t('Obnoviť zo šifrovanej zálohy')}</Text>
+            <Text style={styles.languageNative}>{t('Vyber záložný súbor a zadaj jeho obnovovací kód.')}</Text>
+          </View>
+          {busy === 'backup-import' ? <ActivityIndicator size="small" color={colors.green} /> : null}
+        </Pressable>
+        <Pressable
+          accessibilityRole="button"
           disabled={busy !== null || !transactions.length}
           onPress={() => setConfirmReset(true)}
           style={[styles.languageOption, !transactions.length && styles.disabled]}
@@ -366,6 +504,61 @@ export default function SettingsScreen() {
           </View>
         </Pressable>
       </Surface>
+
+      {createdRecoveryCode ? (
+        <Surface style={styles.confirmCard}>
+          <Text style={styles.languageName}>{t('Obnovovací kód')}</Text>
+          <Text style={styles.languageNative}>{t('Bez tohto kódu sa šifrovaná záloha nedá obnoviť. Kód nie je uložený v súbore.')}</Text>
+          <Text selectable style={styles.recoveryCode}>{createdRecoveryCode}</Text>
+          <Pressable accessibilityRole="button" onPress={copyRecoveryCode} style={styles.secondaryButton}>
+            <Text style={styles.secondaryText}>{t('Kopírovať kód')}</Text>
+          </Pressable>
+        </Surface>
+      ) : null}
+
+      {backupContent && !pendingBackup ? (
+        <Surface style={styles.confirmCard}>
+          <Text style={styles.languageName}>{t('Obnovovací kód zálohy')}</Text>
+          <TextInput
+            accessibilityLabel={t('Obnovovací kód zálohy')}
+            autoCapitalize="none"
+            autoCorrect={false}
+            onChangeText={setBackupRecoveryCode}
+            placeholder={t('Vlož obnovovací kód')}
+            placeholderTextColor={colors.muted}
+            style={styles.recoveryInput}
+            value={backupRecoveryCode}
+          />
+          <Pressable
+            accessibilityRole="button"
+            disabled={busy !== null || !backupRecoveryCode.trim()}
+            onPress={inspectEncryptedBackup}
+            style={[styles.primaryButton, (busy !== null || !backupRecoveryCode.trim()) && styles.disabled]}
+          >
+            <Text style={styles.primaryText}>{t('Overiť zálohu')}</Text>
+          </Pressable>
+        </Surface>
+      ) : null}
+
+      {pendingBackup ? (
+        <Surface style={styles.confirmCard}>
+          <Text style={styles.languageName}>{t('Nahradiť existujúce dáta zálohou?')}</Text>
+          <Text style={styles.languageNative}>{t('Obnovia sa transakcie, zoznamy akcií a nastavenia. Táto akcia prepíše aktuálne dáta.')}</Text>
+          <View style={styles.confirmActions}>
+            <Pressable disabled={busy !== null} onPress={restoreBackup} style={styles.primaryButton}>
+              <Text style={styles.primaryText}>{t('Nahradiť a obnoviť')}</Text>
+            </Pressable>
+            <Pressable
+              disabled={busy !== null}
+              onPress={() => { setPendingBackup(null); setBackupContent(''); setBackupRecoveryCode(''); }}
+              style={styles.secondaryButton}
+            >
+              <Text style={styles.secondaryText}>{t('Zrušiť')}</Text>
+            </Pressable>
+          </View>
+          {busy === 'backup-restore' ? <ActivityIndicator size="small" color={colors.green} /> : null}
+        </Surface>
+      ) : null}
 
       {pending ? (
         <Surface style={styles.confirmCard}>
@@ -534,6 +727,23 @@ const createStyles = () => StyleSheet.create({
     margin: 12,
     padding: 13,
     gap: 4,
+  },
+  recoveryCode: {
+    color: colors.text,
+    fontSize: 13,
+    fontWeight: '700',
+    letterSpacing: 1,
+    paddingVertical: 10,
+  },
+  recoveryInput: {
+    minHeight: 44,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    color: colors.text,
+    backgroundColor: colors.surface,
+    marginVertical: 8,
   },
   confirmActions: {
     flexDirection: 'row',

@@ -1,0 +1,970 @@
+{
+  "capturedAt": "2026-11-05T20:52:07.150Z",
+  "renderer": "Current Expo web UI, mobile viewport; not an Android AAB capture",
+  "transport": "Public Yahoo responses via Playwright HTTP; three browser-only quote guards removed in intercepted bundle only.",
+  "portfolio": "Fictional quantities; real historical purchase closes and FX, real current quotes and FX.",
+  "projectionAssumptions": {
+    "symbol": "MSFT",
+    "revenueGrowth": 10,
+    "incomeGrowth": 12,
+    "peLow": 24,
+    "peHigh": 34
+  },
+  "sources": [
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/EURUSD%3DX?range=1d&interval=1m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:01.797Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/EURUSD%3DX?period1=1736121600&period2=1736467200&interval=1d",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:01.920Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?range=1d&interval=1m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:02.036Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=1736121600&period2=1736467200&interval=1d",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:02.183Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/MSFT?range=1d&interval=1m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:02.275Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/MSFT?period1=1736121600&period2=1736467200&interval=1d",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:02.377Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?range=1d&interval=1m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:02.533Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=1736121600&period2=1736467200&interval=1d",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:02.638Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/AMZN?range=1d&interval=1m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:02.719Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/AMZN?period1=1736121600&period2=1736467200&interval=1d",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:02.840Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/GOOG?range=1d&interval=1m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:02.971Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/GOOG?period1=1736121600&period2=1736467200&interval=1d",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:03.067Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/KO?range=1d&interval=1m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:03.174Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/KO?period1=1736121600&period2=1736467200&interval=1d",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:03.312Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=1793318400&period2=1793911267&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:07.902Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/AMZN?period1=1793318400&period2=1793911267&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:08.155Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/GOOG?period1=1793318400&period2=1793911267&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:08.182Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/KO?period1=1793318400&period2=1793911267&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:08.182Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/MSFT?period1=1793318400&period2=1793911267&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:08.183Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=1793318400&period2=1793911267&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:08.238Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/AAPL?type=quarterlyTotalRevenue%2CquarterlyDilutedEPS&merge=false&period1=1783543268&period2=1793911268",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:08.524Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/MSFT?range=2y&interval=1mo&events=div",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:08.525Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/EURUSD%3DX?period1=1793318400&period2=1793911268&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:08.525Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?range=2y&interval=1mo&events=div",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:08.528Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/MSFT?type=quarterlyTotalRevenue%2CquarterlyDilutedEPS&merge=false&period1=1783543268&period2=1793911268",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:08.540Z"
+    },
+    {
+      "url": "https://fc.yahoo.com/",
+      "status": 404,
+      "retrievedAt": "2026-11-05T20:41:08.667Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/NVDA?type=quarterlyTotalRevenue%2CquarterlyDilutedEPS&merge=false&period1=1783543268&period2=1793911268",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:08.691Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/GOOG?type=quarterlyTotalRevenue%2CquarterlyDilutedEPS&merge=false&period1=1783543268&period2=1793911268",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:08.692Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/AMZN?range=2y&interval=1mo&events=div",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:08.692Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/AMZN?type=quarterlyTotalRevenue%2CquarterlyDilutedEPS&merge=false&period1=1783543268&period2=1793911268",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:08.732Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/GOOG?range=2y&interval=1mo&events=div",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:08.733Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v1/finance/search?q=AAPL&newsCount=4&quotesCount=0",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:08.829Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?range=2y&interval=1mo&events=div",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:08.830Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v1/finance/search?q=NVDA&newsCount=4&quotesCount=0",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:08.886Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v1/finance/search?q=MSFT&newsCount=4&quotesCount=0",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:08.987Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v1/finance/search?q=AMZN&newsCount=4&quotesCount=0",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:08.989Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v1/test/getcrumb",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:09.018Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v1/finance/search?q=GOOG&newsCount=4&quotesCount=0",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:09.047Z"
+    },
+    {
+      "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/MSFT?modules=price%2CcalendarEvents%2CearningsHistory%2Cearnings%2CearningsTrend",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:09.173Z"
+    },
+    {
+      "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/AMZN?modules=price%2CcalendarEvents%2CearningsHistory%2Cearnings%2CearningsTrend",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:09.176Z"
+    },
+    {
+      "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/NVDA?modules=price%2CcalendarEvents%2CearningsHistory%2Cearnings%2CearningsTrend",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:09.176Z"
+    },
+    {
+      "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/AAPL?modules=price%2CcalendarEvents%2CearningsHistory%2Cearnings%2CearningsTrend",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:09.177Z"
+    },
+    {
+      "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/GOOG?modules=price%2CcalendarEvents%2CearningsHistory%2Cearnings%2CearningsTrend",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:09.177Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/KO?type=quarterlyTotalRevenue%2CquarterlyDilutedEPS&merge=false&period1=1783543269&period2=1793911269",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:09.241Z"
+    },
+    {
+      "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/KO?modules=price%2CcalendarEvents%2CearningsHistory%2Cearnings%2CearningsTrend",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:09.267Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/KO?range=2y&interval=1mo&events=div",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:09.314Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v1/finance/search?q=KO&newsCount=4&quotesCount=0",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:09.596Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/AMZN?period1=1761696000&period2=1793911270&interval=1d",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:10.286Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/GOOG?period1=1761696000&period2=1793911270&interval=1d",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:10.288Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/MSFT?period1=1761696000&period2=1793911270&interval=1d",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:10.289Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=1761696000&period2=1793911270&interval=1d",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:10.289Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/KO?period1=1761696000&period2=1793911270&interval=1d",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:10.317Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=1761696000&period2=1793911270&interval=1d",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:10.432Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/EURUSD%3DX?period1=1761696000&period2=1793911270&interval=1d",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:10.502Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/%5EIXIC?range=1d&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:35.158Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/%5EGSPC?range=1d&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:35.166Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/%5EDJI?range=1d&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:35.173Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/META?range=1d&interval=1m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:35.252Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=1793404800&period2=1793911295&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:35.253Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/AMZN?period1=1793404800&period2=1793911295&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:35.256Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=1793404800&period2=1793911295&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:35.256Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/META?period1=1793404800&period2=1793911295&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:35.257Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/GOOG?period1=1793404800&period2=1793911295&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:35.276Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/MSFT?period1=1793404800&period2=1793911295&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:35.286Z"
+    },
+    {
+      "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/GOOG?modules=price%2CsummaryDetail%2CdefaultKeyStatistics%2CfinancialData%2CearningsTrend",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:41.571Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/MSFT?type=trailingTotalRevenue%2CtrailingDilutedEPS%2CannualTotalRevenue%2CannualDilutedEPS&period1=1699044101&period2=1793911301",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:41.572Z"
+    },
+    {
+      "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/META?modules=price%2CsummaryDetail%2CdefaultKeyStatistics%2CfinancialData%2CearningsTrend",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:41.573Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/META?type=trailingTotalRevenue%2CtrailingDilutedEPS%2CannualTotalRevenue%2CannualDilutedEPS&period1=1699044101&period2=1793911301",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:41.580Z"
+    },
+    {
+      "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/MSFT?modules=price%2CsummaryDetail%2CdefaultKeyStatistics%2CfinancialData%2CearningsTrend",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:41.590Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/GOOG?type=trailingTotalRevenue%2CtrailingDilutedEPS%2CannualTotalRevenue%2CannualDilutedEPS&period1=1699044101&period2=1793911301",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:41.601Z"
+    },
+    {
+      "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/MSFT?modules=price%2CfinancialData",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:41.725Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/MSFT?type=trailingTotalRevenue%2CtrailingNetIncomeCommonStockholders%2CannualTotalRevenue%2CannualNetIncomeCommonStockholders%2CtrailingDilutedEPS%2CannualDilutedEPS%2CtrailingDilutedAverageShares%2CannualDilutedAverageShares%2CquarterlyTotalRevenue&period1=1604176901&period2=1793911301",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:41.725Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/MSFT?period1=1698439301&period2=1793911301&interval=1d",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:41:41.899Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/AAPL?type=quarterlyTotalRevenue%2CquarterlyDilutedEPS&merge=false&period1=1783543321&period2=1793911321",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:42:01.747Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/AMZN?type=quarterlyTotalRevenue%2CquarterlyDilutedEPS&merge=false&period1=1783543321&period2=1793911321",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:42:01.747Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/NVDA?type=quarterlyTotalRevenue%2CquarterlyDilutedEPS&merge=false&period1=1783543321&period2=1793911321",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:42:01.749Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/MSFT?type=quarterlyTotalRevenue%2CquarterlyDilutedEPS&merge=false&period1=1783543321&period2=1793911321",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:42:01.749Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/AMZN?period1=1793318400&period2=1793911321&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:42:01.750Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=1793318400&period2=1793911321&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:42:01.750Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/GOOG?type=quarterlyTotalRevenue%2CquarterlyDilutedEPS&merge=false&period1=1783543321&period2=1793911321",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:42:01.752Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=1793318400&period2=1793911321&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:42:01.752Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/KO?period1=1793318400&period2=1793911321&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:42:01.752Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/MSFT?period1=1793318400&period2=1793911321&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:42:01.753Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/GOOG?period1=1793318400&period2=1793911321&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:42:01.753Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/KO?type=quarterlyTotalRevenue%2CquarterlyDilutedEPS&merge=false&period1=1783543321&period2=1793911321",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:42:01.824Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/EURUSD%3DX?period1=1793318400&period2=1793911321&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:42:01.998Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/AMZN?period1=1761696000&period2=1793911323&interval=1d",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:42:03.480Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/MSFT?period1=1761696000&period2=1793911323&interval=1d",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:42:03.486Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=1761696000&period2=1793911323&interval=1d",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:42:03.500Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/KO?period1=1761696000&period2=1793911323&interval=1d",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:42:03.564Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/GOOG?period1=1761696000&period2=1793911323&interval=1d",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:42:03.565Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=1761696000&period2=1793911323&interval=1d",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:42:03.626Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/EURUSD%3DX?period1=1761696000&period2=1793911323&interval=1d",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:42:03.696Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=1793404800&period2=1793911348&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:42:28.390Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/META?period1=1793404800&period2=1793911348&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:42:28.391Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/GOOG?period1=1793404800&period2=1793911348&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:42:28.394Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/MSFT?period1=1793404800&period2=1793911348&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:42:28.397Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/AMZN?period1=1793404800&period2=1793911348&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:42:28.398Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=1793404800&period2=1793911348&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:42:28.415Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/GOOG?type=trailingTotalRevenue%2CtrailingDilutedEPS%2CannualTotalRevenue%2CannualDilutedEPS&period1=1699044154&period2=1793911354",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:42:34.751Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/MSFT?type=trailingTotalRevenue%2CtrailingDilutedEPS%2CannualTotalRevenue%2CannualDilutedEPS&period1=1699044154&period2=1793911354",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:42:34.754Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/META?type=trailingTotalRevenue%2CtrailingDilutedEPS%2CannualTotalRevenue%2CannualDilutedEPS&period1=1699044154&period2=1793911354",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:42:34.755Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/MSFT?type=trailingTotalRevenue%2CtrailingNetIncomeCommonStockholders%2CannualTotalRevenue%2CannualNetIncomeCommonStockholders%2CtrailingDilutedEPS%2CannualDilutedEPS%2CtrailingDilutedAverageShares%2CannualDilutedAverageShares%2CquarterlyTotalRevenue&period1=1604176954&period2=1793911354",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:42:34.942Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/MSFT?period1=1698439354&period2=1793911354&interval=1d",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:42:35.025Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/MSFT?period1=1793318400&period2=1793911928&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:08.148Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/GOOG?period1=1793318400&period2=1793911928&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:08.162Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/KO?period1=1793318400&period2=1793911928&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:08.168Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=1793318400&period2=1793911928&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:08.179Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=1793318400&period2=1793911928&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:08.190Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/AMZN?period1=1793318400&period2=1793911928&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:08.246Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/EURUSD%3DX?period1=1793318400&period2=1793911928&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:08.385Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/MSFT?type=quarterlyTotalRevenue%2CquarterlyDilutedEPS&merge=false&period1=1783543928&period2=1793911928",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:08.662Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/AAPL?type=quarterlyTotalRevenue%2CquarterlyDilutedEPS&merge=false&period1=1783543928&period2=1793911928",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:08.665Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/MSFT?range=2y&interval=1mo&events=div",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:08.671Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?range=2y&interval=1mo&events=div",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:08.684Z"
+    },
+    {
+      "url": "https://fc.yahoo.com/",
+      "status": 404,
+      "retrievedAt": "2026-11-05T20:52:08.694Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/NVDA?type=quarterlyTotalRevenue%2CquarterlyDilutedEPS&merge=false&period1=1783543928&period2=1793911928",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:08.727Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/GOOG?type=quarterlyTotalRevenue%2CquarterlyDilutedEPS&merge=false&period1=1783543928&period2=1793911928",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:08.739Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?range=2y&interval=1mo&events=div",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:08.752Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/AMZN?range=2y&interval=1mo&events=div",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:08.752Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/GOOG?range=2y&interval=1mo&events=div",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:08.771Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/AMZN?type=quarterlyTotalRevenue%2CquarterlyDilutedEPS&merge=false&period1=1783543928&period2=1793911928",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:08.827Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v1/finance/search?q=GOOG&newsCount=4&quotesCount=0",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:08.954Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v1/finance/search?q=NVDA&newsCount=4&quotesCount=0",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:09.006Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v1/finance/search?q=MSFT&newsCount=4&quotesCount=0",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:09.036Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v1/test/getcrumb",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:09.060Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v1/finance/search?q=AAPL&newsCount=4&quotesCount=0",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:09.106Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v1/finance/search?q=AMZN&newsCount=4&quotesCount=0",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:09.159Z"
+    },
+    {
+      "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/AAPL?modules=price%2CcalendarEvents%2CearningsHistory%2Cearnings%2CearningsTrend",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:09.160Z"
+    },
+    {
+      "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/NVDA?modules=price%2CcalendarEvents%2CearningsHistory%2Cearnings%2CearningsTrend",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:09.161Z"
+    },
+    {
+      "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/MSFT?modules=price%2CcalendarEvents%2CearningsHistory%2Cearnings%2CearningsTrend",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:09.166Z"
+    },
+    {
+      "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/GOOG?modules=price%2CcalendarEvents%2CearningsHistory%2Cearnings%2CearningsTrend",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:09.170Z"
+    },
+    {
+      "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/AMZN?modules=price%2CcalendarEvents%2CearningsHistory%2Cearnings%2CearningsTrend",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:09.183Z"
+    },
+    {
+      "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/KO?modules=price%2CcalendarEvents%2CearningsHistory%2Cearnings%2CearningsTrend",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:09.232Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/KO?type=quarterlyTotalRevenue%2CquarterlyDilutedEPS&merge=false&period1=1783543929&period2=1793911929",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:09.305Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/KO?range=2y&interval=1mo&events=div",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:09.306Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v1/finance/search?q=KO&newsCount=4&quotesCount=0",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:09.570Z"
+    },
+    {
+      "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/META?modules=price%2CsummaryDetail%2CdefaultKeyStatistics%2CfinancialData%2CearningsTrend",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:10.310Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/META?type=trailingTotalRevenue%2CtrailingDilutedEPS%2CannualTotalRevenue%2CannualDilutedEPS&period1=1699044730&period2=1793911930",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:10.313Z"
+    },
+    {
+      "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/GOOG?modules=price%2CsummaryDetail%2CdefaultKeyStatistics%2CfinancialData%2CearningsTrend",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:10.325Z"
+    },
+    {
+      "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/MSFT?modules=price%2CsummaryDetail%2CdefaultKeyStatistics%2CfinancialData%2CearningsTrend",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:10.326Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/GOOG?type=trailingTotalRevenue%2CtrailingDilutedEPS%2CannualTotalRevenue%2CannualDilutedEPS&period1=1699044730&period2=1793911930",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:10.330Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/MSFT?type=trailingTotalRevenue%2CtrailingDilutedEPS%2CannualTotalRevenue%2CannualDilutedEPS&period1=1699044730&period2=1793911930",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:10.350Z"
+    },
+    {
+      "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/MSFT?modules=price%2CfinancialData",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:10.457Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/MSFT?type=trailingTotalRevenue%2CtrailingNetIncomeCommonStockholders%2CannualTotalRevenue%2CannualNetIncomeCommonStockholders%2CtrailingDilutedEPS%2CannualDilutedEPS%2CtrailingDilutedAverageShares%2CannualDilutedAverageShares%2CquarterlyTotalRevenue&period1=1604177530&period2=1793911930",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:10.461Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/MSFT?period1=1698439930&period2=1793911930&interval=1d",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:10.517Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/AMZN?range=1d&interval=1m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:18.136Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?range=1d&interval=1m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:18.136Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/MSFT?range=1d&interval=1m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:18.136Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/GOOG?range=1d&interval=1m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:18.137Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?range=1d&interval=1m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:18.137Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/KO?range=1d&interval=1m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:18.151Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/EURUSD%3DX?range=1d&interval=1m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:18.344Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/AMZN?type=quarterlyTotalRevenue%2CquarterlyDilutedEPS&merge=false&period1=1783543943&period2=1793911943",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:24.034Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/MSFT?period1=1793318400&period2=1793911943&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:24.047Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/AMZN?period1=1793318400&period2=1793911943&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:24.049Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=1793318400&period2=1793911943&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:24.060Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/GOOG?type=quarterlyTotalRevenue%2CquarterlyDilutedEPS&merge=false&period1=1783543943&period2=1793911943",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:24.074Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=1793318400&period2=1793911943&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:24.074Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/NVDA?type=quarterlyTotalRevenue%2CquarterlyDilutedEPS&merge=false&period1=1783543943&period2=1793911943",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:24.091Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/MSFT?type=quarterlyTotalRevenue%2CquarterlyDilutedEPS&merge=false&period1=1783543943&period2=1793911943",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:24.091Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/KO?period1=1793318400&period2=1793911943&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:24.095Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/GOOG?period1=1793318400&period2=1793911943&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:24.106Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/AAPL?type=quarterlyTotalRevenue%2CquarterlyDilutedEPS&merge=false&period1=1783543943&period2=1793911943",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:24.237Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/KO?type=quarterlyTotalRevenue%2CquarterlyDilutedEPS&merge=false&period1=1783543944&period2=1793911944",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:24.297Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/EURUSD%3DX?period1=1793318400&period2=1793911944&interval=5m",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:24.371Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/MSFT?type=trailingTotalRevenue%2CtrailingDilutedEPS%2CannualTotalRevenue%2CannualDilutedEPS&period1=1699044745&period2=1793911945",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:25.163Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/GOOG?type=trailingTotalRevenue%2CtrailingDilutedEPS%2CannualTotalRevenue%2CannualDilutedEPS&period1=1699044745&period2=1793911945",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:25.163Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/META?type=trailingTotalRevenue%2CtrailingDilutedEPS%2CannualTotalRevenue%2CannualDilutedEPS&period1=1699044745&period2=1793911945",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:25.396Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/MSFT?type=trailingTotalRevenue%2CtrailingNetIncomeCommonStockholders%2CannualTotalRevenue%2CannualNetIncomeCommonStockholders%2CtrailingDilutedEPS%2CannualDilutedEPS%2CtrailingDilutedAverageShares%2CannualDilutedAverageShares%2CquarterlyTotalRevenue&period1=1604177545&period2=1793911945",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:25.442Z"
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/MSFT?period1=1698439945&period2=1793911945&interval=1d",
+      "status": 200,
+      "retrievedAt": "2026-11-05T20:52:25.530Z"
+    }
+  ],
+  "images": [
+    {
+      "language": "en",
+      "feature": "portfolio",
+      "file": "en-US\\01-portfolio.png",
+      "width": 1080,
+      "height": 1920,
+      "capturedAt": "2026-11-05T20:41:01.560Z"
+    },
+    {
+      "language": "en",
+      "feature": "events",
+      "file": "en-US\\02-events.png",
+      "width": 1080,
+      "height": 1920,
+      "capturedAt": "2026-11-05T20:41:01.560Z"
+    },
+    {
+      "language": "en",
+      "feature": "watchlist",
+      "file": "en-US\\03-watchlist.png",
+      "width": 1080,
+      "height": 1920,
+      "capturedAt": "2026-11-05T20:41:01.560Z"
+    },
+    {
+      "language": "en",
+      "feature": "projections",
+      "file": "en-US\\04-projections.png",
+      "width": 1080,
+      "height": 1920,
+      "capturedAt": "2026-11-05T20:52:32.373Z"
+    },
+    {
+      "language": "en",
+      "feature": "compare",
+      "file": "en-US\\05-compare.png",
+      "width": 1080,
+      "height": 1920,
+      "capturedAt": "2026-11-05T20:52:38.771Z"
+    },
+    {
+      "language": "en",
+      "feature": "forecast",
+      "file": "en-US\\06-forecast.png",
+      "width": 1080,
+      "height": 1920,
+      "capturedAt": "2026-11-05T20:41:01.560Z"
+    },
+    {
+      "language": "sk",
+      "feature": "portfolio",
+      "file": "sk-SK\\01-portfolio.png",
+      "width": 1080,
+      "height": 1920,
+      "capturedAt": "2026-11-05T20:41:01.560Z"
+    },
+    {
+      "language": "sk",
+      "feature": "events",
+      "file": "sk-SK\\02-events.png",
+      "width": 1080,
+      "height": 1920,
+      "capturedAt": "2026-11-05T20:41:01.560Z"
+    },
+    {
+      "language": "sk",
+      "feature": "watchlist",
+      "file": "sk-SK\\03-watchlist.png",
+      "width": 1080,
+      "height": 1920,
+      "capturedAt": "2026-11-05T20:41:01.560Z"
+    },
+    {
+      "language": "sk",
+      "feature": "projections",
+      "file": "sk-SK\\04-projections.png",
+      "width": 1080,
+      "height": 1920,
+      "capturedAt": "2026-11-05T20:52:16.991Z"
+    },
+    {
+      "language": "sk",
+      "feature": "compare",
+      "file": "sk-SK\\05-compare.png",
+      "width": 1080,
+      "height": 1920,
+      "capturedAt": "2026-11-05T20:52:23.397Z"
+    },
+    {
+      "language": "sk",
+      "feature": "forecast",
+      "file": "sk-SK\\06-forecast.png",
+      "width": 1080,
+      "height": 1920,
+      "capturedAt": "2026-11-05T20:41:01.560Z"
+    }
+  ],
+  "failures": [],
+  "artworkUpdatedAt": "2026-11-05T21:06:42.676Z"
+}

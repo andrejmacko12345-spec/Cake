@@ -17,34 +17,40 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PositionsProvider } from '../hooks/use-positions';
 import { usePositions } from '../hooks/use-positions';
 import { preloadCompanyEvents } from '../data/events-cache';
+import { useEventPrefs } from '../data/event-prefs';
+import { resolveEventSymbols } from '../data/event-symbols';
+import { useWatchlists } from '../hooks/use-watchlists';
 import { colors } from '../data/portfolio';
 import { FLOATING_NAVIGATION_GAP, GlassBackground, GlassTargetContext } from '../components/glass-background';
 import { useLocale, LocaleProvider } from '../context/locale';
-import { AccountProvider } from '../context/account';
 import { AmountVisibilityProvider } from '../context/amount-visibility';
 
 const NAVIGATION_ROUTES = ['/', '/events', '/watchlist', '/compare', '/forecast'];
 
 export default function RootLayout() {
   return (
-    <AccountProvider>
-      <LocaleProvider>
-        <AmountVisibilityProvider>
-          <PositionsProvider>
-            <EventDataPreloader />
-            <AppTabs />
-          </PositionsProvider>
-        </AmountVisibilityProvider>
-      </LocaleProvider>
-    </AccountProvider>
+    <LocaleProvider>
+      <AmountVisibilityProvider>
+        <PositionsProvider>
+          <EventDataPreloader />
+          <AppTabs />
+        </PositionsProvider>
+      </AmountVisibilityProvider>
+    </LocaleProvider>
   );
 }
 
 function EventDataPreloader() {
   const { positions, loading } = usePositions();
+  const prefs = useEventPrefs();
+  const watchlists = useWatchlists();
   const symbols = useMemo(
-    () => [...new Set(positions.filter((position) => position.shares > 1e-8).map((position) => position.symbol))],
-    [positions],
+    () => resolveEventSymbols(
+      positions.filter((position) => position.shares > 1e-8).map((position) => position.symbol),
+      watchlists.lists.flatMap((list) => list.symbols),
+      prefs.symbols,
+    ),
+    [positions, watchlists.lists, prefs.symbols],
   );
   const symbolKey = symbols.join(',');
 
@@ -226,6 +232,10 @@ function AppTabs() {
             headerShown: false,
           }}
         />
+        <Tabs.Screen name="legal" options={{
+          title: t('Súkromie a podpora'),
+          tabBarItemStyle: { display: 'none' },
+        }} />
         <Tabs.Screen
           name="position"
           options={{

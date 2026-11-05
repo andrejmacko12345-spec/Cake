@@ -2,7 +2,7 @@ import { YAHOO_USER_AGENT, yahooQuoteSummary } from './fundamentals';
 import { fetchFmpQuarterly, getFmpKey } from './fmp';
 import { applyEarningsConsensus, combineFinancialSources, FinancialQuarter, FinancialSources, mergeQuarters, QuarterResult } from './quarterly';
 import { fetchSecQuarterly } from './sec';
-import { getFinancialHistory, saveFinancialHistory } from './earnings-history';
+import { getFinancialHistory, getLocalFinancialHistory, saveFinancialHistory } from './earnings-history';
 import { archivedRevenueConsensus, EarningsSummary, parseEarningsConsensus, parseUpcomingEarnings, UpcomingEarningsEstimates } from './earnings-consensus';
 export type { QuarterResult } from './quarterly';
 
@@ -136,7 +136,35 @@ function yahooQuarters(
   });
 }
 
-export async function fetchCompanyEvents(symbol: string, force = false): Promise<CompanyEvents> {
+function reportQuarters(sources: FinancialSources) {
+  return applyEarningsConsensus(
+    mergeQuarters(['sec', 'fmp', 'yahoo', 'yahoo-earnings'].map((source) => sources[source] ?? [])),
+    [sources['reported-consensus'] ?? [],
+      archivedRevenueConsensus(sources['yahoo-forecast'] ?? [], sources['yahoo-earnings'] ?? []),
+      sources['yahoo-earnings'] ?? []],
+  );
+}
+
+function reportIssue(quarters: QuarterResult[]): CompanyEvents['financialDataIssue'] {
+  return !quarters.length || quarters.slice(0, 6).some((row) => row.revenue === null || row.epsActual === null
+    || row.revenueYoY === null || row.revenueBeat === null || row.epsBeat === null) ? 'incomplete-data' : null;
+}
+
+export async function getLocalCompanyReports(symbol: string): Promise<Pick<CompanyEvents, 'quarters' | 'financialDataIssue'>> {
+  const quarters = reportQuarters(await getLocalFinancialHistory(symbol));
+  return { quarters, financialDataIssue: reportIssue(quarters) };
+}
+
+const pendingEvents = new Map<string, Promise<CompanyEvents>>();
+export function fetchCompanyEvents(symbol: string, force = false): Promise<CompanyEvents> {
+  const pending = pendingEvents.get(symbol);
+  if (pending) return pending;
+  const request = loadCompanyEvents(symbol, force).finally(() => pendingEvents.delete(symbol));
+  pendingEvents.set(symbol, request);
+  return request;
+}
+
+async function loadCompanyEvents(symbol: string, force = false): Promise<CompanyEvents> {
   const cached = cache.get(symbol);
   if (!force && cached && Date.now() - cached.at < (cached.value.financialDataIssue ? 60000 : CACHE_MS)) return cached.value;
 
@@ -169,12 +197,7 @@ export async function fetchCompanyEvents(symbol: string, force = false): Promise
     if (rows.length) freshSources[source] = rows;
   }
   const sources = combineFinancialSources(history.sources, freshSources);
-  const quarters = applyEarningsConsensus(
-    mergeQuarters(['sec', 'fmp', 'yahoo', 'yahoo-earnings'].map((source) => sources[source] ?? [])),
-    [sources['reported-consensus'] ?? [],
-      archivedRevenueConsensus(sources['yahoo-forecast'] ?? [], sources['yahoo-earnings'] ?? []),
-      sources['yahoo-earnings'] ?? []],
-  );
+  const quarters = reportQuarters(sources);
   if (Object.keys(freshSources).length) {
     const backfilled = history.needsBackfill && (sec.length > 0 || fmp.length > 0
       || (secResult.status === 'fulfilled' && yahoo.length > 0));
@@ -197,10 +220,7 @@ export async function fetchCompanyEvents(symbol: string, force = false): Promise
     .filter((value): value is number => value !== null && value > latestPeriod && value <= now);
 
   const filedAt = sources.sec?.find((row) => Math.abs(row.time - latestPeriod) <= 14 * DAY)?.reportedAt;
-  const financialDataIssue = !quarters.length || quarters.slice(0, 6)
-    .some((row) => row.revenue === null || row.epsActual === null || row.revenueYoY === null
-      || row.revenueBeat === null || row.epsBeat === null)
-    ? 'incomplete-data' : null;
+  const financialDataIssue = reportIssue(quarters);
 
   const value: CompanyEvents = {
     symbol,

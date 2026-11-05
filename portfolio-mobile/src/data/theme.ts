@@ -69,8 +69,8 @@ export function readStoredTheme(): ThemeName {
   }
 }
 
-export async function storeTheme(name: ThemeName, backup = true) {
-  if (backup) await appStorage.setItem('@portfolio-mobile/theme', name);
+export async function storeTheme(name: ThemeName) {
+  await appStorage.setItem('@portfolio-mobile/theme', name);
   if (Platform.OS === 'web') {
     localStorage.setItem(STORAGE_NAME, name);
   } else {

@@ -12,6 +12,7 @@ test('Analyse mounts both panels and supports button and swipe selection without
   const originalState = React.useState;
   const originalRef = React.useRef;
   const buttons = [];
+  const panels = [];
   const changes = [];
   const scrolls = [];
   const progressValues = [];
@@ -43,7 +44,11 @@ test('Analyse mounts both panels and supports button and swipe selection without
             return 0;
           }
         } },
-        View: wrap, Text: wrap,
+        View: (props) => {
+          if (typeof props.accessibilityElementsHidden === 'boolean') panels.push(props);
+          return wrap(props);
+        },
+        Text: wrap,
         Pressable: (props) => { buttons.push(props); return wrap(props); },
         ScrollView: (props) => { scroll = props; return wrap(props); },
         StyleSheet: { create: (styles) => styles }, useWindowDimensions: () => ({ width: 360 }),
@@ -70,6 +75,10 @@ test('Analyse mounts both panels and supports button and swipe selection without
     assert.equal(buttons[0].accessibilityState.selected, true);
     assert.equal(buttons[1].accessibilityLabel, 'Porovnanie');
     assert.ok(html.indexOf('projection-panel') < html.indexOf('compare-panel'));
+    assert.deepEqual(panels.map((panel) => panel.style), [
+      { width: 360, height: '100%' },
+      { width: 360, height: '100%' },
+    ]);
     assert.deepEqual(scroll.contentOffset, { x: 0, y: 0 });
     assert.equal(scroll.horizontal, true);
     assert.equal(scroll.pagingEnabled, true);

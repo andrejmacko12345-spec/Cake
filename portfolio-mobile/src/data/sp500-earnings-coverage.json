@@ -1,0 +1,4031 @@
+{
+  "checkedAt": "2026-11-05T15:39:01.893Z",
+  "membershipSource": "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies",
+  "requiredReports": 6,
+  "members": [
+    {
+      "symbol": "MMM",
+      "name": "3M",
+      "sector": "Industrials",
+      "industry": "Industrial Conglomerates",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2026-01-20T23:59:59Z."
+    },
+    {
+      "symbol": "AOS",
+      "name": "A. O. Smith",
+      "sector": "Industrials",
+      "industry": "Building Products",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "ABT",
+      "name": "Abbott Laboratories",
+      "sector": "Health Care",
+      "industry": "Health Care Equipment",
+      "complete": false,
+      "reason": "Only 2/6 complete historical pairs."
+    },
+    {
+      "symbol": "ABBV",
+      "name": "AbbVie",
+      "sector": "Health Care",
+      "industry": "Biotechnology",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "ACN",
+      "name": "Accenture",
+      "sector": "Information Technology",
+      "industry": "IT Consulting & Other Services",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "ADBE",
+      "name": "Adobe Inc.",
+      "sector": "Information Technology",
+      "industry": "Application Software",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "AMD",
+      "name": "Advanced Micro Devices",
+      "sector": "Information Technology",
+      "industry": "Semiconductors",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "AES",
+      "name": "AES Corporation",
+      "sector": "Utilities",
+      "industry": "Independent Power Producers & Energy Traders",
+      "complete": false,
+      "reason": "The actual six displayed reports do not all contain both beats."
+    },
+    {
+      "symbol": "AFL",
+      "name": "Aflac",
+      "sector": "Financials",
+      "industry": "Life & Health Insurance",
+      "complete": false,
+      "reason": "No reported period for 2026-11-04T23:59:59Z."
+    },
+    {
+      "symbol": "A",
+      "name": "Agilent Technologies",
+      "sector": "Health Care",
+      "industry": "Life Sciences Tools & Services",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "APD",
+      "name": "Air Products",
+      "sector": "Materials",
+      "industry": "Industrial Gases",
+      "complete": false,
+      "reason": "The actual six displayed reports do not all contain both beats."
+    },
+    {
+      "symbol": "ABNB",
+      "name": "Airbnb",
+      "sector": "Consumer Discretionary",
+      "industry": "Hotels, Resorts & Cruise Lines",
+      "complete": false,
+      "reason": "EPS history needs manual split or exceptional-item verification."
+    },
+    {
+      "symbol": "AKAM",
+      "name": "Akamai Technologies",
+      "sector": "Information Technology",
+      "industry": "Internet Services & Infrastructure",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "ALB",
+      "name": "Albemarle Corporation",
+      "sector": "Materials",
+      "industry": "Specialty Chemicals",
+      "complete": false,
+      "reason": "EPS pair needs manual split/methodology verification."
+    },
+    {
+      "symbol": "ARE",
+      "name": "Alexandria Real Estate Equities",
+      "sector": "Real Estate",
+      "industry": "Office REITs",
+      "complete": false,
+      "reason": "REIT: FFO/EPS methodology requires manual review."
+    },
+    {
+      "symbol": "ALGN",
+      "name": "Align Technology",
+      "sector": "Health Care",
+      "industry": "Health Care Supplies",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "ALLE",
+      "name": "Allegion",
+      "sector": "Industrials",
+      "industry": "Building Products",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "LNT",
+      "name": "Alliant Energy",
+      "sector": "Utilities",
+      "industry": "Electric Utilities",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "ALL",
+      "name": "Allstate",
+      "sector": "Financials",
+      "industry": "Property & Casualty Insurance",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2025-07-30T23:59:59Z."
+    },
+    {
+      "symbol": "GOOGL",
+      "name": "Alphabet Inc. (Class A)",
+      "sector": "Communication Services",
+      "industry": "Interactive Media & Services",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "GOOG",
+      "name": "Alphabet Inc. (Class C)",
+      "sector": "Communication Services",
+      "industry": "Interactive Media & Services",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "MO",
+      "name": "Altria",
+      "sector": "Consumer Staples",
+      "industry": "Tobacco",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2025-07-30T23:59:59Z."
+    },
+    {
+      "symbol": "AMZN",
+      "name": "Amazon",
+      "sector": "Consumer Discretionary",
+      "industry": "Broadline Retail",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "AMCR",
+      "name": "Amcor",
+      "sector": "Materials",
+      "industry": "Paper & Plastic Packaging Products & Materials",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "AEE",
+      "name": "Ameren",
+      "sector": "Utilities",
+      "industry": "Multi-Utilities",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "AEP",
+      "name": "American Electric Power",
+      "sector": "Utilities",
+      "industry": "Electric Utilities",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "AXP",
+      "name": "American Express",
+      "sector": "Financials",
+      "industry": "Consumer Finance",
+      "complete": false,
+      "reason": "Non-positive reported revenue or consensus."
+    },
+    {
+      "symbol": "AIG",
+      "name": "American International Group",
+      "sector": "Financials",
+      "industry": "Multi-line Insurance",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2025-08-06T23:59:59Z."
+    },
+    {
+      "symbol": "AMT",
+      "name": "American Tower",
+      "sector": "Real Estate",
+      "industry": "Telecom Tower REITs",
+      "complete": false,
+      "reason": "REIT: FFO/EPS methodology requires manual review."
+    },
+    {
+      "symbol": "AWK",
+      "name": "American Water Works",
+      "sector": "Utilities",
+      "industry": "Water Utilities",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "AMP",
+      "name": "Ameriprise Financial",
+      "sector": "Financials",
+      "industry": "Asset Management & Custody Banks",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "AME",
+      "name": "Ametek",
+      "sector": "Industrials",
+      "industry": "Electrical Components & Equipment",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "AMGN",
+      "name": "Amgen",
+      "sector": "Health Care",
+      "industry": "Biotechnology",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "APH",
+      "name": "Amphenol",
+      "sector": "Information Technology",
+      "industry": "Electronic Components",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "ADI",
+      "name": "Analog Devices",
+      "sector": "Information Technology",
+      "industry": "Semiconductors",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "AON",
+      "name": "Aon plc",
+      "sector": "Financials",
+      "industry": "Insurance Brokers",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "APA",
+      "name": "APA Corporation",
+      "sector": "Energy",
+      "industry": "Oil & Gas Exploration & Production",
+      "complete": false,
+      "reason": "No reported period for 2026-11-04T23:59:59Z."
+    },
+    {
+      "symbol": "APO",
+      "name": "Apollo Global Management",
+      "sector": "Financials",
+      "industry": "Asset Management & Custody Banks",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "AAPL",
+      "name": "Apple Inc.",
+      "sector": "Information Technology",
+      "industry": "Technology Hardware, Storage & Peripherals",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "AMAT",
+      "name": "Applied Materials",
+      "sector": "Information Technology",
+      "industry": "Semiconductor Materials & Equipment",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "APP",
+      "name": "AppLovin",
+      "sector": "Communication Services",
+      "industry": "Advertising",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "APTV",
+      "name": "Aptiv",
+      "sector": "Consumer Discretionary",
+      "industry": "Automotive Parts & Equipment",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2025-07-31T23:59:59Z."
+    },
+    {
+      "symbol": "ACGL",
+      "name": "Arch Capital Group",
+      "sector": "Financials",
+      "industry": "Property & Casualty Insurance",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "ADM",
+      "name": "Archer Daniels Midland",
+      "sector": "Consumer Staples",
+      "industry": "Agricultural Products & Services",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "ARES",
+      "name": "Ares Management",
+      "sector": "Financials",
+      "industry": "Asset Management & Custody Banks",
+      "complete": false,
+      "reason": "No reported period for 2026-10-29T23:59:59Z."
+    },
+    {
+      "symbol": "ANET",
+      "name": "Arista Networks",
+      "sector": "Information Technology",
+      "industry": "Communications Equipment",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "AJG",
+      "name": "Arthur J. Gallagher & Co.",
+      "sector": "Financials",
+      "industry": "Insurance Brokers",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "AIZ",
+      "name": "Assurant",
+      "sector": "Financials",
+      "industry": "Multi-line Insurance",
+      "complete": false,
+      "reason": "No reported period for 2026-11-03T23:59:59Z."
+    },
+    {
+      "symbol": "T",
+      "name": "AT&T",
+      "sector": "Communication Services",
+      "industry": "Integrated Telecommunication Services",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "ATO",
+      "name": "Atmos Energy",
+      "sector": "Utilities",
+      "industry": "Gas Utilities",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "ADSK",
+      "name": "Autodesk",
+      "sector": "Information Technology",
+      "industry": "Application Software",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "ADP",
+      "name": "Automatic Data Processing",
+      "sector": "Industrials",
+      "industry": "Human Resource & Employment Services",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "AZO",
+      "name": "AutoZone",
+      "sector": "Consumer Discretionary",
+      "industry": "Automotive Retail",
+      "complete": false,
+      "reason": "EPS pair needs manual split/methodology verification."
+    },
+    {
+      "symbol": "AVY",
+      "name": "Avery Dennison",
+      "sector": "Materials",
+      "industry": "Paper & Plastic Packaging Products & Materials",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "AXON",
+      "name": "Axon Enterprise",
+      "sector": "Industrials",
+      "industry": "Aerospace & Defense",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "BKR",
+      "name": "Baker Hughes",
+      "sector": "Energy",
+      "industry": "Oil & Gas Equipment & Services",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "BALL",
+      "name": "Ball Corporation",
+      "sector": "Materials",
+      "industry": "Metal, Glass & Plastic Containers",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "BAC",
+      "name": "Bank of America",
+      "sector": "Financials",
+      "industry": "Diversified Banks",
+      "complete": false,
+      "reason": "Non-positive reported revenue or consensus."
+    },
+    {
+      "symbol": "BAX",
+      "name": "Baxter International",
+      "sector": "Health Care",
+      "industry": "Health Care Equipment",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "BDX",
+      "name": "Becton Dickinson",
+      "sector": "Health Care",
+      "industry": "Health Care Equipment",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2026-02-09T23:59:59Z."
+    },
+    {
+      "symbol": "BRK-B",
+      "name": "Berkshire Hathaway",
+      "sector": "Financials",
+      "industry": "Multi-Sector Holdings",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "BBY",
+      "name": "Best Buy",
+      "sector": "Consumer Discretionary",
+      "industry": "Computer & Electronics Retail",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "TECH",
+      "name": "Bio-Techne",
+      "sector": "Health Care",
+      "industry": "Life Sciences Tools & Services",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "BIIB",
+      "name": "Biogen",
+      "sector": "Health Care",
+      "industry": "Biotechnology",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "BLK",
+      "name": "BlackRock",
+      "sector": "Financials",
+      "industry": "Asset Management & Custody Banks",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "BX",
+      "name": "Blackstone Inc.",
+      "sector": "Financials",
+      "industry": "Asset Management & Custody Banks",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2026-10-22T23:59:59Z."
+    },
+    {
+      "symbol": "XYZ",
+      "name": "Block, Inc.",
+      "sector": "Financials",
+      "industry": "Transaction & Payment Processing Services",
+      "complete": false,
+      "reason": "Only 1/6 complete historical pairs."
+    },
+    {
+      "symbol": "BE",
+      "name": "Bloom Energy",
+      "sector": "Industrials",
+      "industry": "Electrical Components & Equipment",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "BNY",
+      "name": "BNY Mellon",
+      "sector": "Financials",
+      "industry": "Asset Management & Custody Banks",
+      "complete": false,
+      "reason": "Only 4/6 complete historical pairs."
+    },
+    {
+      "symbol": "BA",
+      "name": "Boeing",
+      "sector": "Industrials",
+      "industry": "Aerospace & Defense",
+      "complete": false,
+      "reason": "EPS pair needs manual split/methodology verification."
+    },
+    {
+      "symbol": "BKNG",
+      "name": "Booking Holdings",
+      "sector": "Consumer Discretionary",
+      "industry": "Hotels, Resorts & Cruise Lines",
+      "complete": false,
+      "reason": "EPS pair needs manual split/methodology verification."
+    },
+    {
+      "symbol": "BSX",
+      "name": "Boston Scientific",
+      "sector": "Health Care",
+      "industry": "Health Care Equipment",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "BMY",
+      "name": "Bristol Myers Squibb",
+      "sector": "Health Care",
+      "industry": "Pharmaceuticals",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "AVGO",
+      "name": "Broadcom",
+      "sector": "Information Technology",
+      "industry": "Semiconductors",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "BR",
+      "name": "Broadridge Financial Solutions",
+      "sector": "Industrials",
+      "industry": "Data Processing & Outsourced Services",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "BRO",
+      "name": "Brown & Brown",
+      "sector": "Financials",
+      "industry": "Insurance Brokers",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "BF-B",
+      "name": "Brown–Forman",
+      "sector": "Consumer Staples",
+      "industry": "Distillers & Vintners",
+      "complete": false,
+      "reason": "Only 4/6 complete historical pairs."
+    },
+    {
+      "symbol": "BG",
+      "name": "Bunge Global",
+      "sector": "Consumer Staples",
+      "industry": "Agricultural Products & Services",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "BXP",
+      "name": "BXP, Inc.",
+      "sector": "Real Estate",
+      "industry": "Office REITs",
+      "complete": false,
+      "reason": "REIT: FFO/EPS methodology requires manual review."
+    },
+    {
+      "symbol": "CHRW",
+      "name": "C.H. Robinson",
+      "sector": "Industrials",
+      "industry": "Air Freight & Logistics",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "CDNS",
+      "name": "Cadence Design Systems",
+      "sector": "Information Technology",
+      "industry": "Application Software",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "CPT",
+      "name": "Camden Property Trust",
+      "sector": "Real Estate",
+      "industry": "Multi-Family Residential REITs",
+      "complete": false,
+      "reason": "REIT: FFO/EPS methodology requires manual review."
+    },
+    {
+      "symbol": "COF",
+      "name": "Capital One",
+      "sector": "Financials",
+      "industry": "Consumer Finance",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "CAH",
+      "name": "Cardinal Health",
+      "sector": "Health Care",
+      "industry": "Health Care Distributors",
+      "complete": false,
+      "reason": "The actual six displayed reports do not all contain both beats."
+    },
+    {
+      "symbol": "CCL",
+      "name": "Carnival Corporation",
+      "sector": "Consumer Discretionary",
+      "industry": "Hotels, Resorts & Cruise Lines",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "CARR",
+      "name": "Carrier Global",
+      "sector": "Industrials",
+      "industry": "Building Products",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "CVNA",
+      "name": "Carvana",
+      "sector": "Consumer Discretionary",
+      "industry": "Automotive Retail",
+      "complete": false,
+      "reason": "EPS pair needs manual split/methodology verification."
+    },
+    {
+      "symbol": "CASY",
+      "name": "Casey's",
+      "sector": "Consumer Staples",
+      "industry": "Food Retail",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "CAT",
+      "name": "Caterpillar Inc.",
+      "sector": "Industrials",
+      "industry": "Construction Machinery & Heavy Transportation Equipment",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "CBOE",
+      "name": "Cboe Global Markets",
+      "sector": "Financials",
+      "industry": "Financial Exchanges & Data",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "CBRE",
+      "name": "CBRE Group",
+      "sector": "Real Estate",
+      "industry": "Real Estate Services",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "CDW",
+      "name": "CDW Corporation",
+      "sector": "Information Technology",
+      "industry": "Technology Distributors",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "COR",
+      "name": "Cencora",
+      "sector": "Health Care",
+      "industry": "Health Care Distributors",
+      "complete": false,
+      "reason": "No reported period for 2026-11-04T23:59:59Z."
+    },
+    {
+      "symbol": "CNC",
+      "name": "Centene Corporation",
+      "sector": "Health Care",
+      "industry": "Managed Health Care",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "CNP",
+      "name": "CenterPoint Energy",
+      "sector": "Utilities",
+      "industry": "Multi-Utilities",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "CF",
+      "name": "CF Industries",
+      "sector": "Materials",
+      "industry": "Fertilizers & Agricultural Chemicals",
+      "complete": false,
+      "reason": "No reported period for 2026-11-04T23:59:59Z."
+    },
+    {
+      "symbol": "CRL",
+      "name": "Charles River Laboratories",
+      "sector": "Health Care",
+      "industry": "Life Sciences Tools & Services",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "SCHW",
+      "name": "Charles Schwab Corporation",
+      "sector": "Financials",
+      "industry": "Investment Banking & Brokerage",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2025-10-16T23:59:59Z."
+    },
+    {
+      "symbol": "CHTR",
+      "name": "Charter Communications",
+      "sector": "Communication Services",
+      "industry": "Cable & Satellite",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "CVX",
+      "name": "Chevron Corporation",
+      "sector": "Energy",
+      "industry": "Integrated Oil & Gas",
+      "complete": false,
+      "reason": "No reported period for 2026-10-30T23:59:59Z."
+    },
+    {
+      "symbol": "CMG",
+      "name": "Chipotle Mexican Grill",
+      "sector": "Consumer Discretionary",
+      "industry": "Restaurants",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "CB",
+      "name": "Chubb Limited",
+      "sector": "Financials",
+      "industry": "Property & Casualty Insurance",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "CHD",
+      "name": "Church & Dwight",
+      "sector": "Consumer Staples",
+      "industry": "Household Products",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "CIEN",
+      "name": "Ciena",
+      "sector": "Information Technology",
+      "industry": "Communications Equipment",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "CI",
+      "name": "Cigna",
+      "sector": "Health Care",
+      "industry": "Health Care Services",
+      "complete": false,
+      "reason": "The actual six displayed reports do not all contain both beats."
+    },
+    {
+      "symbol": "CINF",
+      "name": "Cincinnati Financial",
+      "sector": "Financials",
+      "industry": "Property & Casualty Insurance",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2025-07-28T23:59:59Z."
+    },
+    {
+      "symbol": "CTAS",
+      "name": "Cintas",
+      "sector": "Industrials",
+      "industry": "Diversified Support Services",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "CSCO",
+      "name": "Cisco",
+      "sector": "Information Technology",
+      "industry": "Communications Equipment",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "C",
+      "name": "Citigroup",
+      "sector": "Financials",
+      "industry": "Diversified Banks",
+      "complete": false,
+      "reason": "No reported period for 2026-10-13T23:59:59Z."
+    },
+    {
+      "symbol": "CFG",
+      "name": "Citizens Financial Group",
+      "sector": "Financials",
+      "industry": "Regional Banks",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "CLX",
+      "name": "Clorox",
+      "sector": "Consumer Staples",
+      "industry": "Household Products",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "CME",
+      "name": "CME Group",
+      "sector": "Financials",
+      "industry": "Financial Exchanges & Data",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "CMS",
+      "name": "CMS Energy",
+      "sector": "Utilities",
+      "industry": "Multi-Utilities",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "KO",
+      "name": "Coca-Cola Company (The)",
+      "sector": "Consumer Staples",
+      "industry": "Soft Drinks & Non-alcoholic Beverages",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "CTSH",
+      "name": "Cognizant",
+      "sector": "Information Technology",
+      "industry": "IT Consulting & Other Services",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "COHR",
+      "name": "Coherent Corp.",
+      "sector": "Information Technology",
+      "industry": "Electronic Components",
+      "complete": false,
+      "reason": "Only 1/6 complete historical pairs."
+    },
+    {
+      "symbol": "COIN",
+      "name": "Coinbase",
+      "sector": "Financials",
+      "industry": "Financial Exchanges & Data",
+      "complete": false,
+      "reason": "EPS pair needs manual split/methodology verification."
+    },
+    {
+      "symbol": "CL",
+      "name": "Colgate-Palmolive",
+      "sector": "Consumer Staples",
+      "industry": "Household Products",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "CMCSA",
+      "name": "Comcast",
+      "sector": "Communication Services",
+      "industry": "Cable & Satellite",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "FIX",
+      "name": "Comfort Systems USA",
+      "sector": "Industrials",
+      "industry": "Construction & Engineering",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "COP",
+      "name": "ConocoPhillips",
+      "sector": "Energy",
+      "industry": "Oil & Gas Exploration & Production",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2026-02-05T23:59:59Z."
+    },
+    {
+      "symbol": "ED",
+      "name": "Consolidated Edison",
+      "sector": "Utilities",
+      "industry": "Multi-Utilities",
+      "complete": false,
+      "reason": "The actual six displayed reports do not all contain both beats."
+    },
+    {
+      "symbol": "STZ",
+      "name": "Constellation Brands",
+      "sector": "Consumer Staples",
+      "industry": "Distillers & Vintners",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "CEG",
+      "name": "Constellation Energy",
+      "sector": "Utilities",
+      "industry": "Electric Utilities",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "COO",
+      "name": "Cooper Companies (The)",
+      "sector": "Health Care",
+      "industry": "Health Care Supplies",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "CPRT",
+      "name": "Copart",
+      "sector": "Industrials",
+      "industry": "Diversified Support Services",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "GLW",
+      "name": "Corning Inc.",
+      "sector": "Information Technology",
+      "industry": "Electronic Components",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2026-10-27T23:59:59Z."
+    },
+    {
+      "symbol": "CPAY",
+      "name": "Corpay",
+      "sector": "Financials",
+      "industry": "Transaction & Payment Processing Services",
+      "complete": false,
+      "reason": "Only 4/6 complete historical pairs."
+    },
+    {
+      "symbol": "CSGP",
+      "name": "CoStar Group",
+      "sector": "Real Estate",
+      "industry": "Real Estate Services",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "COST",
+      "name": "Costco",
+      "sector": "Consumer Staples",
+      "industry": "Consumer Staples Merchandise Retail",
+      "complete": false,
+      "reason": "The actual six displayed reports do not all contain both beats."
+    },
+    {
+      "symbol": "CRH",
+      "name": "CRH plc",
+      "sector": "Materials",
+      "industry": "Construction Materials",
+      "complete": false,
+      "reason": "EPS history needs manual split or exceptional-item verification."
+    },
+    {
+      "symbol": "CRWD",
+      "name": "CrowdStrike",
+      "sector": "Information Technology",
+      "industry": "Systems Software",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "CCI",
+      "name": "Crown Castle",
+      "sector": "Real Estate",
+      "industry": "Telecom Tower REITs",
+      "complete": false,
+      "reason": "REIT: FFO/EPS methodology requires manual review."
+    },
+    {
+      "symbol": "CSX",
+      "name": "CSX Corporation",
+      "sector": "Industrials",
+      "industry": "Rail Transportation",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "CMI",
+      "name": "Cummins",
+      "sector": "Industrials",
+      "industry": "Construction Machinery & Heavy Transportation Equipment",
+      "complete": false,
+      "reason": "The actual six displayed reports do not all contain both beats."
+    },
+    {
+      "symbol": "CVS",
+      "name": "CVS Health",
+      "sector": "Health Care",
+      "industry": "Health Care Services",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "DHR",
+      "name": "Danaher Corporation",
+      "sector": "Health Care",
+      "industry": "Life Sciences Tools & Services",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "DRI",
+      "name": "Darden Restaurants",
+      "sector": "Consumer Discretionary",
+      "industry": "Restaurants",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "DDOG",
+      "name": "Datadog",
+      "sector": "Information Technology",
+      "industry": "Application Software",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "DVA",
+      "name": "DaVita",
+      "sector": "Health Care",
+      "industry": "Health Care Services",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "DECK",
+      "name": "Deckers Brands",
+      "sector": "Consumer Discretionary",
+      "industry": "Footwear",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "DE",
+      "name": "Deere & Company",
+      "sector": "Industrials",
+      "industry": "Agricultural & Farm Machinery",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2025-08-14T23:59:59Z."
+    },
+    {
+      "symbol": "DELL",
+      "name": "Dell Technologies",
+      "sector": "Information Technology",
+      "industry": "Technology Hardware, Storage & Peripherals",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "DAL",
+      "name": "Delta Air Lines",
+      "sector": "Industrials",
+      "industry": "Passenger Airlines",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2026-10-09T23:59:59Z."
+    },
+    {
+      "symbol": "DVN",
+      "name": "Devon Energy",
+      "sector": "Energy",
+      "industry": "Oil & Gas Exploration & Production",
+      "complete": false,
+      "reason": "Non-positive reported revenue or consensus."
+    },
+    {
+      "symbol": "DXCM",
+      "name": "Dexcom",
+      "sector": "Health Care",
+      "industry": "Health Care Equipment",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "FANG",
+      "name": "Diamondback Energy",
+      "sector": "Energy",
+      "industry": "Oil & Gas Exploration & Production",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "DLR",
+      "name": "Digital Realty",
+      "sector": "Real Estate",
+      "industry": "Data Center REITs",
+      "complete": false,
+      "reason": "REIT: FFO/EPS methodology requires manual review."
+    },
+    {
+      "symbol": "DG",
+      "name": "Dollar General",
+      "sector": "Consumer Staples",
+      "industry": "Consumer Staples Merchandise Retail",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "DLTR",
+      "name": "Dollar Tree",
+      "sector": "Consumer Staples",
+      "industry": "Consumer Staples Merchandise Retail",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "D",
+      "name": "Dominion Energy",
+      "sector": "Utilities",
+      "industry": "Multi-Utilities",
+      "complete": false,
+      "reason": "No reported period for 2026-07-31T23:59:59Z."
+    },
+    {
+      "symbol": "DPZ",
+      "name": "Domino's",
+      "sector": "Consumer Discretionary",
+      "industry": "Restaurants",
+      "complete": false,
+      "reason": "Only 2/6 complete historical pairs."
+    },
+    {
+      "symbol": "DASH",
+      "name": "DoorDash",
+      "sector": "Consumer Discretionary",
+      "industry": "Specialized Consumer Services",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "DOV",
+      "name": "Dover Corporation",
+      "sector": "Industrials",
+      "industry": "Industrial Machinery & Supplies & Components",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "DOW",
+      "name": "Dow Inc.",
+      "sector": "Materials",
+      "industry": "Commodity Chemicals",
+      "complete": false,
+      "reason": "EPS history needs manual split or exceptional-item verification."
+    },
+    {
+      "symbol": "DHI",
+      "name": "D. R. Horton",
+      "sector": "Consumer Discretionary",
+      "industry": "Homebuilding",
+      "complete": false,
+      "reason": "No reported period for 2026-10-29T23:59:59Z."
+    },
+    {
+      "symbol": "DTE",
+      "name": "DTE Energy",
+      "sector": "Utilities",
+      "industry": "Multi-Utilities",
+      "complete": false,
+      "reason": "No reported period for 2026-07-28T23:59:59Z."
+    },
+    {
+      "symbol": "DUK",
+      "name": "Duke Energy",
+      "sector": "Utilities",
+      "industry": "Electric Utilities",
+      "complete": false,
+      "reason": "No reported period for 2026-08-03T23:59:59Z."
+    },
+    {
+      "symbol": "DD",
+      "name": "DuPont",
+      "sector": "Industrials",
+      "industry": "Industrial Conglomerates",
+      "complete": false,
+      "reason": "Non-positive reported revenue or consensus."
+    },
+    {
+      "symbol": "ETN",
+      "name": "Eaton Corporation",
+      "sector": "Industrials",
+      "industry": "Electrical Components & Equipment",
+      "complete": false,
+      "reason": "Only 4/6 complete historical pairs."
+    },
+    {
+      "symbol": "EBAY",
+      "name": "eBay Inc.",
+      "sector": "Consumer Discretionary",
+      "industry": "Broadline Retail",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "ECHO",
+      "name": "EchoStar",
+      "sector": "Communication Services",
+      "industry": "Wireless Telecommunication Services",
+      "complete": false,
+      "reason": "EPS pair needs manual split/methodology verification."
+    },
+    {
+      "symbol": "ECL",
+      "name": "Ecolab",
+      "sector": "Materials",
+      "industry": "Specialty Chemicals",
+      "complete": false,
+      "reason": "Only 3/6 complete historical pairs."
+    },
+    {
+      "symbol": "EIX",
+      "name": "Edison International",
+      "sector": "Utilities",
+      "industry": "Electric Utilities",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "EW",
+      "name": "Edwards Lifesciences",
+      "sector": "Health Care",
+      "industry": "Health Care Equipment",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "ELV",
+      "name": "Elevance Health",
+      "sector": "Health Care",
+      "industry": "Managed Health Care",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "EME",
+      "name": "Emcor",
+      "sector": "Industrials",
+      "industry": "Construction & Engineering",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "EMR",
+      "name": "Emerson Electric",
+      "sector": "Industrials",
+      "industry": "Electrical Components & Equipment",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "ETR",
+      "name": "Entergy",
+      "sector": "Utilities",
+      "industry": "Electric Utilities",
+      "complete": false,
+      "reason": "No reported period for 2026-11-02T23:59:59Z."
+    },
+    {
+      "symbol": "EOG",
+      "name": "EOG Resources",
+      "sector": "Energy",
+      "industry": "Oil & Gas Exploration & Production",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "EQT",
+      "name": "EQT Corporation",
+      "sector": "Energy",
+      "industry": "Oil & Gas Exploration & Production",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2026-07-21T23:59:59Z."
+    },
+    {
+      "symbol": "EFX",
+      "name": "Equifax",
+      "sector": "Industrials",
+      "industry": "Research & Consulting Services",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "EQIX",
+      "name": "Equinix",
+      "sector": "Real Estate",
+      "industry": "Data Center REITs",
+      "complete": false,
+      "reason": "REIT: FFO/EPS methodology requires manual review."
+    },
+    {
+      "symbol": "ERIE",
+      "name": "Erie Indemnity",
+      "sector": "Financials",
+      "industry": "Insurance Brokers",
+      "complete": false,
+      "reason": "EPS history needs manual split or exceptional-item verification."
+    },
+    {
+      "symbol": "ESS",
+      "name": "Essex Property Trust",
+      "sector": "Real Estate",
+      "industry": "Multi-Family Residential REITs",
+      "complete": false,
+      "reason": "REIT: FFO/EPS methodology requires manual review."
+    },
+    {
+      "symbol": "EL",
+      "name": "Estée Lauder Companies (The)",
+      "sector": "Consumer Staples",
+      "industry": "Personal Care Products",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "EG",
+      "name": "Everest Group",
+      "sector": "Financials",
+      "industry": "Reinsurance",
+      "complete": false,
+      "reason": "Only 4/6 complete historical pairs."
+    },
+    {
+      "symbol": "EVRG",
+      "name": "Evergy",
+      "sector": "Utilities",
+      "industry": "Electric Utilities",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "P",
+      "name": "Everpure",
+      "sector": "Information Technology",
+      "industry": "Technology Hardware, Storage & Peripherals",
+      "complete": false,
+      "reason": "Only 3/6 complete historical pairs."
+    },
+    {
+      "symbol": "ES",
+      "name": "Eversource Energy",
+      "sector": "Utilities",
+      "industry": "Electric Utilities",
+      "complete": false,
+      "reason": "No reported period for 2026-11-04T23:59:59Z."
+    },
+    {
+      "symbol": "EXC",
+      "name": "Exelon",
+      "sector": "Utilities",
+      "industry": "Electric Utilities",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "EXE",
+      "name": "Expand Energy",
+      "sector": "Energy",
+      "industry": "Oil & Gas Exploration & Production",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "EXPE",
+      "name": "Expedia Group",
+      "sector": "Consumer Discretionary",
+      "industry": "Hotels, Resorts & Cruise Lines",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "EXPD",
+      "name": "Expeditors International",
+      "sector": "Industrials",
+      "industry": "Air Freight & Logistics",
+      "complete": false,
+      "reason": "Only 1/6 complete historical pairs."
+    },
+    {
+      "symbol": "EXR",
+      "name": "Extra Space Storage",
+      "sector": "Real Estate",
+      "industry": "Self-Storage REITs",
+      "complete": false,
+      "reason": "REIT: FFO/EPS methodology requires manual review."
+    },
+    {
+      "symbol": "XOM",
+      "name": "ExxonMobil",
+      "sector": "Energy",
+      "industry": "Integrated Oil & Gas",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2026-10-30T23:59:59Z."
+    },
+    {
+      "symbol": "FFIV",
+      "name": "F5, Inc.",
+      "sector": "Information Technology",
+      "industry": "Communications Equipment",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2026-10-27T23:59:59Z."
+    },
+    {
+      "symbol": "FDS",
+      "name": "FactSet",
+      "sector": "Financials",
+      "industry": "Financial Exchanges & Data",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "FICO",
+      "name": "Fair Isaac",
+      "sector": "Information Technology",
+      "industry": "Application Software",
+      "complete": false,
+      "reason": "No reported period for 2026-11-04T23:59:59Z."
+    },
+    {
+      "symbol": "FAST",
+      "name": "Fastenal",
+      "sector": "Industrials",
+      "industry": "Trading Companies & Distributors",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "FRT",
+      "name": "Federal Realty Investment Trust",
+      "sector": "Real Estate",
+      "industry": "Retail REITs",
+      "complete": false,
+      "reason": "REIT: FFO/EPS methodology requires manual review."
+    },
+    {
+      "symbol": "FDX",
+      "name": "FedEx",
+      "sector": "Industrials",
+      "industry": "Air Freight & Logistics",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "FDXF",
+      "name": "FedEx Freight",
+      "sector": "Industrials",
+      "industry": "Cargo Ground Transportation",
+      "complete": false,
+      "reason": "Only 0/6 complete historical pairs."
+    },
+    {
+      "symbol": "FERG",
+      "name": "Ferguson Enterprises",
+      "sector": "Industrials",
+      "industry": "Trading Companies & Distributors",
+      "complete": false,
+      "reason": "Only 1/6 complete historical pairs."
+    },
+    {
+      "symbol": "FIS",
+      "name": "Fidelity National Information Services",
+      "sector": "Financials",
+      "industry": "Transaction & Payment Processing Services",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "FITB",
+      "name": "Fifth Third Bancorp",
+      "sector": "Financials",
+      "industry": "Regional Banks",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "FSLR",
+      "name": "First Solar",
+      "sector": "Information Technology",
+      "industry": "Semiconductors",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "FE",
+      "name": "FirstEnergy",
+      "sector": "Utilities",
+      "industry": "Electric Utilities",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "FISV",
+      "name": "Fiserv",
+      "sector": "Financials",
+      "industry": "Transaction & Payment Processing Services",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2026-11-03T23:59:59Z."
+    },
+    {
+      "symbol": "FLEX",
+      "name": "Flex Ltd.",
+      "sector": "Information Technology",
+      "industry": "Electronic Manufacturing Services",
+      "complete": false,
+      "reason": "Only 4/6 complete historical pairs."
+    },
+    {
+      "symbol": "F",
+      "name": "Ford Motor Company",
+      "sector": "Consumer Discretionary",
+      "industry": "Automobile Manufacturers",
+      "complete": false,
+      "reason": "EPS history needs manual split or exceptional-item verification."
+    },
+    {
+      "symbol": "FTNT",
+      "name": "Fortinet",
+      "sector": "Information Technology",
+      "industry": "Systems Software",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "FTV",
+      "name": "Fortive",
+      "sector": "Industrials",
+      "industry": "Industrial Machinery & Supplies & Components",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2026-04-30T23:59:59Z."
+    },
+    {
+      "symbol": "FOXA",
+      "name": "Fox Corporation (Class A)",
+      "sector": "Communication Services",
+      "industry": "Broadcasting",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "FOX",
+      "name": "Fox Corporation (Class B)",
+      "sector": "Communication Services",
+      "industry": "Broadcasting",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "BEN",
+      "name": "Franklin Resources",
+      "sector": "Financials",
+      "industry": "Asset Management & Custody Banks",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "FCX",
+      "name": "Freeport-McMoRan",
+      "sector": "Materials",
+      "industry": "Copper",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2026-10-27T23:59:59Z."
+    },
+    {
+      "symbol": "GRMN",
+      "name": "Garmin",
+      "sector": "Consumer Discretionary",
+      "industry": "Consumer Electronics",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "IT",
+      "name": "Gartner",
+      "sector": "Information Technology",
+      "industry": "IT Consulting & Other Services",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "GE",
+      "name": "GE Aerospace",
+      "sector": "Industrials",
+      "industry": "Aerospace & Defense",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2026-10-20T23:59:59Z."
+    },
+    {
+      "symbol": "GEHC",
+      "name": "GE HealthCare",
+      "sector": "Health Care",
+      "industry": "Health Care Equipment",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "GEV",
+      "name": "GE Vernova",
+      "sector": "Industrials",
+      "industry": "Heavy Electrical Equipment",
+      "complete": false,
+      "reason": "EPS pair needs manual split/methodology verification."
+    },
+    {
+      "symbol": "GEN",
+      "name": "Gen Digital",
+      "sector": "Information Technology",
+      "industry": "Systems Software",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "GNRC",
+      "name": "Generac",
+      "sector": "Industrials",
+      "industry": "Heavy Electrical Equipment",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "GD",
+      "name": "General Dynamics",
+      "sector": "Industrials",
+      "industry": "Aerospace & Defense",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "GIS",
+      "name": "General Mills",
+      "sector": "Consumer Staples",
+      "industry": "Packaged Foods & Meats",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "GM",
+      "name": "General Motors",
+      "sector": "Consumer Discretionary",
+      "industry": "Automobile Manufacturers",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "GPC",
+      "name": "Genuine Parts Company",
+      "sector": "Consumer Discretionary",
+      "industry": "Distributors",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "GILD",
+      "name": "Gilead Sciences",
+      "sector": "Health Care",
+      "industry": "Biotechnology",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "GPN",
+      "name": "Global Payments",
+      "sector": "Financials",
+      "industry": "Transaction & Payment Processing Services",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2026-08-05T23:59:59Z."
+    },
+    {
+      "symbol": "GL",
+      "name": "Globe Life",
+      "sector": "Financials",
+      "industry": "Life & Health Insurance",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "GDDY",
+      "name": "GoDaddy",
+      "sector": "Information Technology",
+      "industry": "Internet Services & Infrastructure",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "GS",
+      "name": "Goldman Sachs",
+      "sector": "Financials",
+      "industry": "Investment Banking & Brokerage",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2026-01-15T23:59:59Z."
+    },
+    {
+      "symbol": "HAL",
+      "name": "Halliburton",
+      "sector": "Energy",
+      "industry": "Oil & Gas Equipment & Services",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "HIG",
+      "name": "Hartford (The)",
+      "sector": "Financials",
+      "industry": "Property & Casualty Insurance",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2025-10-27T23:59:59Z."
+    },
+    {
+      "symbol": "HAS",
+      "name": "Hasbro",
+      "sector": "Consumer Discretionary",
+      "industry": "Leisure Products",
+      "complete": false,
+      "reason": "Multiple reports map to the same period."
+    },
+    {
+      "symbol": "HCA",
+      "name": "HCA Healthcare",
+      "sector": "Health Care",
+      "industry": "Health Care Facilities",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "DOC",
+      "name": "Healthpeak Properties",
+      "sector": "Real Estate",
+      "industry": "Health Care REITs",
+      "complete": false,
+      "reason": "REIT: FFO/EPS methodology requires manual review."
+    },
+    {
+      "symbol": "HSIC",
+      "name": "Henry Schein",
+      "sector": "Health Care",
+      "industry": "Health Care Distributors",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "HSY",
+      "name": "Hershey Company (The)",
+      "sector": "Consumer Staples",
+      "industry": "Packaged Foods & Meats",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "HPE",
+      "name": "Hewlett Packard Enterprise",
+      "sector": "Information Technology",
+      "industry": "Technology Hardware, Storage & Peripherals",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "HLT",
+      "name": "Hilton Worldwide",
+      "sector": "Consumer Discretionary",
+      "industry": "Hotels, Resorts & Cruise Lines",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2026-10-27T23:59:59Z."
+    },
+    {
+      "symbol": "HD",
+      "name": "Home Depot (The)",
+      "sector": "Consumer Discretionary",
+      "industry": "Home Improvement Retail",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "HONA",
+      "name": "Honeywell Aerospace",
+      "sector": "Industrials",
+      "industry": "Aerospace & Defense",
+      "complete": false,
+      "reason": "Only 0/6 complete historical pairs."
+    },
+    {
+      "symbol": "HON",
+      "name": "Honeywell Technologies",
+      "sector": "Industrials",
+      "industry": "Industrial Conglomerates",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2026-01-29T23:59:59Z."
+    },
+    {
+      "symbol": "HRL",
+      "name": "Hormel Foods",
+      "sector": "Consumer Staples",
+      "industry": "Packaged Foods & Meats",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "HST",
+      "name": "Host Hotels & Resorts",
+      "sector": "Real Estate",
+      "industry": "Hotel & Resort REITs",
+      "complete": false,
+      "reason": "REIT: FFO/EPS methodology requires manual review."
+    },
+    {
+      "symbol": "HWM",
+      "name": "Howmet Aerospace",
+      "sector": "Industrials",
+      "industry": "Aerospace & Defense",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "HPQ",
+      "name": "HP Inc.",
+      "sector": "Information Technology",
+      "industry": "Technology Hardware, Storage & Peripherals",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "HUBB",
+      "name": "Hubbell Incorporated",
+      "sector": "Industrials",
+      "industry": "Industrial Machinery & Supplies & Components",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "HUM",
+      "name": "Humana",
+      "sector": "Health Care",
+      "industry": "Managed Health Care",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "HBAN",
+      "name": "Huntington Bancshares",
+      "sector": "Financials",
+      "industry": "Regional Banks",
+      "complete": false,
+      "reason": "Only 2/6 complete historical pairs."
+    },
+    {
+      "symbol": "HII",
+      "name": "Huntington Ingalls Industries",
+      "sector": "Industrials",
+      "industry": "Aerospace & Defense",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "IBM",
+      "name": "IBM",
+      "sector": "Information Technology",
+      "industry": "IT Consulting & Other Services",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "IEX",
+      "name": "IDEX Corporation",
+      "sector": "Industrials",
+      "industry": "Industrial Machinery & Supplies & Components",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "IDXX",
+      "name": "Idexx Laboratories",
+      "sector": "Health Care",
+      "industry": "Health Care Equipment",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "ITW",
+      "name": "Illinois Tool Works",
+      "sector": "Industrials",
+      "industry": "Industrial Machinery & Supplies & Components",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "ILMN",
+      "name": "Illumina, Inc.",
+      "sector": "Health Care",
+      "industry": "Life Sciences Tools & Services",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2026-10-29T23:59:59Z."
+    },
+    {
+      "symbol": "INCY",
+      "name": "Incyte",
+      "sector": "Health Care",
+      "industry": "Biotechnology",
+      "complete": false,
+      "reason": "The actual six displayed reports do not all contain both beats."
+    },
+    {
+      "symbol": "IR",
+      "name": "Ingersoll Rand",
+      "sector": "Industrials",
+      "industry": "Industrial Machinery & Supplies & Components",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "PODD",
+      "name": "Insulet Corporation",
+      "sector": "Health Care",
+      "industry": "Health Care Equipment",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2025-11-06T23:59:59Z."
+    },
+    {
+      "symbol": "INTC",
+      "name": "Intel",
+      "sector": "Information Technology",
+      "industry": "Semiconductors",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "IBKR",
+      "name": "Interactive Brokers",
+      "sector": "Financials",
+      "industry": "Investment Banking & Brokerage",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2025-10-16T23:59:59Z."
+    },
+    {
+      "symbol": "ICE",
+      "name": "Intercontinental Exchange",
+      "sector": "Financials",
+      "industry": "Financial Exchanges & Data",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "IFF",
+      "name": "International Flavors & Fragrances",
+      "sector": "Materials",
+      "industry": "Specialty Chemicals",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2025-08-05T23:59:59Z."
+    },
+    {
+      "symbol": "IP",
+      "name": "International Paper",
+      "sector": "Materials",
+      "industry": "Paper & Plastic Packaging Products & Materials",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2025-07-31T23:59:59Z."
+    },
+    {
+      "symbol": "INTU",
+      "name": "Intuit",
+      "sector": "Information Technology",
+      "industry": "Application Software",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "ISRG",
+      "name": "Intuitive Surgical",
+      "sector": "Health Care",
+      "industry": "Health Care Equipment",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "IVZ",
+      "name": "Invesco",
+      "sector": "Financials",
+      "industry": "Asset Management & Custody Banks",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2026-10-27T23:59:59Z."
+    },
+    {
+      "symbol": "INVH",
+      "name": "Invitation Homes",
+      "sector": "Real Estate",
+      "industry": "Single-Family Residential REITs",
+      "complete": false,
+      "reason": "REIT: FFO/EPS methodology requires manual review."
+    },
+    {
+      "symbol": "IQV",
+      "name": "IQVIA",
+      "sector": "Health Care",
+      "industry": "Life Sciences Tools & Services",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "IRM",
+      "name": "Iron Mountain",
+      "sector": "Real Estate",
+      "industry": "Other Specialized REITs",
+      "complete": false,
+      "reason": "REIT: FFO/EPS methodology requires manual review."
+    },
+    {
+      "symbol": "JBHT",
+      "name": "J.B. Hunt",
+      "sector": "Industrials",
+      "industry": "Cargo Ground Transportation",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "JBL",
+      "name": "Jabil",
+      "sector": "Information Technology",
+      "industry": "Electronic Manufacturing Services",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "JKHY",
+      "name": "Jack Henry & Associates",
+      "sector": "Financials",
+      "industry": "Transaction & Payment Processing Services",
+      "complete": false,
+      "reason": "No reported period for 2026-11-03T23:59:59Z."
+    },
+    {
+      "symbol": "J",
+      "name": "Jacobs Solutions",
+      "sector": "Industrials",
+      "industry": "Construction & Engineering",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2026-08-04T23:59:59Z."
+    },
+    {
+      "symbol": "JNJ",
+      "name": "Johnson & Johnson",
+      "sector": "Health Care",
+      "industry": "Pharmaceuticals",
+      "complete": false,
+      "reason": "Only 4/6 complete historical pairs."
+    },
+    {
+      "symbol": "JCI",
+      "name": "Johnson Controls",
+      "sector": "Industrials",
+      "industry": "Building Products",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "JPM",
+      "name": "JPMorgan Chase",
+      "sector": "Financials",
+      "industry": "Diversified Banks",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "KDP",
+      "name": "Keurig Dr Pepper",
+      "sector": "Consumer Staples",
+      "industry": "Soft Drinks & Non-alcoholic Beverages",
+      "complete": false,
+      "reason": "Only 4/6 complete historical pairs."
+    },
+    {
+      "symbol": "KEY",
+      "name": "KeyCorp",
+      "sector": "Financials",
+      "industry": "Regional Banks",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2026-01-20T23:59:59Z."
+    },
+    {
+      "symbol": "KEYS",
+      "name": "Keysight Technologies",
+      "sector": "Information Technology",
+      "industry": "Electronic Equipment & Instruments",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "KMB",
+      "name": "Kimberly-Clark",
+      "sector": "Consumer Staples",
+      "industry": "Household Products",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2025-04-22T23:59:59Z."
+    },
+    {
+      "symbol": "KIM",
+      "name": "Kimco Realty",
+      "sector": "Real Estate",
+      "industry": "Retail REITs",
+      "complete": false,
+      "reason": "REIT: FFO/EPS methodology requires manual review."
+    },
+    {
+      "symbol": "KMI",
+      "name": "Kinder Morgan",
+      "sector": "Energy",
+      "industry": "Oil & Gas Storage & Transportation",
+      "complete": false,
+      "reason": "Only 4/6 complete historical pairs."
+    },
+    {
+      "symbol": "KKR",
+      "name": "KKR & Co.",
+      "sector": "Financials",
+      "industry": "Asset Management & Custody Banks",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "KLAC",
+      "name": "KLA Corporation",
+      "sector": "Information Technology",
+      "industry": "Semiconductor Materials & Equipment",
+      "complete": false,
+      "reason": "EPS pair needs manual split/methodology verification."
+    },
+    {
+      "symbol": "KHC",
+      "name": "Kraft Heinz",
+      "sector": "Consumer Staples",
+      "industry": "Packaged Foods & Meats",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "KR",
+      "name": "Kroger",
+      "sector": "Consumer Staples",
+      "industry": "Food Retail",
+      "complete": false,
+      "reason": "No reported period for 2025-06-20T23:59:59Z."
+    },
+    {
+      "symbol": "LHX",
+      "name": "L3Harris",
+      "sector": "Industrials",
+      "industry": "Aerospace & Defense",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "LH",
+      "name": "Labcorp",
+      "sector": "Health Care",
+      "industry": "Health Care Services",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "LRCX",
+      "name": "Lam Research",
+      "sector": "Information Technology",
+      "industry": "Semiconductor Materials & Equipment",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "LVS",
+      "name": "Las Vegas Sands",
+      "sector": "Consumer Discretionary",
+      "industry": "Casinos & Gaming",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "LDOS",
+      "name": "Leidos",
+      "sector": "Industrials",
+      "industry": "Diversified Support Services",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2026-02-17T23:59:59Z."
+    },
+    {
+      "symbol": "LEN",
+      "name": "Lennar",
+      "sector": "Consumer Discretionary",
+      "industry": "Homebuilding",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "LII",
+      "name": "Lennox International",
+      "sector": "Industrials",
+      "industry": "Building Products",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "LLY",
+      "name": "Lilly (Eli)",
+      "sector": "Health Care",
+      "industry": "Pharmaceuticals",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "LIN",
+      "name": "Linde plc",
+      "sector": "Materials",
+      "industry": "Industrial Gases",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "LYV",
+      "name": "Live Nation Entertainment",
+      "sector": "Communication Services",
+      "industry": "Movies & Entertainment",
+      "complete": false,
+      "reason": "EPS pair needs manual split/methodology verification."
+    },
+    {
+      "symbol": "LMT",
+      "name": "Lockheed Martin",
+      "sector": "Industrials",
+      "industry": "Aerospace & Defense",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "L",
+      "name": "Loews Corporation",
+      "sector": "Financials",
+      "industry": "Multi-line Insurance",
+      "complete": false,
+      "reason": "Only 0/6 complete historical pairs."
+    },
+    {
+      "symbol": "LOW",
+      "name": "Lowe's",
+      "sector": "Consumer Discretionary",
+      "industry": "Home Improvement Retail",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "LULU",
+      "name": "Lululemon Athletica",
+      "sector": "Consumer Discretionary",
+      "industry": "Apparel, Accessories & Luxury Goods",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "LITE",
+      "name": "Lumentum",
+      "sector": "Information Technology",
+      "industry": "Communications Equipment",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "LYB",
+      "name": "LyondellBasell",
+      "sector": "Materials",
+      "industry": "Specialty Chemicals",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "MTB",
+      "name": "M&T Bank",
+      "sector": "Financials",
+      "industry": "Regional Banks",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "MPC",
+      "name": "Marathon Petroleum",
+      "sector": "Energy",
+      "industry": "Oil & Gas Refining & Marketing",
+      "complete": false,
+      "reason": "EPS history needs manual split or exceptional-item verification."
+    },
+    {
+      "symbol": "MAR",
+      "name": "Marriott International",
+      "sector": "Consumer Discretionary",
+      "industry": "Hotels, Resorts & Cruise Lines",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "MRSH",
+      "name": "Marsh McLennan",
+      "sector": "Financials",
+      "industry": "Insurance Brokers",
+      "complete": false,
+      "reason": "Only 3/6 complete historical pairs."
+    },
+    {
+      "symbol": "MLM",
+      "name": "Martin Marietta Materials",
+      "sector": "Materials",
+      "industry": "Construction Materials",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2025-08-07T23:59:59Z."
+    },
+    {
+      "symbol": "MRVL",
+      "name": "Marvell Technology",
+      "sector": "Information Technology",
+      "industry": "Semiconductors",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "MAS",
+      "name": "Masco",
+      "sector": "Industrials",
+      "industry": "Building Products",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "MA",
+      "name": "Mastercard",
+      "sector": "Financials",
+      "industry": "Transaction & Payment Processing Services",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "MKC",
+      "name": "McCormick & Company",
+      "sector": "Consumer Staples",
+      "industry": "Packaged Foods & Meats",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "MCD",
+      "name": "McDonald's",
+      "sector": "Consumer Discretionary",
+      "industry": "Restaurants",
+      "complete": false,
+      "reason": "No reported period for 2026-11-04T23:59:59Z."
+    },
+    {
+      "symbol": "MCK",
+      "name": "McKesson",
+      "sector": "Health Care",
+      "industry": "Health Care Distributors",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "MDT",
+      "name": "Medtronic",
+      "sector": "Health Care",
+      "industry": "Health Care Equipment",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "MRK",
+      "name": "Merck & Co.",
+      "sector": "Health Care",
+      "industry": "Pharmaceuticals",
+      "complete": false,
+      "reason": "EPS history needs manual split or exceptional-item verification."
+    },
+    {
+      "symbol": "META",
+      "name": "Meta Platforms",
+      "sector": "Communication Services",
+      "industry": "Interactive Media & Services",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "MET",
+      "name": "MetLife",
+      "sector": "Financials",
+      "industry": "Life & Health Insurance",
+      "complete": false,
+      "reason": "No reported period for 2026-11-04T23:59:59Z."
+    },
+    {
+      "symbol": "MTD",
+      "name": "Mettler Toledo",
+      "sector": "Health Care",
+      "industry": "Life Sciences Tools & Services",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "MGM",
+      "name": "MGM Resorts",
+      "sector": "Consumer Discretionary",
+      "industry": "Casinos & Gaming",
+      "complete": false,
+      "reason": "EPS history needs manual split or exceptional-item verification."
+    },
+    {
+      "symbol": "MCHP",
+      "name": "Microchip Technology",
+      "sector": "Information Technology",
+      "industry": "Semiconductors",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "MU",
+      "name": "Micron Technology",
+      "sector": "Information Technology",
+      "industry": "Semiconductors",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "MSFT",
+      "name": "Microsoft",
+      "sector": "Information Technology",
+      "industry": "Systems Software",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "MAA",
+      "name": "Mid-America Apartment Communities",
+      "sector": "Real Estate",
+      "industry": "Multi-Family Residential REITs",
+      "complete": false,
+      "reason": "REIT: FFO/EPS methodology requires manual review."
+    },
+    {
+      "symbol": "MRNA",
+      "name": "Moderna",
+      "sector": "Health Care",
+      "industry": "Biotechnology",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "MDLZ",
+      "name": "Mondelez International",
+      "sector": "Consumer Staples",
+      "industry": "Packaged Foods & Meats",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "MPWR",
+      "name": "Monolithic Power Systems",
+      "sector": "Information Technology",
+      "industry": "Semiconductors",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "MNST",
+      "name": "Monster Beverage",
+      "sector": "Consumer Staples",
+      "industry": "Soft Drinks & Non-alcoholic Beverages",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "MCO",
+      "name": "Moody's Corporation",
+      "sector": "Financials",
+      "industry": "Financial Exchanges & Data",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "MS",
+      "name": "Morgan Stanley",
+      "sector": "Financials",
+      "industry": "Investment Banking & Brokerage",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2026-10-14T23:59:59Z."
+    },
+    {
+      "symbol": "MOS",
+      "name": "Mosaic Company (The)",
+      "sector": "Materials",
+      "industry": "Fertilizers & Agricultural Chemicals",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "MSI",
+      "name": "Motorola Solutions",
+      "sector": "Information Technology",
+      "industry": "Communications Equipment",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "MSCI",
+      "name": "MSCI",
+      "sector": "Financials",
+      "industry": "Financial Exchanges & Data",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "NDAQ",
+      "name": "Nasdaq, Inc.",
+      "sector": "Financials",
+      "industry": "Financial Exchanges & Data",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2025-10-21T23:59:59Z."
+    },
+    {
+      "symbol": "NTAP",
+      "name": "NetApp",
+      "sector": "Information Technology",
+      "industry": "Technology Hardware, Storage & Peripherals",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "NFLX",
+      "name": "Netflix",
+      "sector": "Communication Services",
+      "industry": "Movies & Entertainment",
+      "complete": false,
+      "reason": "Reviewed non-comparable EPS must not be overwritten by automated consensus."
+    },
+    {
+      "symbol": "NEM",
+      "name": "Newmont",
+      "sector": "Materials",
+      "industry": "Gold",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "NWSA",
+      "name": "News Corp (Class A)",
+      "sector": "Communication Services",
+      "industry": "Publishing",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "NWS",
+      "name": "News Corp (Class B)",
+      "sector": "Communication Services",
+      "industry": "Publishing",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2026-11-04T23:59:59Z."
+    },
+    {
+      "symbol": "NEE",
+      "name": "NextEra Energy",
+      "sector": "Utilities",
+      "industry": "Multi-Utilities",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2025-07-23T23:59:59Z."
+    },
+    {
+      "symbol": "NKE",
+      "name": "Nike, Inc.",
+      "sector": "Consumer Discretionary",
+      "industry": "Apparel, Accessories & Luxury Goods",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "NI",
+      "name": "NiSource",
+      "sector": "Utilities",
+      "industry": "Multi-Utilities",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "NDSN",
+      "name": "Nordson Corporation",
+      "sector": "Industrials",
+      "industry": "Industrial Machinery & Supplies & Components",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "NSC",
+      "name": "Norfolk Southern",
+      "sector": "Industrials",
+      "industry": "Rail Transportation",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "NTRS",
+      "name": "Northern Trust",
+      "sector": "Financials",
+      "industry": "Asset Management & Custody Banks",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "NOC",
+      "name": "Northrop Grumman",
+      "sector": "Industrials",
+      "industry": "Aerospace & Defense",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "NCLH",
+      "name": "Norwegian Cruise Line Holdings",
+      "sector": "Consumer Discretionary",
+      "industry": "Hotels, Resorts & Cruise Lines",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "NRG",
+      "name": "NRG Energy",
+      "sector": "Utilities",
+      "industry": "Independent Power Producers & Energy Traders",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "NUE",
+      "name": "Nucor",
+      "sector": "Materials",
+      "industry": "Steel",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2026-10-26T23:59:59Z."
+    },
+    {
+      "symbol": "NVDA",
+      "name": "Nvidia",
+      "sector": "Information Technology",
+      "industry": "Semiconductors",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "NVR",
+      "name": "NVR, Inc.",
+      "sector": "Consumer Discretionary",
+      "industry": "Homebuilding",
+      "complete": false,
+      "reason": "EPS pair needs manual split/methodology verification."
+    },
+    {
+      "symbol": "NXPI",
+      "name": "NXP Semiconductors",
+      "sector": "Information Technology",
+      "industry": "Semiconductors",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "ORLY",
+      "name": "O'Reilly Automotive",
+      "sector": "Consumer Discretionary",
+      "industry": "Automotive Retail",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "OXY",
+      "name": "Occidental Petroleum",
+      "sector": "Energy",
+      "industry": "Oil & Gas Exploration & Production",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2026-05-05T23:59:59Z."
+    },
+    {
+      "symbol": "OKTA",
+      "name": "Okta, Inc.",
+      "sector": "Information Technology",
+      "industry": "Application Software",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2025-08-26T23:59:59Z."
+    },
+    {
+      "symbol": "ODFL",
+      "name": "Old Dominion",
+      "sector": "Industrials",
+      "industry": "Cargo Ground Transportation",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "OMC",
+      "name": "Omnicom Group",
+      "sector": "Communication Services",
+      "industry": "Advertising",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "ON",
+      "name": "ON Semiconductor",
+      "sector": "Information Technology",
+      "industry": "Semiconductors",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "OKE",
+      "name": "Oneok",
+      "sector": "Energy",
+      "industry": "Oil & Gas Storage & Transportation",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2025-08-04T23:59:59Z."
+    },
+    {
+      "symbol": "ORCL",
+      "name": "Oracle Corporation",
+      "sector": "Information Technology",
+      "industry": "Application Software",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "OTIS",
+      "name": "Otis Worldwide",
+      "sector": "Industrials",
+      "industry": "Industrial Machinery & Supplies & Components",
+      "complete": false,
+      "reason": "Only 4/6 complete historical pairs."
+    },
+    {
+      "symbol": "PCAR",
+      "name": "Paccar",
+      "sector": "Industrials",
+      "industry": "Construction Machinery & Heavy Transportation Equipment",
+      "complete": false,
+      "reason": "Only 3/6 complete historical pairs."
+    },
+    {
+      "symbol": "PKG",
+      "name": "Packaging Corporation of America",
+      "sector": "Materials",
+      "industry": "Paper & Plastic Packaging Products & Materials",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2026-10-21T23:59:59Z."
+    },
+    {
+      "symbol": "PLTR",
+      "name": "Palantir Technologies",
+      "sector": "Information Technology",
+      "industry": "Application Software",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "PANW",
+      "name": "Palo Alto Networks",
+      "sector": "Information Technology",
+      "industry": "Systems Software",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "PH",
+      "name": "Parker Hannifin",
+      "sector": "Industrials",
+      "industry": "Industrial Machinery & Supplies & Components",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "PAYX",
+      "name": "Paychex",
+      "sector": "Industrials",
+      "industry": "Human Resource & Employment Services",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "PYPL",
+      "name": "PayPal",
+      "sector": "Financials",
+      "industry": "Transaction & Payment Processing Services",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "PNR",
+      "name": "Pentair",
+      "sector": "Industrials",
+      "industry": "Industrial Machinery & Supplies & Components",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "PEP",
+      "name": "PepsiCo",
+      "sector": "Consumer Staples",
+      "industry": "Soft Drinks & Non-alcoholic Beverages",
+      "complete": false,
+      "reason": "The actual six displayed reports do not all contain both beats."
+    },
+    {
+      "symbol": "PFE",
+      "name": "Pfizer",
+      "sector": "Health Care",
+      "industry": "Pharmaceuticals",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "PCG",
+      "name": "PG&E Corporation",
+      "sector": "Utilities",
+      "industry": "Multi-Utilities",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "PM",
+      "name": "Philip Morris International",
+      "sector": "Consumer Staples",
+      "industry": "Tobacco",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "PSX",
+      "name": "Phillips 66",
+      "sector": "Energy",
+      "industry": "Oil & Gas Refining & Marketing",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2026-02-04T23:59:59Z."
+    },
+    {
+      "symbol": "PNW",
+      "name": "Pinnacle West Capital",
+      "sector": "Utilities",
+      "industry": "Multi-Utilities",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "PNC",
+      "name": "PNC Financial Services",
+      "sector": "Financials",
+      "industry": "Diversified Banks",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2025-07-16T23:59:59Z."
+    },
+    {
+      "symbol": "PPG",
+      "name": "PPG Industries",
+      "sector": "Materials",
+      "industry": "Specialty Chemicals",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "PPL",
+      "name": "PPL Corporation",
+      "sector": "Utilities",
+      "industry": "Electric Utilities",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "PFG",
+      "name": "Principal Financial Group",
+      "sector": "Financials",
+      "industry": "Life & Health Insurance",
+      "complete": false,
+      "reason": "Only 4/6 complete historical pairs."
+    },
+    {
+      "symbol": "PG",
+      "name": "Procter & Gamble",
+      "sector": "Consumer Staples",
+      "industry": "Personal Care Products",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "PGR",
+      "name": "Progressive Corporation",
+      "sector": "Financials",
+      "industry": "Property & Casualty Insurance",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "PLD",
+      "name": "Prologis",
+      "sector": "Real Estate",
+      "industry": "Industrial REITs",
+      "complete": false,
+      "reason": "REIT: FFO/EPS methodology requires manual review."
+    },
+    {
+      "symbol": "PRU",
+      "name": "Prudential Financial",
+      "sector": "Financials",
+      "industry": "Life & Health Insurance",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2026-08-04T23:59:59Z."
+    },
+    {
+      "symbol": "PTC",
+      "name": "PTC Inc.",
+      "sector": "Information Technology",
+      "industry": "Application Software",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "PEG",
+      "name": "Public Service Enterprise Group",
+      "sector": "Utilities",
+      "industry": "Electric Utilities",
+      "complete": false,
+      "reason": "No reported period for 2026-11-02T23:59:59Z."
+    },
+    {
+      "symbol": "PSA",
+      "name": "Public Storage",
+      "sector": "Real Estate",
+      "industry": "Self-Storage REITs",
+      "complete": false,
+      "reason": "REIT: FFO/EPS methodology requires manual review."
+    },
+    {
+      "symbol": "PHM",
+      "name": "PulteGroup",
+      "sector": "Consumer Discretionary",
+      "industry": "Homebuilding",
+      "complete": false,
+      "reason": "The actual six displayed reports do not all contain both beats."
+    },
+    {
+      "symbol": "Q",
+      "name": "Qnity Electronics",
+      "sector": "Information Technology",
+      "industry": "Semiconductor Materials & Equipment",
+      "complete": false,
+      "reason": "Only 2/6 complete historical pairs."
+    },
+    {
+      "symbol": "QCOM",
+      "name": "Qualcomm",
+      "sector": "Information Technology",
+      "industry": "Semiconductors",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "PWR",
+      "name": "Quanta Services",
+      "sector": "Industrials",
+      "industry": "Construction & Engineering",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "DGX",
+      "name": "Quest Diagnostics",
+      "sector": "Health Care",
+      "industry": "Health Care Services",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "RL",
+      "name": "Ralph Lauren Corporation",
+      "sector": "Consumer Discretionary",
+      "industry": "Apparel, Accessories & Luxury Goods",
+      "complete": false,
+      "reason": "The actual six displayed reports do not all contain both beats."
+    },
+    {
+      "symbol": "RJF",
+      "name": "Raymond James Financial",
+      "sector": "Financials",
+      "industry": "Investment Banking & Brokerage",
+      "complete": false,
+      "reason": "No reported period for 2026-10-28T23:59:59Z."
+    },
+    {
+      "symbol": "RDDT",
+      "name": "Reddit",
+      "sector": "Communication Services",
+      "industry": "Interactive Media & Services",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "O",
+      "name": "Realty Income",
+      "sector": "Real Estate",
+      "industry": "Retail REITs",
+      "complete": false,
+      "reason": "REIT: FFO/EPS methodology requires manual review."
+    },
+    {
+      "symbol": "REG",
+      "name": "Regency Centers",
+      "sector": "Real Estate",
+      "industry": "Retail REITs",
+      "complete": false,
+      "reason": "REIT: FFO/EPS methodology requires manual review."
+    },
+    {
+      "symbol": "REGN",
+      "name": "Regeneron Pharmaceuticals",
+      "sector": "Health Care",
+      "industry": "Biotechnology",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "RF",
+      "name": "Regions Financial Corporation",
+      "sector": "Financials",
+      "industry": "Regional Banks",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "RSG",
+      "name": "Republic Services",
+      "sector": "Industrials",
+      "industry": "Environmental & Facilities Services",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2025-07-29T23:59:59Z."
+    },
+    {
+      "symbol": "RMD",
+      "name": "ResMed",
+      "sector": "Health Care",
+      "industry": "Health Care Equipment",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "RVTY",
+      "name": "Revvity",
+      "sector": "Health Care",
+      "industry": "Health Care Equipment",
+      "complete": false,
+      "reason": "No reported period for 2026-11-03T23:59:59Z."
+    },
+    {
+      "symbol": "HOOD",
+      "name": "Robinhood Markets",
+      "sector": "Financials",
+      "industry": "Investment Banking & Brokerage",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "ROK",
+      "name": "Rockwell Automation",
+      "sector": "Industrials",
+      "industry": "Electrical Components & Equipment",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2025-11-06T23:59:59Z."
+    },
+    {
+      "symbol": "ROL",
+      "name": "Rollins, Inc.",
+      "sector": "Industrials",
+      "industry": "Environmental & Facilities Services",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "ROP",
+      "name": "Roper Technologies",
+      "sector": "Information Technology",
+      "industry": "Electronic Equipment & Instruments",
+      "complete": false,
+      "reason": "Only 2/6 complete historical pairs."
+    },
+    {
+      "symbol": "ROST",
+      "name": "Ross Stores",
+      "sector": "Consumer Discretionary",
+      "industry": "Apparel Retail",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "RCL",
+      "name": "Royal Caribbean Group",
+      "sector": "Consumer Discretionary",
+      "industry": "Hotels, Resorts & Cruise Lines",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "RTX",
+      "name": "RTX Corporation",
+      "sector": "Industrials",
+      "industry": "Aerospace & Defense",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "SPGI",
+      "name": "S&P Global",
+      "sector": "Financials",
+      "industry": "Financial Exchanges & Data",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2025-10-30T23:59:59Z."
+    },
+    {
+      "symbol": "CRM",
+      "name": "Salesforce",
+      "sector": "Information Technology",
+      "industry": "Application Software",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "SNDK",
+      "name": "Sandisk",
+      "sector": "Information Technology",
+      "industry": "Technology Hardware, Storage & Peripherals",
+      "complete": false,
+      "reason": "Only 2/6 complete historical pairs."
+    },
+    {
+      "symbol": "SBAC",
+      "name": "SBA Communications",
+      "sector": "Real Estate",
+      "industry": "Telecom Tower REITs",
+      "complete": false,
+      "reason": "REIT: FFO/EPS methodology requires manual review."
+    },
+    {
+      "symbol": "SLB",
+      "name": "Schlumberger",
+      "sector": "Energy",
+      "industry": "Oil & Gas Equipment & Services",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "STX",
+      "name": "Seagate Technology",
+      "sector": "Information Technology",
+      "industry": "Technology Hardware, Storage & Peripherals",
+      "complete": false,
+      "reason": "The actual six displayed reports do not all contain both beats."
+    },
+    {
+      "symbol": "SRE",
+      "name": "Sempra",
+      "sector": "Utilities",
+      "industry": "Multi-Utilities",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "NOW",
+      "name": "ServiceNow",
+      "sector": "Information Technology",
+      "industry": "Systems Software",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "SHW",
+      "name": "Sherwin-Williams",
+      "sector": "Materials",
+      "industry": "Specialty Chemicals",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "SPG",
+      "name": "Simon Property Group",
+      "sector": "Real Estate",
+      "industry": "Retail REITs",
+      "complete": false,
+      "reason": "REIT: FFO/EPS methodology requires manual review."
+    },
+    {
+      "symbol": "SKYD",
+      "name": "Skydance",
+      "sector": "Communication Services",
+      "industry": "Movies & Entertainment",
+      "complete": false,
+      "reason": "Only 2/6 complete historical pairs."
+    },
+    {
+      "symbol": "SWKS",
+      "name": "Skyworks Solutions",
+      "sector": "Information Technology",
+      "industry": "Semiconductors",
+      "complete": false,
+      "reason": "Only 4/6 complete historical pairs."
+    },
+    {
+      "symbol": "SJM",
+      "name": "J.M. Smucker Company (The)",
+      "sector": "Consumer Staples",
+      "industry": "Packaged Foods & Meats",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "SW",
+      "name": "Smurfit Westrock",
+      "sector": "Materials",
+      "industry": "Paper & Plastic Packaging Products & Materials",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "SNA",
+      "name": "Snap-on",
+      "sector": "Industrials",
+      "industry": "Industrial Machinery & Supplies & Components",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2026-10-22T23:59:59Z."
+    },
+    {
+      "symbol": "SOLV",
+      "name": "Solventum",
+      "sector": "Health Care",
+      "industry": "Health Care Technology",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "SO",
+      "name": "Southern Company",
+      "sector": "Utilities",
+      "industry": "Electric Utilities",
+      "complete": false,
+      "reason": "No reported period for 2026-11-04T23:59:59Z."
+    },
+    {
+      "symbol": "LUV",
+      "name": "Southwest Airlines",
+      "sector": "Industrials",
+      "industry": "Passenger Airlines",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "SWK",
+      "name": "Stanley Black & Decker",
+      "sector": "Industrials",
+      "industry": "Industrial Machinery & Supplies & Components",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "SBUX",
+      "name": "Starbucks",
+      "sector": "Consumer Discretionary",
+      "industry": "Restaurants",
+      "complete": false,
+      "reason": "No reported period for 2026-10-29T23:59:59Z."
+    },
+    {
+      "symbol": "STT",
+      "name": "State Street Corporation",
+      "sector": "Financials",
+      "industry": "Asset Management & Custody Banks",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "STLD",
+      "name": "Steel Dynamics",
+      "sector": "Materials",
+      "industry": "Steel",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "STE",
+      "name": "Steris",
+      "sector": "Health Care",
+      "industry": "Health Care Equipment",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "SYK",
+      "name": "Stryker Corporation",
+      "sector": "Health Care",
+      "industry": "Health Care Equipment",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "SMCI",
+      "name": "Supermicro",
+      "sector": "Information Technology",
+      "industry": "Technology Hardware, Storage & Peripherals",
+      "complete": false,
+      "reason": "No reported period for 2026-11-03T23:59:59Z."
+    },
+    {
+      "symbol": "SYF",
+      "name": "Synchrony Financial",
+      "sector": "Financials",
+      "industry": "Consumer Finance",
+      "complete": false,
+      "reason": "No reported period for 2025-07-22T23:59:59Z."
+    },
+    {
+      "symbol": "SNPS",
+      "name": "Synopsys",
+      "sector": "Information Technology",
+      "industry": "Application Software",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "SYY",
+      "name": "Sysco",
+      "sector": "Consumer Staples",
+      "industry": "Food Distributors",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "TMUS",
+      "name": "T-Mobile US",
+      "sector": "Communication Services",
+      "industry": "Wireless Telecommunication Services",
+      "complete": false,
+      "reason": "The actual six displayed reports do not all contain both beats."
+    },
+    {
+      "symbol": "TROW",
+      "name": "T. Rowe Price",
+      "sector": "Financials",
+      "industry": "Asset Management & Custody Banks",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "TTWO",
+      "name": "Take-Two Interactive",
+      "sector": "Communication Services",
+      "industry": "Interactive Home Entertainment",
+      "complete": false,
+      "reason": "Only 3/6 complete historical pairs."
+    },
+    {
+      "symbol": "TPR",
+      "name": "Tapestry, Inc.",
+      "sector": "Consumer Discretionary",
+      "industry": "Apparel, Accessories & Luxury Goods",
+      "complete": false,
+      "reason": "The actual six displayed reports do not all contain both beats."
+    },
+    {
+      "symbol": "TRGP",
+      "name": "Targa Resources",
+      "sector": "Energy",
+      "industry": "Oil & Gas Storage & Transportation",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "TGT",
+      "name": "Target Corporation",
+      "sector": "Consumer Staples",
+      "industry": "Consumer Staples Merchandise Retail",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "TEL",
+      "name": "TE Connectivity",
+      "sector": "Information Technology",
+      "industry": "Electronic Manufacturing Services",
+      "complete": false,
+      "reason": "No reported period for 2026-10-28T23:59:59Z."
+    },
+    {
+      "symbol": "TDY",
+      "name": "Teledyne Technologies",
+      "sector": "Information Technology",
+      "industry": "Electronic Equipment & Instruments",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "TER",
+      "name": "Teradyne",
+      "sector": "Information Technology",
+      "industry": "Semiconductor Materials & Equipment",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "TSLA",
+      "name": "Tesla, Inc.",
+      "sector": "Consumer Discretionary",
+      "industry": "Automobile Manufacturers",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "TXN",
+      "name": "Texas Instruments",
+      "sector": "Information Technology",
+      "industry": "Semiconductors",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "TPL",
+      "name": "Texas Pacific Land Corporation",
+      "sector": "Energy",
+      "industry": "Oil & Gas Exploration & Production",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "TXT",
+      "name": "Textron",
+      "sector": "Industrials",
+      "industry": "Aerospace & Defense",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "TMO",
+      "name": "Thermo Fisher Scientific",
+      "sector": "Health Care",
+      "industry": "Life Sciences Tools & Services",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "TJX",
+      "name": "TJX Companies",
+      "sector": "Consumer Discretionary",
+      "industry": "Apparel Retail",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "TKO",
+      "name": "TKO Group Holdings",
+      "sector": "Communication Services",
+      "industry": "Movies & Entertainment",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "TSCO",
+      "name": "Tractor Supply",
+      "sector": "Consumer Discretionary",
+      "industry": "Other Specialty Retail",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2026-10-22T23:59:59Z."
+    },
+    {
+      "symbol": "TT",
+      "name": "Trane Technologies",
+      "sector": "Industrials",
+      "industry": "Building Products",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "TDG",
+      "name": "TransDigm Group",
+      "sector": "Industrials",
+      "industry": "Aerospace & Defense",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "TRV",
+      "name": "Travelers Companies (The)",
+      "sector": "Financials",
+      "industry": "Property & Casualty Insurance",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2025-07-17T23:59:59Z."
+    },
+    {
+      "symbol": "TRMB",
+      "name": "Trimble Inc.",
+      "sector": "Information Technology",
+      "industry": "Application Software",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "TFC",
+      "name": "Truist Financial",
+      "sector": "Financials",
+      "industry": "Diversified Banks",
+      "complete": false,
+      "reason": "No reported period for 2026-10-16T23:59:59Z."
+    },
+    {
+      "symbol": "TWLO",
+      "name": "Twilio",
+      "sector": "Information Technology",
+      "industry": "Systems Software",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "TYL",
+      "name": "Tyler Technologies",
+      "sector": "Information Technology",
+      "industry": "Application Software",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2025-07-30T23:59:59Z."
+    },
+    {
+      "symbol": "TSN",
+      "name": "Tyson Foods",
+      "sector": "Consumer Staples",
+      "industry": "Packaged Foods & Meats",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "USB",
+      "name": "U.S. Bancorp",
+      "sector": "Financials",
+      "industry": "Diversified Banks",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2026-01-20T23:59:59Z."
+    },
+    {
+      "symbol": "UBER",
+      "name": "Uber",
+      "sector": "Industrials",
+      "industry": "Passenger Ground Transportation",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "UDR",
+      "name": "UDR, Inc.",
+      "sector": "Real Estate",
+      "industry": "Multi-Family Residential REITs",
+      "complete": false,
+      "reason": "REIT: FFO/EPS methodology requires manual review."
+    },
+    {
+      "symbol": "ULTA",
+      "name": "Ulta Beauty",
+      "sector": "Consumer Discretionary",
+      "industry": "Other Specialty Retail",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "UNP",
+      "name": "Union Pacific Corporation",
+      "sector": "Industrials",
+      "industry": "Rail Transportation",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "UAL",
+      "name": "United Airlines Holdings",
+      "sector": "Industrials",
+      "industry": "Passenger Airlines",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "UPS",
+      "name": "United Parcel Service",
+      "sector": "Industrials",
+      "industry": "Air Freight & Logistics",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "URI",
+      "name": "United Rentals",
+      "sector": "Industrials",
+      "industry": "Trading Companies & Distributors",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "UNH",
+      "name": "UnitedHealth Group",
+      "sector": "Health Care",
+      "industry": "Managed Health Care",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "UHS",
+      "name": "Universal Health Services",
+      "sector": "Health Care",
+      "industry": "Health Care Facilities",
+      "complete": false,
+      "reason": "Multiple reports map to the same period."
+    },
+    {
+      "symbol": "VLO",
+      "name": "Valero Energy",
+      "sector": "Energy",
+      "industry": "Oil & Gas Refining & Marketing",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "VEEV",
+      "name": "Veeva Systems",
+      "sector": "Health Care",
+      "industry": "Health Care Technology",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2025-11-20T23:59:59Z."
+    },
+    {
+      "symbol": "VTR",
+      "name": "Ventas",
+      "sector": "Real Estate",
+      "industry": "Health Care REITs",
+      "complete": false,
+      "reason": "REIT: FFO/EPS methodology requires manual review."
+    },
+    {
+      "symbol": "VLTO",
+      "name": "Veralto",
+      "sector": "Industrials",
+      "industry": "Environmental & Facilities Services",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "VRSN",
+      "name": "Verisign",
+      "sector": "Information Technology",
+      "industry": "Internet Services & Infrastructure",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "VRSK",
+      "name": "Verisk Analytics",
+      "sector": "Industrials",
+      "industry": "Research & Consulting Services",
+      "complete": false,
+      "reason": "The actual six displayed reports do not all contain both beats."
+    },
+    {
+      "symbol": "VZ",
+      "name": "Verizon",
+      "sector": "Communication Services",
+      "industry": "Integrated Telecommunication Services",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "VRTX",
+      "name": "Vertex Pharmaceuticals",
+      "sector": "Health Care",
+      "industry": "Biotechnology",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "VRT",
+      "name": "Vertiv",
+      "sector": "Industrials",
+      "industry": "Electrical Components & Equipment",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "VTRS",
+      "name": "Viatris",
+      "sector": "Health Care",
+      "industry": "Pharmaceuticals",
+      "complete": false,
+      "reason": "The actual six displayed reports do not all contain both beats."
+    },
+    {
+      "symbol": "VICI",
+      "name": "Vici Properties",
+      "sector": "Real Estate",
+      "industry": "Hotel & Resort REITs",
+      "complete": false,
+      "reason": "REIT: FFO/EPS methodology requires manual review."
+    },
+    {
+      "symbol": "V",
+      "name": "Visa Inc.",
+      "sector": "Financials",
+      "industry": "Transaction & Payment Processing Services",
+      "complete": false,
+      "reason": "No reported period for 2026-10-27T23:59:59Z."
+    },
+    {
+      "symbol": "VST",
+      "name": "Vistra Corp.",
+      "sector": "Utilities",
+      "industry": "Electric Utilities",
+      "complete": false,
+      "reason": "EPS history needs manual split or exceptional-item verification."
+    },
+    {
+      "symbol": "VMRK",
+      "name": "Vivmark Residential",
+      "sector": "Real Estate",
+      "industry": "Multi-Family Residential REITs",
+      "complete": false,
+      "reason": "REIT: FFO/EPS methodology requires manual review."
+    },
+    {
+      "symbol": "VMC",
+      "name": "Vulcan Materials Company",
+      "sector": "Materials",
+      "industry": "Construction Materials",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "VYLR",
+      "name": "Vylor",
+      "sector": "Consumer Staples",
+      "industry": "Agricultural Products & Services",
+      "complete": false,
+      "reason": "Public historical earnings table unavailable."
+    },
+    {
+      "symbol": "WRB",
+      "name": "W. R. Berkley Corporation",
+      "sector": "Financials",
+      "industry": "Property & Casualty Insurance",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2026-01-26T23:59:59Z."
+    },
+    {
+      "symbol": "GWW",
+      "name": "W. W. Grainger",
+      "sector": "Industrials",
+      "industry": "Industrial Machinery & Supplies & Components",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "WAB",
+      "name": "Wabtec",
+      "sector": "Industrials",
+      "industry": "Construction Machinery & Heavy Transportation Equipment",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "WMT",
+      "name": "Walmart",
+      "sector": "Consumer Staples",
+      "industry": "Consumer Staples Merchandise Retail",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2025-08-21T23:59:59Z."
+    },
+    {
+      "symbol": "DIS",
+      "name": "Walt Disney Company (The)",
+      "sector": "Communication Services",
+      "industry": "Movies & Entertainment",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "WM",
+      "name": "Waste Management",
+      "sector": "Industrials",
+      "industry": "Environmental & Facilities Services",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "WAT",
+      "name": "Waters Corporation",
+      "sector": "Health Care",
+      "industry": "Life Sciences Tools & Services",
+      "complete": false,
+      "reason": "No reported period for 2026-11-03T23:59:59Z."
+    },
+    {
+      "symbol": "WEC",
+      "name": "WEC Energy Group",
+      "sector": "Utilities",
+      "industry": "Electric Utilities",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "WFC",
+      "name": "Wells Fargo",
+      "sector": "Financials",
+      "industry": "Diversified Banks",
+      "complete": false,
+      "reason": "Revenue/period mismatch at 2026-04-14T23:59:59Z."
+    },
+    {
+      "symbol": "WELL",
+      "name": "Welltower",
+      "sector": "Real Estate",
+      "industry": "Health Care REITs",
+      "complete": false,
+      "reason": "REIT: FFO/EPS methodology requires manual review."
+    },
+    {
+      "symbol": "WST",
+      "name": "West Pharmaceutical Services",
+      "sector": "Health Care",
+      "industry": "Health Care Supplies",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "WDC",
+      "name": "Western Digital",
+      "sector": "Information Technology",
+      "industry": "Technology Hardware, Storage & Peripherals",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "WY",
+      "name": "Weyerhaeuser",
+      "sector": "Real Estate",
+      "industry": "Timber REITs",
+      "complete": false,
+      "reason": "REIT: FFO/EPS methodology requires manual review."
+    },
+    {
+      "symbol": "WSM",
+      "name": "Williams-Sonoma, Inc.",
+      "sector": "Consumer Discretionary",
+      "industry": "Homefurnishing Retail",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "WMB",
+      "name": "Williams Companies",
+      "sector": "Energy",
+      "industry": "Oil & Gas Storage & Transportation",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "WTW",
+      "name": "Willis Towers Watson",
+      "sector": "Financials",
+      "industry": "Insurance Brokers",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "WDAY",
+      "name": "Workday, Inc.",
+      "sector": "Information Technology",
+      "industry": "Application Software",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "WYNN",
+      "name": "Wynn Resorts",
+      "sector": "Consumer Discretionary",
+      "industry": "Casinos & Gaming",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "XEL",
+      "name": "Xcel Energy",
+      "sector": "Utilities",
+      "industry": "Multi-Utilities",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "XYL",
+      "name": "Xylem Inc.",
+      "sector": "Industrials",
+      "industry": "Industrial Machinery & Supplies & Components",
+      "complete": false,
+      "reason": "Only 5/6 complete historical pairs."
+    },
+    {
+      "symbol": "YUM",
+      "name": "Yum! Brands",
+      "sector": "Consumer Discretionary",
+      "industry": "Restaurants",
+      "complete": false,
+      "reason": "No reported period for 2026-11-03T23:59:59Z."
+    },
+    {
+      "symbol": "ZBRA",
+      "name": "Zebra Technologies",
+      "sector": "Information Technology",
+      "industry": "Electronic Equipment & Instruments",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "ZBH",
+      "name": "Zimmer Biomet",
+      "sector": "Health Care",
+      "industry": "Health Care Equipment",
+      "complete": true,
+      "reason": null
+    },
+    {
+      "symbol": "ZTS",
+      "name": "Zoetis",
+      "sector": "Health Care",
+      "industry": "Pharmaceuticals",
+      "complete": false,
+      "reason": "The actual six displayed reports do not all contain both beats."
+    }
+  ]
+}

@@ -2,15 +2,18 @@ import { useThemedStyles } from '../data/theme';
 import type { ComponentRef } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { ActivityIndicator, Animated, Linking, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { Bell, ChevronRight, X } from 'lucide-react-native';
+import { ActivityIndicator, Alert, Animated, Linking, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Check, ChevronDown, ChevronRight, Filter, Minus, X } from 'lucide-react-native';
 import { AssetLogo } from '../components/asset-logo';
 import { Header, Page, SectionTitle, Surface } from '../components/finapp';
 import { useLocale } from '../context/locale';
 import { CompanyEvents, QuarterResult } from '../data/events';
 import { earningsOutcome } from '../data/quarterly';
 import { getEventsCacheSnapshot, preloadCompanyEvents, subscribeToEventsCache } from '../data/events-cache';
-import { useEventPrefs } from '../data/event-prefs';
+import { setEventSymbols, useEventPrefs } from '../data/event-prefs';
+import { resolveEventSymbols, toggleEventSymbolGroup } from '../data/event-symbols';
+import { useWatchlists } from '../hooks/use-watchlists';
+import { availableAssets } from '../data/portfolio';
 import { colors } from '../data/portfolio';
 import { usePositions } from '../hooks/use-positions';
 import { usePopupAnimation } from '../hooks/use-popup-animation';
@@ -41,7 +44,7 @@ function fmtNum(value: number | null, digits = 2) {
 
 function fmtPct(value: number | null) {
   if (value === null || !Number.isFinite(value)) return '—';
-  return `${value >= 0 ? '+' : ''}${value.toFixed(1)} %`;
+  return `${value >= 0 ? '+' : ''}${value.toFixed(2)} %`;
 }
 
 function pctColor(value: number | null) {
@@ -83,10 +86,15 @@ function earningsTime(ms: number, sk: boolean) {
 export default function EventsScreen() {
   const styles = useThemedStyles(createStyles);
   const router = useRouter();
-  const { language, t } = useLocale();
+  const { language, t, errorText } = useLocale();
   const sk = language === 'sk';
   const { positions } = usePositions();
   const prefs = useEventPrefs();
+  const watchlists = useWatchlists();
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [draftSymbols, setDraftSymbols] = useState<string[] | null>(null);
+  const [savingSettings, setSavingSettings] = useState(false);
+  const [expandedGroups, setExpandedGroups] = useState<string[]>([]);
   const [cache, setCache] = useState(getEventsCacheSnapshot);
   const [detail, setDetail] = useState<CompanyEvents | null>(null);
   const detailPosition = positions.find((position) => position.symbol === detail?.symbol);
@@ -104,10 +112,35 @@ export default function EventsScreen() {
     return () => setScreenFocused(false);
   }, []));
 
-  const symbols = useMemo(
+  const portfolioSymbols = useMemo(
     () => [...new Set(positions.filter((position) => position.shares > 1e-8).map((position) => position.symbol))],
     [positions],
   );
+  const watchlistSymbols = useMemo(() => watchlists.lists.flatMap((list) => list.symbols), [watchlists.lists]);
+  const symbols = useMemo(() => resolveEventSymbols(portfolioSymbols, watchlistSymbols, prefs.symbols),
+    [portfolioSymbols, watchlistSymbols, prefs.symbols]);
+  const selectedSymbols = resolveEventSymbols(portfolioSymbols, watchlistSymbols, draftSymbols);
+  const toggleSymbol = (symbol: string) => {
+    setDraftSymbols((previous) => toggleEventSymbolGroup(portfolioSymbols, previous, [symbol]));
+  };
+  const selectionMark = (checked: boolean | 'mixed') => (
+    <View style={[styles.selectionBox, checked !== false && styles.selectionBoxActive]}>
+      {checked === 'mixed' ? <Minus size={14} strokeWidth={3} color={colors.background} />
+        : checked ? <Check size={14} strokeWidth={3} color={colors.background} /> : null}
+    </View>
+  );
+  const saveSettings = async () => {
+    setSavingSettings(true);
+    try {
+      await setEventSymbols(draftSymbols);
+      setSettingsOpen(false);
+    } catch (error) {
+      console.warn('Event stock selection could not be saved:', error);
+      Alert.alert(t('Chyba'), errorText(error instanceof Error ? error.message : String(error)));
+    } finally {
+      setSavingSettings(false);
+    }
+  };
   const symbolKey = symbols.join(',');
 
   useEffect(() => {
@@ -287,9 +320,14 @@ export default function EventsScreen() {
 
   return (
     <Page scrollRef={scrollRef} onScrollViewLayout={setScrollHeight}>
-      <Header compact title={t('Udalosti')} action={<Bell size={18} color={colors.text} />} />
+      <Header compact title={t('Udalosti')} action={
+        <Pressable accessibilityRole="button" accessibilityLabel={t('Nastavenia udalostí')}
+          style={styles.closeButton} onPress={() => { setDraftSymbols(prefs.symbols); setExpandedGroups([]); setSettingsOpen(true); }}>
+          <Filter size={18} color={colors.text} />
+        </Pressable>
+      } />
       {loading ? <ActivityIndicator color={colors.green} style={styles.loader} /> : null}
-      {!symbols.length ? <Text style={styles.empty}>{t('Pridaj pozície a uvidíš udalosti svojich akcií.')}</Text> : null}
+      {!symbols.length ? <Text style={styles.empty}>{t('Vyber akcie v nastaveniach udalostí alebo pridaj pozície do portfólia.')}</Text> : null}
       {failed && symbols.length ? <Text style={styles.empty}>{t('Údaje sa nepodarilo načítať. Potiahni nadol a skús znova.')}</Text> : null}
 
       {timelinePast.map(renderItem)}
@@ -309,6 +347,84 @@ export default function EventsScreen() {
         </View>
       ) : null}
       {timelineFuture.map(renderItem)}
+
+      <Modal visible={settingsOpen} transparent animationType="slide" onRequestClose={() => {
+        if (!savingSettings) setSettingsOpen(false);
+      }}>
+        <View style={[styles.scrim, styles.backdrop]}>
+          <Pressable style={StyleSheet.absoluteFill} disabled={savingSettings} onPress={() => setSettingsOpen(false)} />
+          <View style={styles.sheet}>
+            <View style={styles.sheetHeader}>
+              <Text style={[styles.sheetTitle, styles.sheetCopy]}>{t('Nastavenia udalostí')}</Text>
+              <Pressable accessibilityRole="button" accessibilityLabel={t('Zavrieť')} disabled={savingSettings}
+                style={styles.closeButton} onPress={() => setSettingsOpen(false)}>
+                <X size={18} color={colors.text} />
+              </Pressable>
+            </View>
+            <ScrollView>
+              {watchlists.loading ? <ActivityIndicator color={colors.green} /> : null}
+              {watchlists.error ? <Text accessibilityRole="alert" style={styles.empty}>{errorText(watchlists.error)}</Text> : null}
+              {[{ id: 'portfolio', name: t('Portfólio'), symbols: portfolioSymbols },
+                { id: 'watchlist', name: t('Sledované'), symbols: [...new Set(watchlistSymbols)] }].map((group) => {
+                const count = group.symbols.filter((symbol) => selectedSymbols.includes(symbol)).length;
+                const checked = group.symbols.length > 0 && count === group.symbols.length
+                  ? true : count > 0 ? 'mixed' : false;
+                const expanded = expandedGroups.includes(group.id);
+                const disabled = savingSettings || (group.id === 'watchlist' && (watchlists.loading || !!watchlists.error));
+                return (
+                  <View key={group.id} style={styles.selectionGroup}>
+                    <View style={styles.groupHeader}>
+                      <Pressable accessibilityRole="checkbox" accessibilityLabel={group.name}
+                        accessibilityState={{ checked, disabled: disabled || !group.symbols.length }}
+                        aria-checked={checked} disabled={disabled || !group.symbols.length}
+                        style={styles.groupSelect} onPress={() => setDraftSymbols((previous) =>
+                          toggleEventSymbolGroup(portfolioSymbols, previous, group.symbols, group.id === 'portfolio'))}>
+                        {selectionMark(checked)}
+                        <View style={styles.sheetCopy}>
+                          <Text style={styles.groupTitle}>{group.name}</Text>
+                          <Text style={styles.selectionCount}>{count} / {group.symbols.length} · {t('Vybrané akcie')}</Text>
+                        </View>
+                      </Pressable>
+                      <Pressable accessibilityRole="button" accessibilityLabel={`${t('Detail akcií')} · ${group.name}`}
+                        accessibilityState={{ expanded }} disabled={savingSettings}
+                        style={styles.expandButton} onPress={() => setExpandedGroups((previous) => expanded
+                          ? previous.filter((id) => id !== group.id) : [...previous, group.id])}>
+                        <ChevronDown size={20} color={colors.muted} style={{ transform: [{ rotate: expanded ? '180deg' : '0deg' }] }} />
+                      </Pressable>
+                    </View>
+                    {expanded ? <View style={styles.groupDetails}>
+                      {group.symbols.length ? group.symbols.map((symbol) => {
+                        const name = positions.find((position) => position.symbol === symbol)?.name
+                          ?? availableAssets.find((asset) => asset.symbol === symbol)?.name;
+                        const selected = selectedSymbols.includes(symbol);
+                        return (
+                          <Pressable key={symbol} accessibilityRole="checkbox" accessibilityLabel={`${symbol}${name ? ` · ${name}` : ''}`}
+                            accessibilityState={{ checked: selected }} aria-checked={selected} disabled={disabled}
+                            style={styles.stockOption} onPress={() => toggleSymbol(symbol)}>
+                            {selectionMark(selected)}
+                            <View style={styles.sheetCopy}>
+                              <Text style={styles.stockTicker}>{symbol}</Text>
+                              {name ? <Text style={styles.sheetSubtitle}>{name}</Text> : null}
+                            </View>
+                          </Pressable>
+                        );
+                      }) : <Text style={styles.sheetNote}>{t('Žiadne akcie')}</Text>}
+                    </View> : null}
+                  </View>
+                );
+              })}
+              <Text style={styles.sheetNote}>{draftSymbols === null
+                ? t('Nové pozície sa pridajú automaticky.')
+                : t('Vlastný výber akcií. Nové akcie pridaj ručne.')}</Text>
+            </ScrollView>
+            <Pressable accessibilityRole="button" disabled={savingSettings || watchlists.loading || !!watchlists.error}
+              style={[styles.saveSelection, (savingSettings || watchlists.loading || !!watchlists.error) && { opacity: 0.5 }]}
+              onPress={() => void saveSettings()}>
+              {savingSettings ? <ActivityIndicator color={colors.background} /> : <Text style={styles.saveSelectionText}>{t('Uložiť')}</Text>}
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
 
       <Modal visible={detail !== null} animationType="none" transparent onRequestClose={closeDetail}>
         <View style={styles.scrim}>
@@ -420,6 +536,19 @@ function QuarterCard({ quarter, sk }: { quarter: QuarterResult; sk: boolean }) {
 }
 
 const createStyles = () => StyleSheet.create({
+  stockOption: { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 52, paddingVertical: 10 },
+  selectionGroup: { borderRadius: 16, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface, marginBottom: 10, overflow: 'hidden' },
+  groupHeader: { flexDirection: 'row', alignItems: 'center' },
+  groupSelect: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, minHeight: 68 },
+  groupTitle: { color: colors.text, fontSize: 15, fontWeight: '800' },
+  selectionCount: { color: colors.muted, fontSize: 11, marginTop: 4, fontVariant: ['tabular-nums'] },
+  expandButton: { width: 48, minHeight: 48, alignItems: 'center', justifyContent: 'center' },
+  groupDetails: { paddingHorizontal: 14, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border },
+  selectionBox: { width: 22, height: 22, borderRadius: 7, borderWidth: 2, borderColor: colors.muted, alignItems: 'center', justifyContent: 'center' },
+  selectionBoxActive: { backgroundColor: colors.green, borderColor: colors.green },
+  stockTicker: { color: colors.text, fontSize: 13, fontWeight: '800' },
+  saveSelection: { minHeight: 48, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.green, marginTop: 8 },
+  saveSelectionText: { color: colors.background, fontSize: 14, fontWeight: '800' },
   reportIndicators: { flexDirection: 'row', gap: 16 },
   reportIndicator: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   reportDot: { width: 7, height: 7, borderRadius: 4 },

@@ -25,7 +25,7 @@ const { applyEarningsConsensus, combineFinancialSources, earningsOutcome, growth
 const { archivedRevenueConsensus, captureRevenueForecast, parseEarningsConsensus, parseUpcomingEarnings } = require('./earnings-consensus.ts');
 const { parseSecQuarters } = require('./sec.ts');
 const { fetchFmpQuarterly } = require('./fmp.ts');
-const { fetchCompanyEvents } = require('./events.ts');
+const { fetchCompanyEvents, getLocalCompanyReports } = require('./events.ts');
 const { getEventsCacheSnapshot, preloadCompanyEvents } = require('./events-cache.ts');
 const { getFinancialHistory, saveFinancialHistory, parseHistorySnapshot } = require('./earnings-history.ts');
 const mockedLoad = Module._load;
@@ -52,6 +52,15 @@ const forecastSummary = () => ({
     { period: '+1q', endDate: '2026-12-31', revenueEstimate: { avg: 120, revenueCurrency: 'USD' } },
     { period: '0y', endDate: '2026-12-31', revenueEstimate: { avg: 450, revenueCurrency: 'USD' } },
   ] },
+});
+
+test('local earnings reports are available without making or waiting for any network request', async (t) => {
+  let requests = 0;
+  t.mock.method(globalThis, 'fetch', () => { requests++; return new Promise(() => {}); });
+  const report = await getLocalCompanyReports('PFE');
+  assert.ok(report.quarters.length >= 6);
+  assert.equal(requests, 0);
+  assert.ok(report.quarters.slice(0, 6).every((row) => Number.isFinite(row.revenueBeat) && Number.isFinite(row.epsBeat)));
 });
 
 test('earnings card outcome requires both beats for green and any miss for red', () => {
@@ -666,6 +675,117 @@ test('all displayed quarters in the shared seed have calendar labels matching ac
       assert.equal(row.label, `Q${Math.floor(date.getUTCMonth() / 3) + 1} ${date.getUTCFullYear()}`, symbol);
     }
   }
+});
+
+test('expanded S&P 500 batch has offline reports and consensus without fabricated revenue estimates', () => {
+  const snapshot = parseHistorySnapshot(require('./financial-history.json'));
+  const universe = require('./financial-universe.json');
+  for (const symbol of ['MU', 'MRK', 'AMAT', 'RTX', 'PANW', 'LRCX', 'CRWD', 'AXP', 'GILD', 'DELL',
+    'GEV', 'ANET', 'C', 'PEP', 'VZ', 'ADI', 'BLK', 'APH', 'DE', 'UNP']) {
+    assert.ok(universe.includes(symbol), symbol);
+    const sources = snapshot.companies[symbol]?.sources;
+    assert.ok(sources?.sec?.length > 0, `${symbol}: SEC statements`);
+    const quarters = applyEarningsConsensus(
+      mergeQuarters(['sec', 'fmp', 'yahoo', 'yahoo-earnings'].map((source) => sources[source] ?? [])),
+      [sources['yahoo-earnings'] ?? []],
+    ).slice(0, 6);
+    assert.equal(quarters.length, 6, symbol);
+    assert.ok(quarters.every((row) => row.revenue !== null), `${symbol}: revenue`);
+    assert.ok(quarters.filter((row) => row.epsBeat !== null).length >= 4, `${symbol}: EPS consensus`);
+    assert.ok((sources['yahoo-earnings'] ?? []).every((row) => row.revenueEstimate == null),
+      `${symbol}: rolling forecasts must not become historical estimates`);
+  }
+});
+
+test('50 expanded companies have both paired beats in all 300 displayed offline reports', async (t) => {
+  const consensus = require('./reported-consensus.json');
+  const snapshot = require('./financial-history.json');
+  const universe = require('./financial-universe.json');
+  const symbols = [
+    'PFE', 'ISRG', 'TJX', 'VRTX', 'LMT', 'MDT', 'BMY', 'SYK', 'LOW', 'COF',
+    'MCK', 'NEM', 'ADP', 'CME', 'HCA', 'CVS', 'VLO', 'GD', 'MRNA', 'WM',
+    'ELV', 'CSX', 'UPS', 'REGN', 'ADBE', 'MNST', 'FTNT', 'MCO', 'CMCSA', 'MSI',
+    'TT', 'CDNS', 'SHW', 'MDLZ', 'SNPS', 'HWM', 'CEG', 'ITW', 'PWR', 'CL',
+    'GM', 'ROST', 'NSC', 'NOC', 'SLB', 'DASH', 'AJG', 'TGT', 'AON', 'HOOD',
+  ];
+  assert.equal(symbols.length, 50);
+  t.mock.method(Date, 'now', () => Date.parse('2026-11-05T16:00:00Z'));
+  t.mock.method(console, 'warn', () => {});
+  t.mock.method(globalThis, 'fetch', async () => { throw new Error('offline'); });
+  let count = 0;
+  for (const symbol of symbols) {
+    assert.ok(universe.includes(symbol), symbol);
+    const company = await fetchCompanyEvents(symbol, true);
+    const rows = company.quarters.slice(0, 6);
+    assert.equal(rows.length, 6, symbol);
+    for (const row of rows) {
+      const label = `${symbol} ${row.periodEnd}`;
+      const pair = consensus[symbol].find((entry) => entry.periodEnd === row.periodEnd);
+      assert.ok(pair, `${label}: source pair`);
+      assert.ok(Number.isFinite(row.revenueBeat), `${label}: Revenue beat`);
+      assert.ok(Number.isFinite(row.epsBeat), `${label}: EPS beat`);
+      assert.notEqual(row.revenueBeatProvisional, true, `${label}: not a rolling forecast`);
+      assert.equal(row.revenueBeat, pair.revenue - pair.revenueEstimate, label);
+      assert.ok(Math.abs(row.epsBeat - (pair.eps - pair.epsEstimate)) < 1e-10, label);
+      assert.equal(row.epsActual, pair.eps, label);
+      const statement = snapshot.companies[symbol].sources.sec.find((entry) =>
+        new Date(entry.time * 1000).toISOString().slice(0, 10) === row.periodEnd);
+      assert.ok(statement?.revenue > 0, `${label}: independent SEC statement`);
+      assert.ok(Math.abs(pair.revenue - statement.revenue) / statement.revenue <= 0.02, label);
+      assert.ok(Date.parse(pair.publishedAt) <= Date.now(), label);
+      assert.equal(new URL(pair.source).hostname, 'www.marketbeat.com', label);
+      assert.ok(pair.tableSource.endsWith(`/${symbol}/earnings/`), label);
+      count++;
+    }
+  }
+  assert.equal(count, 300);
+});
+
+test('full-index coverage audit matches every displayed offline report and explains incomplete tickers', async (t) => {
+  const coverage = require('./sp500-earnings-coverage.json');
+  const snapshot = require('./financial-history.json');
+  const consensus = require('./reported-consensus.json');
+  const { displayed, complete } = require('../../scripts/expand-earnings-history.cjs');
+  t.mock.method(Date, 'now', () => Date.parse(coverage.checkedAt));
+  t.mock.method(console, 'warn', () => {});
+  t.mock.method(globalThis, 'fetch', async () => { throw new Error('offline'); });
+  assert.equal(coverage.requiredReports, 6);
+  assert.equal(coverage.members.length, 503);
+  assert.equal(new Set(coverage.members.map((member) => member.symbol)).size, 503);
+  let reportCount = 0;
+  for (const member of coverage.members) {
+    const sources = snapshot.companies[member.symbol]?.sources;
+    assert.equal(member.complete, sources ? complete(sources) : false, member.symbol);
+    if (!member.complete) {
+      assert.equal(typeof member.reason, 'string', member.symbol);
+      assert.ok(member.reason.length > 0, member.symbol);
+      continue;
+    }
+    const company = await fetchCompanyEvents(member.symbol, true);
+    const expected = displayed(sources);
+    const rows = company.quarters.slice(0, 6);
+    assert.equal(rows.length, 6, member.symbol);
+    for (let index = 0; index < 6; index++) {
+      const label = `${member.symbol} ${rows[index].periodEnd}`;
+      assert.equal(rows[index].periodEnd, expected[index].periodEnd, label);
+      assert.ok(Number.isFinite(rows[index].revenueBeat), label);
+      assert.ok(Number.isFinite(rows[index].epsBeat), label);
+      assert.notEqual(rows[index].revenueBeatProvisional, true, label);
+      assert.equal(rows[index].revenueBeat, expected[index].revenueBeat, label);
+      assert.equal(rows[index].epsBeat, expected[index].epsBeat, label);
+      reportCount++;
+    }
+    for (const pair of consensus[member.symbol] ?? []) {
+      if (!pair.validationSource) continue;
+      assert.ok(['sec', 'yahoo'].includes(pair.validationSource), member.symbol);
+      const date = Date.parse(`${pair.periodEnd}T00:00:00Z`) / 1000;
+      const statement = sources[pair.validationSource]?.find((row) => row.time === date);
+      assert.ok(statement?.revenue > 0, member.symbol);
+      assert.ok(Math.abs(pair.revenue - statement.revenue) / statement.revenue <= 0.02, member.symbol);
+    }
+  }
+  assert.equal(coverage.members.filter((member) => member.complete).length, 239);
+  assert.equal(reportCount, 1434);
 });
 
 test('historical results exclude future period ends, future releases and empty forecast rows', () => {

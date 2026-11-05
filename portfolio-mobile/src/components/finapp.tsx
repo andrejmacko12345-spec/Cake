@@ -222,7 +222,7 @@ export function Header({
       <View style={styles.headerCopy}>
         {brand ? (
           <View style={styles.brandLine}>
-            <Image source={require('../../assets/icon.png')} style={styles.brandIcon} />
+            <Image source={require('../../assets/icon-green.png')} style={styles.brandIcon} />
             <Text style={styles.brandName}>Fincake</Text>
           </View>
         ) : null}

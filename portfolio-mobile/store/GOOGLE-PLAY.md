@@ -14,6 +14,21 @@ pred odoslaním znovu skontrolovať. Tento dokument nenahrádza právne posúden
 - Profil → **Súkromie a podpora**, dostupné aj bez prihlásenia.
 - Lokálne portfólio, CSV import/export a voliteľný lokálny AES-GCM šifrovaný prenos
   cez súbor a samostatný obnovovací kód; aplikácia nemá registráciu ani cloudové zálohy.
+- Predvolený Watchlist je prázdny, bez ukážkových akcií. Existujúce uložené
+  zoznamy zostávajú nezmenené.
+- Udalosti → filter: predvolene všetky otvorené pozície, prípadne vlastný výber
+  jednotlivých akcií z portfólia a všetkých watchlistov. Výber sa ukladá lokálne
+  a prenáša v šifrovanej zálohe; staršie zálohy použijú predvolený režim.
+  Panel má zbalené sekcie Portfólio a Watchlist s výberom celej skupiny.
+  Šípka rozbalí jednotlivé akcie; pomlčka označuje čiastočný výber.
+- Editácia alebo pridanie transakcie z „Moje pohyby“ sa po uložení či zatvorení
+  formulára vracia do histórie pohybov, nie na detail akcie.
+  História zostáva otvorená aj pod priehľadným editorom počas úprav.
+  Buy, Sell a tlačidlo počtu akcií majú jemnú haptickú odozvu.
+- Podržanie stĺpca v dividendovom kalendári zobrazí mesiac a sumu výplat v EUR.
+  Pri skrytí súm zostáva hodnota skrytá aj v tomto zobrazení.
+- Vyhladený model výhľadu sa pripravuje po načítaní transakcií pri otvorení
+  Forecastu; otvorenie nastavení ani prepnutie modelu výpočet neopakujú.
 - Informačné upozornenie: Nákup/Predaj len evidujú, nevykonávajú obchody;
   prognózy nie sú zárukou zisku ani personalizovaným odporúčaním.
 - Odstránené nepotrebné Android oprávnenia: kamera, mikrofón, kontakty,
@@ -216,14 +231,91 @@ pri striedaní GitHub/EAS buildov koordinovať číslovanie.
 - Feature graphic: JPEG alebo 24-bit PNG bez alpha, **1 024 × 500**.
   Pripravené návrhy [SK](assets/feature-graphic-sk.png)
   a [EN](assets/feature-graphic-en.png), s existujúcim brandingom Fincake.
+- Tmavé alternatívy: [zelená](assets/dark/green) ladí s novými screenshotmi,
+  [oranžová](assets/dark/orange) zachováva pôvodný akcent značky.
+  Každá obsahuje ikonu 512 × 512 a grafiku 1 024 × 500 v SK aj EN;
+  [spoločný náhľad](assets/dark/preview.png) a
+  [ZIP](assets/dark/fincake-dark-branding.zip). Pôvodné podklady zostávajú
+  zachované; **zelená tmavá ikona je nastavená pre nové buildy aplikácie**.
+  `assets/icon-green.png` je 1 024 × 1 024 pre základnú/iOS ikonu a web;
+  Android používa samostatné transparentné popredie, tmavé pozadie
+  a monochromatickú vrstvu pre tematické ikony.
+  Zmena sa prejaví po zostavení a nainštalovaní nového APK/AAB, nie cez OTA aktualizáciu.
 - Telefón: minimálne **2 skutočné screenshoty**, odporúčam 6–8;
   PNG/JPEG, každá strana 320–3 840 px, dlhšia najviac 2× kratšia.
   Na propagačné plochy odporúčané aspoň 4 screenshoty s rozlíšením min. 1 080 px.
-- Návrh poradia: portfólio → detail akcie → udalosti → projekcie → porovnanie → výhľad.
+- Pripravené poradie: portfólio → udalosti → sledované → projekcie → porovnanie → výhľad.
 - Samostatné SK/EN obrázky pri lokalizovanom UI; konzistentný vzhľad a aktuálna zostava.
 - Použiť výhradne syntetické/demo transakcie, nie osobné portfólio, e-mail alebo účty.
 - Bez falošných UI prvkov, sľubov zisku, hodnotení a odznakov Google Play.
 - Žiadne obrázky v tomto balíku nepredstavujú hotové screenshoty testovanej AAB zostavy.
+
+### Lokalizované propagačné náhľady
+
+V [assets/screenshots/sk-SK](assets/screenshots/sk-SK) a
+[assets/screenshots/en-US](assets/screenshots/en-US) je po šesť PNG obrázkov
+**1080 × 1920**. Prehľad celej série:
+[SK](assets/screenshots/preview-sk-SK.png) a
+[EN](assets/screenshots/preview-en-US.png).
+Do telefónnych screenshotov v príslušnom jazyku vyber iba šesť obrázkov
+z daného jazykového priečinka, nie prehľadové koláže. Poradie určujú číselné
+prefixy názvov súborov; samotné vizualizácie nemajú viditeľné číslovanie.
+
+Obrázky používajú skutočné aktuálne rozhranie Expo web pri mobilnej veľkosti,
+nie AI vygenerované UI ani screenshot otestovaného Android AAB.
+Pred publikovaním porovnaj obsah s finálnou Android zostavou.
+Ukážkové množstvá AAPL, MSFT, NVDA, AMZN, GOOG a KO sú fiktívne.
+Nákupné ceny k 6. 1. 2025, kurzy USD/EUR a aktuálne kotácie sú reálne dáta
+Yahoo Finance. Výsledky firiem zobrazuje existujúca dátová vrstva aplikácie.
+Projekcia MSFT používa výslovne modelové vstupy: rast tržieb 10 %,
+rast zisku 12 % a P/E 24–34; nejde o analytickú predpoveď.
+Pôvodné zábery sú v `raw`, demo dáta v `demo-portfolio.json`;
+čas vytvorenia a verejné zdroje sú v `manifest.json`.
+Osobné portfólio ani nastavenia používateľa sa nemenia.
+
+Obnovenie obrázkov cez Microsoft Edge na Windows (dva terminály v projekte):
+
+```powershell
+# Terminál 1
+npm run web -- --port 8081
+
+# Terminál 2; nástroje iba v dočasnom priečinku, bez zmeny závislostí aplikácie
+npm install --prefix "$env:TEMP\fincake-capture-tools" --no-package-lock --no-audit --no-fund playwright
+$env:CAPTURE_PLAYWRIGHT = "$env:TEMP\fincake-capture-tools\node_modules\playwright"
+node scripts\capture-store-screenshots.cjs
+node --test scripts\capture-store-screenshots.test.cjs
+```
+
+Ak už existuje kompletná sada, možno obnoviť iba vybrané obrazovky bez zmeny
+ostatných obrázkov a demo portfólia:
+
+```powershell
+$env:CAPTURE_FEATURES = 'projections,compare'
+node scripts\capture-store-screenshots.cjs
+Remove-Item Env:\CAPTURE_FEATURES
+```
+
+Po obnovení obrázkov znovu vytvor ZIP s oboma jazykmi:
+
+```powershell
+Compress-Archive -Path 'store\assets\screenshots\sk-SK','store\assets\screenshots\en-US' -DestinationPath 'store\assets\screenshots\fincake-play-screenshots.zip' -Force
+```
+
+Capture vytvára izolovaný prehliadač s demo úložiskom. Len v zachytenom
+webovom bundle odstráni tri kontroly blokujúce webové kotácie a verejné Yahoo
+požiadavky odošle cez HTTP klienta Playwright, aby obišiel CORS.
+Produkčné zdroje ani natívne správanie nemení. Pri zmene týchto kontrol
+skript skončí chybou; dáta nenahrádza vymyslenými hodnotami.
+
+Tmavé grafiky možno znovu vytvoriť po nastavení `CAPTURE_PLAYWRIGHT`
+rovnakým postupom ako pri screenshotoch. Skript obnoví aj zelené buildové
+ikony v `assets`; pôvodný `assets/icon.png` zostáva zdrojom geometrie loga:
+
+```powershell
+node scripts\create-dark-play-graphics.cjs
+node --test scripts\create-dark-play-graphics.test.cjs
+Compress-Archive -Path 'store\assets\dark\green','store\assets\dark\orange' -DestinationPath 'store\assets\dark\fincake-dark-branding.zip' -Force
+```
 
 ## 9. Pred povolením produkcie
 

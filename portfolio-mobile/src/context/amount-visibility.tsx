@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { Alert } from 'react-native';
-import { useAppStorage } from '../data/app-storage';
+import { onBulkStorageChange, useAppStorage } from '../data/app-storage';
 import { useLocale } from './locale';
 
 const STORAGE_KEY = '@portfolio-mobile/hide-amounts';
@@ -23,14 +23,20 @@ export function AmountVisibilityProvider({ children }: { children: ReactNode }) 
   useEffect(() => { messages.current = { t, errorText }; }, [t, errorText]);
   useEffect(() => {
     let active = true;
-    storage.getItem(STORAGE_KEY).then((value) => {
-      if (value !== null && value !== 'true' && value !== 'false') throw new Error('Invalid amount visibility setting.');
-      if (active) setHideAmounts(value === 'true');
-    }).catch((error: unknown) => {
-      console.warn('Could not load amount visibility:', error);
-      if (active) Alert.alert(messages.current.t('Nastavenie súkromia sa nepodarilo načítať.'), messages.current.errorText(error instanceof Error ? error.message : String(error)));
-    }).finally(() => { if (active) setReady(true); });
-    return () => { active = false; };
+    let request = 0;
+    const load = () => {
+      const current = ++request;
+      void storage.getItem(STORAGE_KEY).then((value) => {
+        if (value !== null && value !== 'true' && value !== 'false') throw new Error('Invalid amount visibility setting.');
+        if (active && current === request) setHideAmounts(value === 'true');
+      }).catch((error: unknown) => {
+        console.warn('Could not load amount visibility:', error);
+        if (active && current === request) Alert.alert(messages.current.t('Nastavenie súkromia sa nepodarilo načítať.'), messages.current.errorText(error instanceof Error ? error.message : String(error)));
+      }).finally(() => { if (active && current === request) setReady(true); });
+    };
+    const unsubscribe = onBulkStorageChange(load);
+    load();
+    return () => { active = false; unsubscribe(); };
   }, [storage]);
 
   const toggleHideAmounts = useCallback(async () => {

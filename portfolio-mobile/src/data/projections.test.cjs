@@ -318,7 +318,7 @@ test('compact projection table renders 4 shared inputs and all 3 years in Slovak
       };
       if (id === 'expo-router') return { router: {} };
       if (id === 'lucide-react-native') return { ArrowLeft: () => null, Search: () => null,
-        ChevronDown: () => null, X: () => null, BriefcaseBusiness: () => null, Check: () => null, Bookmark: () => null };
+        ChevronDown: () => null, X: () => null, BriefcaseBusiness: () => null, Check: () => null, Bookmark: () => null, Info: () => null };
       if (id === '../components/finapp') return {
         Page: wrap, Surface: wrap, Header: ({ title }) => React.createElement('h1', null, title),
       };
@@ -373,6 +373,11 @@ test('compact projection table renders 4 shared inputs and all 3 years in Slovak
       assert.equal((html.match(/<input/g) ?? []).length, 5);
       assert.doesNotMatch(html, /AAPL|MSFT/);
       assert.doesNotMatch(html, /CLOSED/);
+      const info = buttons.find((button) => button.accessibilityLabel === (language === 'sk' ? 'Ako predvypĺňame hodnoty' : 'How default values are calculated'));
+      assert.ok(info);
+      info.onPress();
+      assert.ok(updates.some(([index, next]) => index === 12 && next === true));
+      updates = [];
       const clear = buttons.find((button) => button.accessibilityLabel === (language === 'sk' ? 'Zrušiť výber akcie' : 'Clear stock selection'));
       assert.ok(clear);
       clear.onPress();

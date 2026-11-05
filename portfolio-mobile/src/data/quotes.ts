@@ -1,5 +1,7 @@
 import { Platform } from 'react-native';
+import { createRequestCache } from './request-cache';
 import { availableAssets, Asset, colors } from './portfolio';
+import { getAssetCategory } from './asset-discovery';
 
 type YahooChartResponse = {
   chart?: {
@@ -98,10 +100,11 @@ export async function searchAssets(inputQuery: string): Promise<Asset[]> {
   const seen = new Set<string>();
   return (result.quotes ?? []).flatMap((quote) => {
     const symbol = quote.symbol?.trim().toUpperCase();
+    const category = getAssetCategory(quote.quoteType);
     if (
       !symbol ||
       !/^[A-Z0-9.^=-]{1,20}$/.test(symbol) ||
-      (quote.quoteType && quote.quoteType !== 'EQUITY' && quote.quoteType !== 'ETF') ||
+      !category ||
       seen.has(symbol)
     ) return [];
     seen.add(symbol);
@@ -112,6 +115,7 @@ export async function searchAssets(inputQuery: string): Promise<Asset[]> {
       price: 0,
       change: 0,
       color: knownAsset?.color ?? colors.violet,
+      category,
     }];
   });
 }
@@ -151,7 +155,12 @@ export type IndexHistory = {
   timestamp: number;
 };
 
-export async function fetchIndexHistory(symbol: string, range: IndexRange): Promise<IndexHistory> {
+const indexRequest = createRequestCache<IndexHistory>(60 * 1000);
+export function fetchIndexHistory(symbol: string, range: IndexRange): Promise<IndexHistory> {
+  return indexRequest(`${symbol}|${range}`, () => loadIndexHistory(symbol, range));
+}
+
+async function loadIndexHistory(symbol: string, range: IndexRange): Promise<IndexHistory> {
   if (!marketIndices.some((index) => index.symbol === symbol)) throw new Error(`Neplatný index: ${symbol}.`);
   const ranges = { '1D': '1d', '1W': '5d', '1M': '1mo', '3M': '3mo', '1Y': '1y', '5Y': '5y', MAX: 'max' } as const;
   const response = await fetchChart(symbol, ranges[range], range === '1D' || range === '1W' ? '5m' : range === 'MAX' ? '1mo' : range === '5Y' ? '1wk' : '1d');
@@ -167,7 +176,17 @@ export async function fetchIndexHistory(symbol: string, range: IndexRange): Prom
   return { points, baseline, timestamp: points[points.length - 1].timestamp };
 }
 
-export async function fetchHistoricalQuoteSeries(
+const historyRequest = createRequestCache<HistoricalQuoteSeries>(60 * 1000);
+export function fetchHistoricalQuoteSeries(
+  inputSymbol: string,
+  startDate: string,
+  interval: '5m' | '15m' | '1d' | '1wk',
+): Promise<HistoricalQuoteSeries> {
+  return historyRequest(`${inputSymbol.trim().toUpperCase()}|${startDate}|${interval}`,
+    () => loadHistoricalQuoteSeries(inputSymbol, startDate, interval));
+}
+
+async function loadHistoricalQuoteSeries(
   inputSymbol: string,
   startDate: string,
   interval: '5m' | '15m' | '1d' | '1wk',

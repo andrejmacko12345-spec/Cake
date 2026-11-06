@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-05T15:39:01.893Z",
+  "checkedAt": "2026-11-06T08:46:45.920Z",
   "membershipSource": "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies",
   "requiredReports": 6,
   "members": [
@@ -9,7 +9,7 @@
       "sector": "Industrials",
       "industry": "Industrial Conglomerates",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2026-01-20T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "AOS",
@@ -25,7 +25,7 @@
       "sector": "Health Care",
       "industry": "Health Care Equipment",
       "complete": false,
-      "reason": "Only 2/6 complete historical pairs."
+      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
     },
     {
       "symbol": "ABBV",
@@ -65,7 +65,7 @@
       "sector": "Utilities",
       "industry": "Independent Power Producers & Energy Traders",
       "complete": false,
-      "reason": "The actual six displayed reports do not all contain both beats."
+      "reason": "No offline history."
     },
     {
       "symbol": "AFL",
@@ -73,7 +73,7 @@
       "sector": "Financials",
       "industry": "Life & Health Insurance",
       "complete": false,
-      "reason": "No reported period for 2026-11-04T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "A",
@@ -81,7 +81,7 @@
       "sector": "Health Care",
       "industry": "Life Sciences Tools & Services",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "APD",
@@ -89,7 +89,7 @@
       "sector": "Materials",
       "industry": "Industrial Gases",
       "complete": false,
-      "reason": "The actual six displayed reports do not all contain both beats."
+      "reason": "No offline history."
     },
     {
       "symbol": "ABNB",
@@ -97,7 +97,7 @@
       "sector": "Consumer Discretionary",
       "industry": "Hotels, Resorts & Cruise Lines",
       "complete": false,
-      "reason": "EPS history needs manual split or exceptional-item verification."
+      "reason": "No offline history."
     },
     {
       "symbol": "AKAM",
@@ -105,7 +105,7 @@
       "sector": "Information Technology",
       "industry": "Internet Services & Infrastructure",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "ALB",
@@ -113,7 +113,7 @@
       "sector": "Materials",
       "industry": "Specialty Chemicals",
       "complete": false,
-      "reason": "EPS pair needs manual split/methodology verification."
+      "reason": "No offline history."
     },
     {
       "symbol": "ARE",
@@ -121,7 +121,7 @@
       "sector": "Real Estate",
       "industry": "Office REITs",
       "complete": false,
-      "reason": "REIT: FFO/EPS methodology requires manual review."
+      "reason": "No offline history."
     },
     {
       "symbol": "ALGN",
@@ -145,7 +145,7 @@
       "sector": "Utilities",
       "industry": "Electric Utilities",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "ALL",
@@ -153,7 +153,7 @@
       "sector": "Financials",
       "industry": "Property & Casualty Insurance",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2025-07-30T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "GOOGL",
@@ -177,7 +177,7 @@
       "sector": "Consumer Staples",
       "industry": "Tobacco",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2025-07-30T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "AMZN",
@@ -193,15 +193,15 @@
       "sector": "Materials",
       "industry": "Paper & Plastic Packaging Products & Materials",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "AEE",
       "name": "Ameren",
       "sector": "Utilities",
       "industry": "Multi-Utilities",
-      "complete": true,
-      "reason": null
+      "complete": false,
+      "reason": "6/6 reports; 5/6 verified Revenue beats; 6/6 EPS beats."
     },
     {
       "symbol": "AEP",
@@ -217,7 +217,7 @@
       "sector": "Financials",
       "industry": "Consumer Finance",
       "complete": false,
-      "reason": "Non-positive reported revenue or consensus."
+      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
     },
     {
       "symbol": "AIG",
@@ -225,7 +225,7 @@
       "sector": "Financials",
       "industry": "Multi-line Insurance",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2025-08-06T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "AMT",
@@ -233,7 +233,7 @@
       "sector": "Real Estate",
       "industry": "Telecom Tower REITs",
       "complete": false,
-      "reason": "REIT: FFO/EPS methodology requires manual review."
+      "reason": "No offline history."
     },
     {
       "symbol": "AWK",
@@ -297,7 +297,7 @@
       "sector": "Energy",
       "industry": "Oil & Gas Exploration & Production",
       "complete": false,
-      "reason": "No reported period for 2026-11-04T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "APO",
@@ -305,7 +305,7 @@
       "sector": "Financials",
       "industry": "Asset Management & Custody Banks",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "AAPL",
@@ -329,7 +329,7 @@
       "sector": "Communication Services",
       "industry": "Advertising",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "APTV",
@@ -337,7 +337,7 @@
       "sector": "Consumer Discretionary",
       "industry": "Automotive Parts & Equipment",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2025-07-31T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "ACGL",
@@ -345,7 +345,7 @@
       "sector": "Financials",
       "industry": "Property & Casualty Insurance",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "ADM",
@@ -361,7 +361,7 @@
       "sector": "Financials",
       "industry": "Asset Management & Custody Banks",
       "complete": false,
-      "reason": "No reported period for 2026-10-29T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "ANET",
@@ -385,7 +385,7 @@
       "sector": "Financials",
       "industry": "Multi-line Insurance",
       "complete": false,
-      "reason": "No reported period for 2026-11-03T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "T",
@@ -393,7 +393,7 @@
       "sector": "Communication Services",
       "industry": "Integrated Telecommunication Services",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "ATO",
@@ -401,7 +401,7 @@
       "sector": "Utilities",
       "industry": "Gas Utilities",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "ADSK",
@@ -425,7 +425,7 @@
       "sector": "Consumer Discretionary",
       "industry": "Automotive Retail",
       "complete": false,
-      "reason": "EPS pair needs manual split/methodology verification."
+      "reason": "No offline history."
     },
     {
       "symbol": "AVY",
@@ -440,8 +440,8 @@
       "name": "Axon Enterprise",
       "sector": "Industrials",
       "industry": "Aerospace & Defense",
-      "complete": true,
-      "reason": null
+      "complete": false,
+      "reason": "6/6 reports; 5/6 verified Revenue beats; 6/6 EPS beats."
     },
     {
       "symbol": "BKR",
@@ -457,7 +457,7 @@
       "sector": "Materials",
       "industry": "Metal, Glass & Plastic Containers",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "BAC",
@@ -465,7 +465,7 @@
       "sector": "Financials",
       "industry": "Diversified Banks",
       "complete": false,
-      "reason": "Non-positive reported revenue or consensus."
+      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
     },
     {
       "symbol": "BAX",
@@ -481,7 +481,7 @@
       "sector": "Health Care",
       "industry": "Health Care Equipment",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2026-02-09T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "BRK-B",
@@ -489,7 +489,7 @@
       "sector": "Financials",
       "industry": "Multi-Sector Holdings",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
     },
     {
       "symbol": "BBY",
@@ -505,7 +505,7 @@
       "sector": "Health Care",
       "industry": "Life Sciences Tools & Services",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "BIIB",
@@ -529,7 +529,7 @@
       "sector": "Financials",
       "industry": "Asset Management & Custody Banks",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2026-10-22T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "XYZ",
@@ -537,7 +537,7 @@
       "sector": "Financials",
       "industry": "Transaction & Payment Processing Services",
       "complete": false,
-      "reason": "Only 1/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "BE",
@@ -553,7 +553,7 @@
       "sector": "Financials",
       "industry": "Asset Management & Custody Banks",
       "complete": false,
-      "reason": "Only 4/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "BA",
@@ -561,7 +561,7 @@
       "sector": "Industrials",
       "industry": "Aerospace & Defense",
       "complete": false,
-      "reason": "EPS pair needs manual split/methodology verification."
+      "reason": "No offline history."
     },
     {
       "symbol": "BKNG",
@@ -569,7 +569,7 @@
       "sector": "Consumer Discretionary",
       "industry": "Hotels, Resorts & Cruise Lines",
       "complete": false,
-      "reason": "EPS pair needs manual split/methodology verification."
+      "reason": "No offline history."
     },
     {
       "symbol": "BSX",
@@ -601,7 +601,7 @@
       "sector": "Industrials",
       "industry": "Data Processing & Outsourced Services",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "BRO",
@@ -617,7 +617,7 @@
       "sector": "Consumer Staples",
       "industry": "Distillers & Vintners",
       "complete": false,
-      "reason": "Only 4/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "BG",
@@ -633,7 +633,7 @@
       "sector": "Real Estate",
       "industry": "Office REITs",
       "complete": false,
-      "reason": "REIT: FFO/EPS methodology requires manual review."
+      "reason": "No offline history."
     },
     {
       "symbol": "CHRW",
@@ -657,7 +657,7 @@
       "sector": "Real Estate",
       "industry": "Multi-Family Residential REITs",
       "complete": false,
-      "reason": "REIT: FFO/EPS methodology requires manual review."
+      "reason": "No offline history."
     },
     {
       "symbol": "COF",
@@ -673,7 +673,7 @@
       "sector": "Health Care",
       "industry": "Health Care Distributors",
       "complete": false,
-      "reason": "The actual six displayed reports do not all contain both beats."
+      "reason": "No offline history."
     },
     {
       "symbol": "CCL",
@@ -697,7 +697,7 @@
       "sector": "Consumer Discretionary",
       "industry": "Automotive Retail",
       "complete": false,
-      "reason": "EPS pair needs manual split/methodology verification."
+      "reason": "No offline history."
     },
     {
       "symbol": "CASY",
@@ -721,7 +721,7 @@
       "sector": "Financials",
       "industry": "Financial Exchanges & Data",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "CBRE",
@@ -737,7 +737,7 @@
       "sector": "Information Technology",
       "industry": "Technology Distributors",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "COR",
@@ -745,7 +745,7 @@
       "sector": "Health Care",
       "industry": "Health Care Distributors",
       "complete": false,
-      "reason": "No reported period for 2026-11-04T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "CNC",
@@ -769,7 +769,7 @@
       "sector": "Materials",
       "industry": "Fertilizers & Agricultural Chemicals",
       "complete": false,
-      "reason": "No reported period for 2026-11-04T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "CRL",
@@ -785,7 +785,7 @@
       "sector": "Financials",
       "industry": "Investment Banking & Brokerage",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2025-10-16T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "CHTR",
@@ -801,7 +801,7 @@
       "sector": "Energy",
       "industry": "Integrated Oil & Gas",
       "complete": false,
-      "reason": "No reported period for 2026-10-30T23:59:59Z."
+      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
     },
     {
       "symbol": "CMG",
@@ -809,7 +809,7 @@
       "sector": "Consumer Discretionary",
       "industry": "Restaurants",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "CB",
@@ -817,7 +817,7 @@
       "sector": "Financials",
       "industry": "Property & Casualty Insurance",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "CHD",
@@ -841,7 +841,7 @@
       "sector": "Health Care",
       "industry": "Health Care Services",
       "complete": false,
-      "reason": "The actual six displayed reports do not all contain both beats."
+      "reason": "No offline history."
     },
     {
       "symbol": "CINF",
@@ -849,7 +849,7 @@
       "sector": "Financials",
       "industry": "Property & Casualty Insurance",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2025-07-28T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "CTAS",
@@ -857,7 +857,7 @@
       "sector": "Industrials",
       "industry": "Diversified Support Services",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "CSCO",
@@ -873,7 +873,7 @@
       "sector": "Financials",
       "industry": "Diversified Banks",
       "complete": false,
-      "reason": "No reported period for 2026-10-13T23:59:59Z."
+      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
     },
     {
       "symbol": "CFG",
@@ -929,7 +929,7 @@
       "sector": "Information Technology",
       "industry": "Electronic Components",
       "complete": false,
-      "reason": "Only 1/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "COIN",
@@ -937,7 +937,7 @@
       "sector": "Financials",
       "industry": "Financial Exchanges & Data",
       "complete": false,
-      "reason": "EPS pair needs manual split/methodology verification."
+      "reason": "No offline history."
     },
     {
       "symbol": "CL",
@@ -969,7 +969,7 @@
       "sector": "Energy",
       "industry": "Oil & Gas Exploration & Production",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2026-02-05T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "ED",
@@ -977,7 +977,7 @@
       "sector": "Utilities",
       "industry": "Multi-Utilities",
       "complete": false,
-      "reason": "The actual six displayed reports do not all contain both beats."
+      "reason": "No offline history."
     },
     {
       "symbol": "STZ",
@@ -1009,7 +1009,7 @@
       "sector": "Industrials",
       "industry": "Diversified Support Services",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "GLW",
@@ -1017,7 +1017,7 @@
       "sector": "Information Technology",
       "industry": "Electronic Components",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2026-10-27T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "CPAY",
@@ -1025,7 +1025,7 @@
       "sector": "Financials",
       "industry": "Transaction & Payment Processing Services",
       "complete": false,
-      "reason": "Only 4/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "CSGP",
@@ -1041,7 +1041,7 @@
       "sector": "Consumer Staples",
       "industry": "Consumer Staples Merchandise Retail",
       "complete": false,
-      "reason": "The actual six displayed reports do not all contain both beats."
+      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
     },
     {
       "symbol": "CRH",
@@ -1049,7 +1049,7 @@
       "sector": "Materials",
       "industry": "Construction Materials",
       "complete": false,
-      "reason": "EPS history needs manual split or exceptional-item verification."
+      "reason": "No offline history."
     },
     {
       "symbol": "CRWD",
@@ -1065,7 +1065,7 @@
       "sector": "Real Estate",
       "industry": "Telecom Tower REITs",
       "complete": false,
-      "reason": "REIT: FFO/EPS methodology requires manual review."
+      "reason": "No offline history."
     },
     {
       "symbol": "CSX",
@@ -1081,7 +1081,7 @@
       "sector": "Industrials",
       "industry": "Construction Machinery & Heavy Transportation Equipment",
       "complete": false,
-      "reason": "The actual six displayed reports do not all contain both beats."
+      "reason": "No offline history."
     },
     {
       "symbol": "CVS",
@@ -1105,7 +1105,7 @@
       "sector": "Consumer Discretionary",
       "industry": "Restaurants",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "DDOG",
@@ -1137,7 +1137,7 @@
       "sector": "Industrials",
       "industry": "Agricultural & Farm Machinery",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2025-08-14T23:59:59Z."
+      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
     },
     {
       "symbol": "DELL",
@@ -1153,7 +1153,7 @@
       "sector": "Industrials",
       "industry": "Passenger Airlines",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2026-10-09T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "DVN",
@@ -1161,7 +1161,7 @@
       "sector": "Energy",
       "industry": "Oil & Gas Exploration & Production",
       "complete": false,
-      "reason": "Non-positive reported revenue or consensus."
+      "reason": "No offline history."
     },
     {
       "symbol": "DXCM",
@@ -1185,7 +1185,7 @@
       "sector": "Real Estate",
       "industry": "Data Center REITs",
       "complete": false,
-      "reason": "REIT: FFO/EPS methodology requires manual review."
+      "reason": "No offline history."
     },
     {
       "symbol": "DG",
@@ -1209,7 +1209,7 @@
       "sector": "Utilities",
       "industry": "Multi-Utilities",
       "complete": false,
-      "reason": "No reported period for 2026-07-31T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "DPZ",
@@ -1217,7 +1217,7 @@
       "sector": "Consumer Discretionary",
       "industry": "Restaurants",
       "complete": false,
-      "reason": "Only 2/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "DASH",
@@ -1241,7 +1241,7 @@
       "sector": "Materials",
       "industry": "Commodity Chemicals",
       "complete": false,
-      "reason": "EPS history needs manual split or exceptional-item verification."
+      "reason": "No offline history."
     },
     {
       "symbol": "DHI",
@@ -1249,7 +1249,7 @@
       "sector": "Consumer Discretionary",
       "industry": "Homebuilding",
       "complete": false,
-      "reason": "No reported period for 2026-10-29T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "DTE",
@@ -1257,7 +1257,7 @@
       "sector": "Utilities",
       "industry": "Multi-Utilities",
       "complete": false,
-      "reason": "No reported period for 2026-07-28T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "DUK",
@@ -1265,7 +1265,7 @@
       "sector": "Utilities",
       "industry": "Electric Utilities",
       "complete": false,
-      "reason": "No reported period for 2026-08-03T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "DD",
@@ -1273,7 +1273,7 @@
       "sector": "Industrials",
       "industry": "Industrial Conglomerates",
       "complete": false,
-      "reason": "Non-positive reported revenue or consensus."
+      "reason": "No offline history."
     },
     {
       "symbol": "ETN",
@@ -1281,7 +1281,7 @@
       "sector": "Industrials",
       "industry": "Electrical Components & Equipment",
       "complete": false,
-      "reason": "Only 4/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "EBAY",
@@ -1297,7 +1297,7 @@
       "sector": "Communication Services",
       "industry": "Wireless Telecommunication Services",
       "complete": false,
-      "reason": "EPS pair needs manual split/methodology verification."
+      "reason": "No offline history."
     },
     {
       "symbol": "ECL",
@@ -1305,7 +1305,7 @@
       "sector": "Materials",
       "industry": "Specialty Chemicals",
       "complete": false,
-      "reason": "Only 3/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "EIX",
@@ -1337,7 +1337,7 @@
       "sector": "Industrials",
       "industry": "Construction & Engineering",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "EMR",
@@ -1345,7 +1345,7 @@
       "sector": "Industrials",
       "industry": "Electrical Components & Equipment",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "ETR",
@@ -1353,15 +1353,15 @@
       "sector": "Utilities",
       "industry": "Electric Utilities",
       "complete": false,
-      "reason": "No reported period for 2026-11-02T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "EOG",
       "name": "EOG Resources",
       "sector": "Energy",
       "industry": "Oil & Gas Exploration & Production",
-      "complete": true,
-      "reason": null
+      "complete": false,
+      "reason": "6/6 reports; 5/6 verified Revenue beats; 6/6 EPS beats."
     },
     {
       "symbol": "EQT",
@@ -1369,7 +1369,7 @@
       "sector": "Energy",
       "industry": "Oil & Gas Exploration & Production",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2026-07-21T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "EFX",
@@ -1385,7 +1385,7 @@
       "sector": "Real Estate",
       "industry": "Data Center REITs",
       "complete": false,
-      "reason": "REIT: FFO/EPS methodology requires manual review."
+      "reason": "No offline history."
     },
     {
       "symbol": "ERIE",
@@ -1393,7 +1393,7 @@
       "sector": "Financials",
       "industry": "Insurance Brokers",
       "complete": false,
-      "reason": "EPS history needs manual split or exceptional-item verification."
+      "reason": "No offline history."
     },
     {
       "symbol": "ESS",
@@ -1401,7 +1401,7 @@
       "sector": "Real Estate",
       "industry": "Multi-Family Residential REITs",
       "complete": false,
-      "reason": "REIT: FFO/EPS methodology requires manual review."
+      "reason": "No offline history."
     },
     {
       "symbol": "EL",
@@ -1417,7 +1417,7 @@
       "sector": "Financials",
       "industry": "Reinsurance",
       "complete": false,
-      "reason": "Only 4/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "EVRG",
@@ -1425,7 +1425,7 @@
       "sector": "Utilities",
       "industry": "Electric Utilities",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "P",
@@ -1433,7 +1433,7 @@
       "sector": "Information Technology",
       "industry": "Technology Hardware, Storage & Peripherals",
       "complete": false,
-      "reason": "Only 3/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "ES",
@@ -1441,7 +1441,7 @@
       "sector": "Utilities",
       "industry": "Electric Utilities",
       "complete": false,
-      "reason": "No reported period for 2026-11-04T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "EXC",
@@ -1449,7 +1449,7 @@
       "sector": "Utilities",
       "industry": "Electric Utilities",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "EXE",
@@ -1473,7 +1473,7 @@
       "sector": "Industrials",
       "industry": "Air Freight & Logistics",
       "complete": false,
-      "reason": "Only 1/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "EXR",
@@ -1481,7 +1481,7 @@
       "sector": "Real Estate",
       "industry": "Self-Storage REITs",
       "complete": false,
-      "reason": "REIT: FFO/EPS methodology requires manual review."
+      "reason": "No offline history."
     },
     {
       "symbol": "XOM",
@@ -1489,7 +1489,7 @@
       "sector": "Energy",
       "industry": "Integrated Oil & Gas",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2026-10-30T23:59:59Z."
+      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
     },
     {
       "symbol": "FFIV",
@@ -1497,7 +1497,7 @@
       "sector": "Information Technology",
       "industry": "Communications Equipment",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2026-10-27T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "FDS",
@@ -1513,7 +1513,7 @@
       "sector": "Information Technology",
       "industry": "Application Software",
       "complete": false,
-      "reason": "No reported period for 2026-11-04T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "FAST",
@@ -1521,7 +1521,7 @@
       "sector": "Industrials",
       "industry": "Trading Companies & Distributors",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "FRT",
@@ -1529,7 +1529,7 @@
       "sector": "Real Estate",
       "industry": "Retail REITs",
       "complete": false,
-      "reason": "REIT: FFO/EPS methodology requires manual review."
+      "reason": "No offline history."
     },
     {
       "symbol": "FDX",
@@ -1537,7 +1537,7 @@
       "sector": "Industrials",
       "industry": "Air Freight & Logistics",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "FDXF",
@@ -1545,7 +1545,7 @@
       "sector": "Industrials",
       "industry": "Cargo Ground Transportation",
       "complete": false,
-      "reason": "Only 0/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "FERG",
@@ -1553,7 +1553,7 @@
       "sector": "Industrials",
       "industry": "Trading Companies & Distributors",
       "complete": false,
-      "reason": "Only 1/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "FIS",
@@ -1561,7 +1561,7 @@
       "sector": "Financials",
       "industry": "Transaction & Payment Processing Services",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "FITB",
@@ -1569,7 +1569,7 @@
       "sector": "Financials",
       "industry": "Regional Banks",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "FSLR",
@@ -1585,7 +1585,7 @@
       "sector": "Utilities",
       "industry": "Electric Utilities",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "FISV",
@@ -1593,7 +1593,7 @@
       "sector": "Financials",
       "industry": "Transaction & Payment Processing Services",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2026-11-03T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "FLEX",
@@ -1601,7 +1601,7 @@
       "sector": "Information Technology",
       "industry": "Electronic Manufacturing Services",
       "complete": false,
-      "reason": "Only 4/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "F",
@@ -1609,7 +1609,7 @@
       "sector": "Consumer Discretionary",
       "industry": "Automobile Manufacturers",
       "complete": false,
-      "reason": "EPS history needs manual split or exceptional-item verification."
+      "reason": "No offline history."
     },
     {
       "symbol": "FTNT",
@@ -1625,7 +1625,7 @@
       "sector": "Industrials",
       "industry": "Industrial Machinery & Supplies & Components",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2026-04-30T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "FOXA",
@@ -1649,7 +1649,7 @@
       "sector": "Financials",
       "industry": "Asset Management & Custody Banks",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "FCX",
@@ -1657,7 +1657,7 @@
       "sector": "Materials",
       "industry": "Copper",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2026-10-27T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "GRMN",
@@ -1665,7 +1665,7 @@
       "sector": "Consumer Discretionary",
       "industry": "Consumer Electronics",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "IT",
@@ -1681,7 +1681,7 @@
       "sector": "Industrials",
       "industry": "Aerospace & Defense",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2026-10-20T23:59:59Z."
+      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
     },
     {
       "symbol": "GEHC",
@@ -1697,7 +1697,7 @@
       "sector": "Industrials",
       "industry": "Heavy Electrical Equipment",
       "complete": false,
-      "reason": "EPS pair needs manual split/methodology verification."
+      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
     },
     {
       "symbol": "GEN",
@@ -1761,7 +1761,7 @@
       "sector": "Financials",
       "industry": "Transaction & Payment Processing Services",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2026-08-05T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "GL",
@@ -1785,7 +1785,7 @@
       "sector": "Financials",
       "industry": "Investment Banking & Brokerage",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2026-01-15T23:59:59Z."
+      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
     },
     {
       "symbol": "HAL",
@@ -1793,7 +1793,7 @@
       "sector": "Energy",
       "industry": "Oil & Gas Equipment & Services",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "HIG",
@@ -1801,7 +1801,7 @@
       "sector": "Financials",
       "industry": "Property & Casualty Insurance",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2025-10-27T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "HAS",
@@ -1809,7 +1809,7 @@
       "sector": "Consumer Discretionary",
       "industry": "Leisure Products",
       "complete": false,
-      "reason": "Multiple reports map to the same period."
+      "reason": "No offline history."
     },
     {
       "symbol": "HCA",
@@ -1825,7 +1825,7 @@
       "sector": "Real Estate",
       "industry": "Health Care REITs",
       "complete": false,
-      "reason": "REIT: FFO/EPS methodology requires manual review."
+      "reason": "No offline history."
     },
     {
       "symbol": "HSIC",
@@ -1857,7 +1857,7 @@
       "sector": "Consumer Discretionary",
       "industry": "Hotels, Resorts & Cruise Lines",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2026-10-27T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "HD",
@@ -1873,7 +1873,7 @@
       "sector": "Industrials",
       "industry": "Aerospace & Defense",
       "complete": false,
-      "reason": "Only 0/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "HON",
@@ -1881,7 +1881,7 @@
       "sector": "Industrials",
       "industry": "Industrial Conglomerates",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2026-01-29T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "HRL",
@@ -1889,7 +1889,7 @@
       "sector": "Consumer Staples",
       "industry": "Packaged Foods & Meats",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "HST",
@@ -1897,7 +1897,7 @@
       "sector": "Real Estate",
       "industry": "Hotel & Resort REITs",
       "complete": false,
-      "reason": "REIT: FFO/EPS methodology requires manual review."
+      "reason": "No offline history."
     },
     {
       "symbol": "HWM",
@@ -1913,7 +1913,7 @@
       "sector": "Information Technology",
       "industry": "Technology Hardware, Storage & Peripherals",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "HUBB",
@@ -1937,7 +1937,7 @@
       "sector": "Financials",
       "industry": "Regional Banks",
       "complete": false,
-      "reason": "Only 2/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "HII",
@@ -1953,7 +1953,7 @@
       "sector": "Information Technology",
       "industry": "IT Consulting & Other Services",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
     },
     {
       "symbol": "IEX",
@@ -1985,7 +1985,7 @@
       "sector": "Health Care",
       "industry": "Life Sciences Tools & Services",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2026-10-29T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "INCY",
@@ -1993,7 +1993,7 @@
       "sector": "Health Care",
       "industry": "Biotechnology",
       "complete": false,
-      "reason": "The actual six displayed reports do not all contain both beats."
+      "reason": "No offline history."
     },
     {
       "symbol": "IR",
@@ -2001,7 +2001,7 @@
       "sector": "Industrials",
       "industry": "Industrial Machinery & Supplies & Components",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "PODD",
@@ -2009,7 +2009,7 @@
       "sector": "Health Care",
       "industry": "Health Care Equipment",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2025-11-06T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "INTC",
@@ -2025,7 +2025,7 @@
       "sector": "Financials",
       "industry": "Investment Banking & Brokerage",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2025-10-16T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "ICE",
@@ -2033,7 +2033,7 @@
       "sector": "Financials",
       "industry": "Financial Exchanges & Data",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "IFF",
@@ -2041,7 +2041,7 @@
       "sector": "Materials",
       "industry": "Specialty Chemicals",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2025-08-05T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "IP",
@@ -2049,7 +2049,7 @@
       "sector": "Materials",
       "industry": "Paper & Plastic Packaging Products & Materials",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2025-07-31T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "INTU",
@@ -2073,7 +2073,7 @@
       "sector": "Financials",
       "industry": "Asset Management & Custody Banks",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2026-10-27T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "INVH",
@@ -2081,7 +2081,7 @@
       "sector": "Real Estate",
       "industry": "Single-Family Residential REITs",
       "complete": false,
-      "reason": "REIT: FFO/EPS methodology requires manual review."
+      "reason": "No offline history."
     },
     {
       "symbol": "IQV",
@@ -2097,7 +2097,7 @@
       "sector": "Real Estate",
       "industry": "Other Specialized REITs",
       "complete": false,
-      "reason": "REIT: FFO/EPS methodology requires manual review."
+      "reason": "No offline history."
     },
     {
       "symbol": "JBHT",
@@ -2121,7 +2121,7 @@
       "sector": "Financials",
       "industry": "Transaction & Payment Processing Services",
       "complete": false,
-      "reason": "No reported period for 2026-11-03T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "J",
@@ -2129,7 +2129,7 @@
       "sector": "Industrials",
       "industry": "Construction & Engineering",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2026-08-04T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "JNJ",
@@ -2137,7 +2137,7 @@
       "sector": "Health Care",
       "industry": "Pharmaceuticals",
       "complete": false,
-      "reason": "Only 4/6 complete historical pairs."
+      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
     },
     {
       "symbol": "JCI",
@@ -2145,7 +2145,7 @@
       "sector": "Industrials",
       "industry": "Building Products",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "JPM",
@@ -2161,7 +2161,7 @@
       "sector": "Consumer Staples",
       "industry": "Soft Drinks & Non-alcoholic Beverages",
       "complete": false,
-      "reason": "Only 4/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "KEY",
@@ -2169,7 +2169,7 @@
       "sector": "Financials",
       "industry": "Regional Banks",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2026-01-20T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "KEYS",
@@ -2185,7 +2185,7 @@
       "sector": "Consumer Staples",
       "industry": "Household Products",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2025-04-22T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "KIM",
@@ -2193,7 +2193,7 @@
       "sector": "Real Estate",
       "industry": "Retail REITs",
       "complete": false,
-      "reason": "REIT: FFO/EPS methodology requires manual review."
+      "reason": "No offline history."
     },
     {
       "symbol": "KMI",
@@ -2201,7 +2201,7 @@
       "sector": "Energy",
       "industry": "Oil & Gas Storage & Transportation",
       "complete": false,
-      "reason": "Only 4/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "KKR",
@@ -2209,7 +2209,7 @@
       "sector": "Financials",
       "industry": "Asset Management & Custody Banks",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "KLAC",
@@ -2217,7 +2217,7 @@
       "sector": "Information Technology",
       "industry": "Semiconductor Materials & Equipment",
       "complete": false,
-      "reason": "EPS pair needs manual split/methodology verification."
+      "reason": "No offline history."
     },
     {
       "symbol": "KHC",
@@ -2233,7 +2233,7 @@
       "sector": "Consumer Staples",
       "industry": "Food Retail",
       "complete": false,
-      "reason": "No reported period for 2025-06-20T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "LHX",
@@ -2273,7 +2273,7 @@
       "sector": "Industrials",
       "industry": "Diversified Support Services",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2026-02-17T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "LEN",
@@ -2313,7 +2313,7 @@
       "sector": "Communication Services",
       "industry": "Movies & Entertainment",
       "complete": false,
-      "reason": "EPS pair needs manual split/methodology verification."
+      "reason": "No offline history."
     },
     {
       "symbol": "LMT",
@@ -2329,7 +2329,7 @@
       "sector": "Financials",
       "industry": "Multi-line Insurance",
       "complete": false,
-      "reason": "Only 0/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "LOW",
@@ -2345,7 +2345,7 @@
       "sector": "Consumer Discretionary",
       "industry": "Apparel, Accessories & Luxury Goods",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "LITE",
@@ -2361,7 +2361,7 @@
       "sector": "Materials",
       "industry": "Specialty Chemicals",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "MTB",
@@ -2369,7 +2369,7 @@
       "sector": "Financials",
       "industry": "Regional Banks",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "MPC",
@@ -2377,7 +2377,7 @@
       "sector": "Energy",
       "industry": "Oil & Gas Refining & Marketing",
       "complete": false,
-      "reason": "EPS history needs manual split or exceptional-item verification."
+      "reason": "No offline history."
     },
     {
       "symbol": "MAR",
@@ -2385,7 +2385,7 @@
       "sector": "Consumer Discretionary",
       "industry": "Hotels, Resorts & Cruise Lines",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "MRSH",
@@ -2393,7 +2393,7 @@
       "sector": "Financials",
       "industry": "Insurance Brokers",
       "complete": false,
-      "reason": "Only 3/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "MLM",
@@ -2401,7 +2401,7 @@
       "sector": "Materials",
       "industry": "Construction Materials",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2025-08-07T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "MRVL",
@@ -2409,7 +2409,7 @@
       "sector": "Information Technology",
       "industry": "Semiconductors",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "MAS",
@@ -2441,7 +2441,7 @@
       "sector": "Consumer Discretionary",
       "industry": "Restaurants",
       "complete": false,
-      "reason": "No reported period for 2026-11-04T23:59:59Z."
+      "reason": "6/6 reports; 0/6 verified Revenue beats; 5/6 EPS beats."
     },
     {
       "symbol": "MCK",
@@ -2465,7 +2465,7 @@
       "sector": "Health Care",
       "industry": "Pharmaceuticals",
       "complete": false,
-      "reason": "EPS history needs manual split or exceptional-item verification."
+      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
     },
     {
       "symbol": "META",
@@ -2481,15 +2481,15 @@
       "sector": "Financials",
       "industry": "Life & Health Insurance",
       "complete": false,
-      "reason": "No reported period for 2026-11-04T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "MTD",
       "name": "Mettler Toledo",
       "sector": "Health Care",
       "industry": "Life Sciences Tools & Services",
-      "complete": true,
-      "reason": null
+      "complete": false,
+      "reason": "6/6 reports; 5/6 verified Revenue beats; 6/6 EPS beats."
     },
     {
       "symbol": "MGM",
@@ -2497,15 +2497,15 @@
       "sector": "Consumer Discretionary",
       "industry": "Casinos & Gaming",
       "complete": false,
-      "reason": "EPS history needs manual split or exceptional-item verification."
+      "reason": "No offline history."
     },
     {
       "symbol": "MCHP",
       "name": "Microchip Technology",
       "sector": "Information Technology",
       "industry": "Semiconductors",
-      "complete": true,
-      "reason": null
+      "complete": false,
+      "reason": "6/6 reports; 5/6 verified Revenue beats; 6/6 EPS beats."
     },
     {
       "symbol": "MU",
@@ -2529,7 +2529,7 @@
       "sector": "Real Estate",
       "industry": "Multi-Family Residential REITs",
       "complete": false,
-      "reason": "REIT: FFO/EPS methodology requires manual review."
+      "reason": "No offline history."
     },
     {
       "symbol": "MRNA",
@@ -2560,8 +2560,8 @@
       "name": "Monster Beverage",
       "sector": "Consumer Staples",
       "industry": "Soft Drinks & Non-alcoholic Beverages",
-      "complete": true,
-      "reason": null
+      "complete": false,
+      "reason": "6/6 reports; 5/6 verified Revenue beats; 6/6 EPS beats."
     },
     {
       "symbol": "MCO",
@@ -2577,7 +2577,7 @@
       "sector": "Financials",
       "industry": "Investment Banking & Brokerage",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2026-10-14T23:59:59Z."
+      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
     },
     {
       "symbol": "MOS",
@@ -2609,7 +2609,7 @@
       "sector": "Financials",
       "industry": "Financial Exchanges & Data",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2025-10-21T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "NTAP",
@@ -2625,7 +2625,7 @@
       "sector": "Communication Services",
       "industry": "Movies & Entertainment",
       "complete": false,
-      "reason": "Reviewed non-comparable EPS must not be overwritten by automated consensus."
+      "reason": "6/6 reports; 6/6 verified Revenue beats; 5/6 EPS beats."
     },
     {
       "symbol": "NEM",
@@ -2641,7 +2641,7 @@
       "sector": "Communication Services",
       "industry": "Publishing",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "NWS",
@@ -2649,7 +2649,7 @@
       "sector": "Communication Services",
       "industry": "Publishing",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2026-11-04T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "NEE",
@@ -2657,7 +2657,7 @@
       "sector": "Utilities",
       "industry": "Multi-Utilities",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2025-07-23T23:59:59Z."
+      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
     },
     {
       "symbol": "NKE",
@@ -2673,7 +2673,7 @@
       "sector": "Utilities",
       "industry": "Multi-Utilities",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "NDSN",
@@ -2697,7 +2697,7 @@
       "sector": "Financials",
       "industry": "Asset Management & Custody Banks",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "NOC",
@@ -2729,7 +2729,7 @@
       "sector": "Materials",
       "industry": "Steel",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2026-10-26T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "NVDA",
@@ -2745,7 +2745,7 @@
       "sector": "Consumer Discretionary",
       "industry": "Homebuilding",
       "complete": false,
-      "reason": "EPS pair needs manual split/methodology verification."
+      "reason": "No offline history."
     },
     {
       "symbol": "NXPI",
@@ -2761,7 +2761,7 @@
       "sector": "Consumer Discretionary",
       "industry": "Automotive Retail",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "OXY",
@@ -2769,7 +2769,7 @@
       "sector": "Energy",
       "industry": "Oil & Gas Exploration & Production",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2026-05-05T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "OKTA",
@@ -2777,7 +2777,7 @@
       "sector": "Information Technology",
       "industry": "Application Software",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2025-08-26T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "ODFL",
@@ -2809,7 +2809,7 @@
       "sector": "Energy",
       "industry": "Oil & Gas Storage & Transportation",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2025-08-04T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "ORCL",
@@ -2825,7 +2825,7 @@
       "sector": "Industrials",
       "industry": "Industrial Machinery & Supplies & Components",
       "complete": false,
-      "reason": "Only 4/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "PCAR",
@@ -2833,7 +2833,7 @@
       "sector": "Industrials",
       "industry": "Construction Machinery & Heavy Transportation Equipment",
       "complete": false,
-      "reason": "Only 3/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "PKG",
@@ -2841,7 +2841,7 @@
       "sector": "Materials",
       "industry": "Paper & Plastic Packaging Products & Materials",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2026-10-21T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "PLTR",
@@ -2865,7 +2865,7 @@
       "sector": "Industrials",
       "industry": "Industrial Machinery & Supplies & Components",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "PAYX",
@@ -2873,7 +2873,7 @@
       "sector": "Industrials",
       "industry": "Human Resource & Employment Services",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "PYPL",
@@ -2897,7 +2897,7 @@
       "sector": "Consumer Staples",
       "industry": "Soft Drinks & Non-alcoholic Beverages",
       "complete": false,
-      "reason": "The actual six displayed reports do not all contain both beats."
+      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
     },
     {
       "symbol": "PFE",
@@ -2913,7 +2913,7 @@
       "sector": "Utilities",
       "industry": "Multi-Utilities",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "PM",
@@ -2921,7 +2921,7 @@
       "sector": "Consumer Staples",
       "industry": "Tobacco",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
     },
     {
       "symbol": "PSX",
@@ -2929,7 +2929,7 @@
       "sector": "Energy",
       "industry": "Oil & Gas Refining & Marketing",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2026-02-04T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "PNW",
@@ -2937,7 +2937,7 @@
       "sector": "Utilities",
       "industry": "Multi-Utilities",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "PNC",
@@ -2945,7 +2945,7 @@
       "sector": "Financials",
       "industry": "Diversified Banks",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2025-07-16T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "PPG",
@@ -2953,7 +2953,7 @@
       "sector": "Materials",
       "industry": "Specialty Chemicals",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "PPL",
@@ -2961,7 +2961,7 @@
       "sector": "Utilities",
       "industry": "Electric Utilities",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "PFG",
@@ -2969,7 +2969,7 @@
       "sector": "Financials",
       "industry": "Life & Health Insurance",
       "complete": false,
-      "reason": "Only 4/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "PG",
@@ -2985,7 +2985,7 @@
       "sector": "Financials",
       "industry": "Property & Casualty Insurance",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "PLD",
@@ -2993,7 +2993,7 @@
       "sector": "Real Estate",
       "industry": "Industrial REITs",
       "complete": false,
-      "reason": "REIT: FFO/EPS methodology requires manual review."
+      "reason": "No offline history."
     },
     {
       "symbol": "PRU",
@@ -3001,7 +3001,7 @@
       "sector": "Financials",
       "industry": "Life & Health Insurance",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2026-08-04T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "PTC",
@@ -3009,7 +3009,7 @@
       "sector": "Information Technology",
       "industry": "Application Software",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "PEG",
@@ -3017,7 +3017,7 @@
       "sector": "Utilities",
       "industry": "Electric Utilities",
       "complete": false,
-      "reason": "No reported period for 2026-11-02T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "PSA",
@@ -3025,7 +3025,7 @@
       "sector": "Real Estate",
       "industry": "Self-Storage REITs",
       "complete": false,
-      "reason": "REIT: FFO/EPS methodology requires manual review."
+      "reason": "No offline history."
     },
     {
       "symbol": "PHM",
@@ -3033,7 +3033,7 @@
       "sector": "Consumer Discretionary",
       "industry": "Homebuilding",
       "complete": false,
-      "reason": "The actual six displayed reports do not all contain both beats."
+      "reason": "No offline history."
     },
     {
       "symbol": "Q",
@@ -3041,7 +3041,7 @@
       "sector": "Information Technology",
       "industry": "Semiconductor Materials & Equipment",
       "complete": false,
-      "reason": "Only 2/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "QCOM",
@@ -3073,7 +3073,7 @@
       "sector": "Consumer Discretionary",
       "industry": "Apparel, Accessories & Luxury Goods",
       "complete": false,
-      "reason": "The actual six displayed reports do not all contain both beats."
+      "reason": "No offline history."
     },
     {
       "symbol": "RJF",
@@ -3081,7 +3081,7 @@
       "sector": "Financials",
       "industry": "Investment Banking & Brokerage",
       "complete": false,
-      "reason": "No reported period for 2026-10-28T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "RDDT",
@@ -3097,7 +3097,7 @@
       "sector": "Real Estate",
       "industry": "Retail REITs",
       "complete": false,
-      "reason": "REIT: FFO/EPS methodology requires manual review."
+      "reason": "No offline history."
     },
     {
       "symbol": "REG",
@@ -3105,7 +3105,7 @@
       "sector": "Real Estate",
       "industry": "Retail REITs",
       "complete": false,
-      "reason": "REIT: FFO/EPS methodology requires manual review."
+      "reason": "No offline history."
     },
     {
       "symbol": "REGN",
@@ -3121,7 +3121,7 @@
       "sector": "Financials",
       "industry": "Regional Banks",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "RSG",
@@ -3129,7 +3129,7 @@
       "sector": "Industrials",
       "industry": "Environmental & Facilities Services",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2025-07-29T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "RMD",
@@ -3145,7 +3145,7 @@
       "sector": "Health Care",
       "industry": "Health Care Equipment",
       "complete": false,
-      "reason": "No reported period for 2026-11-03T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "HOOD",
@@ -3161,7 +3161,7 @@
       "sector": "Industrials",
       "industry": "Electrical Components & Equipment",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2025-11-06T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "ROL",
@@ -3169,7 +3169,7 @@
       "sector": "Industrials",
       "industry": "Environmental & Facilities Services",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "ROP",
@@ -3177,7 +3177,7 @@
       "sector": "Information Technology",
       "industry": "Electronic Equipment & Instruments",
       "complete": false,
-      "reason": "Only 2/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "ROST",
@@ -3193,7 +3193,7 @@
       "sector": "Consumer Discretionary",
       "industry": "Hotels, Resorts & Cruise Lines",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "RTX",
@@ -3209,7 +3209,7 @@
       "sector": "Financials",
       "industry": "Financial Exchanges & Data",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2025-10-30T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "CRM",
@@ -3225,7 +3225,7 @@
       "sector": "Information Technology",
       "industry": "Technology Hardware, Storage & Peripherals",
       "complete": false,
-      "reason": "Only 2/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "SBAC",
@@ -3233,7 +3233,7 @@
       "sector": "Real Estate",
       "industry": "Telecom Tower REITs",
       "complete": false,
-      "reason": "REIT: FFO/EPS methodology requires manual review."
+      "reason": "No offline history."
     },
     {
       "symbol": "SLB",
@@ -3249,7 +3249,7 @@
       "sector": "Information Technology",
       "industry": "Technology Hardware, Storage & Peripherals",
       "complete": false,
-      "reason": "The actual six displayed reports do not all contain both beats."
+      "reason": "No offline history."
     },
     {
       "symbol": "SRE",
@@ -3257,7 +3257,7 @@
       "sector": "Utilities",
       "industry": "Multi-Utilities",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "NOW",
@@ -3281,7 +3281,7 @@
       "sector": "Real Estate",
       "industry": "Retail REITs",
       "complete": false,
-      "reason": "REIT: FFO/EPS methodology requires manual review."
+      "reason": "No offline history."
     },
     {
       "symbol": "SKYD",
@@ -3289,7 +3289,7 @@
       "sector": "Communication Services",
       "industry": "Movies & Entertainment",
       "complete": false,
-      "reason": "Only 2/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "SWKS",
@@ -3297,7 +3297,7 @@
       "sector": "Information Technology",
       "industry": "Semiconductors",
       "complete": false,
-      "reason": "Only 4/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "SJM",
@@ -3313,7 +3313,7 @@
       "sector": "Materials",
       "industry": "Paper & Plastic Packaging Products & Materials",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "SNA",
@@ -3321,15 +3321,15 @@
       "sector": "Industrials",
       "industry": "Industrial Machinery & Supplies & Components",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2026-10-22T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "SOLV",
       "name": "Solventum",
       "sector": "Health Care",
       "industry": "Health Care Technology",
-      "complete": true,
-      "reason": null
+      "complete": false,
+      "reason": "6/6 reports; 5/6 verified Revenue beats; 6/6 EPS beats."
     },
     {
       "symbol": "SO",
@@ -3337,7 +3337,7 @@
       "sector": "Utilities",
       "industry": "Electric Utilities",
       "complete": false,
-      "reason": "No reported period for 2026-11-04T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "LUV",
@@ -3345,7 +3345,7 @@
       "sector": "Industrials",
       "industry": "Passenger Airlines",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "SWK",
@@ -3361,7 +3361,7 @@
       "sector": "Consumer Discretionary",
       "industry": "Restaurants",
       "complete": false,
-      "reason": "No reported period for 2026-10-29T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "STT",
@@ -3385,7 +3385,7 @@
       "sector": "Health Care",
       "industry": "Health Care Equipment",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "SYK",
@@ -3401,7 +3401,7 @@
       "sector": "Information Technology",
       "industry": "Technology Hardware, Storage & Peripherals",
       "complete": false,
-      "reason": "No reported period for 2026-11-03T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "SYF",
@@ -3409,7 +3409,7 @@
       "sector": "Financials",
       "industry": "Consumer Finance",
       "complete": false,
-      "reason": "No reported period for 2025-07-22T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "SNPS",
@@ -3425,7 +3425,7 @@
       "sector": "Consumer Staples",
       "industry": "Food Distributors",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "TMUS",
@@ -3433,7 +3433,7 @@
       "sector": "Communication Services",
       "industry": "Wireless Telecommunication Services",
       "complete": false,
-      "reason": "The actual six displayed reports do not all contain both beats."
+      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
     },
     {
       "symbol": "TROW",
@@ -3449,7 +3449,7 @@
       "sector": "Communication Services",
       "industry": "Interactive Home Entertainment",
       "complete": false,
-      "reason": "Only 3/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "TPR",
@@ -3457,15 +3457,15 @@
       "sector": "Consumer Discretionary",
       "industry": "Apparel, Accessories & Luxury Goods",
       "complete": false,
-      "reason": "The actual six displayed reports do not all contain both beats."
+      "reason": "No offline history."
     },
     {
       "symbol": "TRGP",
       "name": "Targa Resources",
       "sector": "Energy",
       "industry": "Oil & Gas Storage & Transportation",
-      "complete": true,
-      "reason": null
+      "complete": false,
+      "reason": "6/6 reports; 5/6 verified Revenue beats; 6/6 EPS beats."
     },
     {
       "symbol": "TGT",
@@ -3481,7 +3481,7 @@
       "sector": "Information Technology",
       "industry": "Electronic Manufacturing Services",
       "complete": false,
-      "reason": "No reported period for 2026-10-28T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "TDY",
@@ -3513,7 +3513,7 @@
       "sector": "Information Technology",
       "industry": "Semiconductors",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
     },
     {
       "symbol": "TPL",
@@ -3561,7 +3561,7 @@
       "sector": "Consumer Discretionary",
       "industry": "Other Specialty Retail",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2026-10-22T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "TT",
@@ -3585,7 +3585,7 @@
       "sector": "Financials",
       "industry": "Property & Casualty Insurance",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2025-07-17T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "TRMB",
@@ -3601,7 +3601,7 @@
       "sector": "Financials",
       "industry": "Diversified Banks",
       "complete": false,
-      "reason": "No reported period for 2026-10-16T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "TWLO",
@@ -3617,7 +3617,7 @@
       "sector": "Information Technology",
       "industry": "Application Software",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2025-07-30T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "TSN",
@@ -3633,7 +3633,7 @@
       "sector": "Financials",
       "industry": "Diversified Banks",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2026-01-20T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "UBER",
@@ -3649,7 +3649,7 @@
       "sector": "Real Estate",
       "industry": "Multi-Family Residential REITs",
       "complete": false,
-      "reason": "REIT: FFO/EPS methodology requires manual review."
+      "reason": "No offline history."
     },
     {
       "symbol": "ULTA",
@@ -3705,7 +3705,7 @@
       "sector": "Health Care",
       "industry": "Health Care Facilities",
       "complete": false,
-      "reason": "Multiple reports map to the same period."
+      "reason": "No offline history."
     },
     {
       "symbol": "VLO",
@@ -3721,7 +3721,7 @@
       "sector": "Health Care",
       "industry": "Health Care Technology",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2025-11-20T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "VTR",
@@ -3729,7 +3729,7 @@
       "sector": "Real Estate",
       "industry": "Health Care REITs",
       "complete": false,
-      "reason": "REIT: FFO/EPS methodology requires manual review."
+      "reason": "No offline history."
     },
     {
       "symbol": "VLTO",
@@ -3753,7 +3753,7 @@
       "sector": "Industrials",
       "industry": "Research & Consulting Services",
       "complete": false,
-      "reason": "The actual six displayed reports do not all contain both beats."
+      "reason": "No offline history."
     },
     {
       "symbol": "VZ",
@@ -3785,7 +3785,7 @@
       "sector": "Health Care",
       "industry": "Pharmaceuticals",
       "complete": false,
-      "reason": "The actual six displayed reports do not all contain both beats."
+      "reason": "No offline history."
     },
     {
       "symbol": "VICI",
@@ -3793,7 +3793,7 @@
       "sector": "Real Estate",
       "industry": "Hotel & Resort REITs",
       "complete": false,
-      "reason": "REIT: FFO/EPS methodology requires manual review."
+      "reason": "No offline history."
     },
     {
       "symbol": "V",
@@ -3801,7 +3801,7 @@
       "sector": "Financials",
       "industry": "Transaction & Payment Processing Services",
       "complete": false,
-      "reason": "No reported period for 2026-10-27T23:59:59Z."
+      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
     },
     {
       "symbol": "VST",
@@ -3809,7 +3809,7 @@
       "sector": "Utilities",
       "industry": "Electric Utilities",
       "complete": false,
-      "reason": "EPS history needs manual split or exceptional-item verification."
+      "reason": "No offline history."
     },
     {
       "symbol": "VMRK",
@@ -3817,7 +3817,7 @@
       "sector": "Real Estate",
       "industry": "Multi-Family Residential REITs",
       "complete": false,
-      "reason": "REIT: FFO/EPS methodology requires manual review."
+      "reason": "No offline history."
     },
     {
       "symbol": "VMC",
@@ -3833,7 +3833,7 @@
       "sector": "Consumer Staples",
       "industry": "Agricultural Products & Services",
       "complete": false,
-      "reason": "Public historical earnings table unavailable."
+      "reason": "No offline history."
     },
     {
       "symbol": "WRB",
@@ -3841,7 +3841,7 @@
       "sector": "Financials",
       "industry": "Property & Casualty Insurance",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2026-01-26T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "GWW",
@@ -3865,7 +3865,7 @@
       "sector": "Consumer Staples",
       "industry": "Consumer Staples Merchandise Retail",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2025-08-21T23:59:59Z."
+      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
     },
     {
       "symbol": "DIS",
@@ -3889,7 +3889,7 @@
       "sector": "Health Care",
       "industry": "Life Sciences Tools & Services",
       "complete": false,
-      "reason": "No reported period for 2026-11-03T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "WEC",
@@ -3897,7 +3897,7 @@
       "sector": "Utilities",
       "industry": "Electric Utilities",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "WFC",
@@ -3905,7 +3905,7 @@
       "sector": "Financials",
       "industry": "Diversified Banks",
       "complete": false,
-      "reason": "Revenue/period mismatch at 2026-04-14T23:59:59Z."
+      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
     },
     {
       "symbol": "WELL",
@@ -3913,7 +3913,7 @@
       "sector": "Real Estate",
       "industry": "Health Care REITs",
       "complete": false,
-      "reason": "REIT: FFO/EPS methodology requires manual review."
+      "reason": "No offline history."
     },
     {
       "symbol": "WST",
@@ -3937,7 +3937,7 @@
       "sector": "Real Estate",
       "industry": "Timber REITs",
       "complete": false,
-      "reason": "REIT: FFO/EPS methodology requires manual review."
+      "reason": "No offline history."
     },
     {
       "symbol": "WSM",
@@ -3976,8 +3976,8 @@
       "name": "Wynn Resorts",
       "sector": "Consumer Discretionary",
       "industry": "Casinos & Gaming",
-      "complete": true,
-      "reason": null
+      "complete": false,
+      "reason": "6/6 reports; 5/6 verified Revenue beats; 6/6 EPS beats."
     },
     {
       "symbol": "XEL",
@@ -3985,7 +3985,7 @@
       "sector": "Utilities",
       "industry": "Multi-Utilities",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "XYL",
@@ -3993,7 +3993,7 @@
       "sector": "Industrials",
       "industry": "Industrial Machinery & Supplies & Components",
       "complete": false,
-      "reason": "Only 5/6 complete historical pairs."
+      "reason": "No offline history."
     },
     {
       "symbol": "YUM",
@@ -4001,7 +4001,7 @@
       "sector": "Consumer Discretionary",
       "industry": "Restaurants",
       "complete": false,
-      "reason": "No reported period for 2026-11-03T23:59:59Z."
+      "reason": "No offline history."
     },
     {
       "symbol": "ZBRA",
@@ -4025,7 +4025,7 @@
       "sector": "Health Care",
       "industry": "Pharmaceuticals",
       "complete": false,
-      "reason": "The actual six displayed reports do not all contain both beats."
+      "reason": "No offline history."
     }
   ]
 }

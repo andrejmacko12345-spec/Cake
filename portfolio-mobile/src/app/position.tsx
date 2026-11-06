@@ -703,7 +703,7 @@ export default function PositionDetailScreen() {
                   <Text style={styles.reportGroupTitle}>{t('Tržby')}</Text>
                 </View>
                 <View style={styles.reportGrowthGroup}>
-                  <Text style={styles.reportGroupTitle}>YoY</Text>
+                  <Text style={styles.reportGroupTitle}>{t('YoY')}</Text>
                 </View>
                 <View style={styles.reportEpsGroup}>
                   <Text style={styles.reportGroupTitle}>EPS</Text>

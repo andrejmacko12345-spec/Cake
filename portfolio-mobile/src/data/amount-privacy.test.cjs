@@ -68,7 +68,7 @@ try {
     if (id === '../components/transaction-modal') return { TransactionModal: () => null };
     if (id === '../data/events') return {};
     if (id === '../components/finapp') return { Header: header, SectionTitle: header, Page: wrap, Surface: wrap, PortfolioChart: () => null };
-    if (id === '../components/table-column') return { TableColumn: wrap };
+    if (id === '../components/table-column') return { ...originalLoad.call(this, id, ...args), TableColumn: wrap };
     if (id === '../context/locale' || id === './locale') return { useLocale: () => ({
       language, t: (key) => translateText(key, language, translations),
       errorText: (message) => translateError(message, language, translations),
@@ -160,7 +160,8 @@ for (const locale of ['sk', 'en']) {
       assert.match(segment, /^.*?<\/span><span>•••••<\/span>/, translated);
     }
     assert.match(privateView, /120 EUR/);
-    assert.match(privateView, /20,00 %/);
+    assert.match(visible, /20,00 %/);
+    assert.doesNotMatch(privateView, /20,00 %/);
     assert.doesNotMatch(privateView, /1[,\s\u00a0]?[02]00\s*€|250\s*€|200\s*€/);
   });
 }

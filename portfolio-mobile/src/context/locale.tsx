@@ -563,6 +563,7 @@ export const englishTranslations: Record<string, string> = {
   'Odstrániť pohyb?': 'Delete transaction?',
   'Táto transakcia bude odstránená z histórie a výsledok sa prepočíta.': 'This transaction will be removed from history and the result recalculated.',
   'Transakcia sa neodstránila': 'Transaction could not be deleted',
+  'YoY': 'YoY',
   'Vymazať všetky transakcie': 'Delete all transactions',
   'Vymazať všetky transakcie?': 'Delete all transactions?',
   'Vymažú sa všetky nákupy aj predaje tejto akcie. Táto akcia sa nedá vrátiť späť.': 'All buys and sells for this stock will be deleted. This cannot be undone.',

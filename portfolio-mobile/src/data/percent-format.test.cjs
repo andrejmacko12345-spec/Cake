@@ -29,15 +29,19 @@ test('watchlist percentage output retains two decimals in Slovak and English', (
   const source = ts.createSourceFile(file, fs.readFileSync(file, 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
   let expression;
   const visit = (node) => {
-    if (ts.isTemplateExpression(node) && node.getText(source).includes('change.toLocaleString')) expression = node.getText(source);
+    if (ts.isVariableDeclaration(node) && node.name.getText(source) === 'formatMovement') {
+      expression = ts.transpileModule(`const formatMovement = ${node.initializer.getText(source)};`, {
+        compilerOptions: { target: ts.ScriptTarget.ES2022 },
+      }).outputText;
+    }
     ts.forEachChild(node, visit);
   };
   visit(source);
   assert.ok(expression);
   for (const language of ['sk', 'en']) {
     for (const change of [6.1, 6, 0, -6.1]) {
-      const actual = vm.runInNewContext(expression, { language, change });
-      const expected = `${change > 0 ? '+' : ''}${change.toFixed(2).replace('.', language === 'sk' ? ',' : '.')} %`;
+      const actual = vm.runInNewContext(`${expression}\nformatMovement(change, true)`, { language, change });
+      const expected = `${change > 0 ? '+' : ''}${change.toFixed(2).replace('.', language === 'sk' ? ',' : '.')}%`;
       assert.equal(actual, expected);
     }
   }

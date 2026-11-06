@@ -1,4 +1,5 @@
 import { useThemedStyles } from '../data/theme';
+import { AnimatedCollapse } from './animated-collapse';
 import { selectionHaptic } from '../data/haptics';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -125,11 +126,11 @@ export function MarketOverview() {
     <View style={styles.overview}>
       <Pressable accessibilityRole="button" accessibilityState={{ expanded }}
         accessibilityLabel={t(expanded ? 'Skryť trhy' : 'Zobraziť trhy')}
-        onPress={() => setExpanded((value) => !value)} style={styles.toggle}>
+        onPress={() => { selectionHaptic(); setExpanded((value) => !value); }} style={styles.toggle}>
         {!expanded ? <Text style={styles.note}>{t('Zobraziť trhy')}</Text> : null}
         {expanded ? <ChevronUp size={14} color={colors.muted} /> : <ChevronDown size={14} color={colors.muted} />}
       </Pressable>
-      <View style={expanded ? styles.cards : { display: 'none' }}>
+      <AnimatedCollapse expanded={expanded}><View style={styles.cards}>
       {marketIndices.map((index) => {
         const entry = entries[index.symbol];
         const data = entry?.data;
@@ -150,7 +151,8 @@ export function MarketOverview() {
         );
       })}
       </View>
-      {expanded && initialLoading ? <ActivityIndicator size="small" color={colors.green} /> : null}
+      {initialLoading ? <ActivityIndicator size="small" color={colors.green} /> : null}
+      </AnimatedCollapse>
       {selected ? <IndexDetail key={selected.symbol} index={selected} onClose={() => {
         setSelected(null);
       }} /> : null}

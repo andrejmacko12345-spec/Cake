@@ -606,13 +606,14 @@ test('all ten requested companies retain their six reviewed offline reports as n
   for (const symbol of ['AMD', 'SOFI', 'META', 'ELF', 'GOOGL', 'HIMS', 'NFLX', 'CELH', 'NKE', 'NOW']) {
     assert.ok(universe.includes(symbol), symbol);
     const company = await fetchCompanyEvents(symbol, true);
-    assert.equal(consensus[symbol].length, 6, symbol);
-    const rows = consensus[symbol].map((entry) =>
+    const reviewed = consensus[symbol].filter((entry) => Date.parse(entry.publishedAt) <= Date.now()).slice(0, 6);
+    assert.equal(reviewed.length, 6, symbol);
+    const rows = reviewed.map((entry) =>
       company.quarters.find((row) => row.periodEnd === entry.periodEnd));
     assert.ok(rows.every(Boolean), `${symbol}: all reviewed reports retained`);
     for (let index = 0; index < rows.length; index++) {
       const row = rows[index];
-      const entry = consensus[symbol][index];
+      const entry = reviewed[index];
       const label = `${symbol} ${row.label}`;
       assert.equal(row.periodEnd, entry.periodEnd, label);
       assert.ok(row.revenue > 0, label);
@@ -720,7 +721,7 @@ test('50 expanded companies retain both paired beats in their 300 imported offli
   for (const symbol of symbols) {
     assert.ok(universe.includes(symbol), symbol);
     const company = await fetchCompanyEvents(symbol, true);
-    const rows = consensus[symbol].slice(0, 6).map((entry) =>
+    const rows = consensus[symbol].filter((entry) => Date.parse(entry.publishedAt) <= Date.now()).slice(0, 6).map((entry) =>
       company.quarters.find((row) => row.periodEnd === entry.periodEnd));
     assert.equal(rows.length, 6, symbol);
     assert.ok(rows.every(Boolean), `${symbol}: imported reports retained`);
@@ -745,6 +746,38 @@ test('50 expanded companies retain both paired beats in their 300 imported offli
     }
   }
   assert.equal(count, 300);
+});
+
+test('public-table enrichment has both paired beats in all six displayed reports of 31 completed companies', async (t) => {
+  const consensus = require('./reported-consensus.json');
+  const symbols = [
+    'V', 'XOM', 'WMT', 'JNJ', 'CVX', 'TMUS', 'WFC', 'MCD', 'PM', 'IBM', 'TXN',
+    'MS', 'GS', 'SHOP', 'NVO', 'ELF', 'CELH', 'MRK', 'AXP', 'GEV', 'C', 'DE',
+    'MNST', 'AEE', 'AXON', 'MTD', 'MCHP', 'SOLV', 'TRGP', 'WYNN', 'EOG',
+  ];
+  t.mock.method(Date, 'now', () => Date.parse('2026-11-06T12:00:00Z'));
+  let requests = 0;
+  t.mock.method(globalThis, 'fetch', () => { requests++; throw new Error('No network allowed'); });
+  for (const symbol of symbols) {
+    const company = await getLocalCompanyReports(symbol);
+    const rows = company.quarters.slice(0, 6);
+    assert.equal(rows.length, 6, symbol);
+    for (const row of rows) {
+      const label = `${symbol} ${row.periodEnd}`;
+      const pair = consensus[symbol].find((entry) => entry.periodEnd === row.periodEnd);
+      assert.ok(pair, label);
+      assert.ok(Number.isFinite(row.revenueBeat) && Number.isFinite(row.epsBeat), label);
+      assert.notEqual(row.revenueBeatProvisional, true, label);
+      assert.equal(row.revenueBeat, pair.revenue - pair.revenueEstimate, label);
+      assert.ok(Math.abs(row.epsBeat - (pair.eps - pair.epsEstimate)) < 1e-10, label);
+    }
+  }
+  assert.equal(requests, 0);
+  const mcd = consensus.MCD.filter((entry) => entry.periodEnd <= '2026-09-30').slice(0, 6);
+  assert.equal(mcd.length, 6);
+  assert.ok(mcd.slice(0, 4).every((entry) => new URL(entry.source).hostname === 'seekingalpha.com'));
+  assert.ok(mcd.slice(4).every((entry) => new URL(entry.source).hostname === 'www.marketbeat.com'));
+  assert.equal(mcd[0].revenueEstimate, 7280436920);
 });
 
 test('full-index coverage audit matches every displayed offline report and explains incomplete tickers', async (t) => {
@@ -783,7 +816,7 @@ test('full-index coverage audit matches every displayed offline report and expla
     }
     for (const pair of consensus[member.symbol] ?? []) {
       if (!pair.validationSource) continue;
-      assert.ok(['sec', 'yahoo'].includes(pair.validationSource), member.symbol);
+      assert.ok(['sec', 'yahoo', 'yahoo-earnings'].includes(pair.validationSource), member.symbol);
       const date = Date.parse(`${pair.periodEnd}T00:00:00Z`) / 1000;
       const statement = sources[pair.validationSource]?.find((row) => row.time === date);
       assert.ok(statement?.revenue > 0, member.symbol);

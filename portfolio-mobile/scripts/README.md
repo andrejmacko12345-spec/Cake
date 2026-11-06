@@ -44,7 +44,159 @@ An optional repository Actions secret `FMP_API_KEY`
 enables FMP backfill; do not put credentials in the JSON dataset. No API key is
 required for SEC/Yahoo. Provider access/rate limits still apply.
 
+## Offline consensus enrichment (November 6, 2026)
+
+The existing dataset was checked for all **42 incomplete companies**. This batch
+adds **170 paired report observations**: 74 from Seeking Alpha, 76 from MarketBeat
+and 20 from Investing.com. **31 companies become complete**, including MCD:
+its four recent reports use Seeking Alpha and its older two use MarketBeat.
+The dataset now has **263 of 274 companies complete**; the constituent audit has
+**257 of 503 tickers complete**. These are dated results, not permanent targets.
+
+Seeking Alpha's four publicly visible quarters were captured with the exact
+actual/consensus values exposed in its public chart labels, not rounded table
+billions. Older observations use other public tables. Both sides of each beat
+always remain from one source. Published rounding from other tables is retained.
+There is no new live Seeking Alpha/Investing.com dependency in the app or updater.
+
+To import a previously captured public table without network access, run:
+
+```sh
+node scripts/expand-earnings-history.cjs --offline-tables=path-to-capture.json
+```
+
+The capture contains `capturedAt`, MarketBeat `results` (`symbol`, `url`, `status`,
+the nine original `headers`, and `rows` with nine `cells` and a relative `report`
+URL), and optional `supplements`. Each supplement records its `symbol`, `source`,
+`provider`, `observedAt` and paired `rows` (`periodEnd`, actual/estimate revenue
+and EPS). Seeking Alpha rows can include `periodLabel` to locate the release in
+the public history. Otherwise a matching stored report timestamp is required.
+Investing.com captures also retain the original page `title` for ticker checking
+and the row's `publishedAt`. EPS methodology must match an independent known
+series or carry an explicitly reviewed `epsBasis` and `methodologySource`.
+For example, WMT and JNJ older adjusted EPS were checked against issuer releases.
+
+The import validates source identity, dates, numeric pairs, EPS scales and
+independently reported revenue within 2%. Same-period Yahoo earnings observations
+can validate adjusted revenue when the statement has a different revenue basis;
+an older quarter is never selected merely because its amount matches.
+Provenance records the actual validation source (`sec`, `yahoo`, or
+`yahoo-earnings`). Reviewed pairs and original statement sources are preserved.
+
+Verified partial imports are saved with the recomputed coverage audit, but the
+command exits **1** if any requested company still lacks complete coverage.
+This intentionally differs from the all-or-nothing company expansion mode.
+It never fills gaps with zeros, forecasts, arbitrary currency conversion or
+duplicate fiscal/calendar dates.
+
+Eleven existing companies remain incomplete:
+
+- COST and PEP: the stored fiscal/calendar dates duplicate some reports.
+- BRK-B: missing comparable latest historical consensus.
+- BAC, ABT, GE and NEE: unresolved revenue-definition or EPS-methodology differences.
+- TSM, BABA and ASML: currency/methodology conflicts or fewer than six independently
+  stored reports; some verified native-currency pairs were retained.
+- NFLX: previously reviewed non-comparable EPS remains excluded.
+
 ## App behavior
+
+The portfolio's closed-position list animates measured height and opacity with
+cubic ease-in-out (360ms opening, 300ms closing), instantly when reduced motion is enabled. Content stays
+mounted for measurement but is inaccessible and noninteractive while collapsed.
+Opening and closing the list trigger the shared selection haptic.
+The same `AnimatedCollapse` height/opacity transition and selection haptic apply
+to stock-detail holding details, event-settings symbol groups, Watchlist indices,
+and the Portfolio/Watchlists selectors in Analysis Projections. Projection
+selectors are mutually exclusive, retain their content during closing, and use
+a vertically scrollable list capped at 260px instead of a modal, with Android
+nested scrolling enabled so gestures scroll the list inside the page. The animated
+list overlays the table below the selector buttons without moving or resizing it.
+Comparison stock search also overlays the metric rows, anchored below the measured
+company header, instead of inserting space into the table.
+Its row-sizing viewport remains unchanged while search or the keyboard is open,
+so keyboard resizing does not compress the comparison rows.
+
+Stock-detail transaction history offers a destructive, confirmed action above the list to delete
+all buys and sells for that stock in a single storage write. Other stocks are
+preserved; successful deletion closes history and storage failures are reported.
+
+Stock detail shows a collapsed held-position summary after the chart: current
+value followed by unrealized money return in parentheses on the same line. Tapping the
+accessible chevron row expands average purchase price, invested capital in the
+open position, unrealized money return with percentage in parentheses (percentage
+unavailable for zero cost), then total result. The preview retains the money return.
+It starts collapsed for each symbol and respects amount hiding. The same card
+contains three always-visible rounded tiles for annual dividend, dividend yield
+and market cap, with muted labels above their values. The position value uses
+larger typography with the money return inline. Without a holding, only the tiles appear.
+A separate **Projection** table follows with two calendar year-end
+columns (current and next year) for revenue, revenue growth, EPS, P/E and P/S;
+it contains neither TTM nor dividend rows. Dividend tiles use equal widths and
+fit long values on one line; projections use aligned year
+columns with a single raised header and no explanatory footer. Approximate
+calendar-year estimates retain an ≈ marker in their year headers.
+Both use theme-aware separators; projections use shared table columns.
+Earnings reports show six quarter blocks without horizontal scrolling.
+Each quarter label has its own left column beside five metric columns: revenue,
+revenue difference, revenue YoY, EPS and EPS difference.
+A single header groups revenue and its difference under Revenue, followed by
+separate YoY and EPS sections; EPS includes its actual and difference, without subheadings.
+A 1% gap and rounded revenue edge separate period from revenue; 2% gaps separate
+Revenue, EPS and Beat in the header and every quarter row.
+The same 2% gap separates Revenue from YoY, including their headers.
+Every period displays its quarter above its year. Header and rows use the same
+percentage-based column widths to keep group boundaries aligned.
+Revenue amounts and differences keep their M/B/T suffix on the same line.
+Revenue actuals use a wider column and compact suffixes (for example `7.2B`),
+with the same fixed font size as EPS and no single-line truncation.
+YoY has its own wider column in neutral, bold 12px type; revenue beat uses a narrower column.
+Long YoY percentages stay on one line, shrinking to fit down to 75% if necessary.
+Only consensus differences use beat/miss colors; other values and headers are neutral.
+Quarters use compact, individually bordered blocks with small gaps.
+The outer earnings card retains its background and original 14px vertical padding.
+Header and quarter backgrounds use 12px corners; colored rows clip to 8px corners.
+Revenue and EPS actual values are separated from their beats by matching 1dp
+neutral dividers, avoiding subpixel hairline differences on native screens.
+Rows use 3px vertical cell padding and 4px gaps between quarters, retaining
+matching bold 12px Revenue/YoY/EPS values and 11px consensus differences.
+Period uses the neutral background; Revenue, YoY and EPS use lighter muted blue,
+sage green and purple backgrounds respectively, matching their headers.
+The same palette is exported by `TableColumn` as `tableToneBackgrounds` and
+shared by Analytics fundamentals, Analysis projections and stock comparison.
+Headers and cells reuse the same fill; comparison stock columns use blue/purple/sage,
+while projection rows group revenue, EPS/margin and price by blue/purple/sage.
+CAGR uses terracotta (the existing `slate` tone key). All four colors have equal
+HSL saturation and lightness, with matching 22% background opacity.
+Comparison group headings have no colored fill or side stripe, only colored dots
+from `tableToneAccents` in the corresponding blue/purple/sage/terracotta order for
+P/E, revenue growth, EPS growth and profitability.
+Stock detail projection rows and their section titles share the same blue/purple
+palette; year headings remain neutral.
+Metric gain/loss text colors remain independent of background tones.
+Revenue amounts and differences use one decimal
+for compact M/B/T units; EPS retains two decimals. Missing values and provisional
+revenue markers are preserved.
+The provider supplies only two fiscal
+forecast years, so no third-year estimates are invented.
+Calendar forecasts use the same fiscal-to-calendar weighting as EPS/P/E;
+missing growth remains a dash and zero/negative growth is retained. Non-December fiscal year estimates
+are labeled approximate; unavailable calendar estimates remain missing.
+Revenue uses the provider's financial currency, which can differ from an ADR's
+quote currency. These metrics reuse the existing fundamentals requests, not
+historical earnings-beat estimates.
+Valuation rows are ordered EPS, P/E, then P/S. Forward P/S holds the current
+valuation constant: reported P/S TTM × reported TTM revenue / calendar-year
+revenue estimate. This reuses the provider's P/S rather than dividing a quote-
+currency market cap by potentially different financial-currency revenue.
+Missing or non-positive inputs leave the forward ratio unavailable.
+If Yahoo omits the prior-year TTM observation, revenue growth compares its
+current reported TTM with the four stored statement quarters ending one year
+earlier. Quarters must be consecutive and from one source (SEC, FMP or Yahoo).
+When four current quarters are also available, their sum must match Yahoo TTM
+within 2%; non-SEC sources require this check. SEC's USD statements can supply
+the prior-year sum before its latest quarter arrives, only for USD TTM.
+Missing quarters, incompatible revenue definitions and misaligned periods are
+rejected, not substituted with quarterly growth or a 15-month comparison.
 
 ### Coverage expansion (November 5, 2026)
 

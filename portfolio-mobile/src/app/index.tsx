@@ -6,6 +6,7 @@ import { useChartHaptics } from '../hooks/use-chart-haptics';
 import { useFrameSelection } from '../hooks/use-frame-selection';
 import { RangeSwipeRow } from '../components/range-swipe-row';
 import { ActivityIndicator, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
+import { AnimatedCollapse } from '../components/animated-collapse';
 import Svg, { Circle, Defs, LinearGradient, Line, Path, Stop } from 'react-native-svg';
 import { ChartNoAxesCombined, ChevronDown, ChevronRight, ChevronUp, Eye, EyeOff, Plus, Search, TrendingUp, UserRound, Wallet } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
@@ -757,10 +758,13 @@ export default function PortfolioScreen() {
           <Pressable
             accessibilityRole="button"
             accessibilityState={{ expanded: closedExpanded }}
-            onPress={() => setClosedExpanded((expanded) => !expanded)}
+            onPress={() => {
+              selectionHaptic();
+              setClosedExpanded((expanded) => !expanded);
+            }}
             style={styles.closedToggle}
           >
-            <View>
+            <View style={styles.closedToggleCopy}>
               <Text style={styles.closedTitle}>{t('Zatvorené pozície')}</Text>
               <Text style={styles.closedSubtitle}>{closedPositions.length} {t('predaných titulov · výnos je v celkovom výsledku')}</Text>
             </View>
@@ -771,7 +775,8 @@ export default function PortfolioScreen() {
                 : <ChevronDown size={18} color={colors.muted} />}
             </View>
           </Pressable>
-          {closedExpanded ? (
+          <AnimatedCollapse expanded={closedExpanded}>
+            <View style={styles.closedList}>
             <Surface style={styles.assetsCard}>
               {closedPositions.map((position) => (
                 <PositionRow
@@ -784,7 +789,8 @@ export default function PortfolioScreen() {
                 />
               ))}
             </Surface>
-          ) : null}
+            </View>
+          </AnimatedCollapse>
         </View>
       ) : null}
 
@@ -888,15 +894,18 @@ const createStyles = () => StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    gap: 12,
     backgroundColor: colors.surface,
     borderRadius: 15,
     paddingHorizontal: 14,
     paddingVertical: 10,
   },
   closedTitle: { color: colors.text, fontSize: 12, fontWeight: '900' },
-  closedSubtitle: { color: colors.muted, fontSize: 12, marginTop: 4 },
-  closedToggleRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  closedCount: { color: colors.green, fontSize: 11, fontWeight: '900' },
+  closedToggleCopy: { flex: 1, minWidth: 0 },
+  closedSubtitle: { color: colors.muted, fontSize: 11, lineHeight: 16, marginTop: 4 },
+  closedToggleRight: { flexDirection: 'row', alignItems: 'center', gap: 10, flexShrink: 0 },
+  closedCount: { color: colors.green, fontSize: 11, fontWeight: '900', minWidth: 28, textAlign: 'center', paddingHorizontal: 8, paddingVertical: 5, borderRadius: 10, backgroundColor: colors.surfaceRaised, overflow: 'hidden' },
+  closedList: { paddingTop: 10 },
   assetsCard: { paddingVertical: 4, paddingHorizontal: 10, backgroundColor: colors.surface, borderRadius: 18 },
   emptyCard: { alignItems: 'center', padding: 22 },
   emptyIcon: {

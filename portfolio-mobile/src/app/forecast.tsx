@@ -152,7 +152,10 @@ export default function ForecastScreen() {
             accessibilityRole="button"
             accessibilityLabel={t('Nastavenia výhľadu')}
             accessibilityState={{ expanded: basisSettingsOpen }}
-            onPress={() => setBasisSettingsOpen(true)}
+            onPress={() => {
+              selectionHaptic();
+              setBasisSettingsOpen(true);
+            }}
             style={styles.settingsButton}
           >
             <Settings2 size={18} color={colors.green} />

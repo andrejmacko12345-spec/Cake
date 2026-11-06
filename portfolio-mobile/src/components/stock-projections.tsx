@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { AnimatedCollapse } from './animated-collapse';
 import { ActivityIndicator, Keyboard, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
 import { ArrowLeft, Bookmark, BriefcaseBusiness, Check, ChevronDown, Info, Search, X } from 'lucide-react-native';
@@ -47,6 +48,8 @@ export default function StockProjections({ embedded = false }: { embedded?: bool
   const [tableTop, setTableTop] = useState(0);
   const [watchlistsOpen, setWatchlistsOpen] = useState(false);
   const [infoOpen, setInfoOpen] = useState(false);
+  const [quickMenu, setQuickMenu] = useState<'portfolio' | 'watchlists'>('portfolio');
+  const [dropdownTop, setDropdownTop] = useState(0);
   const watchlists = useWatchlists();
   const rowHeight = availableHeight && tableTop
     ? Math.max(26, Math.floor((availableHeight - tableTop - 16 - 28 - 8 - 18) / 9)) : 38;
@@ -119,10 +122,10 @@ export default function StockProjections({ embedded = false }: { embedded?: bool
     { label: 'Čistý zisk', key: 'netIncome', format: compact, tone: 'cyan' },
     { label: 'Čistá marža', key: 'margin', format: percent, tone: 'violet', start: true },
     { label: 'EPS', key: 'eps', format: number, tone: 'violet' },
-    { label: 'Dolná cena akcie', key: 'priceLow', format: number, tone: 'amber', start: true },
-    { label: 'Horná cena akcie', key: 'priceHigh', format: number, tone: 'amber' },
-    { label: 'Dolné CAGR', key: 'cagrLow', format: percent, tone: 'green', start: true },
-    { label: 'Horné CAGR', key: 'cagrHigh', format: percent, tone: 'green' },
+    { label: 'Dolná cena akcie', key: 'priceLow', format: number, tone: 'blue', start: true },
+    { label: 'Horná cena akcie', key: 'priceHigh', format: number, tone: 'blue' },
+    { label: 'Dolné CAGR', key: 'cagrLow', format: percent, tone: 'slate', start: true },
+    { label: 'Horné CAGR', key: 'cagrHigh', format: percent, tone: 'slate' },
   ];
   return (
     <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
@@ -169,15 +172,20 @@ export default function StockProjections({ embedded = false }: { embedded?: bool
             <Text style={styles.resultName} numberOfLines={1}>{asset.name}</Text>
           </Pressable>)}
         </View> : null}
-        <View style={styles.quickSection}>
+        <View style={styles.quickSection} onLayout={(event) => {
+          const { y, height } = event.nativeEvent.layout;
+          setDropdownTop(y + height);
+        }}>
           <View style={styles.quickSelectors}>
           <Pressable accessibilityRole="button" accessibilityLabel={t('Z môjho portfólia')}
             accessibilityState={{ expanded: portfolioOpen }} style={styles.dropdownButton}
             onPress={() => {
+              selectionHaptic();
               Keyboard.dismiss();
               setSearchOpen(false);
               setQuery('');
               setWatchlistsOpen(false);
+              setQuickMenu('portfolio');
               setPortfolioOpen((open) => !open);
             }}>
             <BriefcaseBusiness size={15} color={colors.muted} />
@@ -187,33 +195,32 @@ export default function StockProjections({ embedded = false }: { embedded?: bool
           </Pressable>
           <Pressable accessibilityRole="button" accessibilityLabel={t('Sledované')}
             accessibilityState={{ expanded: watchlistsOpen }} style={styles.dropdownButton} onPress={() => {
+              selectionHaptic();
               Keyboard.dismiss();
               setSearchOpen(false);
               setQuery('');
               setPortfolioOpen(false);
+              setQuickMenu('watchlists');
               setWatchlistsOpen((open) => !open);
             }}>
             <Bookmark size={15} color={colors.muted} />
             <Text style={styles.dropdownLabel}>{t('Sledované')}</Text>
             <View style={styles.countBadge}><Text style={styles.countText}>{watchlists.lists.length}</Text></View>
-            <ChevronDown size={16} color={colors.muted} />
+            <ChevronDown size={16} color={colors.muted} style={{ transform: [{ rotate: watchlistsOpen ? '180deg' : '0deg' }] }} />
           </Pressable>
           </View>
-          {portfolioOpen || watchlistsOpen ? <Modal visible transparent animationType="fade" onRequestClose={() => {
-            setPortfolioOpen(false); setWatchlistsOpen(false);
-          }}>
-            <View style={styles.menuScrim}>
-              <Pressable style={StyleSheet.absoluteFill} accessibilityRole="button"
-                accessibilityLabel={t('Zavrieť')} onPress={() => { setPortfolioOpen(false); setWatchlistsOpen(false); }} />
+        </View>
+        <View pointerEvents="box-none" style={[styles.dropdownOverlay, { top: dropdownTop }]}>
+          <AnimatedCollapse expanded={portfolioOpen || watchlistsOpen}>
               <View style={styles.dropdown}>
                 <View style={styles.menuHeading}>
-                  <Text style={styles.selectText}>{portfolioOpen ? t('Z môjho portfólia') : t('Sledované')}</Text>
+                  <Text style={styles.selectText}>{quickMenu === 'portfolio' ? t('Z môjho portfólia') : t('Sledované')}</Text>
                   <Pressable accessibilityRole="button" accessibilityLabel={t('Zavrieť')} style={styles.searchClose}
-                    onPress={() => { setPortfolioOpen(false); setWatchlistsOpen(false); }}><X size={18} color={colors.text} /></Pressable>
+                    onPress={() => { selectionHaptic(); setPortfolioOpen(false); setWatchlistsOpen(false); }}><X size={18} color={colors.text} /></Pressable>
                 </View>
-                <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator style={styles.menuList}>
-            {portfolioOpen && !quickStocks.length ? <Text style={styles.emptyMenu}>{t('Žiadne otvorené pozície.')}</Text> : null}
-            {portfolioOpen ? quickStocks.map((position) => <Pressable key={position.symbol} accessibilityRole="button"
+                <ScrollView nestedScrollEnabled keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator style={styles.menuList}>
+            {quickMenu === 'portfolio' && !quickStocks.length ? <Text style={styles.emptyMenu}>{t('Žiadne otvorené pozície.')}</Text> : null}
+            {quickMenu === 'portfolio' ? quickStocks.map((position) => <Pressable key={position.symbol} accessibilityRole="button"
               accessibilityLabel={`${t('Vybrať akciu')} ${position.symbol}`}
               accessibilityState={{ selected: symbol === position.symbol }}
               style={[styles.chip, symbol === position.symbol && styles.selectedChip]}
@@ -222,7 +229,7 @@ export default function StockProjections({ embedded = false }: { embedded?: bool
               <Text style={styles.resultName} numberOfLines={1}>{position.name}</Text>
               {symbol === position.symbol ? <Check size={16} color={colors.green} /> : null}
             </Pressable>) : null}
-            {watchlistsOpen ? <>
+            {quickMenu === 'watchlists' ? <>
               {watchlists.loading ? <ActivityIndicator color={colors.green} /> : null}
               {watchlists.error ? <Text accessibilityRole="alert" style={styles.error}>{errorText(watchlists.error)}</Text> : null}
               {watchlists.lists.map((list) => <View key={list.id}>
@@ -239,8 +246,7 @@ export default function StockProjections({ embedded = false }: { embedded?: bool
             </> : null}
                 </ScrollView>
               </View>
-            </View>
-          </Modal> : null}
+          </AnimatedCollapse>
         </View>
         {loading ? <ActivityIndicator style={styles.loading} color={colors.green} /> : null}
         {error ? <Surface><Text accessibilityRole="alert" style={styles.error}>{errorText(error)}</Text>
@@ -290,7 +296,7 @@ export default function StockProjections({ embedded = false }: { embedded?: bool
                 <View style={[styles.row, { minHeight: rowHeight }]}>
                   <TableColumn first header style={styles.label}><Text style={styles.heading}>{t('Ukazovatele')}</Text></TableColumn>
                   {['O 1 rok', 'O 2 roky', 'O 3 roky'].map((label) =>
-                    <TableColumn key={label} tone="cyan" header style={styles.cell}><Text style={styles.heading}>{t(label)}</Text></TableColumn>)}
+                    <TableColumn key={label} header style={styles.cell}><Text style={styles.heading}>{t(label)}</Text></TableColumn>)}
                 </View>
                 {resultRows.map((row) => <View key={row.key} style={[styles.row, { minHeight: rowHeight },
                   row.start && styles.sectionStart]}>
@@ -299,7 +305,7 @@ export default function StockProjections({ embedded = false }: { embedded?: bool
                   {[0, 1, 2].map((index) => <TableColumn key={index}
                     tone={row.tone} style={styles.cell}>
                     <Text style={[styles.value,
-                      row.tone === 'green' && calculation.years[index]?.[row.key] != null && {
+                      (row.key === 'cagrLow' || row.key === 'cagrHigh') && calculation.years[index]?.[row.key] != null && {
                         color: (calculation.years[index]?.[row.key] ?? 0) < 0 ? colors.red : colors.green,
                       }]} adjustsFontSizeToFit minimumFontScale={0.75} numberOfLines={1}
                       accessibilityLabel={calculation.years[index] && (row.key === 'revenue' || row.key === 'netIncome')
@@ -329,15 +335,16 @@ const createStyles = () => StyleSheet.create({
   searchResult: { minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 10, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border },
   resultName: { flex: 1, color: colors.muted, fontSize: 12 },
   quickSection: { marginBottom: 6 },
+  dropdownOverlay: { position: 'absolute', left: 0, right: 0, zIndex: 10 },
   quickSelectors: { flexDirection: 'row', gap: 8 },
   dropdownButton: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 10, minHeight: 34, borderRadius: 10, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border },
   dropdownLabel: { flex: 1, color: colors.text, fontSize: 11, fontWeight: '700' },
   countBadge: { backgroundColor: colors.surfaceRaised, borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2 },
   countText: { color: colors.muted, fontSize: 10, fontWeight: '800' },
+  dropdown: { marginTop: 8, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: 16, overflow: 'hidden' },
   menuScrim: { flex: 1, justifyContent: 'center', padding: 24, backgroundColor: 'rgba(0,0,0,0.5)' },
-  dropdown: { height: '65%', backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: 16, overflow: 'hidden' },
   menuHeading: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingLeft: 14 },
-  menuList: { flex: 1 },
+  menuList: { maxHeight: 260 },
   listHeading: { color: colors.text, backgroundColor: colors.surfaceRaised, fontSize: 13, fontWeight: '800', paddingHorizontal: 14, paddingVertical: 10 },
   emptyMenu: { color: colors.muted, fontSize: 12, padding: 14 },
   chip: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 12, minHeight: 44, backgroundColor: colors.surface, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: colors.border },

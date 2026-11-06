@@ -790,8 +790,8 @@ function FundamentalsTable({
     <View style={styles.fundTable}>
       <View style={[styles.fundRow, styles.fundHeaderRow]}>
         <View style={styles.fundLabelBox} />
-        <TableColumn tone="green" header style={styles.fundColumn}><Text style={[styles.fundCell, styles.fundHeader]}>{t('Portfólio')}</Text></TableColumn>
-        <TableColumn tone="cyan" header style={styles.fundColumn}><Text style={[styles.fundCell, styles.fundHeader]}>{t('S&P 500')}</Text></TableColumn>
+        <TableColumn tone="cyan" header style={styles.fundColumn}><Text style={[styles.fundCell, styles.fundHeader]}>{t('Portfólio')}</Text></TableColumn>
+        <TableColumn tone="blue" header style={styles.fundColumn}><Text style={[styles.fundCell, styles.fundHeader]}>{t('S&P 500')}</Text></TableColumn>
         <TableColumn tone="violet" header style={styles.fundColumn}><Text style={[styles.fundCell, styles.fundHeader]}>{t('Rozdiel')}</Text></TableColumn>
       </View>
       {rows.map((row, index) => {
@@ -819,8 +819,8 @@ function FundamentalsTable({
                 <Text style={styles.fundLabel}>{row.label}</Text>
                 {row.year !== null ? <Text style={styles.fundDate}>31.12.{row.year}</Text> : null}
               </View>
-              <TableColumn tone="green" style={styles.fundColumn}><Text style={styles.fundCell}>{format(p)}</Text></TableColumn>
-              <TableColumn tone="cyan" style={styles.fundColumn}><Text style={styles.fundCell}>{format(m)}</Text></TableColumn>
+              <TableColumn tone="cyan" style={styles.fundColumn}><Text style={styles.fundCell}>{format(p)}</Text></TableColumn>
+              <TableColumn tone="blue" style={styles.fundColumn}><Text style={styles.fundCell}>{format(m)}</Text></TableColumn>
               <TableColumn tone="violet" style={styles.fundColumn}>
                 <Text style={[styles.fundCell, { color: good === null ? colors.muted : good ? colors.green : colors.red }]}>{diffText}</Text>
               </TableColumn>

@@ -1,4 +1,6 @@
 import { useThemedStyles } from '../data/theme';
+import { AnimatedCollapse } from '../components/animated-collapse';
+import { selectionHaptic } from '../data/haptics';
 import type { ComponentRef } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFocusEffect, useRouter } from 'expo-router';
@@ -387,12 +389,15 @@ export default function EventsScreen() {
                       </Pressable>
                       <Pressable accessibilityRole="button" accessibilityLabel={`${t('Detail akcií')} · ${group.name}`}
                         accessibilityState={{ expanded }} disabled={savingSettings}
-                        style={styles.expandButton} onPress={() => setExpandedGroups((previous) => expanded
-                          ? previous.filter((id) => id !== group.id) : [...previous, group.id])}>
+                        style={styles.expandButton} onPress={() => {
+                          selectionHaptic();
+                          setExpandedGroups((previous) => expanded
+                            ? previous.filter((id) => id !== group.id) : [...previous, group.id]);
+                        }}>
                         <ChevronDown size={20} color={colors.muted} style={{ transform: [{ rotate: expanded ? '180deg' : '0deg' }] }} />
                       </Pressable>
                     </View>
-                    {expanded ? <View style={styles.groupDetails}>
+                    <AnimatedCollapse expanded={expanded}><View style={styles.groupDetails}>
                       {group.symbols.length ? group.symbols.map((symbol) => {
                         const name = positions.find((position) => position.symbol === symbol)?.name
                           ?? availableAssets.find((asset) => asset.symbol === symbol)?.name;
@@ -409,7 +414,7 @@ export default function EventsScreen() {
                           </Pressable>
                         );
                       }) : <Text style={styles.sheetNote}>{t('Žiadne akcie')}</Text>}
-                    </View> : null}
+                    </View></AnimatedCollapse>
                   </View>
                 );
               })}

@@ -28,6 +28,17 @@ function amount(value) {
   return Number(`${match[1]}e${({ M: 6, B: 9, T: 12 }[match[2]] ?? 0)}`);
 }
 
+function validatePair(row) {
+  if (![row.eps, row.epsEstimate, row.revenue, row.revenueEstimate].every(Number.isFinite)) {
+    throw new Error('Missing comparable actual/estimate pair.');
+  }
+  if (row.revenue <= 0 || row.revenueEstimate <= 0) throw new Error('Non-positive reported revenue or consensus.');
+  const small = Math.min(Math.abs(row.eps), Math.abs(row.epsEstimate));
+  const large = Math.max(Math.abs(row.eps), Math.abs(row.epsEstimate));
+  // Mixed pre-/post-split observations can still have an arithmetically correct surprise.
+  if (small >= 0.1 && large / small >= 5) throw new Error('EPS pair needs manual split/methodology verification.');
+}
+
 function parseConsensusTable(html, now = Date.now(), limit = Infinity) {
   const table = /<table\b[^>]*id="earnings-history"[^>]*>([\s\S]*?)<\/table>/i.exec(html)?.[1];
   if (!table) throw new Error('Historical earnings table missing.');
@@ -56,12 +67,8 @@ function parseConsensusTable(html, now = Date.now(), limit = Infinity) {
     const revenue = amount(cells[7]);
     const sourcePath = /href="(\/earnings\/reports\/[^"]+)"/.exec(cells[8])?.[1];
     if ([epsEstimate, eps, beat, revenueEstimate, revenue].some((value) => value === null) || !sourcePath) return [];
-    if (revenue <= 0 || revenueEstimate <= 0) throw new Error('Non-positive reported revenue or consensus.');
+    validatePair({ eps, epsEstimate, revenue, revenueEstimate });
     if (Math.abs(eps - epsEstimate - beat) > 0.011) throw new Error('EPS surprise does not match the published pair.');
-    // Mixed pre-/post-split observations can still have an arithmetically correct surprise.
-    const small = Math.min(Math.abs(eps), Math.abs(epsEstimate));
-    const large = Math.max(Math.abs(eps), Math.abs(epsEstimate));
-    if (small >= 0.1 && large / small >= 5) throw new Error('EPS pair needs manual split/methodology verification.');
     return [{
       source: `https://www.marketbeat.com${sourcePath}`,
       provider: 'MarketBeat historical earnings table',
@@ -82,13 +89,16 @@ function matchPeriods(rows, statements, alternativeStatements = []) {
     const matchesRevenue = (candidate) => candidate && Math.abs(row.revenue - candidate.revenue)
       / Math.max(Math.abs(candidate.revenue), 1) <= 0.02;
     if (!matchesRevenue(quarter)) {
-      const alternative = alternativeStatements.filter((candidate) => candidate.time < reported
+      const alternatives = alternativeStatements.filter((candidate) => candidate.time < reported
         && reported - candidate.time <= 120 * DAY && candidate.revenue !== null)
-        .sort((a, b) => b.time - a.time)[0];
+        .sort((a, b) => b.time - a.time);
       // Only the latest independently reported period is eligible; never hunt older quarters for a matching value.
+      const latest = alternatives[0];
+      const alternative = alternatives.find((candidate) => latest
+        && latest.time - candidate.time <= 14 * DAY && matchesRevenue(candidate)) ?? latest;
       if (matchesRevenue(alternative) && (!quarter || alternative.time >= quarter.time - 14 * DAY)) {
         quarter = alternative;
-        validationSource = 'yahoo';
+        validationSource = alternative.validationSource ?? 'yahoo';
       }
     }
     if (!quarter) throw new Error(`No reported period for ${row.publishedAt}.`);
@@ -115,8 +125,161 @@ function parseConstituents(html) {
   return members;
 }
 
+function importOfflineTables(capture, snapshot, consensus) {
+  const capturedAt = Date.parse(capture.capturedAt);
+  if (!Number.isFinite(capturedAt) || !Array.isArray(capture.results)
+    || !Array.isArray(capture.supplements ?? [])
+    || new Set(capture.results.map((table) => table.symbol)).size !== capture.results.length) {
+    throw new Error('Invalid offline table capture.');
+  }
+  const report = [];
+  const escape = (value) => String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+  for (const table of capture.results) {
+    const symbol = table.symbol;
+    const previous = snapshot.companies[symbol];
+    if (!previous) throw new Error(`Offline import cannot add an unknown company: ${symbol}.`);
+    const result = { symbol, imported: [], rejected: [], complete: complete(previous.sources) };
+    report.push(result);
+    if (result.complete) continue;
+    if (consensus[symbol]?.some((row) => row.epsEstimateComparable === false)) {
+      result.rejected.push('Reviewed non-comparable EPS requires manual review.');
+      continue;
+    }
+    const tableUrl = /^https:\/\/www\.marketbeat\.com\/stocks\/(?:NYSE|NASDAQ)\/([A-Z0-9.-]+)\/earnings\/$/.exec(table.url ?? '');
+    if (table.status !== 200 || !Array.isArray(table.headers) || !Array.isArray(table.rows)
+      || tableUrl?.[1].replace(/\./g, '-') !== symbol) {
+      result.rejected.push('Public historical table unavailable or invalid.');
+      continue;
+    }
+    const needed = displayed(previous.sources).filter((row) =>
+      !Number.isFinite(row.revenueBeat) || !Number.isFinite(row.epsBeat) || row.revenueBeatProvisional);
+    const pastRows = table.rows.filter((row) => /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(row.cells?.[0])
+      && Date.parse(row.cells[0]) <= capturedAt).slice(0, 6);
+    const alternatives = ['yahoo', 'yahoo-earnings'].flatMap((source) =>
+      (previous.sources[source] ?? []).map((quarter) => ({ ...quarter, validationSource: source })));
+    const store = (pair) => {
+      if (!needed.some((quarter) => quarter.periodEnd === pair.periodEnd)
+        || consensus[symbol]?.some((entry) => entry.periodEnd === pair.periodEnd)) return;
+      validatePair(pair);
+      const time = Date.parse(`${pair.periodEnd}T00:00:00Z`) / 1000;
+      if (!Number.isFinite(time) || new Date(time * 1000).toISOString().slice(0, 10) !== pair.periodEnd) {
+        throw new Error('Invalid supplemental period end.');
+      }
+      if (consensus[symbol]?.some((entry) => Math.abs(Date.parse(entry.periodEnd) / 1000 - time) <= 14 * DAY)) return;
+      const duplicate = alternatives.find((quarter) => Math.abs(quarter.time - time) <= 14 * DAY
+        && (previous.sources.sec ?? []).some((statement) => statement.revenue > 0
+          && statement.revenue === quarter.revenue && Math.abs(statement.time - time) > 14 * DAY
+          && Math.abs(statement.time - time) <= 31 * DAY));
+      if (duplicate) throw new Error(`Fiscal/calendar duplicate requires date review at ${pair.periodEnd}.`);
+      const published = Date.parse(pair.publishedAt);
+      if (!Number.isFinite(published) || published > capturedAt || published / 1000 <= time
+        || published / 1000 - time > 120 * DAY) {
+        throw new Error(`No verified publication date for ${pair.periodEnd}.`);
+      }
+      const independent = matchPeriods([pair], previous.sources.sec ?? [], alternatives)[0];
+      if (Math.abs(Date.parse(independent.periodEnd) / 1000 - time) > 14 * DAY) {
+        throw new Error(`Supplemental period mismatch at ${pair.periodEnd}.`);
+      }
+      pair = { ...pair, validationSource: independent.validationSource };
+      previous.sources = combineFinancialSources(previous.sources, { 'reported-consensus': [{
+        time, fiscalYear: '', period: '', revenue: pair.revenue, revenueEstimate: pair.revenueEstimate,
+        eps: pair.eps, epsEstimate: pair.epsEstimate, epsBasis: pair.epsBasis, reportedAt: published / 1000,
+      }] });
+      previous.updatedAt = capture.capturedAt;
+      consensus[symbol] = [...(consensus[symbol] ?? []), pair]
+        .sort((a, b) => b.periodEnd.localeCompare(a.periodEnd));
+      result.imported.push(pair.periodEnd);
+    };
+    for (const supplemental of (capture.supplements ?? []).filter((entry) => entry.symbol === symbol)) {
+      for (const row of supplemental.rows) {
+        if (!needed.some((quarter) => quarter.periodEnd === row.periodEnd)
+          || consensus[symbol]?.some((entry) => entry.periodEnd === row.periodEnd)) continue;
+        try {
+          const seekingAlpha = supplemental.source === `https://seekingalpha.com/symbol/${symbol.replace('-', '.')}/earnings/eps-surprise-summary?period=quarterly`;
+          const investing = supplemental.provider === 'Investing.com earnings history'
+            && /^https:\/\/www\.investing\.com\/equities\/[a-z0-9.-]+-earnings$/.test(supplemental.source)
+            && supplemental.title?.includes(`(${symbol === 'NVO' ? 'NOVOb' : symbol})`);
+          if ((!seekingAlpha && !investing)
+            || !Number.isFinite(Date.parse(supplemental.observedAt))
+            || Date.parse(supplemental.observedAt) > capturedAt) throw new Error('Invalid supplemental source or observation date.');
+          validatePair(row);
+          const time = Date.parse(`${row.periodEnd}T00:00:00Z`) / 1000;
+          const fiscal = /^F(Q[1-4] \d{4})/.exec(row.periodLabel ?? '')?.[1];
+          const publication = pastRows.find((entry) => fiscal && entry.cells[1] === fiscal);
+          const knownReport = (previous.sources['yahoo-earnings'] ?? []).find((quarter) =>
+            Math.abs(quarter.time - time) <= 14 * DAY && quarter.reportedAt);
+          const publishedAt = row.publishedAt ?? (publication
+            ? (() => {
+              const [month, day, year] = publication.cells[0].split('/');
+              return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T23:59:59Z`;
+            })()
+            : knownReport ? new Date(knownReport.reportedAt * 1000).toISOString() : null);
+          const epsActuals = Object.values(previous.sources).flat()
+            .filter((quarter) => Math.abs(quarter.time - time) <= 14 * DAY);
+          const reviewedBasis = ['gaap', 'adjusted'].includes(row.epsBasis)
+            && /^https:\/\/[^/]+\/.+/.test(row.methodologySource ?? '') ? row.epsBasis : null;
+          const epsBasis = seekingAlpha ? 'adjusted' : reviewedBasis
+            ?? (epsActuals.some((quarter) => quarter.epsBasis === 'adjusted' && Math.abs(quarter.eps - row.eps) < 0.011) ? 'adjusted'
+            : ['sec', 'yahoo'].some((source) => (previous.sources[source] ?? []).some((quarter) =>
+              Math.abs(quarter.time - time) <= 14 * DAY && quarter.eps !== null
+              && Math.abs(quarter.eps - row.eps) < 0.011)) ? 'gaap' : null);
+          if (!epsBasis) throw new Error(`EPS methodology requires review at ${row.periodEnd}.`);
+          store({
+            ...row, source: supplemental.source, tableSource: supplemental.source,
+            provider: supplemental.provider, observedAt: supplemental.observedAt, publishedAt, epsBasis,
+            publicationSource: row.publishedAt ? supplemental.source
+              : publication?.report ? `https://www.marketbeat.com${publication.report}` : 'Yahoo earnings reportedAt',
+          });
+        } catch (error) {
+          result.rejected.push(error.message);
+        }
+      }
+    }
+    for (const row of pastRows) {
+      try {
+        const html = `<table id="earnings-history"><tr>${table.headers.map((value) => `<th>${escape(value)}</th>`).join('')}</tr>`
+          + `<tr>${row.cells.map((value, index) => `<td>${index === 8 && row.report
+            ? `<a href="${escape(row.report)}">Report</a>` : escape(value)}</td>`).join('')}</tr></table>`;
+        const pairs = parseConsensusTable(html, capturedAt);
+        if (pairs.length !== 1) throw new Error(`Missing comparable actual/estimate pair at ${row.cells[0]}.`);
+        const pair = matchPeriods(pairs, previous.sources.sec ?? [], alternatives)[0];
+        store({ ...pair, tableSource: table.url, observedAt: capture.capturedAt });
+      } catch (error) {
+        result.rejected.push(error.message);
+      }
+    }
+    result.complete = complete(previous.sources);
+    result.missing = displayed(previous.sources).filter((row) =>
+      !Number.isFinite(row.revenueBeat) || !Number.isFinite(row.epsBeat) || row.revenueBeatProvisional)
+      .map((row) => row.periodEnd);
+    if (!result.complete && !result.rejected.length) {
+      result.rejected.push('The six displayed reports are not all covered by the available source rows.');
+    }
+  }
+  if (report.some((entry) => entry.imported.length)) snapshot.generatedAt = capture.capturedAt;
+  return report;
+}
+
 async function main() {
   const args = process.argv.slice(2);
+  const offlineArg = args.find((argument) => argument.startsWith('--offline-tables='));
+  if (offlineArg) {
+    if (args.length !== 1) throw new Error('Offline tables cannot be combined with network import options.');
+    const capture = JSON.parse(fs.readFileSync(offlineArg.slice('--offline-tables='.length), 'utf8'));
+    const snapshot = JSON.parse(fs.readFileSync(path.join(root, 'financial-history.json'), 'utf8'));
+    const consensus = JSON.parse(fs.readFileSync(path.join(root, 'reported-consensus.json'), 'utf8'));
+    const report = importOfflineTables(capture, snapshot, consensus);
+    if (report.some((entry) => entry.imported.length)) {
+      const coveragePath = path.join(root, 'sp500-earnings-coverage.json');
+      const coverage = updateCoverage(snapshot, JSON.parse(fs.readFileSync(coveragePath, 'utf8')));
+      for (const [filename, value] of [
+        ['reported-consensus.json', consensus], ['financial-history.json', snapshot], ['sp500-earnings-coverage.json', coverage],
+      ]) fs.writeFileSync(path.join(root, filename), `${JSON.stringify(value, null, 2)}\n`);
+    }
+    console.log(JSON.stringify(report, null, 2));
+    if (report.some((entry) => !entry.complete)) process.exitCode = 1;
+    return;
+  }
   const limitArg = args.find((argument) => argument.startsWith('--limit='));
   const limit = limitArg ? Number(limitArg.slice('--limit='.length)) : Infinity;
   if (limitArg && (!Number.isInteger(limit) || limit < 1)) throw new Error('Invalid import limit.');
@@ -231,4 +394,4 @@ async function main() {
 }
 
 if (require.main === module) main().catch((error) => { console.error(error.message); process.exitCode = 1; });
-module.exports = { amount, parseConsensusTable, matchPeriods, displayed, parseConstituents, complete };
+module.exports = { amount, parseConsensusTable, matchPeriods, displayed, parseConstituents, complete, importOfflineTables };

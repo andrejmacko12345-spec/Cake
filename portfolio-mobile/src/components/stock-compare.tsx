@@ -2,10 +2,10 @@ import { useThemedStyles } from '../data/theme';
 import { useAppStorage } from '../data/app-storage';
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ComponentRef } from 'react';
-import { ActivityIndicator, Animated, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
+import { ActivityIndicator, Animated, Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
 import { ChartNoAxesCombined, Plus, Search, X } from 'lucide-react-native';
 import { Page, Surface } from './finapp';
-import { TableColumn, type TableColumnTone } from '../components/table-column';
+import { TableColumn, tableToneAccents, type TableColumnTone } from '../components/table-column';
 import { colors } from '../data/portfolio';
 import { fetchStockEstimates, StockEstimates } from '../data/fundamentals';
 import { useAssetSearch } from '../hooks/use-asset-search';
@@ -58,13 +58,6 @@ function formatValue(value: number | null, kind: Column['kind']) {
   if (kind === 'pe') return `${value.toFixed(1)}x`;
   const percent = value * 100;
   return `${kind === 'growth' && percent > 0 ? '+' : ''}${percent.toFixed(1)}%`;
-}
-
-function groupDividerStyle(group: Column['group'], styles: ReturnType<typeof createStyles>) {
-  if (group === 'revenue') return styles.groupDividerRevenue;
-  if (group === 'eps') return styles.groupDividerEps;
-  if (group === 'profitability') return styles.groupDividerProfitability;
-  return styles.groupDividerPe;
 }
 
 function groupIndicatorStyle(group: Column['group'], styles: ReturnType<typeof createStyles>) {
@@ -267,6 +260,7 @@ export default function StockCompare() {
   const addSymbol = (symbol: string) => {
     if (symbols.includes(symbol) || symbols.length >= MAX_SYMBOLS) return;
     saveSymbols([...symbols, symbol]);
+    Keyboard.dismiss();
     setQuery('');
     setShowSearch(false);
   };
@@ -296,7 +290,9 @@ export default function StockCompare() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 84 : 0}
     >
-    <Page topInset={false} scrollRef={pageScrollRef} onScrollViewLayout={setViewportHeight}>
+    <Page topInset={false} scrollRef={pageScrollRef} onScrollViewLayout={(height) => {
+      if (!showSearch && !Keyboard.isVisible()) setViewportHeight(height);
+    }}>
 
       <View onLayout={({ nativeEvent: { layout } }) => setTableLayout({ width: layout.width, y: layout.y })}>
       <Surface style={styles.tableCard}>
@@ -330,6 +326,7 @@ export default function StockCompare() {
                 accessibilityState={{ expanded: showSearch }}
                 onPress={() => {
                   setMetricsOpen(false);
+                  if (showSearch) Keyboard.dismiss();
                   setShowSearch((value) => !value);
                 }}
                 style={[styles.addStockHead, { width: addColumnWidth }]}
@@ -343,6 +340,7 @@ export default function StockCompare() {
                 styles.inlineSearch,
                 {
                   width: LABEL_WIDTH + cellWidth * symbols.length + addColumnWidth,
+                  top: tableHeaderHeight,
                   opacity: searchReveal,
                   transform: [{ translateY: searchReveal.interpolate({ inputRange: [0, 1], outputRange: [-6, 0] }) }],
                 },
@@ -382,7 +380,6 @@ export default function StockCompare() {
                   ? (
                     <View style={[
                       styles.groupDivider,
-                      groupDividerStyle(column.group, styles),
                       { width: LABEL_WIDTH + cellWidth * symbols.length + addColumnWidth },
                     ]}>
                       <View style={[styles.groupIndicator, groupIndicatorStyle(column.group, styles)]} />
@@ -556,7 +553,7 @@ const createStyles = () => StyleSheet.create({
     minHeight: 40,
   },
   searchInput: { flex: 1, color: colors.text, fontSize: 14 },
-  inlineSearch: { padding: 12, borderTopWidth: 1, borderTopColor: colors.border, gap: 4 },
+  inlineSearch: { position: 'absolute', left: 0, zIndex: 10, backgroundColor: colors.surface, borderBottomLeftRadius: 16, borderBottomRightRadius: 16, padding: 12, borderTopWidth: 1, borderTopColor: colors.border, gap: 4 },
   resultRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -577,17 +574,12 @@ const createStyles = () => StyleSheet.create({
     paddingHorizontal: 10,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
-    borderLeftWidth: 3,
   },
-  groupDividerRevenue: { backgroundColor: 'rgba(120,216,79,0.08)', borderLeftColor: colors.green },
-  groupDividerEps: { backgroundColor: 'rgba(22,196,216,0.08)', borderLeftColor: colors.cyan },
-  groupDividerPe: { backgroundColor: 'rgba(100,121,255,0.09)', borderLeftColor: colors.violet },
-  groupDividerProfitability: { backgroundColor: 'rgba(255,180,90,0.08)', borderLeftColor: '#ffb45a' },
   groupIndicator: { width: 6, height: 6, borderRadius: 3 },
-  groupIndicatorRevenue: { backgroundColor: colors.green },
-  groupIndicatorEps: { backgroundColor: colors.cyan },
-  groupIndicatorPe: { backgroundColor: colors.violet },
-  groupIndicatorProfitability: { backgroundColor: '#ffb45a' },
+  groupIndicatorRevenue: { backgroundColor: tableToneAccents.violet },
+  groupIndicatorEps: { backgroundColor: tableToneAccents.blue },
+  groupIndicatorPe: { backgroundColor: tableToneAccents.cyan },
+  groupIndicatorProfitability: { backgroundColor: tableToneAccents.slate },
   groupDividerText: { color: colors.text, fontSize: 11, fontWeight: '900', letterSpacing: 0.8, textTransform: 'uppercase' },
   labelCell: { paddingHorizontal: 8, flexDirection: 'row', alignItems: 'center', gap: 3 },
   labelText: { flex: 1, color: colors.muted, fontSize: 12, lineHeight: 15, fontWeight: '700' },
@@ -641,9 +633,9 @@ const createStyles = () => StyleSheet.create({
 });
 
 function stockColumnTone(index: number): TableColumnTone {
-  if (index === 0) return 'green';
-  if (index === 1) return 'cyan';
-  return 'violet';
+  if (index === 0) return 'cyan';
+  if (index === 1) return 'violet';
+  return 'blue';
 }
 
 function groupLabel(group: Column['group']) {

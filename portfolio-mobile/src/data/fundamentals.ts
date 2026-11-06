@@ -1,4 +1,5 @@
 import { createRequestCache } from './request-cache';
+import type { FinancialSources } from './quarterly';
 
 export type FundamentalMetrics = Pick<StockEstimates,
   'currentPE' | 'peThisYear' | 'peNextYear' |
@@ -93,6 +94,10 @@ export type StockEstimates = {
   peNextYear: number | null;
   epsThisYear: number | null;
   epsNextYear: number | null;
+  revenueTTM: number | null;
+  revenueThisYear: number | null;
+  revenueNextYear: number | null;
+  revenueCurrency: string | null;
   revenueGrowthThisYear: number | null;
   revenueGrowthNextYear: number | null;
   epsGrowthThisYear: number | null;
@@ -102,6 +107,8 @@ export type StockEstimates = {
   grossMargin: number | null;
   netMargin: number | null;
   priceToSalesTTM: number | null;
+  priceToSalesThisYear: number | null;
+  priceToSalesNextYear: number | null;
   cy0End: string;
   cy1End: string;
   calendarApproximate: boolean;
@@ -113,12 +120,12 @@ type EstimatesResponse = {
       price?: { regularMarketPrice?: RawValue; shortName?: string; longName?: string };
       summaryDetail?: { trailingPE?: RawValue; forwardPE?: RawValue; priceToSalesTrailing12Months?: RawValue; marketCap?: RawValue };
       defaultKeyStatistics?: { forwardPE?: RawValue };
-      financialData?: { grossMargins?: RawValue; profitMargins?: RawValue };
+      financialData?: { grossMargins?: RawValue; profitMargins?: RawValue; financialCurrency?: string };
       earningsTrend?: {
         trend?: Array<{
           period?: string;
           endDate?: string;
-          revenueEstimate?: { avg?: RawValue; growth?: RawValue; yearAgoRevenue?: RawValue };
+          revenueEstimate?: { avg?: RawValue; growth?: RawValue; yearAgoRevenue?: RawValue; revenueCurrency?: string };
           earningsEstimate?: { avg?: RawValue; growth?: RawValue; yearAgoEps?: RawValue };
         }>;
       };
@@ -135,13 +142,13 @@ async function fetchTrailingGrowth(symbol: string, signal: AbortSignal) {
     { headers: { 'User-Agent': USER_AGENT, Accept: 'application/json' }, signal },
   );
   if (!response.ok) throw new Error(`Zdroj TTM dát vrátil HTTP ${response.status}.`);
-  type Row = { asOfDate?: string; reportedValue?: RawValue };
+  type Row = { asOfDate?: string; reportedValue?: RawValue; currencyCode?: string };
   const data = await response.json() as {
     timeseries?: { result?: Array<Partial<Record<typeof types[number], Row[]>>> };
   };
   const growth = (type: typeof types[number]) => {
     const rows = (data.timeseries?.result?.flatMap((entry) => entry[type] ?? []) ?? [])
-      .filter((row) => row.asOfDate && finite(row.reportedValue) !== null)
+      .filter((row) => row.asOfDate && Date.parse(row.asOfDate) <= now * 1000 && finite(row.reportedValue) !== null)
       .sort((a, b) => String(b.asOfDate).localeCompare(String(a.asOfDate)));
     const latest = rows[0];
     if (!latest?.asOfDate) return null;
@@ -159,12 +166,57 @@ async function fetchTrailingGrowth(symbol: string, signal: AbortSignal) {
         const value = finite(row.reportedValue);
         return row.asOfDate && value !== null ? [{ date: row.asOfDate, value }] : [];
       });
+  const latestRevenue = (data.timeseries?.result?.flatMap((entry) => entry.trailingTotalRevenue ?? []) ?? [])
+    .filter((row) => row.asOfDate && Date.parse(row.asOfDate) <= now * 1000 && finite(row.reportedValue) !== null)
+    .sort((a, b) => String(b.asOfDate).localeCompare(String(a.asOfDate)))[0];
+  let revenueGrowthTTM = growth(types[0]);
+  if (revenueGrowthTTM === null && latestRevenue?.asOfDate) {
+    const { getLocalFinancialHistory } = await import('./earnings-history');
+    revenueGrowthTTM = quarterlyRevenueGrowthTTM(
+      await getLocalFinancialHistory(symbol), latestRevenue.asOfDate, finite(latestRevenue.reportedValue),
+      latestRevenue.currencyCode ?? null,
+    );
+  }
   return {
-    revenueGrowthTTM: growth(types[0]),
+    revenueTTM: finite(latestRevenue?.reportedValue),
+    revenueCurrency: latestRevenue?.currencyCode ?? null,
+    revenueGrowthTTM,
     epsGrowthTTM: growth(types[1]),
     annualRevenue: annual('annualTotalRevenue'),
     annualEPS: annual('annualDilutedEPS'),
   };
+}
+
+export function quarterlyRevenueGrowthTTM(
+  sources: FinancialSources, periodEnd: string, revenueTTM: number | null, currency: string | null = 'USD',
+): number | null {
+  if (revenueTTM === null || !Number.isFinite(revenueTTM)) return null;
+  const end = Date.parse(periodEnd) / 1000;
+  const day = 86400;
+  const priorEnd = new Date(`${periodEnd}T00:00:00Z`);
+  priorEnd.setUTCFullYear(priorEnd.getUTCFullYear() - 1);
+  const priorTime = priorEnd.getTime() / 1000;
+  for (const source of ['sec', 'fmp', 'yahoo']) {
+    if (source === 'sec' && currency !== 'USD') continue;
+    const rows = (sources[source] ?? [])
+      .filter((row) => row.time <= priorTime + 14 * day && row.time <= Date.now() / 1000
+        && (row.reportedAt === undefined || row.reportedAt <= Date.now() / 1000)
+        && row.revenue !== null && Number.isFinite(row.revenue))
+      .sort((a, b) => b.time - a.time).slice(0, 4);
+    if (rows.length !== 4 || Math.abs(rows[0].time - priorTime) > 14 * day) continue;
+    if (rows.some((row, index) => index > 0
+      && (rows[index - 1].time - row.time < 60 * day || rows[index - 1].time - row.time > 120 * day))) continue;
+    const current = (sources[source] ?? []).filter((row) => row.time > priorTime + 14 * day
+      && row.time <= end + 14 * day && row.revenue !== null && Number.isFinite(row.revenue));
+    // Validate the revenue basis against overlapping current observations when all four are available.
+    if (current.length === 4) {
+      const total = current.reduce((sum, row) => sum + (row.revenue ?? 0), 0);
+      if (total <= 0 || Math.abs(total - revenueTTM) / total > 0.02) continue;
+    } else if (source !== 'sec') continue;
+    const previous = rows.reduce((sum, row) => sum + (row.revenue ?? 0), 0);
+    if (previous > 0 && revenueTTM >= 0) return revenueTTM / previous - 1;
+  }
+  return null;
 }
 
 export function calendarYearEstimate(
@@ -239,6 +291,13 @@ async function loadStockEstimates(symbol: string): Promise<StockEstimates> {
       const previous = calendar(rows, targetYear - 1);
       return current !== null && previous !== null && previous > 0 ? current / previous - 1 : null;
     };
+    const priceToSalesTTM = finite(result.summaryDetail?.priceToSalesTrailing12Months);
+    const priceToSales = (targetYear: number) => {
+      const revenue = calendar(annualRevenue, targetYear);
+      return priceToSalesTTM !== null && priceToSalesTTM > 0
+        && trailing.revenueTTM !== null && trailing.revenueTTM > 0 && revenue !== null && revenue > 0
+        ? priceToSalesTTM * trailing.revenueTTM / revenue : null;
+    };
     return {
       symbol,
       name: result.price?.shortName ?? result.price?.longName ?? symbol,
@@ -247,7 +306,9 @@ async function loadStockEstimates(symbol: string): Promise<StockEstimates> {
       epsGrowthTTM: trailing.epsGrowthTTM,
       grossMargin: finite(result.financialData?.grossMargins),
       netMargin: finite(result.financialData?.profitMargins),
-      priceToSalesTTM: finite(result.summaryDetail?.priceToSalesTrailing12Months),
+      priceToSalesTTM,
+      priceToSalesThisYear: priceToSales(year),
+      priceToSalesNextYear: priceToSales(year + 1),
       cy0End: `${year}-12-31`,
       cy1End: `${year + 1}-12-31`,
       calendarApproximate: fiscalMonth !== null && fiscalMonth !== 12,
@@ -257,6 +318,11 @@ async function loadStockEstimates(symbol: string): Promise<StockEstimates> {
       peNextYear: peFrom(calendar(annualEPS, year + 1)),
       epsThisYear: calendar(annualEPS, year),
       epsNextYear: calendar(annualEPS, year + 1),
+      revenueTTM: trailing.revenueTTM,
+      revenueThisYear: calendar(annualRevenue, year),
+      revenueNextYear: calendar(annualRevenue, year + 1),
+      revenueCurrency: trailing.revenueCurrency ?? result.financialData?.financialCurrency
+        ?? thisYear?.revenueEstimate?.revenueCurrency ?? null,
       revenueGrowthThisYear: growth(annualRevenue, year),
       revenueGrowthNextYear: growth(annualRevenue, year + 1),
       epsGrowthThisYear: growth(annualEPS, year),

@@ -317,6 +317,7 @@ test('compact projection table renders 4 shared inputs and all 3 years in Slovak
         ActivityIndicator: () => null, StyleSheet: { create: (styles) => styles }, Platform: { OS: 'android' },
       };
       if (id === 'expo-router') return { router: {} };
+      if (id === './animated-collapse') return { AnimatedCollapse: ({ expanded, children }) => expanded ? wrap({ children }) : null };
       if (id === 'lucide-react-native') return { ArrowLeft: () => null, Search: () => null,
         ChevronDown: () => null, X: () => null, BriefcaseBusiness: () => null, Check: () => null, Bookmark: () => null, Info: () => null };
       if (id === '../components/finapp') return {
@@ -357,7 +358,7 @@ test('compact projection table renders 4 shared inputs and all 3 years in Slovak
       columnTones = [];
       const states = ['TEST', false, base, false, '', 0, {
         revenueGrowth: '10', incomeGrowth: '20', peLow: '10', peHigh: '20',
-      }, '', 500, false, 160, false];
+      }, '', 500, false, 160, false, false, 'portfolio'];
       React.useState = () => {
         const stateIndex = index++;
         const [value] = originalState(states[stateIndex]);
@@ -367,7 +368,7 @@ test('compact projection table renders 4 shared inputs and all 3 years in Slovak
       assert.ok(html.includes(language === 'sk' ? '50,00' : '50.00'));
       assert.match(html, /USD/);
       assert.deepEqual(sectionGaps, [6, 6, 6]);
-      for (const tone of ['cyan', 'violet', 'amber', 'green']) {
+      for (const tone of ['cyan', 'violet', 'blue', 'slate']) {
         assert.ok(columnTones.filter((value) => value === tone).length >= 8);
       }
       assert.equal((html.match(/<input/g) ?? []).length, 5);
@@ -392,6 +393,7 @@ test('compact projection table renders 4 shared inputs and all 3 years in Slovak
       assert.ok(dropdown);
       dropdown.onPress();
       assert.equal(updates.find(([stateIndex]) => stateIndex === 9)[1](false), true);
+      assert.ok(updates.some(([stateIndex, value]) => stateIndex === 13 && value === 'portfolio'));
       updates = [];
       states[9] = true;
       index = 0;
@@ -404,6 +406,7 @@ test('compact projection table renders 4 shared inputs and all 3 years in Slovak
       assert.doesNotMatch(openHtml, /CLOSED/);
       states[9] = false;
       states[11] = true;
+      states[13] = 'watchlists';
       index = 0;
       buttons = [];
       const watchedHtml = renderToStaticMarkup(React.createElement(Screen));
@@ -414,6 +417,7 @@ test('compact projection table renders 4 shared inputs and all 3 years in Slovak
       assert.ok(updates.some(([stateIndex, value]) => stateIndex === 11 && value === false));
       states[9] = true;
       states[11] = false;
+      states[13] = 'portfolio';
       index = 0;
       buttons = [];
       inputs = [];

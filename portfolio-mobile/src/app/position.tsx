@@ -1,4 +1,5 @@
 import { useThemedStyles } from '../data/theme';
+import { AnimatedCollapse } from '../components/animated-collapse';
 import { selectionHaptic } from '../data/haptics';
 import { useEffect, useMemo, useState } from 'react';
 import {
@@ -13,11 +14,11 @@ import {
   View,
 } from 'react-native';
 import Svg, { Circle, Line, Path } from 'react-native-svg';
-import { ArrowLeft, Minus, Pencil, Plus, TrendingDown, TrendingUp } from 'lucide-react-native';
+import { ArrowLeft, ChevronDown, Minus, Pencil, Plus, TrendingDown, TrendingUp } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { AssetLogo } from '../components/asset-logo';
-import { TableColumn } from '../components/table-column';
+import { TableColumn, tableToneAccents, tableToneBackgrounds } from '../components/table-column';
 import { TransactionModal } from '../components/transaction-modal';
 import { Header, Page, SectionTitle, Surface } from '../components/finapp';
 import { Asset, availableAssets, colors, formatMoney, formatPercent } from '../data/portfolio';
@@ -57,11 +58,11 @@ const rangeLabels = ranges.map((item) => item.label);
 
 type PricePoint = HistoricalQuotePoint & { date: string };
 
-function formatBigNumber(value: number) {
+function formatBigNumber(value: number, decimals = 2) {
   const abs = Math.abs(value);
-  if (abs >= 1e12) return `${(value / 1e12).toFixed(2)} T`;
-  if (abs >= 1e9) return `${(value / 1e9).toFixed(2)} B`;
-  if (abs >= 1e6) return `${(value / 1e6).toFixed(2)} M`;
+  if (abs >= 1e12) return `${(value / 1e12).toFixed(decimals)} T`;
+  if (abs >= 1e9) return `${(value / 1e9).toFixed(decimals)} B`;
+  if (abs >= 1e6) return `${(value / 1e6).toFixed(decimals)} M`;
   return value.toFixed(0);
 }
 
@@ -364,7 +365,8 @@ export default function PositionDetailScreen() {
   const { symbol: symbolParam } = useLocalSearchParams<{ symbol: string }>();
   const symbol = Array.isArray(symbolParam) ? symbolParam[0] : symbolParam;
   const router = useRouter();
-  const { positions, loading, saveTransaction, deleteTransaction } = usePositions();
+  const { positions, loading, saveTransaction, deleteTransaction, deleteSymbolTransactions } = usePositions();
+  const [deletingTransactions, setDeletingTransactions] = useState(false);
   const { t, language, errorText } = useLocale();
   const heldPosition = positions.find((item) => item.symbol === symbol);
   const isHeld = Boolean(heldPosition);
@@ -383,6 +385,7 @@ export default function PositionDetailScreen() {
   const [range, setRange] = useState<RangeLabel>('1D');
   const [formVisible, setFormVisible] = useState(false);
   const [movementsOpen, setMovementsOpen] = useState(false);
+  const [resultsExpanded, setResultsExpanded] = useState(false);
   const [stats, setStats] = useState<KeyStats | null>(null);
   const [estimates, setEstimates] = useState<StockEstimates | null>(null);
   const [metricsError, setMetricsError] = useState('');
@@ -396,6 +399,7 @@ export default function PositionDetailScreen() {
     if (!symbol) return;
     let active = true;
     setStatsLoading(true);
+    setResultsExpanded(false);
     setEstimatesLoading(true);
     setReportsLoading(true);
     setStats(null);
@@ -485,6 +489,29 @@ export default function PositionDetailScreen() {
     ]);
   };
 
+  const removeAllTransactions = () => {
+    if (!position || deletingTransactions) return;
+    selectionHaptic();
+    const targetSymbol = position.symbol;
+    Alert.alert(t('Vymazať všetky transakcie?'), `${targetSymbol}: ${t('Vymažú sa všetky nákupy aj predaje tejto akcie. Táto akcia sa nedá vrátiť späť.')}`, [
+      { text: t('Zrušiť'), style: 'cancel' },
+      {
+        text: t('Vymazať všetky transakcie'),
+        style: 'destructive',
+        onPress: () => {
+          setDeletingTransactions(true);
+          void deleteSymbolTransactions(targetSymbol).then(() => {
+            setFormVisible(false);
+            setMovementsOpen(false);
+          }).catch((error: unknown) => {
+            console.warn('Symbol transaction deletion failed:', error);
+            Alert.alert(t('Transakcie sa neodstránili'), errorText(error instanceof Error ? error.message : String(error)));
+          }).finally(() => setDeletingTransactions(false));
+        },
+      },
+    ]);
+  };
+
   const save = (input: TransactionInput, id?: string, quote?: Parameters<typeof saveTransaction>[2]) =>
     saveTransaction(input, id, quote);
 
@@ -536,136 +563,181 @@ export default function PositionDetailScreen() {
       </Pressable>
       </View>
 
+      <Surface style={styles.resultsCard}>
       {heldPosition ? (
-        <Surface style={styles.resultsCard}>
-          <View style={styles.resultHero}>
-            <Text style={styles.resultCaption}>{t('Aktuálna hodnota')}</Text>
-            <Text numberOfLines={1} adjustsFontSizeToFit style={styles.resultTotal}>
-              {hideAmounts ? '•••••' : formatMoney(currentValue)}
-            </Text>
-          </View>
-          <View style={styles.resultGrid}>
+        <>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t(resultsExpanded ? 'Skryť podrobnosti pozície' : 'Zobraziť podrobnosti pozície')}
+            accessibilityState={{ expanded: resultsExpanded }}
+            onPress={() => { selectionHaptic(); setResultsExpanded((expanded) => !expanded); }}
+            style={styles.resultHero}
+          >
+            <View style={styles.resultSummaryValue}>
+              <Text style={styles.resultCaption}>{t('Aktuálna hodnota')}</Text>
+              <Text numberOfLines={1} adjustsFontSizeToFit style={styles.resultTotal}>
+                {hideAmounts ? '•••••' : formatMoney(currentValue)}
+                {!hideAmounts ? <Text style={[styles.resultSummaryPercent, { color: unrealized >= 0 ? colors.green : colors.red }]}>
+                  {` (${unrealized >= 0 ? '+' : ''}${formatMoney(unrealized)})`}
+                </Text> : null}
+              </Text>
+            </View>
+            <ChevronDown size={16} color={colors.muted} style={{ transform: [{ rotate: resultsExpanded ? '180deg' : '0deg' }] }} />
+          </Pressable>
+          <AnimatedCollapse expanded={resultsExpanded}><View style={styles.resultGrid}>
             <View style={styles.resultDetails}>
-              <View>
-                <Text style={styles.resultCaption}>{t('Investované · otvorená pozícia')}</Text>
-                <Text numberOfLines={1} adjustsFontSizeToFit style={styles.resultAmount}>{hideAmounts ? '•••••' : formatMoney(openCost)}</Text>
-              </View>
-              <View>
                 <Text style={styles.resultCaption}>{t('Priemerná nákupná cena')} ({position.currency})</Text>
                 <Text numberOfLines={1} adjustsFontSizeToFit style={styles.resultAmount}>
                   {hideAmounts ? '•••••' : position.averageCost.toLocaleString(language === 'sk' ? 'sk-SK' : 'en-US', { style: 'currency', currency: position.currency, minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </Text>
-              </View>
             </View>
-            <View style={[styles.resultDetails, styles.resultDivider]}>
-              <View>
+            <View style={styles.resultDetails}>
+                <Text style={styles.resultCaption}>{t('Investované · otvorená pozícia')}</Text>
+                <Text numberOfLines={1} adjustsFontSizeToFit style={styles.resultAmount}>{hideAmounts ? '•••••' : formatMoney(openCost)}</Text>
+            </View>
+            <View style={styles.resultDetails}>
                 <Text style={styles.resultCaption}>{t('Nerealizovaný výnos')}</Text>
-                <View style={styles.resultReturn}>
-                  <Text numberOfLines={1} adjustsFontSizeToFit style={[styles.resultAmount, { color: unrealized >= 0 ? colors.green : colors.red }]}>
-                    {hideAmounts ? '•••••' : `${unrealized >= 0 ? '+' : ''}${formatMoney(unrealized)}`}
-                  </Text>
-                  {openCost > 0 ? (
-                    <Text style={[styles.resultPct, { color: unrealized >= 0 ? colors.green : colors.red }]}>{formatPercent((unrealized / openCost) * 100)}</Text>
-                  ) : null}
-                </View>
-              </View>
-              <View>
+                <Text numberOfLines={1} adjustsFontSizeToFit style={[styles.resultAmount, { color: unrealized >= 0 ? colors.green : colors.red }]}>
+                  {hideAmounts ? '•••••' : `${unrealized >= 0 ? '+' : ''}${formatMoney(unrealized)} (${openCost > 0 ? formatPercent((unrealized / openCost) * 100) : '–'})`}
+                </Text>
+            </View>
+            <View style={styles.resultDetails}>
                 <Text style={styles.resultCaption}>{t('Celkový výsledok')}</Text>
                 <Text numberOfLines={1} adjustsFontSizeToFit style={[styles.resultAmount, { color: totalResult >= 0 ? colors.green : colors.red }]}>
                   {hideAmounts ? '•••••' : `${totalResult >= 0 ? '+' : ''}${formatMoney(totalResult)}`}
                 </Text>
-              </View>
             </View>
-          </View>
-        </Surface>
+          </View></AnimatedCollapse>
+        </>
       ) : null}
 
-      <SectionTitle title={t('Ukazovatele')} />
-      <Surface style={styles.statsCard}>
-        {statsLoading && estimatesLoading ? <ActivityIndicator color={colors.green} /> : (
-          <View>
+      <View style={heldPosition ? styles.currentMetricsDivider : undefined}>
+        {statsLoading ? <ActivityIndicator color={colors.green} /> : (
+          <View style={styles.currentMetrics}>
             {([
-              [
-                ['P/E TTM', stats?.pe != null ? stats.pe.toFixed(1) : '–'],
-                [`${t('Odhad P/E')} ${new Date().getFullYear()}`, estimates?.peThisYear != null ? estimates.peThisYear.toFixed(1) : '–'],
-                [`${t('Odhad P/E')} ${new Date().getFullYear() + 1}`, estimates?.peNextYear != null ? estimates.peNextYear.toFixed(1) : '–'],
-              ],
-              [
-                ['EPS TTM', stats?.eps != null ? stats.eps.toFixed(2) : '–'],
-                [`${t('Odhad EPS')} ${new Date().getFullYear()}`, estimates?.epsThisYear != null ? estimates.epsThisYear.toFixed(2) : '–'],
-                [`${t('Odhad EPS')} ${new Date().getFullYear() + 1}`, estimates?.epsNextYear != null ? estimates.epsNextYear.toFixed(2) : '–'],
-              ],
-              [
+              { title: t('Dividendy a kapitalizácia'), tone: 'amber', rows: [[
                 [t('Ročná dividenda na akciu'), stats?.dividendRate != null ? `${stats.dividendRate.toFixed(2)} ${position.currency}` : '–'],
                 [t('Dividendový výnos'), stats?.dividendYield != null ? `${(stats.dividendYield * 100).toFixed(2)} %` : '–'],
                 [t('Trhová kapitalizácia'), stats?.marketCap != null ? formatBigNumber(stats.marketCap) : '–'],
-              ],
-            ] as const).map((group, index) => (
-              <View key={index} style={[styles.statsGrid, index > 0 && styles.statsDivider]}>
-              {group.map(([label, value], columnIndex) => (
-              <View key={label} style={[styles.statItem, columnIndex > 0 && styles.statColumnDivider]}>
-                <Text style={styles.statLabel}>{label}</Text>
-                <Text style={styles.statValue}>{value}</Text>
-              </View>
-              ))}
+              ]] },
+            ] as const).flatMap((section) => section.rows.flatMap((row) => row)).map(([label, value]) => (
+              <View key={label} style={styles.currentMetricTile}>
+                <Text style={styles.currentMetricCaption}>
+                  {label}
+                </Text>
+                <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={styles.currentMetricAmount}>{value}</Text>
               </View>
             ))}
-            {metricsError ? <Text accessibilityRole="alert" style={styles.metricsError}>{errorText(metricsError)}</Text> : null}
+            {metricsError && !stats ? <Text accessibilityRole="alert" style={[styles.metricsError, styles.currentMetricsError]}>{errorText(metricsError)}</Text> : null}
+          </View>
+        )}
+      </View>
+      </Surface>
+
+      <SectionTitle title={t('Projekcia')} />
+      <Surface style={styles.metricsCard}>
+        {estimatesLoading ? <ActivityIndicator color={colors.green} /> : (
+          <View>
+            <View style={styles.projectionHeader}>
+              <TableColumn first style={styles.projectionLabel}>
+                <Text style={styles.projectionCaption}>{t('Odhady analytikov')}</Text>
+              </TableColumn>
+              {[new Date().getFullYear(), new Date().getFullYear() + 1].map((year) => (
+                <TableColumn key={year} style={styles.projectionValue}>
+                  <Text accessibilityLabel={`${year}${estimates?.calendarApproximate ? ` · ${t('Ročné odhady sú približne prepočítané na kalendárny rok.')}` : ''}`} style={styles.projectionYear}>
+                    {estimates?.calendarApproximate ? '≈ ' : ''}{year}
+                  </Text>
+                </TableColumn>
+              ))}
+            </View>
+            {([
+              { title: t('Tržby'), tone: 'cyan', rows: [
+                [t('Odhad tržieb'),
+                  estimates?.revenueThisYear != null ? formatBigNumber(estimates.revenueThisYear) : '–',
+                  estimates?.revenueNextYear != null ? formatBigNumber(estimates.revenueNextYear) : '–'],
+                [t('Rast tržieb'),
+                  estimates?.revenueGrowthThisYear != null ? `${(estimates.revenueGrowthThisYear * 100).toFixed(2)} %` : '–',
+                  estimates?.revenueGrowthNextYear != null ? `${(estimates.revenueGrowthNextYear * 100).toFixed(2)} %` : '–'],
+              ] },
+              { title: t('Ocenenie a zisk'), tone: 'violet', rows: [
+                [t('Odhad EPS'), estimates?.epsThisYear != null ? estimates.epsThisYear.toFixed(2) : '–',
+                  estimates?.epsNextYear != null ? estimates.epsNextYear.toFixed(2) : '–'],
+                [t('Odhad P/E'), estimates?.peThisYear != null ? estimates.peThisYear.toFixed(1) : '–',
+                  estimates?.peNextYear != null ? estimates.peNextYear.toFixed(1) : '–'],
+                [t('Odhad P/S'), estimates?.priceToSalesThisYear != null ? estimates.priceToSalesThisYear.toFixed(2) : '–',
+                  estimates?.priceToSalesNextYear != null ? estimates.priceToSalesNextYear.toFixed(2) : '–'],
+              ] },
+            ] as const).map((section) => (
+              <View key={section.title} style={styles.statsSectionDivider}>
+                <Text accessibilityRole="header" style={[styles.statsSectionTitle, section.tone === 'cyan' ? styles.revenueSectionTitle : styles.valuationSectionTitle]}>
+                  {section.title}{section.tone === 'cyan' && estimates?.revenueCurrency ? ` · ${estimates.revenueCurrency}` : ''}
+                </Text>
+                {section.rows.map(([label, ...values], rowIndex) => (
+                  <View key={label} style={[styles.statsGrid, rowIndex > 0 && styles.statsDivider]}>
+                    <TableColumn first tone={section.tone} style={styles.projectionLabel}>
+                      <Text style={styles.projectionCaption}>{label}</Text>
+                    </TableColumn>
+                    {values.map((value, index) => (
+                      <TableColumn key={index} tone={section.tone} style={styles.projectionValue}>
+                        <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={styles.projectionAmount}>{value}</Text>
+                      </TableColumn>
+                    ))}
+                  </View>
+                ))}
+              </View>
+            ))}
+            {metricsError && !estimates ? <Text accessibilityRole="alert" style={styles.metricsError}>{errorText(metricsError)}</Text> : null}
           </View>
         )}
       </Surface>
 
       <SectionTitle title={t('Výsledkové správy')} />
-      <Surface style={styles.statsCard}>
+      <Surface style={styles.reportCard}>
         {reportsLoading ? <ActivityIndicator color={colors.green} /> : (
           <>
             {events?.quarters?.length ? (
-              <View style={styles.reportRow}>
-                <TableColumn first tone="neutral" header style={[styles.reportColumn, styles.colPeriod]}>
-                  <Text style={styles.reportHead}>{t('Obdobie')}</Text>
-                </TableColumn>
-                <TableColumn tone="cyan" header style={[styles.reportColumn, styles.colNum]}>
-                  <Text style={styles.reportHead}>{t('Tržby')}</Text>
-                </TableColumn>
-                <TableColumn tone="cyan" header style={[styles.reportColumn, styles.colNum]}>
-                  <Text style={styles.reportHead}>{t('YoY tržieb')}</Text>
-                </TableColumn>
-                <TableColumn tone="cyan" header style={[styles.reportColumn, styles.colNum]}>
-                  <Text style={styles.reportHead}>{t('Rozdiel tržieb oproti odhadu')}</Text>
-                </TableColumn>
-                <TableColumn tone="violet" header style={[styles.reportColumn, styles.colNum]}>
-                  <Text style={styles.reportHead}>EPS</Text>
-                </TableColumn>
-                <TableColumn tone="violet" header style={[styles.reportColumn, styles.colNum]}>
-                  <Text style={styles.reportHead}>{t('Rozdiel EPS oproti odhadu')}</Text>
-                </TableColumn>
+              <View style={styles.reportHeading}>
+              <View style={styles.reportGroupHeader}>
+                <View style={styles.colPeriod} />
+                <View style={styles.reportRevenueGroup}>
+                  <Text style={styles.reportGroupTitle}>{t('Tržby')}</Text>
+                </View>
+                <View style={styles.reportGrowthGroup}>
+                  <Text style={styles.reportGroupTitle}>YoY</Text>
+                </View>
+                <View style={styles.reportEpsGroup}>
+                  <Text style={styles.reportGroupTitle}>EPS</Text>
+                </View>
+              </View>
               </View>
             ) : null}
             {(events?.quarters ?? []).slice(0, 6).map((quarter) => {
               return (
-                <View key={quarter.periodEnd} style={styles.reportRow}>
-                  <TableColumn first tone="neutral" style={[styles.reportColumn, styles.colPeriod]}>
-                    <Text style={styles.reportTitle}>{quarter.label}</Text>
+                <View key={quarter.periodEnd} style={styles.reportQuarter}>
+                  <View style={styles.reportRow}>
+                  <TableColumn first style={[styles.reportColumn, styles.colPeriod]}>
+                    <Text style={styles.reportTitle}>{quarter.label.replace(/\s+(\d{4})$/, '\n$1')}</Text>
                   </TableColumn>
-                  <TableColumn tone="cyan" style={[styles.reportColumn, styles.colNum]}>
-                    <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.65} style={styles.reportCell}>{quarter.revenue != null ? formatBigNumber(quarter.revenue) : '–'}</Text>
+                  <TableColumn style={[styles.reportColumn, styles.colRevenue, styles.reportRevenueTone, styles.reportSectionBoundary]}>
+                    <Text style={styles.reportSecondary}>{quarter.revenue != null ? formatBigNumber(quarter.revenue, 1).replace(' ', '') : '–'}</Text>
                   </TableColumn>
-                  <TableColumn tone="cyan" style={[styles.reportColumn, styles.colNum]}>
-                    <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.65} style={styles.reportCell}>{quarter.revenueYoY != null ? `${quarter.revenueYoY.toFixed(1)}%` : '–'}</Text>
-                  </TableColumn>
-                  <TableColumn tone="cyan" style={[styles.reportColumn, styles.colNum]}>
-                    <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.65} style={[styles.reportCell, quarter.revenueBeat != null ? { color: quarter.revenueBeat >= 0 ? colors.green : colors.red } : null]}>
-                      {quarter.revenueBeat != null ? `${quarter.revenueBeat > 0 ? '+' : ''}${formatBigNumber(quarter.revenueBeat)}${quarter.revenueBeatProvisional ? '*' : ''}` : '–'}
+                  <TableColumn style={[styles.reportColumn, styles.colRevenueBeat, styles.reportRevenueTone, styles.reportBeatDivider]}>
+                    <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.85} accessibilityLabel={`${t('Rozdiel tržieb oproti odhadu')}: ${quarter.revenueBeat != null ? formatBigNumber(quarter.revenueBeat, 1) : '–'}`} style={[styles.reportBeat, quarter.revenueBeat != null ? { color: quarter.revenueBeat >= 0 ? colors.green : colors.red } : null]}>
+                      {quarter.revenueBeat != null ? `${quarter.revenueBeat > 0 ? '+' : ''}${formatBigNumber(quarter.revenueBeat, 1).replace(' ', '')}${quarter.revenueBeatProvisional ? '*' : ''}` : '–'}
                     </Text>
                   </TableColumn>
-                  <TableColumn tone="violet" style={[styles.reportColumn, styles.colNum]}>
-                    <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.65} style={styles.reportCell}>{quarter.epsActual != null ? quarter.epsActual.toFixed(2) : '–'}</Text>
+                  <TableColumn style={[styles.reportColumn, styles.colGrowth, styles.reportGrowthTone]}>
+                    <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75} accessibilityLabel={`${t('YoY tržieb')}: ${quarter.revenueYoY != null ? `${quarter.revenueYoY.toFixed(1)}%` : '–'}`} style={styles.reportSecondary}>{quarter.revenueYoY != null ? `${quarter.revenueYoY > 0 ? '+' : ''}${quarter.revenueYoY.toFixed(1)}%` : '–'}</Text>
                   </TableColumn>
-                  <TableColumn tone="violet" style={[styles.reportColumn, styles.colNum]}>
-                    <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.65} style={[styles.reportCell, quarter.epsBeat != null ? { color: quarter.epsBeat >= 0 ? colors.green : colors.red } : null]}>
+                  <TableColumn tone="violet" style={[styles.reportColumn, styles.colNum, styles.reportEpsTone, styles.reportEpsStart]}>
+                    <Text style={styles.reportSecondary}>{quarter.epsActual != null ? quarter.epsActual.toFixed(2) : '–'}</Text>
+                  </TableColumn>
+                  <TableColumn style={[styles.reportColumn, styles.colBeat, styles.reportEpsTone, styles.reportBeatDivider]}>
+                    <Text accessibilityLabel={`${t('Rozdiel EPS oproti odhadu')}: ${quarter.epsBeat != null ? quarter.epsBeat.toFixed(2) : '–'}`} style={[styles.reportBeat, quarter.epsBeat != null ? { color: quarter.epsBeat >= 0 ? colors.green : colors.red } : null]}>
                       {quarter.epsBeat != null ? `${quarter.epsBeat > 0 ? '+' : ''}${quarter.epsBeat.toFixed(2)}` : '–'}
                     </Text>
                   </TableColumn>
+                  </View>
                 </View>
               );
             })}
@@ -678,9 +750,6 @@ export default function PositionDetailScreen() {
                 {t('Niektoré výsledky alebo historické odhady analytikov nie sú dostupné.')}
               </Text>
             ) : null}
-            <Text style={styles.reportSub}>
-              {t('Rozdiel = výsledok − odhad. Rozdiel tržieb je v mene tržieb, rozdiel EPS na akciu. EPS používa metodiku konsenzu (GAAP alebo upravené).')}
-            </Text>
             {events?.quarters.slice(0, 6).some((quarter) => quarter.revenueBeatProvisional) ? (
               <Text style={styles.reportSub}>{t('* Predbežný rozdiel tržieb z odhadu uloženého pred reportom; čaká na manuálne overenie.')}</Text>
             ) : null}
@@ -724,6 +793,13 @@ export default function PositionDetailScreen() {
             <Text style={styles.holdingsTransactionsTitle}>{t('Moje pohyby')}</Text>
             <Text style={styles.transactionCount}>{formatTransactionCount(position.transactions.length, language)}</Text>
             </View>
+            {position.transactions.length ? (
+              <Pressable accessibilityRole="button" accessibilityState={{ disabled: deletingTransactions, busy: deletingTransactions }}
+                hitSlop={6} disabled={deletingTransactions} onPress={removeAllTransactions} style={styles.deleteTransactionsButton}>
+                {deletingTransactions ? <ActivityIndicator color={colors.red} /> :
+                  <Text style={styles.deleteTransactionsText}>{t('Vymazať všetky transakcie')}</Text>}
+              </Pressable>
+            ) : null}
             <TransactionList transactions={position.transactions} onEdit={editTransaction} />
           </ScrollView>
         </SafeAreaView>
@@ -775,16 +851,17 @@ const createStyles = () => StyleSheet.create({
   detailHeader: { flexDirection: 'row', alignItems: 'center' },
   backButton: { width: 38, height: 38, borderRadius: 13, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' },
   summaryCaption: { color: colors.muted, fontSize: 9, marginTop: 4 },
-  resultsCard: { backgroundColor: colors.surface, paddingHorizontal: 14, paddingVertical: 12, marginBottom: 4 },
-  resultHero: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, paddingBottom: 10, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border },
-  resultTotal: { color: colors.text, flexShrink: 1, fontSize: 21, fontWeight: '900', fontVariant: ['tabular-nums'] },
-  resultGrid: { flexDirection: 'row', paddingTop: 10 },
-  resultDetails: { flex: 1, minWidth: 0, gap: 8 },
-  resultDivider: { paddingLeft: 12, borderLeftWidth: StyleSheet.hairlineWidth, borderLeftColor: colors.border },
-  resultCaption: { color: colors.muted, fontSize: 9, fontWeight: '500' },
-  resultReturn: { flexDirection: 'row', alignItems: 'baseline', flexWrap: 'wrap', columnGap: 6 },
-  resultPct: { color: colors.muted, fontSize: 9, fontVariant: ['tabular-nums'] },
-  resultAmount: { color: colors.text, fontSize: 12, fontWeight: '700', marginTop: 2, flexShrink: 1, fontVariant: ['tabular-nums'] },
+  deleteTransactionsButton: { alignSelf: 'flex-end', minHeight: 32, alignItems: 'center', justifyContent: 'center', borderRadius: 9, backgroundColor: colors.surfaceRaised, paddingHorizontal: 10, paddingVertical: 6, marginBottom: 12 },
+  deleteTransactionsText: { color: colors.red, fontSize: 11, fontWeight: '600' },
+  resultsCard: { backgroundColor: colors.surface, paddingHorizontal: 12, paddingVertical: 12, marginBottom: 4 },
+  resultHero: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, minHeight: 58, paddingHorizontal: 4 },
+  resultSummaryValue: { flex: 1, minWidth: 0, gap: 3 },
+  resultSummaryPercent: { fontSize: 12, fontWeight: '700', fontVariant: ['tabular-nums'] },
+  resultTotal: { color: colors.text, flexShrink: 1, fontSize: 22, fontWeight: '800', fontVariant: ['tabular-nums'] },
+  resultGrid: { gap: 10, paddingTop: 12, marginTop: 10, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border },
+  resultDetails: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
+  resultCaption: { color: colors.muted, fontSize: 10, lineHeight: 13, fontWeight: '500' },
+  resultAmount: { color: colors.text, fontSize: 13, fontWeight: '800', marginTop: 3, flexShrink: 1, fontVariant: ['tabular-nums'] },
   chartCard: { padding: 0 },
   chartHeading: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   chartEyebrow: { color: colors.muted, fontSize: 9 },
@@ -826,21 +903,53 @@ const createStyles = () => StyleSheet.create({
   tableTotal: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 3 },
   tableTotalText: { color: colors.text, fontSize: 9, fontWeight: '800' },
   statsCard: { padding: 14, marginBottom: 4 },
-  statsGrid: { flexDirection: 'row', flexWrap: 'wrap' },
-  statsDivider: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border, marginTop: 8, paddingTop: 8 },
+  metricsCard: { padding: 14, marginBottom: 4 },
+  statsGrid: { flexDirection: 'row', alignItems: 'stretch' },
+  statsSectionTitle: { color: colors.muted, fontSize: 10, fontWeight: '700', letterSpacing: 0.4, marginBottom: 8 },
+  revenueSectionTitle: { color: tableToneAccents.cyan },
+  valuationSectionTitle: { color: tableToneAccents.violet },
+  statsSectionDivider: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border, marginTop: 12, paddingTop: 10 },
+  statsDivider: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border },
   metricsError: { color: colors.red, fontSize: 10, marginTop: 8 },
-  statItem: { width: '33.33%', paddingVertical: 6, paddingHorizontal: 3, alignItems: 'center', justifyContent: 'center' },
-  statColumnDivider: { borderLeftWidth: StyleSheet.hairlineWidth, borderLeftColor: colors.border },
-  statLabel: { color: colors.muted, fontSize: 9, fontWeight: '700', textAlign: 'center' },
-  statValue: { color: colors.text, fontSize: 13, fontWeight: '900', marginTop: 3, textAlign: 'center' },
-  reportRow: { flexDirection: 'row', alignItems: 'stretch', minHeight: 34, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border },
-  reportColumn: { justifyContent: 'center', paddingHorizontal: 3 },
-  reportTitle: { color: colors.text, fontSize: 12, fontWeight: '800' },
-  reportSub: { color: colors.muted, fontSize: 10, marginTop: 2 },
-  reportHead: { color: colors.muted, fontSize: 9, fontWeight: '700' },
-  reportCell: { color: colors.text, fontSize: 9, fontWeight: '700', textAlign: 'right' },
-  colPeriod: { flex: 1.3 },
-  colNum: { flex: 1 },
+  currentMetrics: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+  currentMetricTile: { flex: 1, minWidth: 0, backgroundColor: colors.surfaceRaised, borderRadius: 12, paddingHorizontal: 8, paddingVertical: 10, justifyContent: 'space-between', gap: 8 },
+  currentMetricCaption: { color: colors.muted, fontSize: 10, lineHeight: 14, fontWeight: '500' },
+  currentMetricAmount: { color: colors.text, fontSize: 13, fontWeight: '800', fontVariant: ['tabular-nums'] },
+  currentMetricsDivider: { marginTop: 12 },
+  currentMetricsError: { width: '100%' },
+  projectionHeader: { flexDirection: 'row', alignItems: 'stretch', backgroundColor: colors.surfaceRaised, borderRadius: 12, overflow: 'hidden', paddingHorizontal: 6 },
+  projectionLabel: { flex: 1.2, minWidth: 0, paddingVertical: 8, paddingHorizontal: 6, justifyContent: 'center', backgroundColor: 'transparent' },
+  projectionValue: { flex: 1, minWidth: 0, paddingVertical: 8, paddingHorizontal: 4, alignItems: 'center', justifyContent: 'center', backgroundColor: 'transparent', borderLeftWidth: 0 },
+  projectionCaption: { color: colors.muted, fontSize: 10, fontWeight: '600' },
+  projectionYear: { color: colors.text, fontSize: 12, fontWeight: '800' },
+  projectionAmount: { color: colors.text, fontSize: 13, fontWeight: '800', fontVariant: ['tabular-nums'], textAlign: 'center' },
+  reportHeading: { backgroundColor: colors.surfaceRaised, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.border, borderRadius: 12, overflow: 'hidden', marginBottom: 4 },
+  reportGroupHeader: { flexDirection: 'row', paddingHorizontal: 4 },
+  reportRevenueGroup: { width: '36%', marginLeft: '1%', alignItems: 'center', backgroundColor: tableToneBackgrounds.cyan, borderTopLeftRadius: 6, borderTopRightRadius: 6 },
+  reportGrowthGroup: { width: '18%', marginLeft: '2%', alignItems: 'center', backgroundColor: tableToneBackgrounds.blue, borderTopLeftRadius: 6, borderTopRightRadius: 6 },
+  reportEpsGroup: { width: '30%', marginLeft: '2%', alignItems: 'center', backgroundColor: tableToneBackgrounds.violet, borderTopLeftRadius: 6, borderTopRightRadius: 6 },
+  reportEpsStart: { marginLeft: '2%', borderTopLeftRadius: 4, borderBottomLeftRadius: 4 },
+  reportSectionBoundary: { marginLeft: '1%', borderTopLeftRadius: 4, borderBottomLeftRadius: 4 },
+  reportGroupTitle: { color: colors.text, fontSize: 12, fontWeight: '800', paddingVertical: 5 },
+  reportRevenueTone: { backgroundColor: tableToneBackgrounds.cyan },
+  reportGrowthTone: { backgroundColor: tableToneBackgrounds.blue },
+  reportEpsTone: { backgroundColor: tableToneBackgrounds.violet },
+  reportBeatDivider: { borderLeftWidth: 1, borderLeftColor: 'rgba(170,180,195,0.22)' },
+  reportCard: { paddingVertical: 14, paddingHorizontal: 6, marginBottom: 4 },
+  reportQuarter: { backgroundColor: colors.surfaceRaised, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.border, borderRadius: 12, overflow: 'hidden', marginBottom: 4, paddingHorizontal: 4, paddingVertical: 2 },
+  reportRow: { flexDirection: 'row', alignItems: 'stretch', borderRadius: 8, overflow: 'hidden' },
+  reportColumn: { justifyContent: 'center', paddingHorizontal: 2, paddingVertical: 3, minWidth: 0, backgroundColor: 'transparent', borderLeftWidth: 0 },
+  reportTitle: { color: colors.text, fontSize: 12, fontWeight: '800', textAlign: 'center' },
+  reportSub: { color: colors.muted, fontSize: 10, lineHeight: 15, marginTop: 8 },
+  reportHead: { color: colors.muted, fontSize: 11, fontWeight: '700' },
+  reportSecondary: { color: colors.text, fontSize: 12, fontWeight: '700', fontVariant: ['tabular-nums'], textAlign: 'center' },
+  reportBeat: { color: colors.muted, fontSize: 11, fontWeight: '600', fontVariant: ['tabular-nums'], textAlign: 'center' },
+  colPeriod: { width: '11%', borderLeftWidth: 0 },
+  colNum: { width: '16%' },
+  colRevenue: { width: '18%' },
+  colGrowth: { width: '18%', marginLeft: '2%', borderTopLeftRadius: 4, borderBottomLeftRadius: 4 },
+  colRevenueBeat: { width: '18%' },
+  colBeat: { width: '14%' },
   emptyTable: { color: colors.muted, fontSize: 10, textAlign: 'center', paddingVertical: 20 },
   loadingCard: { alignItems: 'center', padding: 22 },
 });

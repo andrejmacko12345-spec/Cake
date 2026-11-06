@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-06T08:46:45.920Z",
+  "checkedAt": "2026-11-06T09:05:50.346Z",
   "membershipSource": "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies",
   "requiredReports": 6,
   "members": [
@@ -25,7 +25,7 @@
       "sector": "Health Care",
       "industry": "Health Care Equipment",
       "complete": false,
-      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
+      "reason": "6/6 reports; 5/6 verified Revenue beats; 5/6 EPS beats."
     },
     {
       "symbol": "ABBV",
@@ -200,8 +200,8 @@
       "name": "Ameren",
       "sector": "Utilities",
       "industry": "Multi-Utilities",
-      "complete": false,
-      "reason": "6/6 reports; 5/6 verified Revenue beats; 6/6 EPS beats."
+      "complete": true,
+      "reason": null
     },
     {
       "symbol": "AEP",
@@ -216,8 +216,8 @@
       "name": "American Express",
       "sector": "Financials",
       "industry": "Consumer Finance",
-      "complete": false,
-      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
+      "complete": true,
+      "reason": null
     },
     {
       "symbol": "AIG",
@@ -440,8 +440,8 @@
       "name": "Axon Enterprise",
       "sector": "Industrials",
       "industry": "Aerospace & Defense",
-      "complete": false,
-      "reason": "6/6 reports; 5/6 verified Revenue beats; 6/6 EPS beats."
+      "complete": true,
+      "reason": null
     },
     {
       "symbol": "BKR",
@@ -465,7 +465,7 @@
       "sector": "Financials",
       "industry": "Diversified Banks",
       "complete": false,
-      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
+      "reason": "6/6 reports; 4/6 verified Revenue beats; 4/6 EPS beats."
     },
     {
       "symbol": "BAX",
@@ -489,7 +489,7 @@
       "sector": "Financials",
       "industry": "Multi-Sector Holdings",
       "complete": false,
-      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
+      "reason": "6/6 reports; 5/6 verified Revenue beats; 6/6 EPS beats."
     },
     {
       "symbol": "BBY",
@@ -800,8 +800,8 @@
       "name": "Chevron Corporation",
       "sector": "Energy",
       "industry": "Integrated Oil & Gas",
-      "complete": false,
-      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
+      "complete": true,
+      "reason": null
     },
     {
       "symbol": "CMG",
@@ -872,8 +872,8 @@
       "name": "Citigroup",
       "sector": "Financials",
       "industry": "Diversified Banks",
-      "complete": false,
-      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
+      "complete": true,
+      "reason": null
     },
     {
       "symbol": "CFG",
@@ -1041,7 +1041,7 @@
       "sector": "Consumer Staples",
       "industry": "Consumer Staples Merchandise Retail",
       "complete": false,
-      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
+      "reason": "6/6 reports; 5/6 verified Revenue beats; 6/6 EPS beats."
     },
     {
       "symbol": "CRH",
@@ -1136,8 +1136,8 @@
       "name": "Deere & Company",
       "sector": "Industrials",
       "industry": "Agricultural & Farm Machinery",
-      "complete": false,
-      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
+      "complete": true,
+      "reason": null
     },
     {
       "symbol": "DELL",
@@ -1360,8 +1360,8 @@
       "name": "EOG Resources",
       "sector": "Energy",
       "industry": "Oil & Gas Exploration & Production",
-      "complete": false,
-      "reason": "6/6 reports; 5/6 verified Revenue beats; 6/6 EPS beats."
+      "complete": true,
+      "reason": null
     },
     {
       "symbol": "EQT",
@@ -1488,8 +1488,8 @@
       "name": "ExxonMobil",
       "sector": "Energy",
       "industry": "Integrated Oil & Gas",
-      "complete": false,
-      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
+      "complete": true,
+      "reason": null
     },
     {
       "symbol": "FFIV",
@@ -1681,7 +1681,7 @@
       "sector": "Industrials",
       "industry": "Aerospace & Defense",
       "complete": false,
-      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
+      "reason": "6/6 reports; 4/6 verified Revenue beats; 4/6 EPS beats."
     },
     {
       "symbol": "GEHC",
@@ -1696,8 +1696,8 @@
       "name": "GE Vernova",
       "sector": "Industrials",
       "industry": "Heavy Electrical Equipment",
-      "complete": false,
-      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
+      "complete": true,
+      "reason": null
     },
     {
       "symbol": "GEN",
@@ -1784,8 +1784,8 @@
       "name": "Goldman Sachs",
       "sector": "Financials",
       "industry": "Investment Banking & Brokerage",
-      "complete": false,
-      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
+      "complete": true,
+      "reason": null
     },
     {
       "symbol": "HAL",
@@ -1952,8 +1952,8 @@
       "name": "IBM",
       "sector": "Information Technology",
       "industry": "IT Consulting & Other Services",
-      "complete": false,
-      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
+      "complete": true,
+      "reason": null
     },
     {
       "symbol": "IEX",
@@ -2136,8 +2136,8 @@
       "name": "Johnson & Johnson",
       "sector": "Health Care",
       "industry": "Pharmaceuticals",
-      "complete": false,
-      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
+      "complete": true,
+      "reason": null
     },
     {
       "symbol": "JCI",
@@ -2440,8 +2440,8 @@
       "name": "McDonald's",
       "sector": "Consumer Discretionary",
       "industry": "Restaurants",
-      "complete": false,
-      "reason": "6/6 reports; 0/6 verified Revenue beats; 5/6 EPS beats."
+      "complete": true,
+      "reason": null
     },
     {
       "symbol": "MCK",
@@ -2464,8 +2464,8 @@
       "name": "Merck & Co.",
       "sector": "Health Care",
       "industry": "Pharmaceuticals",
-      "complete": false,
-      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
+      "complete": true,
+      "reason": null
     },
     {
       "symbol": "META",
@@ -2488,8 +2488,8 @@
       "name": "Mettler Toledo",
       "sector": "Health Care",
       "industry": "Life Sciences Tools & Services",
-      "complete": false,
-      "reason": "6/6 reports; 5/6 verified Revenue beats; 6/6 EPS beats."
+      "complete": true,
+      "reason": null
     },
     {
       "symbol": "MGM",
@@ -2504,8 +2504,8 @@
       "name": "Microchip Technology",
       "sector": "Information Technology",
       "industry": "Semiconductors",
-      "complete": false,
-      "reason": "6/6 reports; 5/6 verified Revenue beats; 6/6 EPS beats."
+      "complete": true,
+      "reason": null
     },
     {
       "symbol": "MU",
@@ -2560,8 +2560,8 @@
       "name": "Monster Beverage",
       "sector": "Consumer Staples",
       "industry": "Soft Drinks & Non-alcoholic Beverages",
-      "complete": false,
-      "reason": "6/6 reports; 5/6 verified Revenue beats; 6/6 EPS beats."
+      "complete": true,
+      "reason": null
     },
     {
       "symbol": "MCO",
@@ -2576,8 +2576,8 @@
       "name": "Morgan Stanley",
       "sector": "Financials",
       "industry": "Investment Banking & Brokerage",
-      "complete": false,
-      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
+      "complete": true,
+      "reason": null
     },
     {
       "symbol": "MOS",
@@ -2657,7 +2657,7 @@
       "sector": "Utilities",
       "industry": "Multi-Utilities",
       "complete": false,
-      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
+      "reason": "6/6 reports; 5/6 verified Revenue beats; 5/6 EPS beats."
     },
     {
       "symbol": "NKE",
@@ -2897,7 +2897,7 @@
       "sector": "Consumer Staples",
       "industry": "Soft Drinks & Non-alcoholic Beverages",
       "complete": false,
-      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
+      "reason": "6/6 reports; 4/6 verified Revenue beats; 6/6 EPS beats."
     },
     {
       "symbol": "PFE",
@@ -2920,8 +2920,8 @@
       "name": "Philip Morris International",
       "sector": "Consumer Staples",
       "industry": "Tobacco",
-      "complete": false,
-      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
+      "complete": true,
+      "reason": null
     },
     {
       "symbol": "PSX",
@@ -3328,8 +3328,8 @@
       "name": "Solventum",
       "sector": "Health Care",
       "industry": "Health Care Technology",
-      "complete": false,
-      "reason": "6/6 reports; 5/6 verified Revenue beats; 6/6 EPS beats."
+      "complete": true,
+      "reason": null
     },
     {
       "symbol": "SO",
@@ -3432,8 +3432,8 @@
       "name": "T-Mobile US",
       "sector": "Communication Services",
       "industry": "Wireless Telecommunication Services",
-      "complete": false,
-      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
+      "complete": true,
+      "reason": null
     },
     {
       "symbol": "TROW",
@@ -3464,8 +3464,8 @@
       "name": "Targa Resources",
       "sector": "Energy",
       "industry": "Oil & Gas Storage & Transportation",
-      "complete": false,
-      "reason": "6/6 reports; 5/6 verified Revenue beats; 6/6 EPS beats."
+      "complete": true,
+      "reason": null
     },
     {
       "symbol": "TGT",
@@ -3512,8 +3512,8 @@
       "name": "Texas Instruments",
       "sector": "Information Technology",
       "industry": "Semiconductors",
-      "complete": false,
-      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
+      "complete": true,
+      "reason": null
     },
     {
       "symbol": "TPL",
@@ -3800,8 +3800,8 @@
       "name": "Visa Inc.",
       "sector": "Financials",
       "industry": "Transaction & Payment Processing Services",
-      "complete": false,
-      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
+      "complete": true,
+      "reason": null
     },
     {
       "symbol": "VST",
@@ -3864,8 +3864,8 @@
       "name": "Walmart",
       "sector": "Consumer Staples",
       "industry": "Consumer Staples Merchandise Retail",
-      "complete": false,
-      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
+      "complete": true,
+      "reason": null
     },
     {
       "symbol": "DIS",
@@ -3904,8 +3904,8 @@
       "name": "Wells Fargo",
       "sector": "Financials",
       "industry": "Diversified Banks",
-      "complete": false,
-      "reason": "6/6 reports; 0/6 verified Revenue beats; 4/6 EPS beats."
+      "complete": true,
+      "reason": null
     },
     {
       "symbol": "WELL",
@@ -3976,8 +3976,8 @@
       "name": "Wynn Resorts",
       "sector": "Consumer Discretionary",
       "industry": "Casinos & Gaming",
-      "complete": false,
-      "reason": "6/6 reports; 5/6 verified Revenue beats; 6/6 EPS beats."
+      "complete": true,
+      "reason": null
     },
     {
       "symbol": "XEL",

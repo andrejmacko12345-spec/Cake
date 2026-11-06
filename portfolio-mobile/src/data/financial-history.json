@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-06T08:46:45.920Z",
+  "generatedAt": "2026-11-06T09:05:50.346Z",
   "companies": {
     "AAPL": {
       "updatedAt": "2026-11-06T08:44:01.790Z",
@@ -3267,7 +3267,7 @@
       }
     },
     "V": {
-      "updatedAt": "2026-11-06T08:44:08.453Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-04T08:02:56.347Z",
       "sources": {
         "sec": [
@@ -3488,11 +3488,79 @@
             "revenueEstimateCapturedAt": 1793954648.202,
             "expectedReportAt": 1800997200
           }
+        ],
+        "reported-consensus": [
+          {
+            "time": 1790726400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 12140000000,
+            "revenueEstimate": 12090000000,
+            "eps": 3.48,
+            "epsEstimate": 3.44,
+            "epsBasis": "adjusted",
+            "reportedAt": 1793145599
+          },
+          {
+            "time": 1782777600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 11630000000,
+            "revenueEstimate": 11400000000,
+            "eps": 3.32,
+            "epsEstimate": 3.23,
+            "epsBasis": "adjusted",
+            "reportedAt": 1785283199
+          },
+          {
+            "time": 1774915200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 11230000000,
+            "revenueEstimate": 10750000000,
+            "eps": 3.31,
+            "epsEstimate": 3.1,
+            "epsBasis": "adjusted",
+            "reportedAt": 1777420799
+          },
+          {
+            "time": 1767139200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 10900000000,
+            "revenueEstimate": 10690000000,
+            "eps": 3.17,
+            "epsEstimate": 3.14,
+            "epsBasis": "adjusted",
+            "reportedAt": 1769731199
+          },
+          {
+            "time": 1759190400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 10720000000,
+            "revenueEstimate": 10600000000,
+            "eps": 2.98,
+            "epsEstimate": 2.97,
+            "epsBasis": "adjusted",
+            "reportedAt": 1761695999
+          },
+          {
+            "time": 1751241600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 10170000000,
+            "revenueEstimate": 9820000000,
+            "eps": 2.98,
+            "epsEstimate": 2.85,
+            "epsBasis": "adjusted",
+            "reportedAt": 1753833599
+          }
         ]
       }
     },
     "XOM": {
-      "updatedAt": "2026-11-06T08:44:09.047Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-04T08:02:57.394Z",
       "sources": {
         "sec": [
@@ -3630,6 +3698,74 @@
             "revenueCurrency": "USD",
             "revenueEstimateCapturedAt": 1793954648.797,
             "expectedReportAt": 1801229400
+          }
+        ],
+        "reported-consensus": [
+          {
+            "time": 1790726400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 110500000000,
+            "revenueEstimate": 104890000000,
+            "eps": 4.23,
+            "epsEstimate": 4.12,
+            "epsBasis": "adjusted",
+            "reportedAt": 1793404799
+          },
+          {
+            "time": 1782777600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 114530000000,
+            "revenueEstimate": 109940000000,
+            "eps": 3.52,
+            "epsEstimate": 3.56,
+            "epsBasis": "adjusted",
+            "reportedAt": 1785542399
+          },
+          {
+            "time": 1774915200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 83160000000,
+            "revenueEstimate": 81130000000,
+            "eps": 1.16,
+            "epsEstimate": 0.984,
+            "epsBasis": "adjusted",
+            "reportedAt": 1777679999
+          },
+          {
+            "time": 1767139200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 80040000000,
+            "revenueEstimate": 77980000000,
+            "eps": 1.71,
+            "epsEstimate": 1.63,
+            "epsBasis": "adjusted",
+            "reportedAt": 1769817599
+          },
+          {
+            "time": 1759190400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 83330000000,
+            "revenueEstimate": 83090000000,
+            "eps": 1.88,
+            "epsEstimate": 1.72,
+            "epsBasis": "adjusted",
+            "reportedAt": 1761955199
+          },
+          {
+            "time": 1751241600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 81510000000,
+            "revenueEstimate": 79070000000,
+            "eps": 1.64,
+            "epsEstimate": 1.47,
+            "epsBasis": "gaap",
+            "reportedAt": 1754092799
           }
         ]
       }
@@ -4244,7 +4380,7 @@
       }
     },
     "COST": {
-      "updatedAt": "2026-11-06T08:44:10.833Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-04T08:03:00.708Z",
       "sources": {
         "sec": [
@@ -4444,11 +4580,68 @@
             "revenueEstimateCapturedAt": 1793954650.583,
             "expectedReportAt": 1796936400
           }
+        ],
+        "reported-consensus": [
+          {
+            "time": 1788134400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 95723000000,
+            "revenueEstimate": 94886134450,
+            "eps": 6.6,
+            "epsEstimate": 6.52,
+            "epsBasis": "adjusted",
+            "reportedAt": 1790294399
+          },
+          {
+            "time": 1778371200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 70530000000,
+            "revenueEstimate": 70120000000,
+            "eps": 4.93,
+            "epsEstimate": 4.94,
+            "epsBasis": "gaap",
+            "reportedAt": 1780012799
+          },
+          {
+            "time": 1771113600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 69597000000,
+            "revenueEstimate": 69295583280,
+            "eps": 4.58,
+            "epsEstimate": 4.55,
+            "epsBasis": "adjusted",
+            "reportedAt": 1773273599
+          },
+          {
+            "time": 1763856000,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 67307000000,
+            "revenueEstimate": 67136647280,
+            "eps": 4.5,
+            "epsEstimate": 4.27,
+            "epsBasis": "adjusted",
+            "reportedAt": 1765497599
+          },
+          {
+            "time": 1756598400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 86160000000,
+            "revenueEstimate": 86010000000,
+            "eps": 5.87,
+            "epsEstimate": 5.81,
+            "epsBasis": "gaap",
+            "reportedAt": 1758844799
+          }
         ]
       }
     },
     "WMT": {
-      "updatedAt": "2026-11-06T08:44:11.439Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-04T08:03:01.673Z",
       "sources": {
         "sec": [
@@ -4668,6 +4861,74 @@
             "revenueCurrency": "USD",
             "revenueEstimateCapturedAt": 1793954651.188,
             "expectedReportAt": 1795095000
+          }
+        ],
+        "reported-consensus": [
+          {
+            "time": 1785456000,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 187937000000,
+            "revenueEstimate": 186824595550,
+            "eps": 0.81,
+            "epsEstimate": 0.74,
+            "epsBasis": "adjusted",
+            "reportedAt": 1787270399
+          },
+          {
+            "time": 1777507200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 177751000000,
+            "revenueEstimate": 174841308960,
+            "eps": 0.66,
+            "epsEstimate": 0.66,
+            "epsBasis": "adjusted",
+            "reportedAt": 1779407999
+          },
+          {
+            "time": 1769817600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 190660000000,
+            "revenueEstimate": 188370000000,
+            "eps": 0.74,
+            "epsEstimate": 0.73,
+            "epsBasis": "adjusted",
+            "reportedAt": 1771545599
+          },
+          {
+            "time": 1761868800,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 177769000000,
+            "revenueEstimate": 175173539060,
+            "eps": 0.62,
+            "epsEstimate": 0.6,
+            "epsBasis": "adjusted",
+            "reportedAt": 1763683199
+          },
+          {
+            "time": 1753920000,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 177400000000,
+            "revenueEstimate": 174400000000,
+            "eps": 0.68,
+            "epsEstimate": 0.74,
+            "epsBasis": "adjusted",
+            "reportedAt": 1755734399
+          },
+          {
+            "time": 1745971200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 165610000000,
+            "revenueEstimate": 164530000000,
+            "eps": 0.61,
+            "epsEstimate": 0.58,
+            "epsBasis": "adjusted",
+            "reportedAt": 1747353599
           }
         ]
       }
@@ -5267,7 +5528,7 @@
       }
     },
     "JNJ": {
-      "updatedAt": "2026-11-06T08:44:13.276Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-04T08:03:04.943Z",
       "sources": {
         "sec": [
@@ -5495,6 +5756,74 @@
             "revenueCurrency": "USD",
             "revenueEstimateCapturedAt": 1793954653.026,
             "expectedReportAt": 1800970200
+          }
+        ],
+        "reported-consensus": [
+          {
+            "time": 1790467200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 25399000000,
+            "revenueEstimate": 25370181710,
+            "eps": 2.59,
+            "epsEstimate": 2.52,
+            "epsBasis": "adjusted",
+            "reportedAt": 1791935999
+          },
+          {
+            "time": 1782604800,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 25310000000,
+            "revenueEstimate": 25060618690,
+            "eps": 2.9,
+            "epsEstimate": 2.85,
+            "epsBasis": "adjusted",
+            "reportedAt": 1784159999
+          },
+          {
+            "time": 1774742400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 24062000000,
+            "revenueEstimate": 23614682280,
+            "eps": 2.7,
+            "epsEstimate": 2.68,
+            "epsBasis": "adjusted",
+            "reportedAt": 1776211199
+          },
+          {
+            "time": 1766880000,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 24564000000,
+            "revenueEstimate": 24148644000,
+            "eps": 2.46,
+            "epsEstimate": 2.46,
+            "epsBasis": "adjusted",
+            "reportedAt": 1769903999
+          },
+          {
+            "time": 1759017600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 23990000000,
+            "revenueEstimate": 23730000000,
+            "eps": 2.8,
+            "epsEstimate": 2.76,
+            "epsBasis": "adjusted",
+            "reportedAt": 1760486399
+          },
+          {
+            "time": 1751155200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 23740000000,
+            "revenueEstimate": 22860000000,
+            "eps": 2.77,
+            "epsEstimate": 2.68,
+            "epsBasis": "adjusted",
+            "reportedAt": 1752623999
           }
         ]
       }
@@ -5800,7 +6129,7 @@
       }
     },
     "BRK-B": {
-      "updatedAt": "2026-11-06T08:44:14.489Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-04T08:03:07.307Z",
       "sources": {
         "sec": [
@@ -6007,6 +6336,63 @@
             "reportedAt": 1761998400,
             "revenueEstimate": null,
             "revenueCurrency": "USD"
+          }
+        ],
+        "reported-consensus": [
+          {
+            "time": 1774915200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 93680000000,
+            "revenueEstimate": 95100000000,
+            "eps": 5.25,
+            "epsEstimate": 4.82,
+            "epsBasis": "adjusted",
+            "reportedAt": 1777766399
+          },
+          {
+            "time": 1767139200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 94232000000,
+            "revenueEstimate": 99176000000,
+            "eps": 4.73,
+            "epsEstimate": 5.17,
+            "epsBasis": "adjusted",
+            "reportedAt": 1772323199
+          },
+          {
+            "time": 1759190400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 94972000000,
+            "revenueEstimate": 96976000000,
+            "eps": 6.25,
+            "epsEstimate": 5.73,
+            "epsBasis": "adjusted",
+            "reportedAt": 1762041599
+          },
+          {
+            "time": 1751241600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 92520000000,
+            "revenueEstimate": 98500000000,
+            "eps": 5.17,
+            "epsEstimate": 5.04,
+            "epsBasis": "adjusted",
+            "reportedAt": 1754179199
+          },
+          {
+            "time": 1743379200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 89730000000,
+            "revenueEstimate": 92210000000,
+            "eps": 4.47,
+            "epsEstimate": 4.72,
+            "epsBasis": "adjusted",
+            "reportedAt": 1746316799
           }
         ]
       }
@@ -6896,7 +7282,7 @@
       }
     },
     "CVX": {
-      "updatedAt": "2026-11-06T08:44:16.915Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-04T08:03:11.477Z",
       "sources": {
         "sec": [
@@ -7124,11 +7510,79 @@
             "revenueEstimateCapturedAt": 1793954656.664,
             "expectedReportAt": 1801229400
           }
+        ],
+        "reported-consensus": [
+          {
+            "time": 1790726400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 67798000000,
+            "revenueEstimate": 62011250170,
+            "eps": 5.28,
+            "epsEstimate": 4.87,
+            "epsBasis": "adjusted",
+            "reportedAt": 1793404799
+          },
+          {
+            "time": 1782777600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 70055000000,
+            "revenueEstimate": 60380594990,
+            "eps": 6.06,
+            "epsEstimate": 5.57,
+            "epsBasis": "adjusted",
+            "reportedAt": 1785542399
+          },
+          {
+            "time": 1774915200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 48607000000,
+            "revenueEstimate": 52698136170,
+            "eps": 1.41,
+            "epsEstimate": 0.97,
+            "epsBasis": "adjusted",
+            "reportedAt": 1777679999
+          },
+          {
+            "time": 1767139200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 46873000000,
+            "revenueEstimate": 46659068070,
+            "eps": 1.52,
+            "epsEstimate": 1.44,
+            "epsBasis": "adjusted",
+            "reportedAt": 1769817599
+          },
+          {
+            "time": 1759190400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 48170000000,
+            "revenueEstimate": 46990000000,
+            "eps": 1.85,
+            "epsEstimate": 1.71,
+            "epsBasis": "adjusted",
+            "reportedAt": 1761955199
+          },
+          {
+            "time": 1751241600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 44820000000,
+            "revenueEstimate": 44590000000,
+            "eps": 1.77,
+            "epsEstimate": 1.58,
+            "epsBasis": "adjusted",
+            "reportedAt": 1754092799
+          }
         ]
       }
     },
     "BAC": {
-      "updatedAt": "2026-11-06T08:44:17.509Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-04T08:03:12.575Z",
       "sources": {
         "sec": [
@@ -7363,6 +7817,52 @@
             "revenueCurrency": "USD",
             "revenueEstimateCapturedAt": 1793954657.259,
             "expectedReportAt": 1800019800
+          }
+        ],
+        "reported-consensus": [
+          {
+            "time": 1790726400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 29958000000,
+            "revenueEstimate": 30620448090,
+            "eps": 1.08,
+            "epsEstimate": 1.1,
+            "epsBasis": "adjusted",
+            "reportedAt": 1792022399
+          },
+          {
+            "time": 1782777600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 31558000000,
+            "revenueEstimate": 30774599350,
+            "eps": 1.21,
+            "epsEstimate": 1.13,
+            "epsBasis": "adjusted",
+            "reportedAt": 1784073599
+          },
+          {
+            "time": 1774915200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 30272000000,
+            "revenueEstimate": 29939045700,
+            "eps": 1.11,
+            "epsEstimate": 1.02,
+            "epsBasis": "adjusted",
+            "reportedAt": 1776297599
+          },
+          {
+            "time": 1767139200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 28367000000,
+            "revenueEstimate": 27742264600,
+            "eps": 0.98,
+            "epsEstimate": 0.95,
+            "epsBasis": "adjusted",
+            "reportedAt": 1768435199
           }
         ]
       }
@@ -7979,7 +8479,7 @@
       }
     },
     "TMUS": {
-      "updatedAt": "2026-11-06T08:44:19.305Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-04T08:03:15.812Z",
       "sources": {
         "sec": [
@@ -8195,11 +8695,79 @@
             "revenueEstimate": null,
             "revenueCurrency": "USD"
           }
+        ],
+        "reported-consensus": [
+          {
+            "time": 1790726400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 23584000000,
+            "revenueEstimate": 23137877350,
+            "eps": 3.22,
+            "epsEstimate": 2.91,
+            "epsBasis": "adjusted",
+            "reportedAt": 1793231999
+          },
+          {
+            "time": 1782777600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 22791000000,
+            "revenueEstimate": 22940465100,
+            "eps": 2.99,
+            "epsEstimate": 2.6,
+            "epsBasis": "adjusted",
+            "reportedAt": 1784851199
+          },
+          {
+            "time": 1774915200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 23107000000,
+            "revenueEstimate": 23008381030,
+            "eps": 2.27,
+            "epsEstimate": 1.97,
+            "epsBasis": "adjusted",
+            "reportedAt": 1777420799
+          },
+          {
+            "time": 1767139200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 24334000000,
+            "revenueEstimate": 24268065080,
+            "eps": 1.88,
+            "epsEstimate": 2.06,
+            "epsBasis": "adjusted",
+            "reportedAt": 1770813444
+          },
+          {
+            "time": 1759190400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 21960000000,
+            "revenueEstimate": 21610000000,
+            "eps": 2.41,
+            "epsEstimate": 2.4,
+            "epsBasis": "gaap",
+            "reportedAt": 1761263999
+          },
+          {
+            "time": 1751241600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 21130000000,
+            "revenueEstimate": 20990000000,
+            "eps": 2.84,
+            "epsEstimate": 2.69,
+            "epsBasis": "gaap",
+            "reportedAt": 1753315199
+          }
         ]
       }
     },
     "WFC": {
-      "updatedAt": "2026-11-06T08:44:19.902Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-04T08:03:16.877Z",
       "sources": {
         "sec": [
@@ -8427,6 +8995,74 @@
             "revenueCurrency": "USD",
             "revenueEstimateCapturedAt": 1793954659.651,
             "expectedReportAt": 1799933400
+          }
+        ],
+        "reported-consensus": [
+          {
+            "time": 1790726400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 21870000000,
+            "revenueEstimate": 22324428570,
+            "eps": 1.81,
+            "epsEstimate": 1.84,
+            "epsBasis": "adjusted",
+            "reportedAt": 1791935999
+          },
+          {
+            "time": 1782777600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 22622000000,
+            "revenueEstimate": 21850166670,
+            "eps": 1.96,
+            "epsEstimate": 1.7,
+            "epsBasis": "adjusted",
+            "reportedAt": 1784073599
+          },
+          {
+            "time": 1774915200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 21446000000,
+            "revenueEstimate": 21791000000,
+            "eps": 1.56,
+            "epsEstimate": 1.6,
+            "epsBasis": "adjusted",
+            "reportedAt": 1776211199
+          },
+          {
+            "time": 1767139200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 21292000000,
+            "revenueEstimate": 21680833330,
+            "eps": 1.76,
+            "epsEstimate": 1.69,
+            "epsBasis": "adjusted",
+            "reportedAt": 1768435199
+          },
+          {
+            "time": 1759190400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 21440000000,
+            "revenueEstimate": 21110000000,
+            "eps": 1.73,
+            "epsEstimate": 1.55,
+            "epsBasis": "adjusted",
+            "reportedAt": 1760486399
+          },
+          {
+            "time": 1751241600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 20820000000,
+            "revenueEstimate": 20830000000,
+            "eps": 1.54,
+            "epsEstimate": 1.41,
+            "epsBasis": "adjusted",
+            "reportedAt": 1752623999
           }
         ]
       }
@@ -8725,7 +9361,7 @@
       }
     },
     "MCD": {
-      "updatedAt": "2026-11-06T08:44:21.127Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-04T08:03:19.577Z",
       "sources": {
         "sec": [
@@ -8951,6 +9587,74 @@
             "reportedAt": 1762344109,
             "revenueEstimate": null,
             "revenueCurrency": "USD"
+          }
+        ],
+        "reported-consensus": [
+          {
+            "time": 1790726400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 7157000000,
+            "revenueEstimate": 7280436920,
+            "eps": 3.57,
+            "epsEstimate": 3.38,
+            "epsBasis": "adjusted",
+            "reportedAt": 1793793600
+          },
+          {
+            "time": 1782777600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 7099000000,
+            "revenueEstimate": 7126525340,
+            "eps": 3.38,
+            "epsEstimate": 3.32,
+            "epsBasis": "adjusted",
+            "reportedAt": 1785841200
+          },
+          {
+            "time": 1774915200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 6517000000,
+            "revenueEstimate": 6465668110,
+            "eps": 2.83,
+            "epsEstimate": 2.74,
+            "epsBasis": "adjusted",
+            "reportedAt": 1778151600
+          },
+          {
+            "time": 1767139200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 7009000000,
+            "revenueEstimate": 6837964410,
+            "eps": 3.12,
+            "epsEstimate": 3.05,
+            "epsBasis": "adjusted",
+            "reportedAt": 1770843756
+          },
+          {
+            "time": 1759190400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 7080000000,
+            "revenueEstimate": 7100000000,
+            "eps": 3.22,
+            "epsEstimate": 3.33,
+            "epsBasis": "adjusted",
+            "reportedAt": 1762387199
+          },
+          {
+            "time": 1751241600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 6840000000,
+            "revenueEstimate": 6680000000,
+            "eps": 3.19,
+            "epsEstimate": 3.15,
+            "epsBasis": "adjusted",
+            "reportedAt": 1754524799
           }
         ]
       }
@@ -9544,7 +10248,7 @@
       }
     },
     "ABT": {
-      "updatedAt": "2026-11-06T08:44:22.912Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-04T08:03:23.106Z",
       "sources": {
         "sec": [
@@ -9770,6 +10474,63 @@
             "revenueCurrency": "USD",
             "revenueEstimateCapturedAt": 1793954662.663,
             "expectedReportAt": 1801143000
+          }
+        ],
+        "reported-consensus": [
+          {
+            "time": 1790726400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 13013000000,
+            "revenueEstimate": 12990170270,
+            "eps": 1.42,
+            "epsEstimate": 1.42,
+            "epsBasis": "adjusted",
+            "reportedAt": 1792627199
+          },
+          {
+            "time": 1782777600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 12593000000,
+            "revenueEstimate": 12516638690,
+            "eps": 1.31,
+            "epsEstimate": 1.28,
+            "epsBasis": "adjusted",
+            "reportedAt": 1784246399
+          },
+          {
+            "time": 1774915200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 11164000000,
+            "revenueEstimate": 10997705660,
+            "eps": 1.15,
+            "epsEstimate": 1.15,
+            "epsBasis": "adjusted",
+            "reportedAt": 1776383999
+          },
+          {
+            "time": 1767139200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 11459000000,
+            "revenueEstimate": 11801905120,
+            "eps": 1.5,
+            "epsEstimate": 1.49,
+            "epsBasis": "adjusted",
+            "reportedAt": 1769126399
+          },
+          {
+            "time": 1759190400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 11370000000,
+            "revenueEstimate": 11400000000,
+            "eps": 0.94,
+            "epsEstimate": 1.3,
+            "epsBasis": "gaap",
+            "reportedAt": 1761695999
           }
         ]
       }
@@ -10076,7 +10837,7 @@
       }
     },
     "PM": {
-      "updatedAt": "2026-11-06T08:44:24.121Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-04T08:03:25.553Z",
       "sources": {
         "sec": [
@@ -10292,11 +11053,79 @@
             "revenueEstimate": null,
             "revenueCurrency": "USD"
           }
+        ],
+        "reported-consensus": [
+          {
+            "time": 1790726400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 11438000000,
+            "revenueEstimate": 11337950810,
+            "eps": 2.36,
+            "epsEstimate": 2.32,
+            "epsBasis": "adjusted",
+            "reportedAt": 1792627199
+          },
+          {
+            "time": 1782777600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 11192000000,
+            "revenueEstimate": 10632230760,
+            "eps": 2.2,
+            "epsEstimate": 2.05,
+            "epsBasis": "adjusted",
+            "reportedAt": 1784764799
+          },
+          {
+            "time": 1774915200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 10146000000,
+            "revenueEstimate": 9907187430,
+            "eps": 1.96,
+            "epsEstimate": 1.83,
+            "epsBasis": "adjusted",
+            "reportedAt": 1776902399
+          },
+          {
+            "time": 1767139200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 10362000000,
+            "revenueEstimate": 10402745570,
+            "eps": 1.7,
+            "epsEstimate": 1.7,
+            "epsBasis": "adjusted",
+            "reportedAt": 1770422399
+          },
+          {
+            "time": 1759190400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 10850000000,
+            "revenueEstimate": 10670000000,
+            "eps": 2.24,
+            "epsEstimate": 2.1,
+            "epsBasis": "adjusted",
+            "reportedAt": 1761350399
+          },
+          {
+            "time": 1751241600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 10140000000,
+            "revenueEstimate": 10330000000,
+            "eps": 1.91,
+            "epsEstimate": 1.86,
+            "epsBasis": "adjusted",
+            "reportedAt": 1753228799
+          }
         ]
       }
     },
     "IBM": {
-      "updatedAt": "2026-11-06T08:44:25.155Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-04T08:03:26.995Z",
       "sources": {
         "sec": [
@@ -10525,11 +11354,79 @@
             "revenueEstimateCapturedAt": 1793954664.904,
             "expectedReportAt": 1801083600
           }
+        ],
+        "reported-consensus": [
+          {
+            "time": 1790726400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 17103000000,
+            "revenueEstimate": 16842959380,
+            "eps": 2.95,
+            "epsEstimate": 2.87,
+            "epsBasis": "adjusted",
+            "reportedAt": 1792627199
+          },
+          {
+            "time": 1782777600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 17162000000,
+            "revenueEstimate": 17263688070,
+            "eps": 2.93,
+            "epsEstimate": 2.93,
+            "epsBasis": "adjusted",
+            "reportedAt": 1784764799
+          },
+          {
+            "time": 1774915200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 15917000000,
+            "revenueEstimate": 15651397110,
+            "eps": 1.91,
+            "epsEstimate": 1.81,
+            "epsBasis": "adjusted",
+            "reportedAt": 1776902399
+          },
+          {
+            "time": 1767139200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 19686000000,
+            "revenueEstimate": 19215470220,
+            "eps": 4.52,
+            "epsEstimate": 4.29,
+            "epsBasis": "adjusted",
+            "reportedAt": 1769644799
+          },
+          {
+            "time": 1759190400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 16330000000,
+            "revenueEstimate": 16100000000,
+            "eps": 2.65,
+            "epsEstimate": 2.45,
+            "epsBasis": "adjusted",
+            "reportedAt": 1761177599
+          },
+          {
+            "time": 1751241600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 16980000000,
+            "revenueEstimate": 16580000000,
+            "eps": 2.8,
+            "epsEstimate": 2.65,
+            "epsBasis": "adjusted",
+            "reportedAt": 1753315199
+          }
         ]
       }
     },
     "GE": {
-      "updatedAt": "2026-11-06T08:44:25.752Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-04T08:03:28.058Z",
       "sources": {
         "sec": [
@@ -10757,6 +11654,52 @@
             "revenueCurrency": "USD",
             "revenueEstimateCapturedAt": 1793954665.502,
             "expectedReportAt": 1800538200
+          }
+        ],
+        "reported-consensus": [
+          {
+            "time": 1790726400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 13285000000,
+            "revenueEstimate": 12877838930,
+            "eps": 2.25,
+            "epsEstimate": 2.02,
+            "epsBasis": "adjusted",
+            "reportedAt": 1792540799
+          },
+          {
+            "time": 1782777600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 12634000000,
+            "revenueEstimate": 11888439290,
+            "eps": 2.02,
+            "epsEstimate": 1.86,
+            "epsBasis": "adjusted",
+            "reportedAt": 1784246399
+          },
+          {
+            "time": 1774915200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 11614000000,
+            "revenueEstimate": 10714568590,
+            "eps": 1.86,
+            "epsEstimate": 1.6,
+            "epsBasis": "adjusted",
+            "reportedAt": 1776815999
+          },
+          {
+            "time": 1767139200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 11865000000,
+            "revenueEstimate": 11196107120,
+            "eps": 1.57,
+            "epsEstimate": 1.43,
+            "epsBasis": "adjusted",
+            "reportedAt": 1769126399
           }
         ]
       }
@@ -11965,7 +12908,7 @@
       }
     },
     "TXN": {
-      "updatedAt": "2026-11-06T08:44:28.717Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-04T08:03:33.398Z",
       "sources": {
         "sec": [
@@ -12193,6 +13136,74 @@
             "revenueCurrency": "USD",
             "revenueEstimateCapturedAt": 1793954668.467,
             "expectedReportAt": 1800997200
+          }
+        ],
+        "reported-consensus": [
+          {
+            "time": 1790726400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 6055000000,
+            "revenueEstimate": 5933514430,
+            "eps": 2.64,
+            "epsEstimate": 2.4,
+            "epsBasis": "adjusted",
+            "reportedAt": 1792627199
+          },
+          {
+            "time": 1782777600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 5463000000,
+            "revenueEstimate": 5252669930,
+            "eps": 2.17,
+            "epsEstimate": 1.95,
+            "epsBasis": "adjusted",
+            "reportedAt": 1784764799
+          },
+          {
+            "time": 1774915200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 4825000000,
+            "revenueEstimate": 4527024790,
+            "eps": 1.71,
+            "epsEstimate": 1.37,
+            "epsBasis": "adjusted",
+            "reportedAt": 1776902399
+          },
+          {
+            "time": 1767139200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 4423000000,
+            "revenueEstimate": 4440560310,
+            "eps": 1.31,
+            "epsEstimate": 1.28,
+            "epsBasis": "adjusted",
+            "reportedAt": 1769558399
+          },
+          {
+            "time": 1759190400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 4740000000,
+            "revenueEstimate": 4650000000,
+            "eps": 1.48,
+            "epsEstimate": 1.49,
+            "epsBasis": "gaap",
+            "reportedAt": 1761004799
+          },
+          {
+            "time": 1751241600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 4450000000,
+            "revenueEstimate": 4310000000,
+            "eps": 1.41,
+            "epsEstimate": 1.32,
+            "epsBasis": "gaap",
+            "reportedAt": 1753228799
           }
         ]
       }
@@ -13121,7 +14132,7 @@
       }
     },
     "MS": {
-      "updatedAt": "2026-11-06T08:44:31.093Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-04T08:03:37.822Z",
       "sources": {
         "sec": [
@@ -13349,11 +14360,79 @@
             "revenueEstimateCapturedAt": 1793954670.843,
             "expectedReportAt": 1799933400
           }
+        ],
+        "reported-consensus": [
+          {
+            "time": 1790726400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 20340000000,
+            "revenueEstimate": 19930000000,
+            "eps": 3.03,
+            "epsEstimate": 2.93,
+            "epsBasis": "gaap",
+            "reportedAt": 1792022399
+          },
+          {
+            "time": 1782777600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 21350000000,
+            "revenueEstimate": 19670000000,
+            "eps": 3.46,
+            "epsEstimate": 2.89,
+            "epsBasis": "gaap",
+            "reportedAt": 1784159999
+          },
+          {
+            "time": 1774915200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 20580000000,
+            "revenueEstimate": 19230000000,
+            "eps": 3.43,
+            "epsEstimate": 3.02,
+            "epsBasis": "gaap",
+            "reportedAt": 1776297599
+          },
+          {
+            "time": 1767139200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 17900000000,
+            "revenueEstimate": 17690000000,
+            "eps": 2.68,
+            "epsEstimate": 2.28,
+            "epsBasis": "gaap",
+            "reportedAt": 1768521599
+          },
+          {
+            "time": 1759190400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 17980000000,
+            "revenueEstimate": 16420000000,
+            "eps": 2.8,
+            "epsEstimate": 2.07,
+            "epsBasis": "gaap",
+            "reportedAt": 1760572799
+          },
+          {
+            "time": 1751241600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 16790000000,
+            "revenueEstimate": 16150000000,
+            "eps": 2.13,
+            "epsEstimate": 1.98,
+            "epsBasis": "gaap",
+            "reportedAt": 1752710399
+          }
         ]
       }
     },
     "NEE": {
-      "updatedAt": "2026-11-06T08:44:31.682Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-04T08:03:39.045Z",
       "sources": {
         "sec": [
@@ -13566,11 +14645,68 @@
             "revenueEstimateCapturedAt": 1793954671.432,
             "expectedReportAt": 1801056600
           }
+        ],
+        "reported-consensus": [
+          {
+            "time": 1790726400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 8090000000,
+            "revenueEstimate": 8668847500,
+            "eps": 1.24,
+            "epsEstimate": 1.19,
+            "epsBasis": "adjusted",
+            "reportedAt": 1792627199
+          },
+          {
+            "time": 1782777600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 7534000000,
+            "revenueEstimate": 8165224010,
+            "eps": 1.15,
+            "epsEstimate": 1.11,
+            "epsBasis": "adjusted",
+            "reportedAt": 1784937599
+          },
+          {
+            "time": 1774915200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 6701000000,
+            "revenueEstimate": 7111351900,
+            "eps": 1.09,
+            "epsEstimate": 1.03,
+            "epsBasis": "adjusted",
+            "reportedAt": 1776988799
+          },
+          {
+            "time": 1767139200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 6500000000,
+            "revenueEstimate": 6793936110,
+            "eps": 0.54,
+            "epsEstimate": 0.53,
+            "epsBasis": "adjusted",
+            "reportedAt": 1769558399
+          },
+          {
+            "time": 1759190400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 7970000000,
+            "revenueEstimate": 8130000000,
+            "eps": 1.13,
+            "epsEstimate": 1.04,
+            "epsBasis": "adjusted",
+            "reportedAt": 1761695999
+          }
         ]
       }
     },
     "GS": {
-      "updatedAt": "2026-11-06T08:44:32.274Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-04T08:03:40.455Z",
       "sources": {
         "sec": [
@@ -13812,6 +14948,74 @@
             "revenueCurrency": "USD",
             "revenueEstimateCapturedAt": 1793954672.024,
             "expectedReportAt": 1800365400
+          }
+        ],
+        "reported-consensus": [
+          {
+            "time": 1790726400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 18679000000,
+            "revenueEstimate": 16887882570,
+            "eps": 17.01,
+            "epsEstimate": 13.09,
+            "epsBasis": "adjusted",
+            "reportedAt": 1791935999
+          },
+          {
+            "time": 1782777600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 20338000000,
+            "revenueEstimate": 16403811030,
+            "eps": 20.98,
+            "epsEstimate": 14.54,
+            "epsBasis": "adjusted",
+            "reportedAt": 1784073599
+          },
+          {
+            "time": 1774915200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 17227000000,
+            "revenueEstimate": 16933167190,
+            "eps": 17.55,
+            "epsEstimate": 16.39,
+            "epsBasis": "adjusted",
+            "reportedAt": 1776124799
+          },
+          {
+            "time": 1767139200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 13454000000,
+            "revenueEstimate": 13849313760,
+            "eps": 14.01,
+            "epsEstimate": 11.65,
+            "epsBasis": "adjusted",
+            "reportedAt": 1768521599
+          },
+          {
+            "time": 1759190400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 15180000000,
+            "revenueEstimate": 13680000000,
+            "eps": 12.25,
+            "epsEstimate": 10.27,
+            "epsBasis": "gaap",
+            "reportedAt": 1760486399
+          },
+          {
+            "time": 1751241600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 14580000000,
+            "revenueEstimate": 13530000000,
+            "eps": 10.91,
+            "epsEstimate": 9.82,
+            "epsBasis": "gaap",
+            "reportedAt": 1752710399
           }
         ]
       }
@@ -15335,7 +16539,7 @@
       }
     },
     "SHOP": {
-      "updatedAt": "2026-11-06T08:44:35.842Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-04T08:03:46.931Z",
       "sources": {
         "sec": [
@@ -15517,6 +16721,74 @@
             "revenueEstimate": null,
             "revenueCurrency": "USD"
           }
+        ],
+        "reported-consensus": [
+          {
+            "time": 1790726400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 3742000000,
+            "revenueEstimate": 3744370520,
+            "eps": 0.49,
+            "epsEstimate": 0.46,
+            "epsBasis": "adjusted",
+            "reportedAt": 1793750399
+          },
+          {
+            "time": 1782777600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 3583000000,
+            "revenueEstimate": 3442166950,
+            "eps": 0.42,
+            "epsEstimate": 0.4,
+            "epsBasis": "adjusted",
+            "reportedAt": 1785974399
+          },
+          {
+            "time": 1774915200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 3170000000,
+            "revenueEstimate": 3086676460,
+            "eps": 0.36,
+            "epsEstimate": 0.33,
+            "epsBasis": "adjusted",
+            "reportedAt": 1777939200
+          },
+          {
+            "time": 1767139200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 3672000000,
+            "revenueEstimate": 3591276280,
+            "eps": 0.48,
+            "epsEstimate": 0.51,
+            "epsBasis": "adjusted",
+            "reportedAt": 1770811325
+          },
+          {
+            "time": 1759190400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 2840000000,
+            "revenueEstimate": 2750000000,
+            "eps": 0.27,
+            "epsEstimate": 0.24,
+            "epsBasis": "adjusted",
+            "reportedAt": 1762300799
+          },
+          {
+            "time": 1751241600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 2680000000,
+            "revenueEstimate": 2550000000,
+            "eps": 0.35,
+            "epsEstimate": 0.29,
+            "epsBasis": "adjusted",
+            "reportedAt": 1754524799
+          }
         ]
       }
     },
@@ -15627,7 +16899,7 @@
       }
     },
     "BABA": {
-      "updatedAt": "2026-11-06T08:44:37.025Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-04T08:03:49.050Z",
       "sources": {
         "yahoo": [
@@ -15729,11 +17001,46 @@
             "revenueEstimateCapturedAt": 1793954676.775,
             "expectedReportAt": 1795527000
           }
+        ],
+        "reported-consensus": [
+          {
+            "time": 1782777600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 268950000000,
+            "revenueEstimate": 268340000000,
+            "eps": 8.52,
+            "epsEstimate": 10.72,
+            "epsBasis": "adjusted",
+            "reportedAt": 1787270399
+          },
+          {
+            "time": 1767139200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 284840000000,
+            "revenueEstimate": 289730000000,
+            "eps": 7.09,
+            "epsEstimate": 10.94,
+            "epsBasis": "adjusted",
+            "reportedAt": 1773964799
+          },
+          {
+            "time": 1759190400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 247800000000,
+            "revenueEstimate": 243200000000,
+            "eps": 4.36,
+            "epsEstimate": 5.78,
+            "epsBasis": "adjusted",
+            "reportedAt": 1764115199
+          }
         ]
       }
     },
     "NVO": {
-      "updatedAt": "2026-11-06T08:44:37.620Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-04T08:03:50.134Z",
       "sources": {
         "yahoo": [
@@ -15854,11 +17161,79 @@
             "revenueEstimateCapturedAt": 1793954677.37,
             "expectedReportAt": 1801661400
           }
+        ],
+        "reported-consensus": [
+          {
+            "time": 1790726400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 79200000000,
+            "revenueEstimate": 73010000000,
+            "eps": 5.79,
+            "epsEstimate": 4.69,
+            "epsBasis": "adjusted",
+            "reportedAt": 1793836799
+          },
+          {
+            "time": 1782777600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 78490000000,
+            "revenueEstimate": 71610000000,
+            "eps": 6.18,
+            "epsEstimate": 5.09,
+            "epsBasis": "adjusted",
+            "reportedAt": 1785887999
+          },
+          {
+            "time": 1774915200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 70060000000,
+            "revenueEstimate": 71810000000,
+            "eps": 6.63,
+            "epsEstimate": 5.71,
+            "epsBasis": "adjusted",
+            "reportedAt": 1778111999
+          },
+          {
+            "time": 1767139200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 79140000000,
+            "revenueEstimate": 76850000000,
+            "eps": 6.04,
+            "epsEstimate": 5.89,
+            "epsBasis": "adjusted",
+            "reportedAt": 1770249599
+          },
+          {
+            "time": 1759190400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 74980000000,
+            "revenueEstimate": 76720000000,
+            "eps": 4.5,
+            "epsEstimate": 5,
+            "epsBasis": "adjusted",
+            "reportedAt": 1762387199
+          },
+          {
+            "time": 1751241600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 76860000000,
+            "revenueEstimate": 77020000000,
+            "eps": 5.96,
+            "epsEstimate": 5.98,
+            "epsBasis": "gaap",
+            "reportedAt": 1754524799
+          }
         ]
       }
     },
     "ASML": {
-      "updatedAt": "2026-11-06T08:44:38.239Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-04T08:03:51.293Z",
       "sources": {
         "yahoo": [
@@ -15960,11 +17335,57 @@
             "revenueEstimateCapturedAt": 1793954677.988,
             "expectedReportAt": 1801056600
           }
+        ],
+        "reported-consensus": [
+          {
+            "time": 1782777600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 9330000000,
+            "revenueEstimate": 8890000000,
+            "eps": 7.59,
+            "epsEstimate": 6.89,
+            "epsBasis": "adjusted",
+            "reportedAt": 1784159999
+          },
+          {
+            "time": 1774915200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 8770000000,
+            "revenueEstimate": 8630000000,
+            "eps": 7.15,
+            "epsEstimate": 6.59,
+            "epsBasis": "adjusted",
+            "reportedAt": 1776297599
+          },
+          {
+            "time": 1767139200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 9720000000,
+            "revenueEstimate": 9520000000,
+            "eps": 7.35,
+            "epsEstimate": 7.49,
+            "epsBasis": "adjusted",
+            "reportedAt": 1769644799
+          },
+          {
+            "time": 1759190400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 7520000000,
+            "revenueEstimate": 7740000000,
+            "eps": 5.48,
+            "epsEstimate": 5.45,
+            "epsBasis": "gaap",
+            "reportedAt": 1760572799
+          }
         ]
       }
     },
     "ELF": {
-      "updatedAt": "2026-11-06T08:44:38.834Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-04T08:23:43.118Z",
       "sources": {
         "sec": [
@@ -16192,6 +17613,17 @@
           }
         ],
         "reported-consensus": [
+          {
+            "time": 1790726400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 520820000,
+            "revenueEstimate": 473520000,
+            "eps": 1.21,
+            "epsEstimate": 0.595,
+            "epsBasis": "adjusted",
+            "reportedAt": 1793836799
+          },
           {
             "time": 1782777600,
             "fiscalYear": "",
@@ -16568,7 +18000,7 @@
       }
     },
     "CELH": {
-      "updatedAt": "2026-11-06T08:44:40.017Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-04T08:23:48.407Z",
       "sources": {
         "sec": [
@@ -16798,6 +18230,17 @@
           }
         ],
         "reported-consensus": [
+          {
+            "time": 1790726400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 847230000,
+            "revenueEstimate": 800630000,
+            "eps": 0.41,
+            "epsEstimate": 0.3397,
+            "epsBasis": "adjusted",
+            "reportedAt": 1793923199
+          },
           {
             "time": 1782777600,
             "fiscalYear": "",
@@ -17483,7 +18926,7 @@
       }
     },
     "MRK": {
-      "updatedAt": "2026-11-06T08:44:41.848Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-05T15:06:48.973Z",
       "sources": {
         "sec": [
@@ -17705,6 +19148,74 @@
             "reportedAt": 1770118200,
             "revenueEstimate": null,
             "revenueCurrency": "USD"
+          }
+        ],
+        "reported-consensus": [
+          {
+            "time": 1790726400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 18090000000,
+            "revenueEstimate": 17330000000,
+            "eps": 2.49,
+            "epsEstimate": 2.09,
+            "epsBasis": "adjusted",
+            "reportedAt": 1793318399
+          },
+          {
+            "time": 1782777600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 16610000000,
+            "revenueEstimate": 16370000000,
+            "eps": -0.13,
+            "epsEstimate": -0.26,
+            "epsBasis": "adjusted",
+            "reportedAt": 1785887999
+          },
+          {
+            "time": 1774915200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 16290000000,
+            "revenueEstimate": 15850000000,
+            "eps": -1.28,
+            "epsEstimate": -1.47,
+            "epsBasis": "adjusted",
+            "reportedAt": 1777593599
+          },
+          {
+            "time": 1767139200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 16400000000,
+            "revenueEstimate": 16190000000,
+            "eps": 2.04,
+            "epsEstimate": 2.01,
+            "epsBasis": "adjusted",
+            "reportedAt": 1770163199
+          },
+          {
+            "time": 1759190400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 17280000000,
+            "revenueEstimate": 17000000000,
+            "eps": 2.58,
+            "epsEstimate": 2.36,
+            "epsBasis": "adjusted",
+            "reportedAt": 1761868799
+          },
+          {
+            "time": 1751241600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 15810000000,
+            "revenueEstimate": 15920000000,
+            "eps": 2.13,
+            "epsEstimate": 2.03,
+            "epsBasis": "adjusted",
+            "reportedAt": 1753833599
           }
         ]
       }
@@ -19186,7 +20697,7 @@
       }
     },
     "AXP": {
-      "updatedAt": "2026-11-06T08:44:45.414Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-05T15:07:01.206Z",
       "sources": {
         "sec": [
@@ -19414,6 +20925,74 @@
             "reportedAt": 1769774434,
             "revenueEstimate": null,
             "revenueCurrency": "USD"
+          }
+        ],
+        "reported-consensus": [
+          {
+            "time": 1790726400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 20062000000,
+            "revenueEstimate": 20115472650,
+            "eps": 4.68,
+            "epsEstimate": 4.49,
+            "epsBasis": "adjusted",
+            "reportedAt": 1792799999
+          },
+          {
+            "time": 1782777600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 19637000000,
+            "revenueEstimate": 19702828930,
+            "eps": 4.53,
+            "epsEstimate": 4.41,
+            "epsBasis": "adjusted",
+            "reportedAt": 1784937599
+          },
+          {
+            "time": 1774915200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 18907000000,
+            "revenueEstimate": 18608801520,
+            "eps": 4.28,
+            "epsEstimate": 3.99,
+            "epsBasis": "adjusted",
+            "reportedAt": 1776988799
+          },
+          {
+            "time": 1767139200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 18980000000,
+            "revenueEstimate": 18926492260,
+            "eps": 3.53,
+            "epsEstimate": 3.55,
+            "epsBasis": "adjusted",
+            "reportedAt": 1769817599
+          },
+          {
+            "time": 1759190400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 18430000000,
+            "revenueEstimate": 18050000000,
+            "eps": 4.14,
+            "epsEstimate": 3.99,
+            "epsBasis": "gaap",
+            "reportedAt": 1760659199
+          },
+          {
+            "time": 1751241600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 17860000000,
+            "revenueEstimate": 17700000000,
+            "eps": 4.08,
+            "epsEstimate": 3.86,
+            "epsBasis": "gaap",
+            "reportedAt": 1752883199
           }
         ]
       }
@@ -19998,7 +21577,7 @@
       }
     },
     "GEV": {
-      "updatedAt": "2026-11-06T08:44:47.251Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-05T15:07:07.579Z",
       "sources": {
         "sec": [
@@ -20217,6 +21796,74 @@
             "reportedAt": 1769599540,
             "revenueEstimate": null,
             "revenueCurrency": "USD"
+          }
+        ],
+        "reported-consensus": [
+          {
+            "time": 1790726400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 12642000000,
+            "revenueEstimate": 12004512780,
+            "eps": 4.25,
+            "epsEstimate": 4,
+            "epsBasis": "adjusted",
+            "reportedAt": 1793231999
+          },
+          {
+            "time": 1782777600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 11104000000,
+            "revenueEstimate": 10767858290,
+            "eps": 2.41,
+            "epsEstimate": 3.01,
+            "epsBasis": "adjusted",
+            "reportedAt": 1784764799
+          },
+          {
+            "time": 1774915200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 9339000000,
+            "revenueEstimate": 9250589050,
+            "eps": 2.01,
+            "epsEstimate": 1.67,
+            "epsBasis": "adjusted",
+            "reportedAt": 1776902399
+          },
+          {
+            "time": 1767139200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 10956000000,
+            "revenueEstimate": 10234389910,
+            "eps": 12.91,
+            "epsEstimate": 3.14,
+            "epsBasis": "adjusted",
+            "reportedAt": 1769644799
+          },
+          {
+            "time": 1759190400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 9970000000,
+            "revenueEstimate": 9150000000,
+            "eps": 1.64,
+            "epsEstimate": 1.72,
+            "epsBasis": "gaap",
+            "reportedAt": 1761177599
+          },
+          {
+            "time": 1751241600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 9110000000,
+            "revenueEstimate": 8780000000,
+            "eps": 1.86,
+            "epsEstimate": 1.63,
+            "epsBasis": "gaap",
+            "reportedAt": 1753315199
           }
         ]
       }
@@ -20517,7 +22164,7 @@
       }
     },
     "C": {
-      "updatedAt": "2026-11-06T08:44:48.434Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-05T15:07:11.492Z",
       "sources": {
         "sec": [
@@ -20729,11 +22376,79 @@
             "revenueEstimate": null,
             "revenueCurrency": "USD"
           }
+        ],
+        "reported-consensus": [
+          {
+            "time": 1790726400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 23850000000,
+            "revenueEstimate": 23740000000,
+            "eps": 2.85,
+            "epsEstimate": 2.66,
+            "epsBasis": "gaap",
+            "reportedAt": 1791935999
+          },
+          {
+            "time": 1782777600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 24770000000,
+            "revenueEstimate": 23740000000,
+            "eps": 3.15,
+            "epsEstimate": 2.74,
+            "epsBasis": "gaap",
+            "reportedAt": 1784073599
+          },
+          {
+            "time": 1774915200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 24630000000,
+            "revenueEstimate": 22960000000,
+            "eps": 3.06,
+            "epsEstimate": 2.63,
+            "epsBasis": "gaap",
+            "reportedAt": 1776211199
+          },
+          {
+            "time": 1767139200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 19870000000,
+            "revenueEstimate": 20990000000,
+            "eps": 1.81,
+            "epsEstimate": 1.65,
+            "epsBasis": "adjusted",
+            "reportedAt": 1768435199
+          },
+          {
+            "time": 1759190400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 22090000000,
+            "revenueEstimate": 20920000000,
+            "eps": 2.24,
+            "epsEstimate": 1.89,
+            "epsBasis": "adjusted",
+            "reportedAt": 1760486399
+          },
+          {
+            "time": 1751241600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 21670000000,
+            "revenueEstimate": 20750000000,
+            "eps": 1.96,
+            "epsEstimate": 1.61,
+            "epsBasis": "gaap",
+            "reportedAt": 1752623999
+          }
         ]
       }
     },
     "PEP": {
-      "updatedAt": "2026-11-06T08:44:49.027Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-05T15:07:13.457Z",
       "sources": {
         "sec": [
@@ -20919,6 +22634,52 @@
             "reportedAt": 1770116484,
             "revenueEstimate": null,
             "revenueCurrency": "USD"
+          }
+        ],
+        "reported-consensus": [
+          {
+            "time": 1788566400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 25270000000,
+            "revenueEstimate": 24950000000,
+            "eps": 2.34,
+            "epsEstimate": 2.29,
+            "epsBasis": "adjusted",
+            "reportedAt": 1791417599
+          },
+          {
+            "time": 1781308800,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 24180000000,
+            "revenueEstimate": 23950000000,
+            "eps": 2.2,
+            "epsEstimate": 2.19,
+            "epsBasis": "adjusted",
+            "reportedAt": 1783641599
+          },
+          {
+            "time": 1774051200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 19443000000,
+            "revenueEstimate": 18941924220,
+            "eps": 1.61,
+            "epsEstimate": 1.55,
+            "epsBasis": "adjusted",
+            "reportedAt": 1776297599
+          },
+          {
+            "time": 1767139200,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 29343000000,
+            "revenueEstimate": 28969914330,
+            "eps": 2.26,
+            "epsEstimate": 2.24,
+            "epsBasis": "adjusted",
+            "reportedAt": 1770076799
           }
         ]
       }
@@ -22112,7 +23873,7 @@
       }
     },
     "DE": {
-      "updatedAt": "2026-11-06T08:44:52.017Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-05T15:07:24.465Z",
       "sources": {
         "sec": [
@@ -22333,6 +24094,74 @@
             "reportedAt": 1764156420,
             "revenueEstimate": null,
             "revenueCurrency": "USD"
+          }
+        ],
+        "reported-consensus": [
+          {
+            "time": 1785628800,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 12610000000,
+            "revenueEstimate": 10810000000,
+            "eps": 5.1,
+            "epsEstimate": 4.69,
+            "epsBasis": "gaap",
+            "reportedAt": 1787270399
+          },
+          {
+            "time": 1777766400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 13370000000,
+            "revenueEstimate": 11550000000,
+            "eps": 6.55,
+            "epsEstimate": 5.7,
+            "epsBasis": "gaap",
+            "reportedAt": 1779407999
+          },
+          {
+            "time": 1769904000,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 9610000000,
+            "revenueEstimate": 7500000000,
+            "eps": 2.42,
+            "epsEstimate": 1.9,
+            "epsBasis": "gaap",
+            "reportedAt": 1771545599
+          },
+          {
+            "time": 1762041600,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 12390000000,
+            "revenueEstimate": 9770000000,
+            "eps": 3.93,
+            "epsEstimate": 3.96,
+            "epsBasis": "gaap",
+            "reportedAt": 1764201599
+          },
+          {
+            "time": 1753574400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 12020000000,
+            "revenueEstimate": 10350000000,
+            "eps": 4.75,
+            "epsEstimate": 4.58,
+            "epsBasis": "gaap",
+            "reportedAt": 1756339199
+          },
+          {
+            "time": 1745712000,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 12760000000,
+            "revenueEstimate": 10980000000,
+            "eps": 6.64,
+            "epsEstimate": 5.56,
+            "epsBasis": "gaap",
+            "reportedAt": 1748476799
           }
         ]
       }
@@ -30108,7 +31937,7 @@
       }
     },
     "MNST": {
-      "updatedAt": "2026-11-06T08:45:08.177Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-05T15:14:45.927Z",
       "sources": {
         "sec": [
@@ -30330,6 +32159,17 @@
           }
         ],
         "reported-consensus": [
+          {
+            "time": 1790726400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 2530000000,
+            "revenueEstimate": 2490000000,
+            "eps": 0.3,
+            "epsEstimate": 0.2991,
+            "epsBasis": "adjusted",
+            "reportedAt": 1793923199
+          },
           {
             "time": 1782777600,
             "fiscalYear": "",
@@ -38377,7 +40217,7 @@
       }
     },
     "AEE": {
-      "updatedAt": "2026-11-06T08:45:24.912Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-05T15:21:55.360Z",
       "sources": {
         "sec": [
@@ -38606,6 +40446,17 @@
           }
         ],
         "reported-consensus": [
+          {
+            "time": 1790726400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 2880000000,
+            "revenueEstimate": 2820000000,
+            "eps": 2.42,
+            "epsEstimate": 2.29,
+            "epsBasis": "gaap",
+            "reportedAt": 1793923199
+          },
           {
             "time": 1782777600,
             "fiscalYear": "",
@@ -40182,7 +42033,7 @@
       }
     },
     "AXON": {
-      "updatedAt": "2026-11-06T08:45:28.503Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-05T15:22:31.595Z",
       "sources": {
         "sec": [
@@ -40404,6 +42255,17 @@
           }
         ],
         "reported-consensus": [
+          {
+            "time": 1790726400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 908550000,
+            "revenueEstimate": 934330000,
+            "eps": 1.72,
+            "epsEstimate": 1.89,
+            "epsBasis": "adjusted",
+            "reportedAt": 1793923199
+          },
           {
             "time": 1782777600,
             "fiscalYear": "",
@@ -60094,7 +61956,7 @@
       }
     },
     "MTD": {
-      "updatedAt": "2026-11-06T08:46:09.233Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-05T15:28:17.832Z",
       "sources": {
         "sec": [
@@ -60312,6 +62174,17 @@
         ],
         "reported-consensus": [
           {
+            "time": 1790726400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 1090000000,
+            "revenueEstimate": 1070000000,
+            "eps": 12.57,
+            "epsEstimate": 12.13,
+            "epsBasis": "adjusted",
+            "reportedAt": 1793923199
+          },
+          {
             "time": 1782777600,
             "fiscalYear": "",
             "period": "",
@@ -60381,7 +62254,7 @@
       }
     },
     "MCHP": {
-      "updatedAt": "2026-11-06T08:46:09.829Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-05T15:28:20.861Z",
       "sources": {
         "sec": [
@@ -60603,6 +62476,17 @@
           }
         ],
         "reported-consensus": [
+          {
+            "time": 1790726400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 1620000000,
+            "revenueEstimate": 1610000000,
+            "eps": 0.97,
+            "epsEstimate": 0.936,
+            "epsBasis": "adjusted",
+            "reportedAt": 1793923199
+          },
           {
             "time": 1782777600,
             "fiscalYear": "",
@@ -65048,7 +66932,7 @@
       }
     },
     "SOLV": {
-      "updatedAt": "2026-11-06T08:46:19.431Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-05T15:30:28.779Z",
       "sources": {
         "sec": [
@@ -65261,6 +67145,17 @@
           }
         ],
         "reported-consensus": [
+          {
+            "time": 1790726400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 1950000000,
+            "revenueEstimate": 1930000000,
+            "eps": 1.45,
+            "epsEstimate": 1.34,
+            "epsBasis": "adjusted",
+            "reportedAt": 1793923199
+          },
           {
             "time": 1782777600,
             "fiscalYear": "",
@@ -66530,7 +68425,7 @@
       }
     },
     "TRGP": {
-      "updatedAt": "2026-11-06T08:46:22.401Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-05T15:30:58.086Z",
       "sources": {
         "sec": [
@@ -66745,6 +68640,17 @@
           }
         ],
         "reported-consensus": [
+          {
+            "time": 1790726400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 5600000000,
+            "revenueEstimate": 4770000000,
+            "eps": 3.04,
+            "epsEstimate": 2.74,
+            "epsBasis": "gaap",
+            "reportedAt": 1793923199
+          },
           {
             "time": 1782777600,
             "fiscalYear": "",
@@ -73283,7 +75189,7 @@
       }
     },
     "WYNN": {
-      "updatedAt": "2026-11-06T08:46:36.150Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-05T15:32:39.170Z",
       "sources": {
         "sec": [
@@ -73502,6 +75408,17 @@
           }
         ],
         "reported-consensus": [
+          {
+            "time": 1790726400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 1690000000,
+            "revenueEstimate": 1750000000,
+            "eps": 0.33,
+            "epsEstimate": 0.525,
+            "epsBasis": "adjusted",
+            "reportedAt": 1793923199
+          },
           {
             "time": 1782777600,
             "fiscalYear": "",
@@ -76491,7 +78408,7 @@
       }
     },
     "EOG": {
-      "updatedAt": "2026-11-06T08:46:42.928Z",
+      "updatedAt": "2026-11-06T09:05:50.346Z",
       "backfilledAt": "2026-11-05T15:35:17.672Z",
       "sources": {
         "sec": [
@@ -76720,6 +78637,17 @@
           }
         ],
         "reported-consensus": [
+          {
+            "time": 1790726400,
+            "fiscalYear": "",
+            "period": "",
+            "revenue": 8550000000,
+            "revenueEstimate": 7260000000,
+            "eps": 4.87,
+            "epsEstimate": 4.45,
+            "epsBasis": "adjusted",
+            "reportedAt": 1793923199
+          },
           {
             "time": 1782777600,
             "fiscalYear": "",

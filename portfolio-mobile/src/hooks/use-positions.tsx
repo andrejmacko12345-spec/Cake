@@ -57,6 +57,7 @@ type PositionsContextValue = {
   loading: boolean;
   saveTransaction: (input: TransactionInput, id?: string, quote?: LiveQuote) => Promise<void>;
   deleteTransaction: (id: string) => Promise<void>;
+  deleteSymbolTransactions: (symbol: string) => Promise<void>;
   importTransactions: (items: Transaction[], mode: 'append' | 'replace') => Promise<void>;
   resetPortfolio: () => Promise<void>;
   refreshQuotes: () => Promise<{ updated: number; failed: string[] }>;
@@ -299,6 +300,12 @@ export function PositionsProvider({ children }: { children: ReactNode }) {
     await persist(nextTransactions, quotes);
   };
 
+  const deleteSymbolTransactions = async (symbol: string) => {
+    const nextTransactions = transactions.filter((transaction) => transaction.symbol !== symbol);
+    validateLedger(nextTransactions);
+    await persist(nextTransactions, quotes);
+  };
+
   const importTransactions = async (items: Transaction[], mode: 'append' | 'replace') => {
     const nextTransactions = mode === 'replace' ? items : [...transactions, ...items];
     validateLedger(nextTransactions);
@@ -344,6 +351,7 @@ export function PositionsProvider({ children }: { children: ReactNode }) {
       loading,
       saveTransaction,
       deleteTransaction,
+      deleteSymbolTransactions,
       importTransactions,
       resetPortfolio,
       refreshQuotes,

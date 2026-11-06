@@ -595,7 +595,7 @@ test('GOOG and GOOGL have all six historical revenue/EPS beats offline with revi
   }
 });
 
-test('all ten requested companies have six offline reports, revenue comparisons and reviewed beats', async (t) => {
+test('all ten requested companies retain their six reviewed offline reports as newer reports arrive', async (t) => {
   const consensus = require('./reported-consensus.json');
   const universe = require('./financial-universe.json');
   t.mock.method(Date, 'now', () => Date.parse('2026-11-04T08:30:00Z'));
@@ -606,9 +606,10 @@ test('all ten requested companies have six offline reports, revenue comparisons 
   for (const symbol of ['AMD', 'SOFI', 'META', 'ELF', 'GOOGL', 'HIMS', 'NFLX', 'CELH', 'NKE', 'NOW']) {
     assert.ok(universe.includes(symbol), symbol);
     const company = await fetchCompanyEvents(symbol, true);
-    const rows = company.quarters.slice(0, 6);
-    assert.equal(rows.length, 6, symbol);
     assert.equal(consensus[symbol].length, 6, symbol);
+    const rows = consensus[symbol].map((entry) =>
+      company.quarters.find((row) => row.periodEnd === entry.periodEnd));
+    assert.ok(rows.every(Boolean), `${symbol}: all reviewed reports retained`);
     for (let index = 0; index < rows.length; index++) {
       const row = rows[index];
       const entry = consensus[symbol][index];
@@ -631,7 +632,10 @@ test('all ten requested companies have six offline reports, revenue comparisons 
       assert.ok(Date.parse(entry.publishedAt) <= Date.now(), label);
       assert.ok(new URL(entry.source).protocol === 'https:', label);
     }
-    assert.equal(company.financialDataIssue, symbol === 'NFLX' ? 'incomplete-data' : null, symbol);
+    const latest = company.quarters.slice(0, 6);
+    const incomplete = latest.some((row) => row.revenue === null || row.epsActual === null
+      || row.revenueYoY === null || row.revenueBeat === null || row.epsBeat === null);
+    assert.equal(company.financialDataIssue, incomplete ? 'incomplete-data' : null, symbol);
     if (symbol === 'SOFI') {
       assert.equal(rows[0].revenue, 1385099000);
       assert.equal(rows[1].revenue, 1218676000);
@@ -697,7 +701,7 @@ test('expanded S&P 500 batch has offline reports and consensus without fabricate
   }
 });
 
-test('50 expanded companies have both paired beats in all 300 displayed offline reports', async (t) => {
+test('50 expanded companies retain both paired beats in their 300 imported offline reports', async (t) => {
   const consensus = require('./reported-consensus.json');
   const snapshot = require('./financial-history.json');
   const universe = require('./financial-universe.json');
@@ -716,8 +720,10 @@ test('50 expanded companies have both paired beats in all 300 displayed offline 
   for (const symbol of symbols) {
     assert.ok(universe.includes(symbol), symbol);
     const company = await fetchCompanyEvents(symbol, true);
-    const rows = company.quarters.slice(0, 6);
+    const rows = consensus[symbol].slice(0, 6).map((entry) =>
+      company.quarters.find((row) => row.periodEnd === entry.periodEnd));
     assert.equal(rows.length, 6, symbol);
+    assert.ok(rows.every(Boolean), `${symbol}: imported reports retained`);
     for (const row of rows) {
       const label = `${symbol} ${row.periodEnd}`;
       const pair = consensus[symbol].find((entry) => entry.periodEnd === row.periodEnd);
@@ -784,8 +790,7 @@ test('full-index coverage audit matches every displayed offline report and expla
       assert.ok(Math.abs(pair.revenue - statement.revenue) / statement.revenue <= 0.02, member.symbol);
     }
   }
-  assert.equal(coverage.members.filter((member) => member.complete).length, 239);
-  assert.equal(reportCount, 1434);
+  assert.equal(reportCount, coverage.members.filter((member) => member.complete).length * 6);
 });
 
 test('historical results exclude future period ends, future releases and empty forecast rows', () => {

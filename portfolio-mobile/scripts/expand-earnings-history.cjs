@@ -9,9 +9,9 @@ require.extensions['.ts'] = (module, filename) => {
 };
 
 const { fetchSecQuarterly } = require('../src/data/sec.ts');
-const { yahooHistory, yahooSummary } = require('./refresh-financial-history.cjs');
+const { yahooHistory, yahooSummary, displayed, complete, updateCoverage } = require('./refresh-financial-history.cjs');
 const { parseEarningsConsensus } = require('../src/data/earnings-consensus.ts');
-const { applyEarningsConsensus, combineFinancialSources, mergeQuarters } = require('../src/data/quarterly.ts');
+const { combineFinancialSources } = require('../src/data/quarterly.ts');
 const root = path.join(__dirname, '..', 'src', 'data');
 const DAY = 86400;
 const constituentsUrl = 'https://en.wikipedia.org/wiki/List_of_S%26P_500_companies';
@@ -99,13 +99,6 @@ function matchPeriods(rows, statements, alternativeStatements = []) {
   });
 }
 
-function displayed(sources) {
-  return applyEarningsConsensus(
-    mergeQuarters(['sec', 'fmp', 'yahoo', 'yahoo-earnings'].map((source) => sources[source] ?? [])),
-    [sources['reported-consensus'] ?? [], sources['yahoo-earnings'] ?? []],
-  ).slice(0, 6);
-}
-
 function parseConstituents(html) {
   const table = /<table\b[^>]*id="constituents"[^>]*>([\s\S]*?)<\/table>/i.exec(html)?.[1];
   if (table === undefined) throw new Error('S&P 500 constituent table missing.');
@@ -120,12 +113,6 @@ function parseConstituents(html) {
     throw new Error('Unexpected S&P 500 membership count.');
   }
   return members;
-}
-
-function complete(sources) {
-  const rows = displayed(sources);
-  return rows.length === 6 && rows.every((row) => Number.isFinite(row.revenueBeat)
-    && Number.isFinite(row.epsBeat) && !row.revenueBeatProvisional);
 }
 
 async function main() {
@@ -159,13 +146,11 @@ async function main() {
         ['reported-consensus.json', consensus], ['financial-history.json', snapshot], ['financial-universe.json', universe],
       ]) fs.writeFileSync(path.join(root, filename), `${JSON.stringify(value, null, 2)}\n`);
     }
-    if (fullIndex) fs.writeFileSync(coveragePath, `${JSON.stringify({
-      checkedAt: new Date().toISOString(), membershipSource: constituentsUrl, requiredReports: 6,
-      members: members.map((member) => ({
-        ...member, complete: snapshot.companies[member.symbol] ? complete(snapshot.companies[member.symbol].sources) : false,
-        reason: rejected.find((entry) => entry.symbol === member.symbol)?.reason ?? null,
-      })),
-    }, null, 2)}\n`);
+    if (fullIndex) fs.writeFileSync(coveragePath, `${JSON.stringify(updateCoverage(
+      { ...snapshot, generatedAt: new Date().toISOString() },
+      { membershipSource: constituentsUrl, requiredReports: 6, members },
+      rejected,
+    ), null, 2)}\n`);
   };
   for (const symbol of symbols) {
     if (accepted.length >= limit) break;

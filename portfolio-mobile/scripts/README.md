@@ -16,12 +16,27 @@ empty rows.
 The GitHub workflow **Refresh financial history** runs on the first day of each
 month at 05:17 UTC for a full backfill, and every six hours at minute 17 for
 Yahoo results and pre-report forecast collection (`--earnings-only`). It can
-also be started manually. GitHub schedules can be delayed; this is not a
-real-time delivery guarantee. It commits only the public
-JSON snapshot to `main`. The workflow and initial dataset must be pushed to
+also be started manually, choosing `full` (the default) or `earnings-only`
+to reproduce the six-hour schedule. GitHub schedules can be delayed; this is not a
+real-time delivery guarantee. It commits the public
+JSON snapshot and its recomputed S&P coverage audit together to `main`.
+The workflow and initial dataset must be pushed to
 `main` before automatic updates work. GitHub Actions needs permission to write
 repository contents. Branch protection may require publishing through a PR
 instead of the workflow's direct push.
+
+Every refresh rechecks the actual latest six displayed reports. A new report
+without historical consensus remains visible with missing beats; its constituent
+is marked incomplete with counts explaining the gaps. It is not replaced by an
+older complete report or filled with forecasts. The Actions summary reports
+completeness changes. Incompleteness is a data-quality state, not by itself a
+failed refresh; provider failures, malformed data and failing tests still block
+publication. Archived reviewed pairs alone do not count as a successful provider
+refresh when every live source fails.
+
+Regression tests distinguish retained reviewed/imported periods from the rolling
+latest six. The audit must match the latest reports, but historical counts such
+as 239 complete constituents are not permanent targets for a changing dataset.
 
 SEC is the primary historical source. Yahoo provides additional reported
 quarterly observations and annual period-end anchors for fiscal labels.

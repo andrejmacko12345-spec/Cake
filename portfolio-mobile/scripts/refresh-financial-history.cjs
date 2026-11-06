@@ -17,8 +17,41 @@ const universe = require('../src/data/financial-universe.json');
 const releases = require('../src/data/reported-releases.json');
 const reportedConsensus = require('../src/data/reported-consensus.json');
 const destination = path.join(path.dirname(require.resolve('../package.json')), 'src', 'data', 'financial-history.json');
+const coveragePath = path.join(path.dirname(destination), 'sp500-earnings-coverage.json');
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 let yahooSession;
+
+function displayed(sources) {
+  return applyEarningsConsensus(
+    mergeQuarters(['sec', 'fmp', 'yahoo', 'yahoo-earnings'].map((source) => sources[source] ?? [])),
+    [sources['reported-consensus'] ?? [],
+      archivedRevenueConsensus(sources['yahoo-forecast'] ?? [], sources['yahoo-earnings'] ?? []),
+      sources['yahoo-earnings'] ?? []],
+  ).slice(0, 6);
+}
+
+function complete(sources) {
+  const rows = displayed(sources);
+  return rows.length === 6 && rows.every((row) => Number.isFinite(row.revenueBeat)
+    && Number.isFinite(row.epsBeat) && !row.revenueBeatProvisional);
+}
+
+function updateCoverage(snapshot, coverage, rejected = []) {
+  return {
+    ...coverage,
+    checkedAt: snapshot.generatedAt,
+    members: coverage.members.map((member) => {
+      const sources = snapshot.companies[member.symbol]?.sources;
+      const rows = sources ? displayed(sources) : [];
+      const isComplete = sources ? complete(sources) : false;
+      const reason = rejected.find((entry) => entry.symbol === member.symbol)?.reason
+        ?? (sources
+          ? `${rows.length}/6 reports; ${rows.filter((row) => Number.isFinite(row.revenueBeat) && !row.revenueBeatProvisional).length}/6 verified Revenue beats; ${rows.filter((row) => Number.isFinite(row.epsBeat)).length}/6 EPS beats.`
+          : 'No offline history.');
+      return { ...member, complete: isComplete, reason: isComplete ? null : reason };
+    }),
+  };
+}
 
 async function yahooSummary(symbol) {
   if (!yahooSession) {
@@ -88,12 +121,12 @@ async function yahooHistory(symbol) {
   return [...rows.values()];
 }
 
-async function main() {
+async function main(args = process.argv.slice(2)) {
   const previous = fs.existsSync(destination) ? JSON.parse(fs.readFileSync(destination, 'utf8'))
     : { version: 1, companies: {} };
   const companies = { ...previous.companies };
-  const earningsOnly = process.argv.includes('--earnings-only');
-  const requested = process.argv.slice(2).filter((argument) => argument !== '--earnings-only');
+  const earningsOnly = args.includes('--earnings-only');
+  const requested = args.filter((argument) => argument !== '--earnings-only');
   const symbols = requested.length ? requested : universe;
   let refreshed = 0;
   let failures = 0;
@@ -127,6 +160,11 @@ async function main() {
       }
       await sleep(250);
     }
+    if (!Object.values(sources).some((rows) => rows.length)) {
+      failures++;
+      console.error(`${symbol}: no new provider data; retaining previous snapshot`);
+      continue;
+    }
     const release = releases[symbol];
     const consensus = reportedConsensus[symbol === 'GOOG' ? 'GOOGL' : symbol];
     if (consensus) {
@@ -152,11 +190,6 @@ async function main() {
       // Reviewed GAAP releases bridge the delay before SEC companyfacts updates.
       sources.sec = combineFinancialSources({ sec: quarters }, { sec: sources.sec ?? [] }).sec;
     }
-    if (!Object.keys(sources).length) {
-      failures++;
-      console.error(`${symbol}: no new data; retaining previous snapshot`);
-      continue;
-    }
     const combined = combineFinancialSources(companies[symbol]?.sources ?? {}, sources);
     if (combined['yahoo-earnings']) {
       combined['yahoo-earnings'] = combined['yahoo-earnings'].map((row) => ({ ...row, revenueEstimate: null }));
@@ -167,12 +200,7 @@ async function main() {
         ? companies[symbol].backfilledAt ?? companies[symbol].updatedAt : new Date().toISOString(),
       sources: combined,
     };
-    const quarters = applyEarningsConsensus(
-      mergeQuarters(['sec', 'fmp', 'yahoo', 'yahoo-earnings'].map((source) => combined[source] ?? [])),
-      [combined['reported-consensus'] ?? [],
-        archivedRevenueConsensus(combined['yahoo-forecast'] ?? [], combined['yahoo-earnings'] ?? []),
-        combined['yahoo-earnings'] ?? []],
-    ).slice(0, 6);
+    const quarters = displayed(combined);
     for (const row of quarters.filter((row) => row.revenueBeatProvisional)) {
       pendingReview.push(`| ${symbol} | ${row.periodEnd} | ${row.revenueBeat} | https://finance.yahoo.com/quote/${symbol}/analysis/ |`);
     }
@@ -183,9 +211,22 @@ async function main() {
   }
   if (!refreshed) throw new Error('No symbols refreshed; refusing to publish an empty update.');
   const snapshot = { version: 1, generatedAt: new Date().toISOString(), companies };
+  const previousCoverage = JSON.parse(fs.readFileSync(coveragePath, 'utf8'));
+  const coverage = updateCoverage(snapshot, previousCoverage);
   const temporary = `${destination}.tmp`;
   fs.writeFileSync(temporary, `${JSON.stringify(snapshot, null, 2)}\n`);
   fs.renameSync(temporary, destination);
+  const coverageTemporary = `${coveragePath}.tmp`;
+  fs.writeFileSync(coverageTemporary, `${JSON.stringify(coverage, null, 2)}\n`);
+  fs.renameSync(coverageTemporary, coveragePath);
+  const changed = coverage.members.filter((member) =>
+    member.complete !== previousCoverage.members.find((previous) => previous.symbol === member.symbol)?.complete);
+  const audit = '\n## Latest six-report coverage\n\n'
+    + `${coverage.members.filter((member) => member.complete).length}/${coverage.members.length} constituents have six verified pairs of beats.\n`
+    + (changed.length ? changed.map((member) =>
+      `- ${member.symbol}: ${member.complete ? 'complete' : member.reason}`).join('\n') : 'No completeness changes.');
+  console.log(audit);
+  if (process.env.GITHUB_STEP_SUMMARY) fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `${audit}\n`);
   const review = '\n## Revenue beats awaiting manual verification\n\n'
     + (pendingReview.length ? '| Symbol | Period end | Provisional beat | Yahoo |\n| --- | --- | --- | --- |\n'
       + pendingReview.join('\n') : 'No provisional revenue beats in the latest six reports.');
@@ -200,4 +241,4 @@ if (require.main === module) main().catch((error) => {
   process.exitCode = 1;
 });
 
-module.exports = { yahooHistory, yahooSummary };
+module.exports = { yahooHistory, yahooSummary, displayed, complete, updateCoverage, main };

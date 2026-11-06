@@ -2,6 +2,14 @@ name: Refresh financial history
 
 on:
   workflow_dispatch:
+    inputs:
+      mode:
+        description: Refresh scope
+        type: choice
+        options:
+          - full
+          - earnings-only
+        default: full
   schedule:
     - cron: '17 5 1 * *'
     - cron: '17 */6 * * *'
@@ -34,8 +42,9 @@ jobs:
         working-directory: portfolio-mobile
         env:
           FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
+          EARNINGS_ONLY: ${{ inputs.mode == 'earnings-only' || (github.event_name == 'schedule' && github.event.schedule != '17 5 1 * *') }}
         run: |
-          if [ "${{ github.event_name }}" = "schedule" ] && [ "${{ github.event.schedule }}" != "17 5 1 * *" ]; then
+          if [ "$EARNINGS_ONLY" = "true" ]; then
             npm run refresh:financial-history -- --earnings-only
           else
             npm run refresh:financial-history
@@ -46,7 +55,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add portfolio-mobile/src/data/financial-history.json
+          git add portfolio-mobile/src/data/financial-history.json portfolio-mobile/src/data/sp500-earnings-coverage.json
           if ! git diff --cached --quiet; then
             git commit -m "Update public quarterly financial history" -m "Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>"
             git push origin HEAD:main

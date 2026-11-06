@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-06T13:28:45.178Z",
+  "checkedAt": "2026-11-06T19:15:21.439Z",
   "membershipSource": "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies",
   "requiredReports": 6,
   "members": [
@@ -792,8 +792,8 @@
       "name": "Charter Communications",
       "sector": "Communication Services",
       "industry": "Cable & Satellite",
-      "complete": true,
-      "reason": null
+      "complete": false,
+      "reason": "6/6 reports; 5/6 verified Revenue beats; 6/6 EPS beats."
     },
     {
       "symbol": "CVX",
@@ -1928,8 +1928,8 @@
       "name": "Humana",
       "sector": "Health Care",
       "industry": "Managed Health Care",
-      "complete": true,
-      "reason": null
+      "complete": false,
+      "reason": "6/6 reports; 5/6 verified Revenue beats; 6/6 EPS beats."
     },
     {
       "symbol": "HBAN",
@@ -2536,8 +2536,8 @@
       "name": "Moderna",
       "sector": "Health Care",
       "industry": "Biotechnology",
-      "complete": true,
-      "reason": null
+      "complete": false,
+      "reason": "6/6 reports; 5/6 verified Revenue beats; 6/6 EPS beats."
     },
     {
       "symbol": "MDLZ",

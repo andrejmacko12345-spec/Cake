@@ -1,5 +1,44 @@
 # Shared quarterly financial history
 
+Watchlist rows display the selected period's price movement, not the current
+share price. The `%` / Amount control switches both the main movement and the
+Pre/After-market line between percentages and quote-currency amounts. Sorting
+by change remains percentage-based. Compact controls share one row. The expanded
+period selector overlays that row at full width so all periods remain readable.
+Both unit choices remain visible in a segmented control when periods are closed. The extended-session
+label is hidden when no active extended-session data is available.
+Extended-session data is requested for Watchlist and stock-detail quotes;
+only points within the active session and at most 30 minutes
+old are shown. Missing or inactive extended sessions are hidden entirely, including
+during regular trading. Cached movements are also hidden after their session ends.
+Stock detail displays the active Pre/After-market movement beneath the chart
+price in quote currency and percent, including held and unheld stocks. Quotes
+refresh every 10 seconds; extended-session prices never replace regular prices
+in portfolio valuation or the historical chart.
+
+The Watchlist list chooser offers Create from portfolio: a one-click snapshot of
+unique symbols with open holdings. It creates and selects a separate saved list
+without changing existing lists; subsequent portfolio changes do not sync it.
+Closed positions are excluded, empty portfolios show an alert, and storage
+failures leave the existing selection unchanged.
+
+Horizontal swipes across the Watchlist screen select the adjacent saved list
+with a slide and selection haptic. Vertical scrolling remains available; swipes
+are disabled during editing and modal interactions. The period selector retains
+its own gesture handling. The first and last lists do not wrap around.
+Short deliberate swipes (24 points, or 12 with sufficient velocity) switch lists;
+the current and adjacent pages track the finger together, then settle with cubic
+ease-out without swapping a visible page mid-transition. Edge drags are resisted.
+Adjacent pages keep a 12-point gap throughout dragging and settling.
+Adjacent list data is prefetched through the same cache. The native responder
+stays stable across quote refreshes. Up/down arrows in the list chooser save the
+list order used by swiping without changing the selected list or its symbols.
+Opening index detail disables watchlist gestures until the detail closes, so
+scrubbing the index chart cannot switch the list behind it.
+Switching lists retains screen-session data by symbol and selected period.
+Fresh quotes are reused for 10 seconds, concurrent requests are deduplicated,
+and older data stays visible during background refreshes, including failures.
+
 The app bundles `src/data/financial-history.json`, so historical results work on
 the first launch even offline. Only public company financial data is stored;
 holdings, transactions and user data are never sent to the updater.

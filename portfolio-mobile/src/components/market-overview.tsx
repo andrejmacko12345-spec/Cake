@@ -89,7 +89,7 @@ function IndexDetail({ index, onClose }: { index: MarketIndex; onClose: () => vo
   );
 }
 
-export function MarketOverview() {
+export function MarketOverview({ onDetailOpenChange }: { onDetailOpenChange?: (open: boolean) => void } = {}) {
   const styles = useThemedStyles(createStyles);
   const { t, language, errorText } = useLocale();
   const [entries, setEntries] = useState<Record<string, Entry>>({});
@@ -141,6 +141,7 @@ export function MarketOverview() {
         return (
           <Pressable key={index.symbol} accessibilityRole="button" accessibilityLabel={index.name}
             onPress={() => {
+              onDetailOpenChange?.(true);
               setSelected(index);
             }} style={styles.card}>
               <Text style={styles.cardTitle} numberOfLines={1}>{index.symbol === '^IXIC' ? 'NASDAQ' : index.name}</Text>
@@ -154,6 +155,7 @@ export function MarketOverview() {
       {initialLoading ? <ActivityIndicator size="small" color={colors.green} /> : null}
       </AnimatedCollapse>
       {selected ? <IndexDetail key={selected.symbol} index={selected} onClose={() => {
+        onDetailOpenChange?.(false);
         setSelected(null);
       }} /> : null}
     </View>

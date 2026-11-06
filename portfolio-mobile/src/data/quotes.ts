@@ -15,6 +15,11 @@ type YahooChartResponse = {
         regularMarketTime?: number;
         chartPreviousClose?: number;
         previousClose?: number;
+        currentTradingPeriod?: {
+          pre?: { start: number; end: number };
+          regular?: { start: number; end: number };
+          post?: { start: number; end: number };
+        };
       };
       timestamp?: number[];
       indicators?: {
@@ -62,7 +67,31 @@ export type LiveQuote = {
   color: string;
   updatedAt: string;
   isMarketQuote: boolean;
+  extendedMarket?: { session: 'pre' | 'post'; change: number; changePercent: number; sessionEndsAt: number };
 };
+
+export function getExtendedMarket(
+  result: NonNullable<NonNullable<YahooChartResponse['chart']>['result']>[number],
+  regularPrice: number,
+  now = Date.now() / 1000,
+): LiveQuote['extendedMarket'] {
+  const periods = result.meta?.currentTradingPeriod;
+  const session = periods?.pre && now >= periods.pre.start && now < periods.pre.end ? 'pre'
+    : periods?.post && now >= periods.post.start && now < periods.post.end ? 'post' : null;
+  if (!session || !periods || !isValidPrice(regularPrice)) return undefined;
+  const period = periods[session];
+  const closes = result.indicators?.quote?.[0]?.close ?? [];
+  const timestamps = result.timestamp ?? [];
+  for (let i = timestamps.length - 1; i >= 0; i--) {
+    const time = timestamps[i];
+    const price = closes[i];
+    if (period && time >= period.start && time < period.end && time <= now && now - time <= 1800 && isValidPrice(price)) {
+      const change = price - regularPrice;
+      return { session, change, changePercent: change / regularPrice * 100, sessionEndsAt: period.end * 1000 };
+    }
+  }
+  return undefined;
+}
 
 export async function searchAssets(inputQuery: string): Promise<Asset[]> {
   const query = inputQuery.trim();
@@ -124,8 +153,8 @@ function isValidPrice(value: unknown): value is number {
   return typeof value === 'number' && Number.isFinite(value) && value > 0;
 }
 
-async function fetchChart(symbol: string, range = '1d', interval = '1m'): Promise<YahooChartResponse> {
-  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=${range}&interval=${interval}`;
+async function fetchChart(symbol: string, range = '1d', interval = '1m', includePrePost = false): Promise<YahooChartResponse> {
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=${range}&interval=${interval}${includePrePost ? '&includePrePost=true' : ''}`;
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 12000);
   try {
@@ -350,7 +379,7 @@ export async function fetchHistoricalQuoteForDate(
   };
 }
 
-export async function fetchLiveQuote(inputSymbol: string): Promise<LiveQuote> {
+export async function fetchLiveQuote(inputSymbol: string, includeExtended = false): Promise<LiveQuote> {
   if (Platform.OS === 'web') {
     throw new Error('Webový prehliadač blokuje priame kotácie. Live ceny načítaj v mobilnej aplikácii Expo Go.');
   }
@@ -362,7 +391,7 @@ export async function fetchLiveQuote(inputSymbol: string): Promise<LiveQuote> {
 
   let chart: YahooChartResponse;
   try {
-    chart = await fetchChart(symbol);
+    chart = await fetchChart(symbol, '1d', '1m', includeExtended);
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') {
       throw new Error('Načítanie ceny vypršalo. Skús to znova.');
@@ -380,7 +409,11 @@ export async function fetchLiveQuote(inputSymbol: string): Promise<LiveQuote> {
 
   const meta = result.meta;
   const closes = result.indicators?.quote?.[0]?.close ?? [];
-  const lastClose = [...closes].reverse().find(isValidPrice);
+  const regular = meta?.currentTradingPeriod?.regular;
+  const lastClose = !includeExtended ? [...closes].reverse().find(isValidPrice) : regular ? closes.filter((_, index) => {
+    const time = result.timestamp?.[index];
+    return time !== undefined && time >= regular.start && time < regular.end;
+  }).reverse().find(isValidPrice) : undefined;
   const price = isValidPrice(meta?.regularMarketPrice)
     ? meta.regularMarketPrice
     : isValidPrice(lastClose) ? lastClose : null;
@@ -421,5 +454,6 @@ export async function fetchLiveQuote(inputSymbol: string): Promise<LiveQuote> {
     color: asset?.color ?? colors.violet,
     updatedAt: new Date().toISOString(),
     isMarketQuote: true,
+    ...(includeExtended ? { extendedMarket: getExtendedMarket(result, price) } : {}),
   };
 }

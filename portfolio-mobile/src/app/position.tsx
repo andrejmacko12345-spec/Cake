@@ -113,13 +113,16 @@ function StockChart({
   position,
   range,
   onRangeChange,
+  extendedMarket: sessionQuote,
 }: {
   position: Position;
   range: RangeLabel;
   onRangeChange: (range: RangeLabel) => void;
+  extendedMarket?: LiveQuote['extendedMarket'];
 }) {
   const styles = useThemedStyles(createStyles);
   const { t, language, errorText } = useLocale();
+  const extendedMarket = sessionQuote && Date.now() < sessionQuote.sessionEndsAt ? sessionQuote : undefined;
   const [history, setHistory] = useState<PricePoint[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -223,7 +226,7 @@ function StockChart({
   return (
     <Surface style={styles.chartCard}>
       <View style={styles.chartHeading}>
-        <View>
+        <View style={styles.chartPriceBlock}>
           <Text style={styles.chartEyebrow}>
             {selectedPoint
               ? range === '1D' ? `${dateLabel(selectedPoint.date)} · ${timeLabel(selectedPoint)}` : dateLabel(selectedPoint.date)
@@ -234,6 +237,9 @@ function StockChart({
               ? `${selectedPoint.price.toLocaleString(language === 'sk' ? 'sk-SK' : 'en-US', { maximumFractionDigits: 2 })} ${position.currency}`
               : `${position.currentPrice.toLocaleString(language === 'sk' ? 'sk-SK' : 'en-US', { maximumFractionDigits: 2 })} ${position.currency}`}
           </Text>
+          {extendedMarket ? <Text style={[styles.extendedMarket, { color: extendedMarket.change >= 0 ? colors.green : colors.red }]}>
+            {`${t(extendedMarket.session === 'pre' ? 'Pre' : 'After')}: ${extendedMarket.change > 0 ? '+' : ''}${extendedMarket.change.toLocaleString(language === 'sk' ? 'sk-SK' : 'en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${position.currency} (${formatPercent(extendedMarket.changePercent)})`}
+          </Text> : null}
         </View>
         <View style={styles.chartChange}>
           <View style={styles.chartChangeRow}>
@@ -439,21 +445,33 @@ export default function PositionDetailScreen() {
   const [initialType, setInitialType] = useState<'BUY' | 'SELL'>('BUY');
 
   useEffect(() => {
-    if (isHeld || !symbol || !hasAsset) return;
+    if (!symbol || !hasAsset) return;
     let active = true;
     setMarketQuote(null);
     setQuoteError('');
-    fetchLiveQuote(symbol)
-      .then((quote) => {
-        if (active) setMarketQuote(quote);
-      })
-      .catch((error: unknown) => {
-        if (active) setQuoteError(error instanceof Error ? error.message : String(error));
-      });
+    let pending = false;
+    const loadQuote = async () => {
+      if (pending) return;
+      pending = true;
+      try {
+        const quote = await fetchLiveQuote(symbol, true);
+        if (active) { setMarketQuote(quote); setQuoteError(''); }
+      } catch (error: unknown) {
+        if (active) {
+          setMarketQuote(null);
+          setQuoteError(error instanceof Error ? error.message : String(error));
+        }
+      } finally {
+        pending = false;
+      }
+    };
+    void loadQuote();
+    const timer = setInterval(() => void loadQuote(), 10000);
     return () => {
       active = false;
+      clearInterval(timer);
     };
-  }, [hasAsset, isHeld, symbol]);
+  }, [hasAsset, symbol]);
 
   const position = heldPosition ?? (asset ? createAssetPosition(asset, marketQuote) : undefined);
   const currentValue = position ? positionValueEUR(position) : 0;
@@ -549,8 +567,8 @@ export default function PositionDetailScreen() {
         }
       />
 
-      {quoteError && !heldPosition ? <Text accessibilityRole="alert" style={styles.summaryCaption}>{errorText(quoteError)}</Text> : null}
-      <StockChart position={position} range={range} onRangeChange={setRange} />
+      {quoteError ? <Text accessibilityRole="alert" style={styles.summaryCaption}>{errorText(quoteError)}</Text> : null}
+      <StockChart position={position} range={range} onRangeChange={setRange} extendedMarket={marketQuote?.extendedMarket} />
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={t('Moje pohyby')}
@@ -864,6 +882,8 @@ const createStyles = () => StyleSheet.create({
   resultAmount: { color: colors.text, fontSize: 13, fontWeight: '800', marginTop: 3, flexShrink: 1, fontVariant: ['tabular-nums'] },
   chartCard: { padding: 0 },
   chartHeading: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  chartPriceBlock: { flex: 1, minWidth: 0, marginRight: 8 },
+  extendedMarket: { fontSize: 11, fontWeight: '600', marginTop: 4, fontVariant: ['tabular-nums'] },
   chartEyebrow: { color: colors.muted, fontSize: 9 },
   chartPrice: { color: colors.text, fontSize: 21, fontWeight: '900', marginTop: 3 },
   chartChange: { alignItems: 'flex-end' },

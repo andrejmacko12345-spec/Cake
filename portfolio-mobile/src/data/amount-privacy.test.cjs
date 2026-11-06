@@ -10,6 +10,7 @@ for (const extension of ['.ts', '.tsx']) {
   require.extensions[extension] = (module, filename) => {
     let source = fs.readFileSync(filename, 'utf8');
     if (filename.endsWith(`${require('node:path').sep}analytics.tsx`)) source += '\nexport { FundamentalsTable };';
+    if (filename.endsWith(`${require('node:path').sep}position.tsx`)) source += '\nexport { StockChart };';
     const { outputText } = ts.transpileModule(source, {
       compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX },
     });
@@ -51,6 +52,7 @@ const originalLoad = Module._load;
 let AnalyticsScreen;
 let ForecastScreen;
 let PositionScreen;
+let StockChart;
 let FundamentalsTable;
 let visibility;
 try {
@@ -88,6 +90,7 @@ try {
   FundamentalsTable = analytics.FundamentalsTable;
   ForecastScreen = require('../app/forecast.tsx').default;
   PositionScreen = require('../app/position.tsx').default;
+  StockChart = require('../app/position.tsx').StockChart;
   visibility = require('../context/amount-visibility.tsx');
 } finally {
   Module._load = originalLoad;
@@ -102,6 +105,27 @@ test('shared privacy context masks amounts before the stored preference is avail
 });
 
 for (const locale of ['sk', 'en']) {
+  test(`stock chart shows extended-session money and percent under its price (${locale})`, () => {
+    language = locale;
+    for (const [session, change, changePercent, label] of [['pre', 2, 1.5, 'Pre'], ['post', -2, -1.5, 'After'], ['pre', 0, 0, 'Pre']]) {
+      const output = renderToStaticMarkup(React.createElement(StockChart, {
+        position, range: '1D', onRangeChange: () => {},
+        extendedMarket: { session, change, changePercent, sessionEndsAt: Date.now() + 60000 },
+      })).replace(/<!-- -->/g, '');
+      const amount = change.toLocaleString(locale === 'sk' ? 'sk-SK' : 'en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      assert.ok(output.includes(`${label}: ${change > 0 ? '+' : ''}${amount} EUR (`), output);
+      assert.match(output, /%/);
+      assert.ok(output.indexOf('120 EUR') < output.indexOf(`${label}:`));
+    }
+    const missing = renderToStaticMarkup(React.createElement(StockChart, { position, range: '1D', onRangeChange: () => {} }));
+    assert.doesNotMatch(missing, /Pre\/After:|Pre:|After:/);
+    const expired = renderToStaticMarkup(React.createElement(StockChart, {
+      position, range: '1D', onRangeChange: () => {},
+      extendedMarket: { session: 'pre', change: 0, changePercent: 0, sessionEndsAt: Date.now() - 1 },
+    }));
+    assert.doesNotMatch(expired, /Pre\/After:|Pre:|After:/);
+  });
+
   test(`fundamental estimate rows are translated with loaded data (${locale})`, () => {
     language = locale;
     const metrics = {

@@ -1,9 +1,9 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-07T13:14:47.673Z",
+  "generatedAt": "2026-11-07T19:04:45.503Z",
   "companies": {
     "AAPL": {
-      "updatedAt": "2026-11-07T13:12:01.465Z",
+      "updatedAt": "2026-11-07T19:02:06.368Z",
       "backfilledAt": "2026-11-05T15:22:12.989Z",
       "sources": {
         "sec": [
@@ -310,7 +310,7 @@
       }
     },
     "MSFT": {
-      "updatedAt": "2026-11-07T13:12:02.082Z",
+      "updatedAt": "2026-11-07T19:02:06.962Z",
       "backfilledAt": "2026-11-05T15:28:24.860Z",
       "sources": {
         "sec": [
@@ -536,7 +536,7 @@
             "eps": null,
             "revenueEstimate": 96699568110,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057121.832,
+            "revenueEstimateCapturedAt": 1794078126.711,
             "expectedReportAt": 1801083600
           }
         ],
@@ -611,7 +611,7 @@
       }
     },
     "NVDA": {
-      "updatedAt": "2026-11-07T13:12:02.686Z",
+      "updatedAt": "2026-11-07T19:02:07.555Z",
       "backfilledAt": "2026-11-05T15:28:51.417Z",
       "sources": {
         "sec": [
@@ -829,7 +829,7 @@
             "eps": null,
             "revenueEstimate": 108976833310,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057122.435,
+            "revenueEstimateCapturedAt": 1794078127.304,
             "expectedReportAt": 1794949200
           }
         ],
@@ -904,7 +904,7 @@
       }
     },
     "AMZN": {
-      "updatedAt": "2026-11-07T13:12:03.295Z",
+      "updatedAt": "2026-11-07T19:02:08.136Z",
       "backfilledAt": "2026-11-05T15:21:53.300Z",
       "sources": {
         "sec": [
@@ -1199,7 +1199,7 @@
       }
     },
     "GOOGL": {
-      "updatedAt": "2026-11-07T13:12:03.910Z",
+      "updatedAt": "2026-11-07T19:02:08.745Z",
       "backfilledAt": "2026-11-04T08:23:44.169Z",
       "sources": {
         "sec": [
@@ -1487,7 +1487,7 @@
       }
     },
     "GOOG": {
-      "updatedAt": "2026-11-07T13:12:04.512Z",
+      "updatedAt": "2026-11-07T19:02:09.320Z",
       "backfilledAt": "2026-11-04T08:23:45.093Z",
       "sources": {
         "sec": [
@@ -1775,7 +1775,7 @@
       }
     },
     "META": {
-      "updatedAt": "2026-11-07T13:12:05.123Z",
+      "updatedAt": "2026-11-07T19:02:09.893Z",
       "backfilledAt": "2026-11-04T08:23:41.976Z",
       "sources": {
         "sec": [
@@ -2069,14 +2069,14 @@
             "eps": null,
             "revenueEstimate": 75155372690,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057124.872,
+            "revenueEstimateCapturedAt": 1794078129.643,
             "expectedReportAt": 1801083600
           }
         ]
       }
     },
     "AVGO": {
-      "updatedAt": "2026-11-07T13:12:05.763Z",
+      "updatedAt": "2026-11-07T19:02:10.472Z",
       "backfilledAt": "2026-11-05T15:22:54.463Z",
       "sources": {
         "sec": [
@@ -2295,7 +2295,7 @@
             "eps": null,
             "revenueEstimate": 34906205760,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057125.513,
+            "revenueEstimateCapturedAt": 1794078130.222,
             "expectedReportAt": 1796850000
           }
         ],
@@ -2370,7 +2370,7 @@
       }
     },
     "TSLA": {
-      "updatedAt": "2026-11-07T13:12:06.372Z",
+      "updatedAt": "2026-11-07T19:02:11.059Z",
       "backfilledAt": "2026-11-05T15:31:06.271Z",
       "sources": {
         "sec": [
@@ -2596,7 +2596,7 @@
             "eps": null,
             "revenueEstimate": 29313093470,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057126.122,
+            "revenueEstimateCapturedAt": 1794078130.808,
             "expectedReportAt": 1801083600
           }
         ],
@@ -2671,7 +2671,7 @@
       }
     },
     "JPM": {
-      "updatedAt": "2026-11-07T13:12:06.979Z",
+      "updatedAt": "2026-11-07T19:02:11.636Z",
       "backfilledAt": "2026-11-05T15:27:10.057Z",
       "sources": {
         "sec": [
@@ -2904,7 +2904,7 @@
             "eps": null,
             "revenueEstimate": 51069960500,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057126.729,
+            "revenueEstimateCapturedAt": 1794078131.385,
             "expectedReportAt": 1799933400
           }
         ],
@@ -2979,7 +2979,7 @@
       }
     },
     "LLY": {
-      "updatedAt": "2026-11-07T13:12:07.601Z",
+      "updatedAt": "2026-11-07T19:02:12.221Z",
       "backfilledAt": "2026-11-05T15:27:45.056Z",
       "sources": {
         "sec": [
@@ -3267,7 +3267,7 @@
       }
     },
     "V": {
-      "updatedAt": "2026-11-07T13:12:08.205Z",
+      "updatedAt": "2026-11-07T19:02:12.801Z",
       "backfilledAt": "2026-11-04T08:02:56.347Z",
       "sources": {
         "sec": [
@@ -3485,7 +3485,7 @@
             "eps": null,
             "revenueEstimate": 12204856180,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057127.955,
+            "revenueEstimateCapturedAt": 1794078132.55,
             "expectedReportAt": 1800997200
           }
         ],
@@ -3560,7 +3560,7 @@
       }
     },
     "XOM": {
-      "updatedAt": "2026-11-07T13:12:08.812Z",
+      "updatedAt": "2026-11-07T19:02:13.373Z",
       "backfilledAt": "2026-11-04T08:02:57.394Z",
       "sources": {
         "sec": [
@@ -3696,7 +3696,7 @@
             "eps": null,
             "revenueEstimate": 118646740240,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057128.562,
+            "revenueEstimateCapturedAt": 1794078133.123,
             "expectedReportAt": 1801229400
           }
         ],
@@ -3771,7 +3771,7 @@
       }
     },
     "UNH": {
-      "updatedAt": "2026-11-07T13:12:09.416Z",
+      "updatedAt": "2026-11-07T19:02:13.958Z",
       "backfilledAt": "2026-11-05T15:31:45.750Z",
       "sources": {
         "sec": [
@@ -4004,7 +4004,7 @@
             "eps": null,
             "revenueEstimate": 112467323970,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057129.166,
+            "revenueEstimateCapturedAt": 1794078133.708,
             "expectedReportAt": 1799760600
           }
         ],
@@ -4079,7 +4079,7 @@
       }
     },
     "MA": {
-      "updatedAt": "2026-11-07T13:12:10.023Z",
+      "updatedAt": "2026-11-07T19:02:14.535Z",
       "backfilledAt": "2026-11-05T15:28:06.882Z",
       "sources": {
         "sec": [
@@ -4305,7 +4305,7 @@
             "eps": null,
             "revenueEstimate": 9920699860,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057129.773,
+            "revenueEstimateCapturedAt": 1794078134.285,
             "expectedReportAt": 1801143000
           }
         ],
@@ -4380,7 +4380,7 @@
       }
     },
     "COST": {
-      "updatedAt": "2026-11-07T13:12:10.631Z",
+      "updatedAt": "2026-11-07T19:02:15.121Z",
       "backfilledAt": "2026-11-04T08:03:00.708Z",
       "sources": {
         "sec": [
@@ -4577,7 +4577,7 @@
             "eps": null,
             "revenueEstimate": 74326845890,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057130.381,
+            "revenueEstimateCapturedAt": 1794078134.87,
             "expectedReportAt": 1796936400
           }
         ],
@@ -4641,7 +4641,7 @@
       }
     },
     "WMT": {
-      "updatedAt": "2026-11-07T13:12:11.241Z",
+      "updatedAt": "2026-11-07T19:02:15.699Z",
       "backfilledAt": "2026-11-04T08:03:01.673Z",
       "sources": {
         "sec": [
@@ -4859,7 +4859,7 @@
             "eps": null,
             "revenueEstimate": 187191825390,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057130.991,
+            "revenueEstimateCapturedAt": 1794078135.448,
             "expectedReportAt": 1795095000
           }
         ],
@@ -4934,7 +4934,7 @@
       }
     },
     "PG": {
-      "updatedAt": "2026-11-07T13:12:11.853Z",
+      "updatedAt": "2026-11-07T19:02:16.280Z",
       "backfilledAt": "2026-11-05T15:29:34.888Z",
       "sources": {
         "sec": [
@@ -5160,7 +5160,7 @@
             "eps": null,
             "revenueEstimate": 22851690120,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057131.603,
+            "revenueEstimateCapturedAt": 1794078136.029,
             "expectedReportAt": 1800538200
           }
         ],
@@ -5235,7 +5235,7 @@
       }
     },
     "HD": {
-      "updatedAt": "2026-11-07T13:12:12.467Z",
+      "updatedAt": "2026-11-07T19:02:16.866Z",
       "backfilledAt": "2026-11-05T15:26:29.962Z",
       "sources": {
         "sec": [
@@ -5453,7 +5453,7 @@
             "eps": null,
             "revenueEstimate": 42765939720,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057132.216,
+            "revenueEstimateCapturedAt": 1794078136.615,
             "expectedReportAt": 1794922200
           }
         ],
@@ -5528,7 +5528,7 @@
       }
     },
     "JNJ": {
-      "updatedAt": "2026-11-07T13:12:13.078Z",
+      "updatedAt": "2026-11-07T19:02:17.453Z",
       "backfilledAt": "2026-11-04T08:03:04.943Z",
       "sources": {
         "sec": [
@@ -5754,7 +5754,7 @@
             "eps": null,
             "revenueEstimate": 26419759280,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057132.827,
+            "revenueEstimateCapturedAt": 1794078137.202,
             "expectedReportAt": 1800970200
           }
         ],
@@ -5829,7 +5829,7 @@
       }
     },
     "ORCL": {
-      "updatedAt": "2026-11-07T13:12:13.688Z",
+      "updatedAt": "2026-11-07T19:02:18.033Z",
       "backfilledAt": "2026-11-05T15:29:11.608Z",
       "sources": {
         "sec": [
@@ -6054,7 +6054,7 @@
             "eps": null,
             "revenueEstimate": 21325007560,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057133.438,
+            "revenueEstimateCapturedAt": 1794078137.782,
             "expectedReportAt": 1797282000
           }
         ],
@@ -6129,7 +6129,7 @@
       }
     },
     "BRK-B": {
-      "updatedAt": "2026-11-07T13:12:14.343Z",
+      "updatedAt": "2026-11-07T19:02:18.606Z",
       "backfilledAt": "2026-11-04T08:03:07.307Z",
       "sources": {
         "sec": [
@@ -6398,7 +6398,7 @@
       }
     },
     "NFLX": {
-      "updatedAt": "2026-11-07T13:12:14.948Z",
+      "updatedAt": "2026-11-07T19:02:19.194Z",
       "backfilledAt": "2026-11-04T08:23:47.197Z",
       "sources": {
         "sec": [
@@ -6693,14 +6693,14 @@
             "eps": null,
             "revenueEstimate": 13446130180,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057134.698,
+            "revenueEstimateCapturedAt": 1794078138.943,
             "expectedReportAt": 1800392400
           }
         ]
       }
     },
     "ABBV": {
-      "updatedAt": "2026-11-07T13:12:15.563Z",
+      "updatedAt": "2026-11-07T19:02:19.780Z",
       "backfilledAt": "2026-11-05T15:21:33.023Z",
       "sources": {
         "sec": [
@@ -6994,7 +6994,7 @@
       }
     },
     "KO": {
-      "updatedAt": "2026-11-07T13:12:16.187Z",
+      "updatedAt": "2026-11-07T19:02:20.358Z",
       "backfilledAt": "2026-11-05T15:24:01.830Z",
       "sources": {
         "sec": [
@@ -7282,7 +7282,7 @@
       }
     },
     "CVX": {
-      "updatedAt": "2026-11-07T13:12:16.794Z",
+      "updatedAt": "2026-11-07T19:02:20.939Z",
       "backfilledAt": "2026-11-04T08:03:11.477Z",
       "sources": {
         "sec": [
@@ -7507,7 +7507,7 @@
             "eps": null,
             "revenueEstimate": 65157267170,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057136.544,
+            "revenueEstimateCapturedAt": 1794078140.688,
             "expectedReportAt": 1801229400
           }
         ],
@@ -7582,7 +7582,7 @@
       }
     },
     "BAC": {
-      "updatedAt": "2026-11-07T13:12:17.398Z",
+      "updatedAt": "2026-11-07T19:02:21.518Z",
       "backfilledAt": "2026-11-04T08:03:12.575Z",
       "sources": {
         "sec": [
@@ -7815,7 +7815,7 @@
             "eps": null,
             "revenueEstimate": 30235461020,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057137.147,
+            "revenueEstimateCapturedAt": 1794078141.267,
             "expectedReportAt": 1800019800
           }
         ],
@@ -7868,7 +7868,7 @@
       }
     },
     "CRM": {
-      "updatedAt": "2026-11-07T13:12:18.006Z",
+      "updatedAt": "2026-11-07T19:02:22.097Z",
       "backfilledAt": "2026-11-05T15:30:09.645Z",
       "sources": {
         "sec": [
@@ -8084,7 +8084,7 @@
             "eps": null,
             "revenueEstimate": 11462302380,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057137.755,
+            "revenueEstimateCapturedAt": 1794078141.846,
             "expectedReportAt": 1796245200
           }
         ],
@@ -8159,7 +8159,7 @@
       }
     },
     "AMD": {
-      "updatedAt": "2026-11-07T13:12:18.612Z",
+      "updatedAt": "2026-11-07T19:02:22.677Z",
       "backfilledAt": "2026-11-04T08:23:39.801Z",
       "sources": {
         "sec": [
@@ -8472,14 +8472,14 @@
             "eps": null,
             "revenueEstimate": 17056045360,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057138.362,
+            "revenueEstimateCapturedAt": 1794078142.426,
             "expectedReportAt": 1801602000
           }
         ]
       }
     },
     "TMUS": {
-      "updatedAt": "2026-11-07T13:12:19.215Z",
+      "updatedAt": "2026-11-07T19:02:23.266Z",
       "backfilledAt": "2026-11-04T08:03:15.812Z",
       "sources": {
         "sec": [
@@ -8767,7 +8767,7 @@
       }
     },
     "WFC": {
-      "updatedAt": "2026-11-07T13:12:19.820Z",
+      "updatedAt": "2026-11-07T19:02:23.854Z",
       "backfilledAt": "2026-11-04T08:03:16.877Z",
       "sources": {
         "sec": [
@@ -8993,7 +8993,7 @@
             "eps": null,
             "revenueEstimate": 22358285710,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057139.57,
+            "revenueEstimateCapturedAt": 1794078143.603,
             "expectedReportAt": 1799933400
           }
         ],
@@ -9068,7 +9068,7 @@
       }
     },
     "CSCO": {
-      "updatedAt": "2026-11-07T13:12:20.425Z",
+      "updatedAt": "2026-11-07T19:02:24.438Z",
       "backfilledAt": "2026-11-05T15:23:54.126Z",
       "sources": {
         "sec": [
@@ -9286,7 +9286,7 @@
             "eps": null,
             "revenueEstimate": 18115769170,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057140.175,
+            "revenueEstimateCapturedAt": 1794078144.187,
             "expectedReportAt": 1794517200
           }
         ],
@@ -9361,7 +9361,7 @@
       }
     },
     "MCD": {
-      "updatedAt": "2026-11-07T13:12:21.030Z",
+      "updatedAt": "2026-11-07T19:02:25.032Z",
       "backfilledAt": "2026-11-04T08:03:19.577Z",
       "sources": {
         "sec": [
@@ -9660,7 +9660,7 @@
       }
     },
     "ACN": {
-      "updatedAt": "2026-11-07T13:12:21.638Z",
+      "updatedAt": "2026-11-07T19:02:25.619Z",
       "backfilledAt": "2026-11-05T15:21:34.888Z",
       "sources": {
         "sec": [
@@ -9885,7 +9885,7 @@
             "eps": null,
             "revenueEstimate": 19406448890,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057141.388,
+            "revenueEstimateCapturedAt": 1794078145.369,
             "expectedReportAt": 1797514200
           }
         ],
@@ -9960,7 +9960,7 @@
       }
     },
     "LIN": {
-      "updatedAt": "2026-11-07T13:12:22.252Z",
+      "updatedAt": "2026-11-07T19:02:26.206Z",
       "backfilledAt": "2026-11-05T15:27:47.317Z",
       "sources": {
         "sec": [
@@ -10248,7 +10248,7 @@
       }
     },
     "ABT": {
-      "updatedAt": "2026-11-07T13:12:22.857Z",
+      "updatedAt": "2026-11-07T19:02:26.792Z",
       "backfilledAt": "2026-11-04T08:03:23.106Z",
       "sources": {
         "sec": [
@@ -10472,7 +10472,7 @@
             "eps": null,
             "revenueEstimate": 13208340720,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057142.608,
+            "revenueEstimateCapturedAt": 1794078146.542,
             "expectedReportAt": 1801143000
           }
         ],
@@ -10536,7 +10536,7 @@
       }
     },
     "DHR": {
-      "updatedAt": "2026-11-07T13:12:23.464Z",
+      "updatedAt": "2026-11-07T19:02:27.391Z",
       "backfilledAt": "2026-11-05T15:24:27.254Z",
       "sources": {
         "sec": [
@@ -10762,7 +10762,7 @@
             "eps": null,
             "revenueEstimate": 7492168820,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057143.214,
+            "revenueEstimateCapturedAt": 1794078147.14,
             "expectedReportAt": 1801056600
           }
         ],
@@ -10837,7 +10837,7 @@
       }
     },
     "PM": {
-      "updatedAt": "2026-11-07T13:12:24.073Z",
+      "updatedAt": "2026-11-07T19:02:27.968Z",
       "backfilledAt": "2026-11-04T08:03:25.553Z",
       "sources": {
         "sec": [
@@ -11125,7 +11125,7 @@
       }
     },
     "IBM": {
-      "updatedAt": "2026-11-07T13:12:24.684Z",
+      "updatedAt": "2026-11-07T19:02:28.546Z",
       "backfilledAt": "2026-11-04T08:03:26.995Z",
       "sources": {
         "sec": [
@@ -11351,7 +11351,7 @@
             "eps": null,
             "revenueEstimate": 20382528670,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057144.434,
+            "revenueEstimateCapturedAt": 1794078148.295,
             "expectedReportAt": 1801083600
           }
         ],
@@ -11426,7 +11426,7 @@
       }
     },
     "GE": {
-      "updatedAt": "2026-11-07T13:12:25.287Z",
+      "updatedAt": "2026-11-07T19:02:29.120Z",
       "backfilledAt": "2026-11-04T08:03:28.058Z",
       "sources": {
         "sec": [
@@ -11652,7 +11652,7 @@
             "eps": null,
             "revenueEstimate": 13298054320,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057145.037,
+            "revenueEstimateCapturedAt": 1794078148.869,
             "expectedReportAt": 1800538200
           }
         ],
@@ -11705,7 +11705,7 @@
       }
     },
     "NOW": {
-      "updatedAt": "2026-11-07T13:12:25.893Z",
+      "updatedAt": "2026-11-07T19:02:29.695Z",
       "backfilledAt": "2026-11-04T08:23:50.662Z",
       "sources": {
         "sec": [
@@ -11999,14 +11999,14 @@
             "eps": null,
             "revenueEstimate": 4370528970,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057145.643,
+            "revenueEstimateCapturedAt": 1794078149.444,
             "expectedReportAt": 1801083600
           }
         ]
       }
     },
     "TMO": {
-      "updatedAt": "2026-11-07T13:12:26.498Z",
+      "updatedAt": "2026-11-07T19:02:30.293Z",
       "backfilledAt": "2026-11-05T15:31:12.706Z",
       "sources": {
         "sec": [
@@ -12232,7 +12232,7 @@
             "eps": null,
             "revenueEstimate": 12852514090,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057146.248,
+            "revenueEstimateCapturedAt": 1794078150.043,
             "expectedReportAt": 1801143000
           }
         ],
@@ -12307,7 +12307,7 @@
       }
     },
     "CAT": {
-      "updatedAt": "2026-11-07T13:12:27.104Z",
+      "updatedAt": "2026-11-07T19:02:30.869Z",
       "backfilledAt": "2026-11-05T15:23:30.429Z",
       "sources": {
         "sec": [
@@ -12540,7 +12540,7 @@
             "eps": null,
             "revenueEstimate": 20769648150,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057146.854,
+            "revenueEstimateCapturedAt": 1794078150.619,
             "expectedReportAt": 1801139400
           }
         ],
@@ -12615,7 +12615,7 @@
       }
     },
     "INTU": {
-      "updatedAt": "2026-11-07T13:12:27.709Z",
+      "updatedAt": "2026-11-07T19:02:31.452Z",
       "backfilledAt": "2026-11-05T15:26:56.132Z",
       "sources": {
         "sec": [
@@ -12833,7 +12833,7 @@
             "eps": null,
             "revenueEstimate": 4306921550,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057147.459,
+            "revenueEstimateCapturedAt": 1794078151.202,
             "expectedReportAt": 1795122000
           }
         ],
@@ -12908,7 +12908,7 @@
       }
     },
     "TXN": {
-      "updatedAt": "2026-11-07T13:12:28.317Z",
+      "updatedAt": "2026-11-07T19:02:32.032Z",
       "backfilledAt": "2026-11-04T08:03:33.398Z",
       "sources": {
         "sec": [
@@ -13134,7 +13134,7 @@
             "eps": null,
             "revenueEstimate": 6067507350,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057148.066,
+            "revenueEstimateCapturedAt": 1794078151.781,
             "expectedReportAt": 1800997200
           }
         ],
@@ -13209,7 +13209,7 @@
       }
     },
     "QCOM": {
-      "updatedAt": "2026-11-07T13:12:28.925Z",
+      "updatedAt": "2026-11-07T19:02:32.608Z",
       "backfilledAt": "2026-11-05T15:29:44.251Z",
       "sources": {
         "sec": [
@@ -13523,14 +13523,14 @@
             "eps": null,
             "revenueEstimate": 10621710000,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057148.675,
+            "revenueEstimateCapturedAt": 1794078152.358,
             "expectedReportAt": 1801688400
           }
         ]
       }
     },
     "AMGN": {
-      "updatedAt": "2026-11-07T13:12:29.578Z",
+      "updatedAt": "2026-11-07T19:02:33.180Z",
       "backfilledAt": "2026-11-05T15:22:06.915Z",
       "sources": {
         "sec": [
@@ -13763,7 +13763,7 @@
             "eps": null,
             "revenueEstimate": 10469987210,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057149.328,
+            "revenueEstimateCapturedAt": 1794078152.929,
             "expectedReportAt": 1801602000
           }
         ],
@@ -13838,7 +13838,7 @@
       }
     },
     "DIS": {
-      "updatedAt": "2026-11-07T13:12:30.182Z",
+      "updatedAt": "2026-11-07T19:02:33.785Z",
       "backfilledAt": "2026-11-05T15:32:21.786Z",
       "sources": {
         "sec": [
@@ -14057,7 +14057,7 @@
             "eps": null,
             "revenueEstimate": 25154598640,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057149.932,
+            "revenueEstimateCapturedAt": 1794078153.535,
             "expectedReportAt": 1794922200
           }
         ],
@@ -14132,7 +14132,7 @@
       }
     },
     "MS": {
-      "updatedAt": "2026-11-07T13:12:30.788Z",
+      "updatedAt": "2026-11-07T19:02:34.367Z",
       "backfilledAt": "2026-11-04T08:03:37.822Z",
       "sources": {
         "sec": [
@@ -14357,7 +14357,7 @@
             "eps": null,
             "revenueEstimate": 20365259560,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057150.538,
+            "revenueEstimateCapturedAt": 1794078154.117,
             "expectedReportAt": 1799933400
           }
         ],
@@ -14432,7 +14432,7 @@
       }
     },
     "NEE": {
-      "updatedAt": "2026-11-07T13:12:31.388Z",
+      "updatedAt": "2026-11-07T19:02:34.954Z",
       "backfilledAt": "2026-11-04T08:03:39.045Z",
       "sources": {
         "sec": [
@@ -14642,7 +14642,7 @@
             "eps": null,
             "revenueEstimate": 7956596850,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057151.138,
+            "revenueEstimateCapturedAt": 1794078154.704,
             "expectedReportAt": 1801056600
           }
         ],
@@ -14706,7 +14706,7 @@
       }
     },
     "GS": {
-      "updatedAt": "2026-11-07T13:12:31.994Z",
+      "updatedAt": "2026-11-07T19:02:35.581Z",
       "backfilledAt": "2026-11-04T08:03:40.455Z",
       "sources": {
         "sec": [
@@ -14946,7 +14946,7 @@
             "eps": null,
             "revenueEstimate": 17727993560,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057151.744,
+            "revenueEstimateCapturedAt": 1794078155.332,
             "expectedReportAt": 1800365400
           }
         ],
@@ -15021,7 +15021,7 @@
       }
     },
     "PLTR": {
-      "updatedAt": "2026-11-07T13:12:32.601Z",
+      "updatedAt": "2026-11-07T19:02:36.166Z",
       "backfilledAt": "2026-11-05T15:29:17.129Z",
       "sources": {
         "sec": [
@@ -15254,7 +15254,7 @@
             "eps": null,
             "revenueEstimate": 2716509160,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057152.351,
+            "revenueEstimateCapturedAt": 1794078155.915,
             "expectedReportAt": 1801515600
           }
         ],
@@ -15329,7 +15329,7 @@
       }
     },
     "UBER": {
-      "updatedAt": "2026-11-07T13:12:33.207Z",
+      "updatedAt": "2026-11-07T19:02:36.743Z",
       "backfilledAt": "2026-11-05T15:31:35.486Z",
       "sources": {
         "sec": [
@@ -15642,14 +15642,14 @@
             "eps": null,
             "revenueEstimate": 15639255950,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057152.956,
+            "revenueEstimateCapturedAt": 1794078156.493,
             "expectedReportAt": 1801661400
           }
         ]
       }
     },
     "SOFI": {
-      "updatedAt": "2026-11-07T13:12:33.815Z",
+      "updatedAt": "2026-11-07T19:02:37.329Z",
       "backfilledAt": "2026-11-04T08:23:40.912Z",
       "sources": {
         "sec": [
@@ -15950,14 +15950,14 @@
             "eps": null,
             "revenueEstimate": 1389750940,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057153.564,
+            "revenueEstimateCapturedAt": 1794078157.078,
             "expectedReportAt": 1801229400
           }
         ]
       }
     },
     "PYPL": {
-      "updatedAt": "2026-11-07T13:12:34.473Z",
+      "updatedAt": "2026-11-07T19:02:37.906Z",
       "backfilledAt": "2026-11-05T15:29:21.694Z",
       "sources": {
         "sec": [
@@ -16245,7 +16245,7 @@
       }
     },
     "INTC": {
-      "updatedAt": "2026-11-07T13:12:35.076Z",
+      "updatedAt": "2026-11-07T19:02:38.491Z",
       "backfilledAt": "2026-11-05T15:26:50.262Z",
       "sources": {
         "sec": [
@@ -16471,7 +16471,7 @@
             "eps": null,
             "revenueEstimate": 15618018670,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057154.825,
+            "revenueEstimateCapturedAt": 1794078158.241,
             "expectedReportAt": 1801170000
           }
         ],
@@ -16546,7 +16546,7 @@
       }
     },
     "SHOP": {
-      "updatedAt": "2026-11-07T13:12:35.677Z",
+      "updatedAt": "2026-11-07T19:02:39.080Z",
       "backfilledAt": "2026-11-04T08:03:46.931Z",
       "sources": {
         "sec": [
@@ -16800,7 +16800,7 @@
       }
     },
     "TSM": {
-      "updatedAt": "2026-11-07T13:12:36.278Z",
+      "updatedAt": "2026-11-07T19:02:39.662Z",
       "backfilledAt": "2026-11-04T08:03:48.048Z",
       "sources": {
         "yahoo": [
@@ -16899,14 +16899,14 @@
             "eps": null,
             "revenueEstimate": 1707801676350,
             "revenueCurrency": "TWD",
-            "revenueEstimateCapturedAt": 1794057156.028,
+            "revenueEstimateCapturedAt": 1794078159.412,
             "expectedReportAt": 1799933400
           }
         ]
       }
     },
     "BABA": {
-      "updatedAt": "2026-11-07T13:12:36.878Z",
+      "updatedAt": "2026-11-07T19:02:40.239Z",
       "backfilledAt": "2026-11-04T08:03:49.050Z",
       "sources": {
         "yahoo": [
@@ -17005,7 +17005,7 @@
             "eps": null,
             "revenueEstimate": 269828043889,
             "revenueCurrency": "CNY",
-            "revenueEstimateCapturedAt": 1794057156.628,
+            "revenueEstimateCapturedAt": 1794078159.989,
             "expectedReportAt": 1795095000
           }
         ],
@@ -17047,7 +17047,7 @@
       }
     },
     "NVO": {
-      "updatedAt": "2026-11-07T13:12:37.487Z",
+      "updatedAt": "2026-11-07T19:02:40.899Z",
       "backfilledAt": "2026-11-04T08:03:50.134Z",
       "sources": {
         "yahoo": [
@@ -17165,7 +17165,7 @@
             "eps": null,
             "revenueEstimate": 79284414980,
             "revenueCurrency": "DKK",
-            "revenueEstimateCapturedAt": 1794057157.236,
+            "revenueEstimateCapturedAt": 1794078160.648,
             "expectedReportAt": 1801661400
           }
         ],
@@ -17240,7 +17240,7 @@
       }
     },
     "ASML": {
-      "updatedAt": "2026-11-07T13:12:38.090Z",
+      "updatedAt": "2026-11-07T19:02:41.476Z",
       "backfilledAt": "2026-11-04T08:03:51.293Z",
       "sources": {
         "yahoo": [
@@ -17339,7 +17339,7 @@
             "eps": null,
             "revenueEstimate": 14816055140,
             "revenueCurrency": "EUR",
-            "revenueEstimateCapturedAt": 1794057157.841,
+            "revenueEstimateCapturedAt": 1794078161.226,
             "expectedReportAt": 1801056600
           }
         ],
@@ -17392,7 +17392,7 @@
       }
     },
     "ELF": {
-      "updatedAt": "2026-11-07T13:12:38.691Z",
+      "updatedAt": "2026-11-07T19:02:42.051Z",
       "backfilledAt": "2026-11-04T08:23:43.118Z",
       "sources": {
         "sec": [
@@ -17707,14 +17707,14 @@
             "eps": null,
             "revenueEstimate": 548235640,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057158.441,
+            "revenueEstimateCapturedAt": 1794078161.801,
             "expectedReportAt": 1801688400
           }
         ]
       }
     },
     "HIMS": {
-      "updatedAt": "2026-11-07T13:12:39.300Z",
+      "updatedAt": "2026-11-07T19:02:42.739Z",
       "backfilledAt": "2026-11-04T08:23:46.146Z",
       "sources": {
         "sec": [
@@ -18000,14 +18000,14 @@
             "eps": null,
             "revenueEstimate": 892770540,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057159.05,
+            "revenueEstimateCapturedAt": 1794078162.489,
             "expectedReportAt": 1794258000
           }
         ]
       }
     },
     "CELH": {
-      "updatedAt": "2026-11-07T13:12:39.903Z",
+      "updatedAt": "2026-11-07T19:02:43.344Z",
       "backfilledAt": "2026-11-04T08:23:48.407Z",
       "sources": {
         "sec": [
@@ -18331,7 +18331,7 @@
       }
     },
     "NKE": {
-      "updatedAt": "2026-11-07T13:12:40.512Z",
+      "updatedAt": "2026-11-07T19:02:43.935Z",
       "backfilledAt": "2026-11-04T08:23:49.625Z",
       "sources": {
         "sec": [
@@ -18625,14 +18625,14 @@
             "eps": null,
             "revenueEstimate": 11104249180,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057160.262,
+            "revenueEstimateCapturedAt": 1794078163.685,
             "expectedReportAt": 1797541200
           }
         ]
       }
     },
     "MU": {
-      "updatedAt": "2026-11-07T13:12:41.143Z",
+      "updatedAt": "2026-11-07T19:02:44.507Z",
       "backfilledAt": "2026-11-05T15:28:22.302Z",
       "sources": {
         "sec": [
@@ -18808,7 +18808,7 @@
             "eps": null,
             "revenueEstimate": 61832643300,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057160.893,
+            "revenueEstimateCapturedAt": 1794078164.257,
             "expectedReportAt": 1798059600
           }
         ],
@@ -18933,7 +18933,7 @@
       }
     },
     "MRK": {
-      "updatedAt": "2026-11-07T13:12:41.793Z",
+      "updatedAt": "2026-11-07T19:02:45.079Z",
       "backfilledAt": "2026-11-05T15:06:48.973Z",
       "sources": {
         "sec": [
@@ -19228,7 +19228,7 @@
       }
     },
     "AMAT": {
-      "updatedAt": "2026-11-07T13:12:42.401Z",
+      "updatedAt": "2026-11-07T19:02:45.677Z",
       "backfilledAt": "2026-11-05T15:22:14.269Z",
       "sources": {
         "sec": [
@@ -19397,7 +19397,7 @@
             "eps": null,
             "revenueEstimate": 10299491080,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057162.151,
+            "revenueEstimateCapturedAt": 1794078165.425,
             "expectedReportAt": 1794517200
           }
         ],
@@ -19522,7 +19522,7 @@
       }
     },
     "RTX": {
-      "updatedAt": "2026-11-07T13:12:43.010Z",
+      "updatedAt": "2026-11-07T19:02:46.263Z",
       "backfilledAt": "2026-11-05T15:30:04.127Z",
       "sources": {
         "sec": [
@@ -19699,7 +19699,7 @@
             "eps": null,
             "revenueEstimate": 25872550110,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057162.759,
+            "revenueEstimateCapturedAt": 1794078166.012,
             "expectedReportAt": 1800970200
           }
         ],
@@ -19824,7 +19824,7 @@
       }
     },
     "PANW": {
-      "updatedAt": "2026-11-07T13:12:43.620Z",
+      "updatedAt": "2026-11-07T19:02:46.838Z",
       "backfilledAt": "2026-11-05T15:29:18.182Z",
       "sources": {
         "sec": [
@@ -19992,7 +19992,7 @@
             "eps": null,
             "revenueEstimate": 3307502950,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057163.37,
+            "revenueEstimateCapturedAt": 1794078166.588,
             "expectedReportAt": 1795035600
           }
         ],
@@ -20117,7 +20117,7 @@
       }
     },
     "LRCX": {
-      "updatedAt": "2026-11-07T13:12:44.229Z",
+      "updatedAt": "2026-11-07T19:02:47.410Z",
       "backfilledAt": "2026-11-05T15:27:30.694Z",
       "sources": {
         "sec": [
@@ -20293,7 +20293,7 @@
             "eps": null,
             "revenueEstimate": 8643520980,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057163.979,
+            "revenueEstimateCapturedAt": 1794078167.16,
             "expectedReportAt": 1801083600
           }
         ],
@@ -20418,7 +20418,7 @@
       }
     },
     "CRWD": {
-      "updatedAt": "2026-11-07T13:12:44.847Z",
+      "updatedAt": "2026-11-07T19:02:47.987Z",
       "backfilledAt": "2026-11-05T15:24:22.824Z",
       "sources": {
         "sec": [
@@ -20579,7 +20579,7 @@
             "eps": null,
             "revenueEstimate": 1528559430,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057164.597,
+            "revenueEstimateCapturedAt": 1794078167.737,
             "expectedReportAt": 1796158800
           }
         ],
@@ -20704,7 +20704,7 @@
       }
     },
     "AXP": {
-      "updatedAt": "2026-11-07T13:12:45.457Z",
+      "updatedAt": "2026-11-07T19:02:48.567Z",
       "backfilledAt": "2026-11-05T15:07:01.206Z",
       "sources": {
         "sec": [
@@ -20880,7 +20880,7 @@
             "eps": null,
             "revenueEstimate": 20806691690,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057165.208,
+            "revenueEstimateCapturedAt": 1794078168.317,
             "expectedReportAt": 1801229400
           }
         ],
@@ -21005,7 +21005,7 @@
       }
     },
     "GILD": {
-      "updatedAt": "2026-11-07T13:12:46.062Z",
+      "updatedAt": "2026-11-07T19:02:49.146Z",
       "backfilledAt": "2026-11-05T15:26:09.007Z",
       "sources": {
         "sec": [
@@ -21293,7 +21293,7 @@
       }
     },
     "DELL": {
-      "updatedAt": "2026-11-07T13:12:46.665Z",
+      "updatedAt": "2026-11-07T19:02:49.723Z",
       "backfilledAt": "2026-11-05T15:24:35.213Z",
       "sources": {
         "sec": [
@@ -21459,7 +21459,7 @@
             "eps": null,
             "revenueEstimate": 49175023750,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057166.415,
+            "revenueEstimateCapturedAt": 1794078169.473,
             "expectedReportAt": 1795554000
           }
         ],
@@ -21584,7 +21584,7 @@
       }
     },
     "GEV": {
-      "updatedAt": "2026-11-07T13:12:47.271Z",
+      "updatedAt": "2026-11-07T19:02:50.297Z",
       "backfilledAt": "2026-11-05T15:07:07.579Z",
       "sources": {
         "sec": [
@@ -21751,7 +21751,7 @@
             "eps": null,
             "revenueEstimate": 14014935080,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057167.02,
+            "revenueEstimateCapturedAt": 1794078170.047,
             "expectedReportAt": 1801056600
           }
         ],
@@ -21876,7 +21876,7 @@
       }
     },
     "ANET": {
-      "updatedAt": "2026-11-07T13:12:47.879Z",
+      "updatedAt": "2026-11-07T19:02:50.882Z",
       "backfilledAt": "2026-11-05T15:22:21.121Z",
       "sources": {
         "sec": [
@@ -22171,7 +22171,7 @@
       }
     },
     "C": {
-      "updatedAt": "2026-11-07T13:12:48.481Z",
+      "updatedAt": "2026-11-07T19:02:51.462Z",
       "backfilledAt": "2026-11-05T15:07:11.492Z",
       "sources": {
         "sec": [
@@ -22330,7 +22330,7 @@
             "eps": null,
             "revenueEstimate": 22894177610,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057168.231,
+            "revenueEstimateCapturedAt": 1794078171.211,
             "expectedReportAt": 1799933400
           }
         ],
@@ -22455,7 +22455,7 @@
       }
     },
     "PEP": {
-      "updatedAt": "2026-11-07T13:12:49.141Z",
+      "updatedAt": "2026-11-07T19:02:52.041Z",
       "backfilledAt": "2026-11-05T15:07:13.457Z",
       "sources": {
         "sec": [
@@ -22692,7 +22692,7 @@
       }
     },
     "VZ": {
-      "updatedAt": "2026-11-07T13:12:49.745Z",
+      "updatedAt": "2026-11-07T19:02:52.614Z",
       "backfilledAt": "2026-11-05T15:31:58.616Z",
       "sources": {
         "sec": [
@@ -22868,7 +22868,7 @@
             "eps": null,
             "revenueEstimate": 37056927510,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057169.494,
+            "revenueEstimateCapturedAt": 1794078172.364,
             "expectedReportAt": 1801143000
           }
         ],
@@ -22993,7 +22993,7 @@
       }
     },
     "ADI": {
-      "updatedAt": "2026-11-07T13:12:50.352Z",
+      "updatedAt": "2026-11-07T19:02:53.185Z",
       "backfilledAt": "2026-11-05T15:22:09.686Z",
       "sources": {
         "sec": [
@@ -23162,7 +23162,7 @@
             "eps": null,
             "revenueEstimate": 4320216180,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057170.101,
+            "revenueEstimateCapturedAt": 1794078172.936,
             "expectedReportAt": 1795527000
           }
         ],
@@ -23287,7 +23287,7 @@
       }
     },
     "BLK": {
-      "updatedAt": "2026-11-07T13:12:50.954Z",
+      "updatedAt": "2026-11-07T19:02:53.761Z",
       "backfilledAt": "2026-11-05T15:22:45.339Z",
       "sources": {
         "sec": [
@@ -23447,7 +23447,7 @@
             "eps": null,
             "revenueEstimate": 7930240000,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057170.704,
+            "revenueEstimateCapturedAt": 1794078173.51,
             "expectedReportAt": 1799933400
           }
         ],
@@ -23572,7 +23572,7 @@
       }
     },
     "APH": {
-      "updatedAt": "2026-11-07T13:12:51.558Z",
+      "updatedAt": "2026-11-07T19:02:54.349Z",
       "backfilledAt": "2026-11-05T15:22:08.293Z",
       "sources": {
         "sec": [
@@ -23755,7 +23755,7 @@
             "eps": null,
             "revenueEstimate": 10554344550,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057171.308,
+            "revenueEstimateCapturedAt": 1794078174.098,
             "expectedReportAt": 1801056600
           }
         ],
@@ -23880,7 +23880,7 @@
       }
     },
     "DE": {
-      "updatedAt": "2026-11-07T13:12:52.160Z",
+      "updatedAt": "2026-11-07T19:02:54.927Z",
       "backfilledAt": "2026-11-05T15:07:24.465Z",
       "sources": {
         "sec": [
@@ -24049,7 +24049,7 @@
             "eps": null,
             "revenueEstimate": 10354114330,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057171.91,
+            "revenueEstimateCapturedAt": 1794078174.677,
             "expectedReportAt": 1795613400
           }
         ],
@@ -24174,7 +24174,7 @@
       }
     },
     "UNP": {
-      "updatedAt": "2026-11-07T13:12:52.768Z",
+      "updatedAt": "2026-11-07T19:02:55.515Z",
       "backfilledAt": "2026-11-05T15:31:39.862Z",
       "sources": {
         "sec": [
@@ -24350,7 +24350,7 @@
             "eps": null,
             "revenueEstimate": 7129576880,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057172.518,
+            "revenueEstimateCapturedAt": 1794078175.264,
             "expectedReportAt": 1800970200
           }
         ],
@@ -24475,7 +24475,7 @@
       }
     },
     "PFE": {
-      "updatedAt": "2026-11-07T13:12:53.372Z",
+      "updatedAt": "2026-11-07T19:02:56.093Z",
       "backfilledAt": "2026-11-05T15:12:40.186Z",
       "sources": {
         "sec": [
@@ -24776,14 +24776,14 @@
             "eps": null,
             "revenueEstimate": 17198607070,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057173.123,
+            "revenueEstimateCapturedAt": 1794078175.842,
             "expectedReportAt": 1801575000
           }
         ]
       }
     },
     "ISRG": {
-      "updatedAt": "2026-11-07T13:12:53.978Z",
+      "updatedAt": "2026-11-07T19:02:56.669Z",
       "backfilledAt": "2026-11-05T15:12:43.609Z",
       "sources": {
         "sec": [
@@ -25077,14 +25077,14 @@
             "eps": null,
             "revenueEstimate": 3236349890,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057173.728,
+            "revenueEstimateCapturedAt": 1794078176.419,
             "expectedReportAt": 1800565200
           }
         ]
       }
     },
     "TJX": {
-      "updatedAt": "2026-11-07T13:12:54.587Z",
+      "updatedAt": "2026-11-07T19:02:57.246Z",
       "backfilledAt": "2026-11-05T15:12:47.700Z",
       "sources": {
         "sec": [
@@ -25370,14 +25370,14 @@
             "eps": null,
             "revenueEstimate": 15863979550,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057174.337,
+            "revenueEstimateCapturedAt": 1794078176.996,
             "expectedReportAt": 1795008600
           }
         ]
       }
     },
     "VRTX": {
-      "updatedAt": "2026-11-07T13:12:55.198Z",
+      "updatedAt": "2026-11-07T19:02:57.823Z",
       "backfilledAt": "2026-11-05T15:12:53.344Z",
       "sources": {
         "sec": [
@@ -25677,7 +25677,7 @@
       }
     },
     "LMT": {
-      "updatedAt": "2026-11-07T13:12:55.802Z",
+      "updatedAt": "2026-11-07T19:02:58.399Z",
       "backfilledAt": "2026-11-05T15:12:56.249Z",
       "sources": {
         "sec": [
@@ -25971,14 +25971,14 @@
             "eps": null,
             "revenueEstimate": 22666981830,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057175.551,
+            "revenueEstimateCapturedAt": 1794078178.15,
             "expectedReportAt": 1800970200
           }
         ]
       }
     },
     "MDT": {
-      "updatedAt": "2026-11-07T13:12:56.407Z",
+      "updatedAt": "2026-11-07T19:02:58.974Z",
       "backfilledAt": "2026-11-05T15:13:00.334Z",
       "sources": {
         "sec": [
@@ -26264,14 +26264,14 @@
             "eps": null,
             "revenueEstimate": 9479252740,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057176.157,
+            "revenueEstimateCapturedAt": 1794078178.724,
             "expectedReportAt": 1795527000
           }
         ]
       }
     },
     "BMY": {
-      "updatedAt": "2026-11-07T13:12:57.011Z",
+      "updatedAt": "2026-11-07T19:02:59.562Z",
       "backfilledAt": "2026-11-05T15:13:01.822Z",
       "sources": {
         "sec": [
@@ -26559,7 +26559,7 @@
       }
     },
     "SYK": {
-      "updatedAt": "2026-11-07T13:12:57.612Z",
+      "updatedAt": "2026-11-07T19:03:00.144Z",
       "backfilledAt": "2026-11-05T15:13:04.958Z",
       "sources": {
         "sec": [
@@ -26852,14 +26852,14 @@
             "eps": null,
             "revenueEstimate": 7684605080,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057177.361,
+            "revenueEstimateCapturedAt": 1794078179.894,
             "expectedReportAt": 1801170000
           }
         ]
       }
     },
     "LOW": {
-      "updatedAt": "2026-11-07T13:12:58.213Z",
+      "updatedAt": "2026-11-07T19:03:00.716Z",
       "backfilledAt": "2026-11-05T15:13:09.546Z",
       "sources": {
         "sec": [
@@ -27145,14 +27145,14 @@
             "eps": null,
             "revenueEstimate": 22337422740,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057177.963,
+            "revenueEstimateCapturedAt": 1794078180.466,
             "expectedReportAt": 1795008600
           }
         ]
       }
     },
     "COF": {
-      "updatedAt": "2026-11-07T13:12:58.821Z",
+      "updatedAt": "2026-11-07T19:03:01.294Z",
       "backfilledAt": "2026-11-05T15:13:11.499Z",
       "sources": {
         "sec": [
@@ -27453,14 +27453,14 @@
             "eps": null,
             "revenueEstimate": 16559547600,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057178.571,
+            "revenueEstimateCapturedAt": 1794078181.044,
             "expectedReportAt": 1800392400
           }
         ]
       }
     },
     "MCK": {
-      "updatedAt": "2026-11-07T13:12:59.475Z",
+      "updatedAt": "2026-11-07T19:03:01.872Z",
       "backfilledAt": "2026-11-05T15:13:12.675Z",
       "sources": {
         "sec": [
@@ -27761,14 +27761,14 @@
             "eps": null,
             "revenueEstimate": 113819696800,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057179.224,
+            "revenueEstimateCapturedAt": 1794078181.622,
             "expectedReportAt": 1801688400
           }
         ]
       }
     },
     "NEM": {
-      "updatedAt": "2026-11-07T13:13:00.083Z",
+      "updatedAt": "2026-11-07T19:03:02.451Z",
       "backfilledAt": "2026-11-05T15:13:18.217Z",
       "sources": {
         "sec": [
@@ -28056,7 +28056,7 @@
       }
     },
     "ADP": {
-      "updatedAt": "2026-11-07T13:13:00.691Z",
+      "updatedAt": "2026-11-07T19:03:03.026Z",
       "backfilledAt": "2026-11-05T15:13:19.341Z",
       "sources": {
         "sec": [
@@ -28350,14 +28350,14 @@
             "eps": null,
             "revenueEstimate": 5681004010,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057180.441,
+            "revenueEstimateCapturedAt": 1794078182.776,
             "expectedReportAt": 1801056600
           }
         ]
       }
     },
     "CME": {
-      "updatedAt": "2026-11-07T13:13:01.294Z",
+      "updatedAt": "2026-11-07T19:03:03.608Z",
       "backfilledAt": "2026-11-05T15:13:25.782Z",
       "sources": {
         "sec": [
@@ -28645,7 +28645,7 @@
       }
     },
     "HCA": {
-      "updatedAt": "2026-11-07T13:13:01.903Z",
+      "updatedAt": "2026-11-07T19:03:04.181Z",
       "backfilledAt": "2026-11-05T15:13:30.739Z",
       "sources": {
         "sec": [
@@ -28939,14 +28939,14 @@
             "eps": null,
             "revenueEstimate": 20017374820,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057181.653,
+            "revenueEstimateCapturedAt": 1794078183.931,
             "expectedReportAt": 1800970200
           }
         ]
       }
     },
     "CVS": {
-      "updatedAt": "2026-11-07T13:13:02.524Z",
+      "updatedAt": "2026-11-07T19:03:04.762Z",
       "backfilledAt": "2026-11-05T15:13:33.175Z",
       "sources": {
         "sec": [
@@ -29248,7 +29248,7 @@
       }
     },
     "VLO": {
-      "updatedAt": "2026-11-07T13:13:03.130Z",
+      "updatedAt": "2026-11-07T19:03:05.343Z",
       "backfilledAt": "2026-11-05T15:13:36.055Z",
       "sources": {
         "sec": [
@@ -29542,14 +29542,14 @@
             "eps": null,
             "revenueEstimate": 41101739690,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057182.88,
+            "revenueEstimateCapturedAt": 1794078185.093,
             "expectedReportAt": 1801143000
           }
         ]
       }
     },
     "GD": {
-      "updatedAt": "2026-11-07T13:13:03.736Z",
+      "updatedAt": "2026-11-07T19:03:05.920Z",
       "backfilledAt": "2026-11-05T15:13:40.841Z",
       "sources": {
         "sec": [
@@ -29843,14 +29843,14 @@
             "eps": null,
             "revenueEstimate": 14735627210,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057183.487,
+            "revenueEstimateCapturedAt": 1794078185.67,
             "expectedReportAt": 1801056600
           }
         ]
       }
     },
     "MRNA": {
-      "updatedAt": "2026-11-07T13:13:04.339Z",
+      "updatedAt": "2026-11-07T19:03:06.502Z",
       "backfilledAt": "2026-11-05T15:13:44.513Z",
       "sources": {
         "sec": [
@@ -30143,7 +30143,7 @@
       }
     },
     "WM": {
-      "updatedAt": "2026-11-07T13:13:04.948Z",
+      "updatedAt": "2026-11-07T19:03:07.079Z",
       "backfilledAt": "2026-11-05T15:14:35.769Z",
       "sources": {
         "sec": [
@@ -30437,14 +30437,14 @@
             "eps": null,
             "revenueEstimate": 6707194740,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057184.698,
+            "revenueEstimateCapturedAt": 1794078186.828,
             "expectedReportAt": 1801083600
           }
         ]
       }
     },
     "ELV": {
-      "updatedAt": "2026-11-07T13:13:05.603Z",
+      "updatedAt": "2026-11-07T19:03:07.657Z",
       "backfilledAt": "2026-11-05T15:14:37.814Z",
       "sources": {
         "sec": [
@@ -30738,14 +30738,14 @@
             "eps": null,
             "revenueEstimate": 49138793880,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057185.353,
+            "revenueEstimateCapturedAt": 1794078187.406,
             "expectedReportAt": 1801143000
           }
         ]
       }
     },
     "CSX": {
-      "updatedAt": "2026-11-07T13:13:06.205Z",
+      "updatedAt": "2026-11-07T19:03:08.246Z",
       "backfilledAt": "2026-11-05T15:14:39.911Z",
       "sources": {
         "sec": [
@@ -31039,14 +31039,14 @@
             "eps": null,
             "revenueEstimate": 3978393370,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057185.955,
+            "revenueEstimateCapturedAt": 1794078187.995,
             "expectedReportAt": 1801170000
           }
         ]
       }
     },
     "UPS": {
-      "updatedAt": "2026-11-07T13:13:06.813Z",
+      "updatedAt": "2026-11-07T19:03:08.823Z",
       "backfilledAt": "2026-11-05T15:14:41.630Z",
       "sources": {
         "sec": [
@@ -31347,14 +31347,14 @@
             "eps": null,
             "revenueEstimate": 25714052830,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057186.562,
+            "revenueEstimateCapturedAt": 1794078188.572,
             "expectedReportAt": 1800970200
           }
         ]
       }
     },
     "REGN": {
-      "updatedAt": "2026-11-07T13:13:07.416Z",
+      "updatedAt": "2026-11-07T19:03:09.409Z",
       "backfilledAt": "2026-11-05T15:14:42.753Z",
       "sources": {
         "sec": [
@@ -31648,14 +31648,14 @@
             "eps": null,
             "revenueEstimate": 5850231350,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057187.167,
+            "revenueEstimateCapturedAt": 1794078189.158,
             "expectedReportAt": 1801143000
           }
         ]
       }
     },
     "ADBE": {
-      "updatedAt": "2026-11-07T13:13:08.023Z",
+      "updatedAt": "2026-11-07T19:03:09.987Z",
       "backfilledAt": "2026-11-05T15:14:43.969Z",
       "sources": {
         "sec": [
@@ -31949,14 +31949,14 @@
             "eps": null,
             "revenueEstimate": 6830578620,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057187.772,
+            "revenueEstimateCapturedAt": 1794078189.737,
             "expectedReportAt": 1796850000
           }
         ]
       }
     },
     "MNST": {
-      "updatedAt": "2026-11-07T13:13:08.631Z",
+      "updatedAt": "2026-11-07T19:03:10.564Z",
       "backfilledAt": "2026-11-05T15:14:45.927Z",
       "sources": {
         "sec": [
@@ -32259,7 +32259,7 @@
       }
     },
     "FTNT": {
-      "updatedAt": "2026-11-07T13:13:09.239Z",
+      "updatedAt": "2026-11-07T19:03:11.143Z",
       "backfilledAt": "2026-11-05T15:14:50.780Z",
       "sources": {
         "sec": [
@@ -32547,7 +32547,7 @@
       }
     },
     "MCO": {
-      "updatedAt": "2026-11-07T13:13:09.844Z",
+      "updatedAt": "2026-11-07T19:03:11.733Z",
       "backfilledAt": "2026-11-05T15:14:53.774Z",
       "sources": {
         "sec": [
@@ -32835,7 +32835,7 @@
       }
     },
     "CMCSA": {
-      "updatedAt": "2026-11-07T13:13:10.454Z",
+      "updatedAt": "2026-11-07T19:03:12.307Z",
       "backfilledAt": "2026-11-05T15:14:55.386Z",
       "sources": {
         "sec": [
@@ -33130,14 +33130,14 @@
             "eps": null,
             "revenueEstimate": 29815935640,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057190.203,
+            "revenueEstimateCapturedAt": 1794078192.056,
             "expectedReportAt": 1801143000
           }
         ]
       }
     },
     "MSI": {
-      "updatedAt": "2026-11-07T13:13:11.061Z",
+      "updatedAt": "2026-11-07T19:03:12.885Z",
       "backfilledAt": "2026-11-05T15:14:57.951Z",
       "sources": {
         "sec": [
@@ -33432,7 +33432,7 @@
       }
     },
     "TT": {
-      "updatedAt": "2026-11-07T13:13:11.674Z",
+      "updatedAt": "2026-11-07T19:03:13.455Z",
       "backfilledAt": "2026-11-05T15:14:59.832Z",
       "sources": {
         "sec": [
@@ -33726,14 +33726,14 @@
             "eps": null,
             "revenueEstimate": 6024253260,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057191.424,
+            "revenueEstimateCapturedAt": 1794078193.206,
             "expectedReportAt": 1801143000
           }
         ]
       }
     },
     "CDNS": {
-      "updatedAt": "2026-11-07T13:13:12.277Z",
+      "updatedAt": "2026-11-07T19:03:14.027Z",
       "backfilledAt": "2026-11-05T15:15:03.405Z",
       "sources": {
         "sec": [
@@ -34021,7 +34021,7 @@
       }
     },
     "SHW": {
-      "updatedAt": "2026-11-07T13:13:12.886Z",
+      "updatedAt": "2026-11-07T19:03:14.611Z",
       "backfilledAt": "2026-11-05T15:15:04.850Z",
       "sources": {
         "sec": [
@@ -34315,14 +34315,14 @@
             "eps": null,
             "revenueEstimate": 5900933330,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057192.635,
+            "revenueEstimateCapturedAt": 1794078194.36,
             "expectedReportAt": 1800970200
           }
         ]
       }
     },
     "MDLZ": {
-      "updatedAt": "2026-11-07T13:13:13.504Z",
+      "updatedAt": "2026-11-07T19:03:15.188Z",
       "backfilledAt": "2026-11-05T15:15:05.844Z",
       "sources": {
         "sec": [
@@ -34617,7 +34617,7 @@
       }
     },
     "SNPS": {
-      "updatedAt": "2026-11-07T13:13:14.112Z",
+      "updatedAt": "2026-11-07T19:03:15.768Z",
       "backfilledAt": "2026-11-05T15:15:14.589Z",
       "sources": {
         "sec": [
@@ -34904,14 +34904,14 @@
             "eps": null,
             "revenueEstimate": 2562189820,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057193.862,
+            "revenueEstimateCapturedAt": 1794078195.517,
             "expectedReportAt": 1796763600
           }
         ]
       }
     },
     "HWM": {
-      "updatedAt": "2026-11-07T13:13:14.714Z",
+      "updatedAt": "2026-11-07T19:03:16.353Z",
       "backfilledAt": "2026-11-05T15:15:21.250Z",
       "sources": {
         "sec": [
@@ -35199,7 +35199,7 @@
       }
     },
     "CEG": {
-      "updatedAt": "2026-11-07T13:13:15.314Z",
+      "updatedAt": "2026-11-07T19:03:16.929Z",
       "backfilledAt": "2026-11-05T15:15:22.241Z",
       "sources": {
         "sec": [
@@ -35485,14 +35485,14 @@
             "eps": null,
             "revenueEstimate": 9349229100,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057195.064,
+            "revenueEstimateCapturedAt": 1794078196.679,
             "expectedReportAt": 1794231000
           }
         ]
       }
     },
     "ITW": {
-      "updatedAt": "2026-11-07T13:13:15.919Z",
+      "updatedAt": "2026-11-07T19:03:17.511Z",
       "backfilledAt": "2026-11-05T15:15:34.527Z",
       "sources": {
         "sec": [
@@ -35773,7 +35773,7 @@
       }
     },
     "PWR": {
-      "updatedAt": "2026-11-07T13:13:16.526Z",
+      "updatedAt": "2026-11-07T19:03:18.088Z",
       "backfilledAt": "2026-11-05T15:15:59.808Z",
       "sources": {
         "sec": [
@@ -36061,7 +36061,7 @@
       }
     },
     "CL": {
-      "updatedAt": "2026-11-07T13:13:17.137Z",
+      "updatedAt": "2026-11-07T19:03:18.696Z",
       "backfilledAt": "2026-11-05T15:16:01.554Z",
       "sources": {
         "sec": [
@@ -36355,14 +36355,14 @@
             "eps": null,
             "revenueEstimate": 5362230540,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057196.886,
+            "revenueEstimateCapturedAt": 1794078198.445,
             "expectedReportAt": 1801229400
           }
         ]
       }
     },
     "GM": {
-      "updatedAt": "2026-11-07T13:13:17.747Z",
+      "updatedAt": "2026-11-07T19:03:19.286Z",
       "backfilledAt": "2026-11-05T15:16:04.997Z",
       "sources": {
         "sec": [
@@ -36663,14 +36663,14 @@
             "eps": null,
             "revenueEstimate": 44712313470,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057197.497,
+            "revenueEstimateCapturedAt": 1794078199.036,
             "expectedReportAt": 1801056600
           }
         ]
       }
     },
     "ROST": {
-      "updatedAt": "2026-11-07T13:13:18.349Z",
+      "updatedAt": "2026-11-07T19:03:19.878Z",
       "backfilledAt": "2026-11-05T15:16:07.813Z",
       "sources": {
         "sec": [
@@ -36956,14 +36956,14 @@
             "eps": null,
             "revenueEstimate": 6217163720,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057198.099,
+            "revenueEstimateCapturedAt": 1794078199.628,
             "expectedReportAt": 1795122000
           }
         ]
       }
     },
     "NSC": {
-      "updatedAt": "2026-11-07T13:13:18.964Z",
+      "updatedAt": "2026-11-07T19:03:20.459Z",
       "backfilledAt": "2026-11-05T15:16:14.481Z",
       "sources": {
         "sec": [
@@ -37257,14 +37257,14 @@
             "eps": null,
             "revenueEstimate": 3483054720,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057198.713,
+            "revenueEstimateCapturedAt": 1794078200.209,
             "expectedReportAt": 1801143000
           }
         ]
       }
     },
     "NOC": {
-      "updatedAt": "2026-11-07T13:13:19.568Z",
+      "updatedAt": "2026-11-07T19:03:21.037Z",
       "backfilledAt": "2026-11-05T15:16:15.818Z",
       "sources": {
         "sec": [
@@ -37565,14 +37565,14 @@
             "eps": null,
             "revenueEstimate": 12207154710,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057199.319,
+            "revenueEstimateCapturedAt": 1794078200.787,
             "expectedReportAt": 1800970200
           }
         ]
       }
     },
     "SLB": {
-      "updatedAt": "2026-11-07T13:13:20.171Z",
+      "updatedAt": "2026-11-07T19:03:21.620Z",
       "backfilledAt": "2026-11-05T15:16:17.662Z",
       "sources": {
         "sec": [
@@ -37866,14 +37866,14 @@
             "eps": null,
             "revenueEstimate": 9989481600,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057199.92,
+            "revenueEstimateCapturedAt": 1794078201.37,
             "expectedReportAt": 1800624600
           }
         ]
       }
     },
     "DASH": {
-      "updatedAt": "2026-11-07T13:13:20.771Z",
+      "updatedAt": "2026-11-07T19:03:22.228Z",
       "backfilledAt": "2026-11-05T15:16:19.571Z",
       "sources": {
         "sec": [
@@ -38161,7 +38161,7 @@
       }
     },
     "AJG": {
-      "updatedAt": "2026-11-07T13:13:21.374Z",
+      "updatedAt": "2026-11-07T19:03:22.826Z",
       "backfilledAt": "2026-11-05T15:16:21.218Z",
       "sources": {
         "sec": [
@@ -38462,14 +38462,14 @@
             "eps": null,
             "revenueEstimate": 3838000000,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057201.123,
+            "revenueEstimateCapturedAt": 1794078202.576,
             "expectedReportAt": 1801170000
           }
         ]
       }
     },
     "TGT": {
-      "updatedAt": "2026-11-07T13:13:21.982Z",
+      "updatedAt": "2026-11-07T19:03:23.406Z",
       "backfilledAt": "2026-11-05T15:16:25.260Z",
       "sources": {
         "sec": [
@@ -38755,14 +38755,14 @@
             "eps": null,
             "revenueEstimate": 26470025870,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057201.732,
+            "revenueEstimateCapturedAt": 1794078203.157,
             "expectedReportAt": 1795008600
           }
         ]
       }
     },
     "AON": {
-      "updatedAt": "2026-11-07T13:13:22.586Z",
+      "updatedAt": "2026-11-07T19:03:23.984Z",
       "backfilledAt": "2026-11-05T15:16:27.950Z",
       "sources": {
         "sec": [
@@ -39056,14 +39056,14 @@
             "eps": null,
             "revenueEstimate": 4538884790,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057202.335,
+            "revenueEstimateCapturedAt": 1794078203.735,
             "expectedReportAt": 1801229400
           }
         ]
       }
     },
     "HOOD": {
-      "updatedAt": "2026-11-07T13:13:23.191Z",
+      "updatedAt": "2026-11-07T19:03:24.563Z",
       "backfilledAt": "2026-11-05T15:16:30.785Z",
       "sources": {
         "sec": [
@@ -39351,7 +39351,7 @@
       }
     },
     "AOS": {
-      "updatedAt": "2026-11-07T13:13:23.795Z",
+      "updatedAt": "2026-11-07T19:03:25.136Z",
       "backfilledAt": "2026-11-05T15:21:30.747Z",
       "sources": {
         "sec": [
@@ -39646,14 +39646,14 @@
             "eps": null,
             "revenueEstimate": 816846000,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057203.544,
+            "revenueEstimateCapturedAt": 1794078204.886,
             "expectedReportAt": 1801143000
           }
         ]
       }
     },
     "ALGN": {
-      "updatedAt": "2026-11-07T13:13:24.402Z",
+      "updatedAt": "2026-11-07T19:03:25.716Z",
       "backfilledAt": "2026-11-05T15:21:46.950Z",
       "sources": {
         "sec": [
@@ -39948,7 +39948,7 @@
       }
     },
     "ALLE": {
-      "updatedAt": "2026-11-07T13:13:25.008Z",
+      "updatedAt": "2026-11-07T19:03:26.311Z",
       "backfilledAt": "2026-11-05T15:21:48.623Z",
       "sources": {
         "sec": [
@@ -40236,7 +40236,7 @@
       }
     },
     "AEE": {
-      "updatedAt": "2026-11-07T13:13:25.612Z",
+      "updatedAt": "2026-11-07T19:03:26.884Z",
       "backfilledAt": "2026-11-05T15:21:55.360Z",
       "sources": {
         "sec": [
@@ -40546,7 +40546,7 @@
       }
     },
     "AWK": {
-      "updatedAt": "2026-11-07T13:13:26.214Z",
+      "updatedAt": "2026-11-07T19:03:27.490Z",
       "backfilledAt": "2026-11-05T15:22:01.069Z",
       "sources": {
         "sec": [
@@ -40841,7 +40841,7 @@
       }
     },
     "AME": {
-      "updatedAt": "2026-11-07T13:13:26.818Z",
+      "updatedAt": "2026-11-07T19:03:28.063Z",
       "backfilledAt": "2026-11-05T15:22:05.547Z",
       "sources": {
         "sec": [
@@ -41142,14 +41142,14 @@
             "eps": null,
             "revenueEstimate": 2439807070,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057206.567,
+            "revenueEstimateCapturedAt": 1794078207.814,
             "expectedReportAt": 1801575000
           }
         ]
       }
     },
     "ADM": {
-      "updatedAt": "2026-11-07T13:13:27.425Z",
+      "updatedAt": "2026-11-07T19:03:28.709Z",
       "backfilledAt": "2026-11-05T15:22:18.571Z",
       "sources": {
         "sec": [
@@ -41457,14 +41457,14 @@
             "eps": null,
             "revenueEstimate": 20810600000,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057207.174,
+            "revenueEstimateCapturedAt": 1794078208.459,
             "expectedReportAt": 1801575000
           }
         ]
       }
     },
     "ADSK": {
-      "updatedAt": "2026-11-07T13:13:28.029Z",
+      "updatedAt": "2026-11-07T19:03:29.297Z",
       "backfilledAt": "2026-11-05T15:22:26.794Z",
       "sources": {
         "sec": [
@@ -41750,14 +41750,14 @@
             "eps": null,
             "revenueEstimate": 2132410570,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057207.778,
+            "revenueEstimateCapturedAt": 1794078209.048,
             "expectedReportAt": 1795554000
           }
         ]
       }
     },
     "AVY": {
-      "updatedAt": "2026-11-07T13:13:28.635Z",
+      "updatedAt": "2026-11-07T19:03:29.879Z",
       "backfilledAt": "2026-11-05T15:22:29.961Z",
       "sources": {
         "sec": [
@@ -42052,7 +42052,7 @@
       }
     },
     "AXON": {
-      "updatedAt": "2026-11-07T13:13:29.242Z",
+      "updatedAt": "2026-11-07T19:03:30.460Z",
       "backfilledAt": "2026-11-05T15:22:31.595Z",
       "sources": {
         "sec": [
@@ -42355,7 +42355,7 @@
       }
     },
     "BKR": {
-      "updatedAt": "2026-11-07T13:13:29.859Z",
+      "updatedAt": "2026-11-07T19:03:31.036Z",
       "backfilledAt": "2026-11-05T15:22:33.195Z",
       "sources": {
         "sec": [
@@ -42649,14 +42649,14 @@
             "eps": null,
             "revenueEstimate": 8341796370,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057209.609,
+            "revenueEstimateCapturedAt": 1794078210.787,
             "expectedReportAt": 1800910800
           }
         ]
       }
     },
     "BAX": {
-      "updatedAt": "2026-11-07T13:13:30.466Z",
+      "updatedAt": "2026-11-07T19:03:31.612Z",
       "backfilledAt": "2026-11-05T15:22:36.816Z",
       "sources": {
         "sec": [
@@ -42944,7 +42944,7 @@
       }
     },
     "BBY": {
-      "updatedAt": "2026-11-07T13:13:31.072Z",
+      "updatedAt": "2026-11-07T19:03:32.203Z",
       "backfilledAt": "2026-11-05T15:22:40.577Z",
       "sources": {
         "sec": [
@@ -43230,14 +43230,14 @@
             "eps": null,
             "revenueEstimate": 9888458320,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057210.821,
+            "revenueEstimateCapturedAt": 1794078211.953,
             "expectedReportAt": 1795527000
           }
         ]
       }
     },
     "BIIB": {
-      "updatedAt": "2026-11-07T13:13:31.676Z",
+      "updatedAt": "2026-11-07T19:03:32.785Z",
       "backfilledAt": "2026-11-05T15:22:43.884Z",
       "sources": {
         "sec": [
@@ -43525,7 +43525,7 @@
       }
     },
     "BE": {
-      "updatedAt": "2026-11-07T13:13:32.281Z",
+      "updatedAt": "2026-11-07T19:03:33.373Z",
       "backfilledAt": "2026-11-05T15:22:49.413Z",
       "sources": {
         "sec": [
@@ -43813,7 +43813,7 @@
       }
     },
     "BSX": {
-      "updatedAt": "2026-11-07T13:13:32.898Z",
+      "updatedAt": "2026-11-07T19:03:33.953Z",
       "backfilledAt": "2026-11-05T15:22:53.222Z",
       "sources": {
         "sec": [
@@ -44115,7 +44115,7 @@
       }
     },
     "BG": {
-      "updatedAt": "2026-11-07T13:13:33.502Z",
+      "updatedAt": "2026-11-07T19:03:34.530Z",
       "backfilledAt": "2026-11-05T15:22:59.337Z",
       "sources": {
         "sec": [
@@ -44401,7 +44401,7 @@
       }
     },
     "CCL": {
-      "updatedAt": "2026-11-07T13:13:34.108Z",
+      "updatedAt": "2026-11-07T19:03:35.106Z",
       "backfilledAt": "2026-11-05T15:23:23.946Z",
       "sources": {
         "sec": [
@@ -44695,14 +44695,14 @@
             "eps": null,
             "revenueEstimate": 6471560810,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057213.858,
+            "revenueEstimateCapturedAt": 1794078214.856,
             "expectedReportAt": 1797600600
           }
         ]
       }
     },
     "CARR": {
-      "updatedAt": "2026-11-07T13:13:34.710Z",
+      "updatedAt": "2026-11-07T19:03:35.678Z",
       "backfilledAt": "2026-11-05T15:23:25.452Z",
       "sources": {
         "sec": [
@@ -44990,7 +44990,7 @@
       }
     },
     "CASY": {
-      "updatedAt": "2026-11-07T13:13:35.315Z",
+      "updatedAt": "2026-11-07T19:03:36.254Z",
       "backfilledAt": "2026-11-05T15:23:28.468Z",
       "sources": {
         "sec": [
@@ -45276,14 +45276,14 @@
             "eps": null,
             "revenueEstimate": 5525224600,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057215.065,
+            "revenueEstimateCapturedAt": 1794078216.004,
             "expectedReportAt": 1796763600
           }
         ]
       }
     },
     "CBRE": {
-      "updatedAt": "2026-11-07T13:13:35.926Z",
+      "updatedAt": "2026-11-07T19:03:36.834Z",
       "backfilledAt": "2026-11-05T15:23:33.529Z",
       "sources": {
         "sec": [
@@ -45571,7 +45571,7 @@
       }
     },
     "CNC": {
-      "updatedAt": "2026-11-07T13:13:36.526Z",
+      "updatedAt": "2026-11-07T19:03:37.412Z",
       "backfilledAt": "2026-11-05T15:23:36.953Z",
       "sources": {
         "sec": [
@@ -45859,7 +45859,7 @@
       }
     },
     "CRL": {
-      "updatedAt": "2026-11-07T13:13:37.129Z",
+      "updatedAt": "2026-11-07T19:03:37.984Z",
       "backfilledAt": "2026-11-05T15:23:40.885Z",
       "sources": {
         "sec": [
@@ -46154,7 +46154,7 @@
       }
     },
     "CHTR": {
-      "updatedAt": "2026-11-07T13:13:37.736Z",
+      "updatedAt": "2026-11-07T19:03:38.560Z",
       "backfilledAt": "2026-11-05T15:23:43.129Z",
       "sources": {
         "sec": [
@@ -46452,14 +46452,14 @@
             "eps": null,
             "revenueEstimate": 16592949929,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057217.485,
+            "revenueEstimateCapturedAt": 1794078218.31,
             "expectedReportAt": 1801229400
           }
         ]
       }
     },
     "CHD": {
-      "updatedAt": "2026-11-07T13:13:38.344Z",
+      "updatedAt": "2026-11-07T19:03:39.140Z",
       "backfilledAt": "2026-11-05T15:23:47.642Z",
       "sources": {
         "sec": [
@@ -46760,14 +46760,14 @@
             "eps": null,
             "revenueEstimate": 1644299890,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057218.093,
+            "revenueEstimateCapturedAt": 1794078218.89,
             "expectedReportAt": 1801229400
           }
         ]
       }
     },
     "CIEN": {
-      "updatedAt": "2026-11-07T13:13:38.951Z",
+      "updatedAt": "2026-11-07T19:03:39.728Z",
       "backfilledAt": "2026-11-05T15:23:49.474Z",
       "sources": {
         "sec": [
@@ -47054,14 +47054,14 @@
             "eps": null,
             "revenueEstimate": 1759664870,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057218.7,
+            "revenueEstimateCapturedAt": 1794078219.477,
             "expectedReportAt": 1796909400
           }
         ]
       }
     },
     "CFG": {
-      "updatedAt": "2026-11-07T13:13:39.551Z",
+      "updatedAt": "2026-11-07T19:03:40.307Z",
       "backfilledAt": "2026-11-05T15:23:57.965Z",
       "sources": {
         "sec": [
@@ -47355,14 +47355,14 @@
             "eps": null,
             "revenueEstimate": 2396864420,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057219.301,
+            "revenueEstimateCapturedAt": 1794078220.057,
             "expectedReportAt": 1800019800
           }
         ]
       }
     },
     "CTSH": {
-      "updatedAt": "2026-11-07T13:13:40.156Z",
+      "updatedAt": "2026-11-07T19:03:40.902Z",
       "backfilledAt": "2026-11-05T15:24:03.248Z",
       "sources": {
         "sec": [
@@ -47650,7 +47650,7 @@
       }
     },
     "FIX": {
-      "updatedAt": "2026-11-07T13:13:40.760Z",
+      "updatedAt": "2026-11-07T19:03:41.553Z",
       "backfilledAt": "2026-11-05T15:24:06.443Z",
       "sources": {
         "sec": [
@@ -47938,7 +47938,7 @@
       }
     },
     "STZ": {
-      "updatedAt": "2026-11-07T13:13:41.366Z",
+      "updatedAt": "2026-11-07T19:03:42.129Z",
       "backfilledAt": "2026-11-05T15:24:10.744Z",
       "sources": {
         "sec": [
@@ -48231,14 +48231,14 @@
             "eps": null,
             "revenueEstimate": 2185049370,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057221.116,
+            "revenueEstimateCapturedAt": 1794078221.879,
             "expectedReportAt": 1799355600
           }
         ]
       }
     },
     "COO": {
-      "updatedAt": "2026-11-07T13:13:41.978Z",
+      "updatedAt": "2026-11-07T19:03:42.715Z",
       "backfilledAt": "2026-11-05T15:24:13.285Z",
       "sources": {
         "sec": [
@@ -48525,14 +48525,14 @@
             "eps": null,
             "revenueEstimate": 1067935900,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057221.727,
+            "revenueEstimateCapturedAt": 1794078222.465,
             "expectedReportAt": 1796331600
           }
         ]
       }
     },
     "CSGP": {
-      "updatedAt": "2026-11-07T13:13:42.582Z",
+      "updatedAt": "2026-11-07T19:03:43.295Z",
       "backfilledAt": "2026-11-05T15:24:19.273Z",
       "sources": {
         "sec": [
@@ -48820,7 +48820,7 @@
       }
     },
     "DDOG": {
-      "updatedAt": "2026-11-07T13:13:43.185Z",
+      "updatedAt": "2026-11-07T19:03:43.868Z",
       "backfilledAt": "2026-11-05T15:24:29.237Z",
       "sources": {
         "sec": [
@@ -49115,7 +49115,7 @@
       }
     },
     "DVA": {
-      "updatedAt": "2026-11-07T13:13:43.794Z",
+      "updatedAt": "2026-11-07T19:03:44.443Z",
       "backfilledAt": "2026-11-05T15:24:30.907Z",
       "sources": {
         "sec": [
@@ -49410,7 +49410,7 @@
       }
     },
     "DECK": {
-      "updatedAt": "2026-11-07T13:13:44.405Z",
+      "updatedAt": "2026-11-07T19:03:45.084Z",
       "backfilledAt": "2026-11-05T15:24:32.335Z",
       "sources": {
         "sec": [
@@ -49704,14 +49704,14 @@
             "eps": null,
             "revenueEstimate": 2011429190,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057224.154,
+            "revenueEstimateCapturedAt": 1794078224.835,
             "expectedReportAt": 1801170000
           }
         ]
       }
     },
     "DXCM": {
-      "updatedAt": "2026-11-07T13:13:45.035Z",
+      "updatedAt": "2026-11-07T19:03:45.687Z",
       "backfilledAt": "2026-11-05T15:24:38.333Z",
       "sources": {
         "sec": [
@@ -49999,7 +49999,7 @@
       }
     },
     "FANG": {
-      "updatedAt": "2026-11-07T13:13:45.637Z",
+      "updatedAt": "2026-11-07T19:03:46.275Z",
       "backfilledAt": "2026-11-05T15:24:39.600Z",
       "sources": {
         "sec": [
@@ -50294,7 +50294,7 @@
       }
     },
     "DG": {
-      "updatedAt": "2026-11-07T13:13:46.247Z",
+      "updatedAt": "2026-11-07T19:03:46.869Z",
       "backfilledAt": "2026-11-05T15:24:41.475Z",
       "sources": {
         "sec": [
@@ -50580,14 +50580,14 @@
             "eps": null,
             "revenueEstimate": 11138537840,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057225.996,
+            "revenueEstimateCapturedAt": 1794078226.619,
             "expectedReportAt": 1796304600
           }
         ]
       }
     },
     "DLTR": {
-      "updatedAt": "2026-11-07T13:13:46.853Z",
+      "updatedAt": "2026-11-07T19:03:47.442Z",
       "backfilledAt": "2026-11-05T15:24:42.769Z",
       "sources": {
         "sec": [
@@ -50873,14 +50873,14 @@
             "eps": null,
             "revenueEstimate": 5037752130,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057226.602,
+            "revenueEstimateCapturedAt": 1794078227.191,
             "expectedReportAt": 1795527000
           }
         ]
       }
     },
     "DOV": {
-      "updatedAt": "2026-11-07T13:13:47.457Z",
+      "updatedAt": "2026-11-07T19:03:48.019Z",
       "backfilledAt": "2026-11-05T15:24:46.080Z",
       "sources": {
         "sec": [
@@ -51174,14 +51174,14 @@
             "eps": null,
             "revenueEstimate": 2233263880,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057227.208,
+            "revenueEstimateCapturedAt": 1794078227.769,
             "expectedReportAt": 1801143000
           }
         ]
       }
     },
     "EBAY": {
-      "updatedAt": "2026-11-07T13:13:48.065Z",
+      "updatedAt": "2026-11-07T19:03:48.598Z",
       "backfilledAt": "2026-11-05T15:24:55.060Z",
       "sources": {
         "sec": [
@@ -51469,7 +51469,7 @@
       }
     },
     "EW": {
-      "updatedAt": "2026-11-07T13:13:48.665Z",
+      "updatedAt": "2026-11-07T19:03:49.172Z",
       "backfilledAt": "2026-11-05T15:24:59.363Z",
       "sources": {
         "sec": [
@@ -51771,7 +51771,7 @@
       }
     },
     "EFX": {
-      "updatedAt": "2026-11-07T13:13:49.277Z",
+      "updatedAt": "2026-11-07T19:03:49.746Z",
       "backfilledAt": "2026-11-05T15:25:07.831Z",
       "sources": {
         "sec": [
@@ -52059,7 +52059,7 @@
       }
     },
     "EL": {
-      "updatedAt": "2026-11-07T13:13:49.883Z",
+      "updatedAt": "2026-11-07T19:03:50.328Z",
       "backfilledAt": "2026-11-05T15:25:20.042Z",
       "sources": {
         "sec": [
@@ -52354,7 +52354,7 @@
       }
     },
     "EXE": {
-      "updatedAt": "2026-11-07T13:13:50.487Z",
+      "updatedAt": "2026-11-07T19:03:50.898Z",
       "backfilledAt": "2026-11-05T15:25:26.315Z",
       "sources": {
         "sec": [
@@ -52642,7 +52642,7 @@
       }
     },
     "EXPE": {
-      "updatedAt": "2026-11-07T13:13:51.087Z",
+      "updatedAt": "2026-11-07T19:03:51.471Z",
       "backfilledAt": "2026-11-05T15:25:28.510Z",
       "sources": {
         "sec": [
@@ -52937,7 +52937,7 @@
       }
     },
     "FDS": {
-      "updatedAt": "2026-11-07T13:13:51.699Z",
+      "updatedAt": "2026-11-07T19:03:52.045Z",
       "backfilledAt": "2026-11-05T15:25:34.456Z",
       "sources": {
         "sec": [
@@ -53231,14 +53231,14 @@
             "eps": null,
             "revenueEstimate": 643647910,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057231.449,
+            "revenueEstimateCapturedAt": 1794078231.795,
             "expectedReportAt": 1797514200
           }
         ]
       }
     },
     "FSLR": {
-      "updatedAt": "2026-11-07T13:13:52.301Z",
+      "updatedAt": "2026-11-07T19:03:52.621Z",
       "backfilledAt": "2026-11-05T15:25:43.321Z",
       "sources": {
         "sec": [
@@ -53526,7 +53526,7 @@
       }
     },
     "FOXA": {
-      "updatedAt": "2026-11-07T13:13:52.902Z",
+      "updatedAt": "2026-11-07T19:03:53.198Z",
       "backfilledAt": "2026-11-05T15:25:50.840Z",
       "sources": {
         "sec": [
@@ -53814,7 +53814,7 @@
       }
     },
     "FOX": {
-      "updatedAt": "2026-11-07T13:13:53.506Z",
+      "updatedAt": "2026-11-07T19:03:53.772Z",
       "backfilledAt": "2026-11-05T15:25:51.790Z",
       "sources": {
         "sec": [
@@ -54053,7 +54053,7 @@
       }
     },
     "IT": {
-      "updatedAt": "2026-11-07T13:13:54.113Z",
+      "updatedAt": "2026-11-07T19:03:54.347Z",
       "backfilledAt": "2026-11-05T15:25:56.890Z",
       "sources": {
         "sec": [
@@ -54361,14 +54361,14 @@
             "eps": null,
             "revenueEstimate": 1745052290,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057233.863,
+            "revenueEstimateCapturedAt": 1794078234.096,
             "expectedReportAt": 1801575000
           }
         ]
       }
     },
     "GEHC": {
-      "updatedAt": "2026-11-07T13:13:54.715Z",
+      "updatedAt": "2026-11-07T19:03:54.948Z",
       "backfilledAt": "2026-11-05T15:25:59.811Z",
       "sources": {
         "sec": [
@@ -54656,7 +54656,7 @@
       }
     },
     "GEN": {
-      "updatedAt": "2026-11-07T13:13:55.320Z",
+      "updatedAt": "2026-11-07T19:03:55.534Z",
       "backfilledAt": "2026-11-05T15:26:02.032Z",
       "sources": {
         "sec": [
@@ -54944,7 +54944,7 @@
       }
     },
     "GNRC": {
-      "updatedAt": "2026-11-07T13:13:55.927Z",
+      "updatedAt": "2026-11-07T19:03:56.125Z",
       "backfilledAt": "2026-11-05T15:26:03.360Z",
       "sources": {
         "sec": [
@@ -55239,7 +55239,7 @@
       }
     },
     "GIS": {
-      "updatedAt": "2026-11-07T13:13:56.530Z",
+      "updatedAt": "2026-11-07T19:03:56.705Z",
       "backfilledAt": "2026-11-05T15:26:05.182Z",
       "sources": {
         "sec": [
@@ -55532,14 +55532,14 @@
             "eps": null,
             "revenueEstimate": 4713355010,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057236.28,
+            "revenueEstimateCapturedAt": 1794078236.454,
             "expectedReportAt": 1798032600
           }
         ]
       }
     },
     "GPC": {
-      "updatedAt": "2026-11-07T13:13:57.136Z",
+      "updatedAt": "2026-11-07T19:03:57.319Z",
       "backfilledAt": "2026-11-05T15:26:07.116Z",
       "sources": {
         "sec": [
@@ -55827,7 +55827,7 @@
       }
     },
     "GL": {
-      "updatedAt": "2026-11-07T13:13:57.742Z",
+      "updatedAt": "2026-11-07T19:03:57.898Z",
       "backfilledAt": "2026-11-05T15:26:12.692Z",
       "sources": {
         "sec": [
@@ -56122,7 +56122,7 @@
       }
     },
     "GDDY": {
-      "updatedAt": "2026-11-07T13:13:58.346Z",
+      "updatedAt": "2026-11-07T19:03:58.469Z",
       "backfilledAt": "2026-11-05T15:26:14.247Z",
       "sources": {
         "sec": [
@@ -56410,7 +56410,7 @@
       }
     },
     "HSIC": {
-      "updatedAt": "2026-11-07T13:13:58.950Z",
+      "updatedAt": "2026-11-07T19:03:59.042Z",
       "backfilledAt": "2026-11-05T15:26:23.228Z",
       "sources": {
         "sec": [
@@ -56705,7 +56705,7 @@
       }
     },
     "HSY": {
-      "updatedAt": "2026-11-07T13:13:59.560Z",
+      "updatedAt": "2026-11-07T19:03:59.615Z",
       "backfilledAt": "2026-11-05T15:26:25.089Z",
       "sources": {
         "sec": [
@@ -56993,7 +56993,7 @@
       }
     },
     "HPE": {
-      "updatedAt": "2026-11-07T13:14:00.165Z",
+      "updatedAt": "2026-11-07T19:04:00.195Z",
       "backfilledAt": "2026-11-05T15:26:26.707Z",
       "sources": {
         "sec": [
@@ -57280,14 +57280,14 @@
             "eps": null,
             "revenueEstimate": 14406617280,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057239.914,
+            "revenueEstimateCapturedAt": 1794078239.945,
             "expectedReportAt": 1795467600
           }
         ]
       }
     },
     "HUBB": {
-      "updatedAt": "2026-11-07T13:14:00.765Z",
+      "updatedAt": "2026-11-07T19:04:00.764Z",
       "backfilledAt": "2026-11-05T15:26:35.451Z",
       "sources": {
         "sec": [
@@ -57574,7 +57574,7 @@
       }
     },
     "HII": {
-      "updatedAt": "2026-11-07T13:14:01.368Z",
+      "updatedAt": "2026-11-07T19:04:01.336Z",
       "backfilledAt": "2026-11-05T15:26:38.634Z",
       "sources": {
         "sec": [
@@ -57862,7 +57862,7 @@
       }
     },
     "IEX": {
-      "updatedAt": "2026-11-07T13:14:01.975Z",
+      "updatedAt": "2026-11-07T19:04:01.914Z",
       "backfilledAt": "2026-11-05T15:26:42.152Z",
       "sources": {
         "sec": [
@@ -58150,7 +58150,7 @@
       }
     },
     "IDXX": {
-      "updatedAt": "2026-11-07T13:14:02.586Z",
+      "updatedAt": "2026-11-07T19:04:02.497Z",
       "backfilledAt": "2026-11-05T15:26:44.473Z",
       "sources": {
         "sec": [
@@ -58463,14 +58463,14 @@
             "eps": null,
             "revenueEstimate": 1181691050,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057242.335,
+            "revenueEstimateCapturedAt": 1794078242.248,
             "expectedReportAt": 1801488600
           }
         ]
       }
     },
     "IQV": {
-      "updatedAt": "2026-11-07T13:14:03.186Z",
+      "updatedAt": "2026-11-07T19:04:03.081Z",
       "backfilledAt": "2026-11-05T15:26:59.712Z",
       "sources": {
         "sec": [
@@ -58758,7 +58758,7 @@
       }
     },
     "JBHT": {
-      "updatedAt": "2026-11-07T13:14:03.791Z",
+      "updatedAt": "2026-11-07T19:04:03.657Z",
       "backfilledAt": "2026-11-05T15:27:01.285Z",
       "sources": {
         "sec": [
@@ -59052,14 +59052,14 @@
             "eps": null,
             "revenueEstimate": 3741858100,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057243.541,
+            "revenueEstimateCapturedAt": 1794078243.407,
             "expectedReportAt": 1800046800
           }
         ]
       }
     },
     "JBL": {
-      "updatedAt": "2026-11-07T13:14:04.396Z",
+      "updatedAt": "2026-11-07T19:04:04.238Z",
       "backfilledAt": "2026-11-05T15:27:02.530Z",
       "sources": {
         "sec": [
@@ -59353,14 +59353,14 @@
             "eps": null,
             "revenueEstimate": 11013646260,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057244.145,
+            "revenueEstimateCapturedAt": 1794078243.988,
             "expectedReportAt": 1797427800
           }
         ]
       }
     },
     "KEYS": {
-      "updatedAt": "2026-11-07T13:14:05.000Z",
+      "updatedAt": "2026-11-07T19:04:04.811Z",
       "backfilledAt": "2026-11-05T15:27:14.696Z",
       "sources": {
         "sec": [
@@ -59647,14 +59647,14 @@
             "eps": null,
             "revenueEstimate": 1949522980,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057244.75,
+            "revenueEstimateCapturedAt": 1794078244.561,
             "expectedReportAt": 1795122000
           }
         ]
       }
     },
     "KHC": {
-      "updatedAt": "2026-11-07T13:14:05.605Z",
+      "updatedAt": "2026-11-07T19:04:05.383Z",
       "backfilledAt": "2026-11-05T15:27:21.379Z",
       "sources": {
         "sec": [
@@ -59948,7 +59948,7 @@
       }
     },
     "LH": {
-      "updatedAt": "2026-11-07T13:14:06.216Z",
+      "updatedAt": "2026-11-07T19:04:06.020Z",
       "backfilledAt": "2026-11-05T15:27:28.710Z",
       "sources": {
         "sec": [
@@ -60234,7 +60234,7 @@
       }
     },
     "LVS": {
-      "updatedAt": "2026-11-07T13:14:06.874Z",
+      "updatedAt": "2026-11-07T19:04:06.596Z",
       "backfilledAt": "2026-11-05T15:27:33.508Z",
       "sources": {
         "sec": [
@@ -60527,14 +60527,14 @@
             "eps": null,
             "revenueEstimate": 3516186710,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057246.624,
+            "revenueEstimateCapturedAt": 1794078246.346,
             "expectedReportAt": 1801083600
           }
         ]
       }
     },
     "LEN": {
-      "updatedAt": "2026-11-07T13:14:07.485Z",
+      "updatedAt": "2026-11-07T19:04:07.176Z",
       "backfilledAt": "2026-11-05T15:27:39.722Z",
       "sources": {
         "sec": [
@@ -60828,14 +60828,14 @@
             "eps": null,
             "revenueEstimate": 8807713350,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057247.235,
+            "revenueEstimateCapturedAt": 1794078246.926,
             "expectedReportAt": 1797368400
           }
         ]
       }
     },
     "LII": {
-      "updatedAt": "2026-11-07T13:14:08.092Z",
+      "updatedAt": "2026-11-07T19:04:07.749Z",
       "backfilledAt": "2026-11-05T15:27:43.747Z",
       "sources": {
         "sec": [
@@ -61122,7 +61122,7 @@
       }
     },
     "LITE": {
-      "updatedAt": "2026-11-07T13:14:08.696Z",
+      "updatedAt": "2026-11-07T19:04:08.323Z",
       "backfilledAt": "2026-11-05T15:27:52.266Z",
       "sources": {
         "sec": [
@@ -61404,14 +61404,14 @@
             "eps": null,
             "revenueEstimate": 1805100870,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057248.445,
+            "revenueEstimateCapturedAt": 1794078248.073,
             "expectedReportAt": 1801575000
           }
         ]
       }
     },
     "MAS": {
-      "updatedAt": "2026-11-07T13:14:09.306Z",
+      "updatedAt": "2026-11-07T19:04:08.893Z",
       "backfilledAt": "2026-11-05T15:28:04.889Z",
       "sources": {
         "sec": [
@@ -61699,7 +61699,7 @@
       }
     },
     "MKC": {
-      "updatedAt": "2026-11-07T13:14:09.915Z",
+      "updatedAt": "2026-11-07T19:04:09.486Z",
       "backfilledAt": "2026-11-05T15:28:09.384Z",
       "sources": {
         "sec": [
@@ -62000,14 +62000,14 @@
             "eps": null,
             "revenueEstimate": 2107090160,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057249.664,
+            "revenueEstimateCapturedAt": 1794078249.236,
             "expectedReportAt": 1800538200
           }
         ]
       }
     },
     "MTD": {
-      "updatedAt": "2026-11-07T13:14:10.517Z",
+      "updatedAt": "2026-11-07T19:04:10.062Z",
       "backfilledAt": "2026-11-05T15:28:17.832Z",
       "sources": {
         "sec": [
@@ -62311,14 +62311,14 @@
             "eps": null,
             "revenueEstimate": 1183377720,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057250.266,
+            "revenueEstimateCapturedAt": 1794078249.813,
             "expectedReportAt": 1801774800
           }
         ]
       }
     },
     "MCHP": {
-      "updatedAt": "2026-11-07T13:14:11.125Z",
+      "updatedAt": "2026-11-07T19:04:10.647Z",
       "backfilledAt": "2026-11-05T15:28:20.861Z",
       "sources": {
         "sec": [
@@ -62627,14 +62627,14 @@
             "eps": null,
             "revenueEstimate": 1613596590,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057250.874,
+            "revenueEstimateCapturedAt": 1794078250.397,
             "expectedReportAt": 1801774800
           }
         ]
       }
     },
     "MPWR": {
-      "updatedAt": "2026-11-07T13:14:11.733Z",
+      "updatedAt": "2026-11-07T19:04:11.227Z",
       "backfilledAt": "2026-11-05T15:28:27.102Z",
       "sources": {
         "sec": [
@@ -62928,7 +62928,7 @@
       }
     },
     "MOS": {
-      "updatedAt": "2026-11-07T13:14:12.341Z",
+      "updatedAt": "2026-11-07T19:04:11.809Z",
       "backfilledAt": "2026-11-05T15:28:30.432Z",
       "sources": {
         "sec": [
@@ -63223,7 +63223,7 @@
       }
     },
     "MSCI": {
-      "updatedAt": "2026-11-07T13:14:12.992Z",
+      "updatedAt": "2026-11-07T19:04:12.386Z",
       "backfilledAt": "2026-11-05T15:28:31.829Z",
       "sources": {
         "sec": [
@@ -63517,14 +63517,14 @@
             "eps": null,
             "revenueEstimate": 913886960,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057252.743,
+            "revenueEstimateCapturedAt": 1794078252.136,
             "expectedReportAt": 1800970200
           }
         ]
       }
     },
     "NDSN": {
-      "updatedAt": "2026-11-07T13:14:13.615Z",
+      "updatedAt": "2026-11-07T19:04:12.970Z",
       "backfilledAt": "2026-11-05T15:28:43.363Z",
       "sources": {
         "sec": [
@@ -63811,14 +63811,14 @@
             "eps": null,
             "revenueEstimate": 828750000,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057253.364,
+            "revenueEstimateCapturedAt": 1794078252.721,
             "expectedReportAt": 1797368400
           }
         ]
       }
     },
     "NCLH": {
-      "updatedAt": "2026-11-07T13:14:14.219Z",
+      "updatedAt": "2026-11-07T19:04:13.603Z",
       "backfilledAt": "2026-11-05T15:28:45.557Z",
       "sources": {
         "sec": [
@@ -64106,7 +64106,7 @@
       }
     },
     "NRG": {
-      "updatedAt": "2026-11-07T13:14:14.827Z",
+      "updatedAt": "2026-11-07T19:04:14.185Z",
       "backfilledAt": "2026-11-05T15:28:48.251Z",
       "sources": {
         "sec": [
@@ -64399,14 +64399,14 @@
             "eps": null,
             "revenueEstimate": 9292646250,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057254.576,
+            "revenueEstimateCapturedAt": 1794078253.936,
             "expectedReportAt": 1794231000
           }
         ]
       }
     },
     "NXPI": {
-      "updatedAt": "2026-11-07T13:14:15.437Z",
+      "updatedAt": "2026-11-07T19:04:14.780Z",
       "backfilledAt": "2026-11-05T15:28:53.868Z",
       "sources": {
         "sec": [
@@ -64694,7 +64694,7 @@
       }
     },
     "ODFL": {
-      "updatedAt": "2026-11-07T13:14:16.040Z",
+      "updatedAt": "2026-11-07T19:04:15.365Z",
       "backfilledAt": "2026-11-05T15:28:58.286Z",
       "sources": {
         "sec": [
@@ -64989,7 +64989,7 @@
       }
     },
     "OMC": {
-      "updatedAt": "2026-11-07T13:14:16.644Z",
+      "updatedAt": "2026-11-07T19:04:15.944Z",
       "backfilledAt": "2026-11-05T15:29:00.623Z",
       "sources": {
         "sec": [
@@ -65277,7 +65277,7 @@
       }
     },
     "ON": {
-      "updatedAt": "2026-11-07T13:14:17.251Z",
+      "updatedAt": "2026-11-07T19:04:16.520Z",
       "backfilledAt": "2026-11-05T15:29:01.903Z",
       "sources": {
         "sec": [
@@ -65560,7 +65560,7 @@
       }
     },
     "PNR": {
-      "updatedAt": "2026-11-07T13:14:17.858Z",
+      "updatedAt": "2026-11-07T19:04:17.103Z",
       "backfilledAt": "2026-11-05T15:29:23.195Z",
       "sources": {
         "sec": [
@@ -65848,7 +65848,7 @@
       }
     },
     "DGX": {
-      "updatedAt": "2026-11-07T13:14:18.462Z",
+      "updatedAt": "2026-11-07T19:04:17.681Z",
       "backfilledAt": "2026-11-05T15:29:45.928Z",
       "sources": {
         "sec": [
@@ -66136,7 +66136,7 @@
       }
     },
     "RDDT": {
-      "updatedAt": "2026-11-07T13:14:19.086Z",
+      "updatedAt": "2026-11-07T19:04:18.256Z",
       "backfilledAt": "2026-11-05T15:29:50.350Z",
       "sources": {
         "sec": [
@@ -66415,7 +66415,7 @@
       }
     },
     "RMD": {
-      "updatedAt": "2026-11-07T13:14:19.694Z",
+      "updatedAt": "2026-11-07T19:04:18.826Z",
       "backfilledAt": "2026-11-05T15:29:56.010Z",
       "sources": {
         "sec": [
@@ -66709,14 +66709,14 @@
             "eps": null,
             "revenueEstimate": 1457173550,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057259.444,
+            "revenueEstimateCapturedAt": 1794078258.577,
             "expectedReportAt": 1801170000
           }
         ]
       }
     },
     "SJM": {
-      "updatedAt": "2026-11-07T13:14:20.302Z",
+      "updatedAt": "2026-11-07T19:04:19.400Z",
       "backfilledAt": "2026-11-05T15:30:23.129Z",
       "sources": {
         "sec": [
@@ -67002,14 +67002,14 @@
             "eps": null,
             "revenueEstimate": 2264442120,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057260.052,
+            "revenueEstimateCapturedAt": 1794078259.151,
             "expectedReportAt": 1795527000
           }
         ]
       }
     },
     "SOLV": {
-      "updatedAt": "2026-11-07T13:14:20.909Z",
+      "updatedAt": "2026-11-07T19:04:19.973Z",
       "backfilledAt": "2026-11-05T15:30:28.779Z",
       "sources": {
         "sec": [
@@ -67310,7 +67310,7 @@
       }
     },
     "SWK": {
-      "updatedAt": "2026-11-07T13:14:21.513Z",
+      "updatedAt": "2026-11-07T19:04:20.551Z",
       "backfilledAt": "2026-11-05T15:30:33.974Z",
       "sources": {
         "sec": [
@@ -67611,14 +67611,14 @@
             "eps": null,
             "revenueEstimate": 3641497810,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057261.263,
+            "revenueEstimateCapturedAt": 1794078260.301,
             "expectedReportAt": 1801661400
           }
         ]
       }
     },
     "STT": {
-      "updatedAt": "2026-11-07T13:14:22.125Z",
+      "updatedAt": "2026-11-07T19:04:21.125Z",
       "backfilledAt": "2026-11-05T15:30:38.940Z",
       "sources": {
         "sec": [
@@ -67912,14 +67912,14 @@
             "eps": null,
             "revenueEstimate": 4076435620,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057261.875,
+            "revenueEstimateCapturedAt": 1794078260.876,
             "expectedReportAt": 1800019800
           }
         ]
       }
     },
     "STLD": {
-      "updatedAt": "2026-11-07T13:14:22.778Z",
+      "updatedAt": "2026-11-07T19:04:21.709Z",
       "backfilledAt": "2026-11-05T15:30:40.785Z",
       "sources": {
         "sec": [
@@ -68214,14 +68214,14 @@
             "eps": null,
             "revenueEstimate": 6322371880,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057262.527,
+            "revenueEstimateCapturedAt": 1794078261.458,
             "expectedReportAt": 1800910800
           }
         ]
       }
     },
     "TROW": {
-      "updatedAt": "2026-11-07T13:14:23.392Z",
+      "updatedAt": "2026-11-07T19:04:22.287Z",
       "backfilledAt": "2026-11-05T15:30:53.318Z",
       "sources": {
         "sec": [
@@ -68509,7 +68509,7 @@
       }
     },
     "TRGP": {
-      "updatedAt": "2026-11-07T13:14:23.996Z",
+      "updatedAt": "2026-11-07T19:04:22.866Z",
       "backfilledAt": "2026-11-05T15:30:58.086Z",
       "sources": {
         "sec": [
@@ -68805,7 +68805,7 @@
       }
     },
     "TDY": {
-      "updatedAt": "2026-11-07T13:14:24.609Z",
+      "updatedAt": "2026-11-07T19:04:23.444Z",
       "backfilledAt": "2026-11-05T15:31:02.640Z",
       "sources": {
         "sec": [
@@ -69099,14 +69099,14 @@
             "eps": null,
             "revenueEstimate": 1723966710,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057264.358,
+            "revenueEstimateCapturedAt": 1794078263.194,
             "expectedReportAt": 1800451800
           }
         ]
       }
     },
     "TER": {
-      "updatedAt": "2026-11-07T13:14:25.220Z",
+      "updatedAt": "2026-11-07T19:04:24.033Z",
       "backfilledAt": "2026-11-05T15:31:04.917Z",
       "sources": {
         "sec": [
@@ -69407,14 +69407,14 @@
             "eps": null,
             "revenueEstimate": 1313150040,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057264.97,
+            "revenueEstimateCapturedAt": 1794078263.783,
             "expectedReportAt": 1801083600
           }
         ]
       }
     },
     "TPL": {
-      "updatedAt": "2026-11-07T13:14:25.831Z",
+      "updatedAt": "2026-11-07T19:04:24.604Z",
       "backfilledAt": "2026-11-05T15:31:08.896Z",
       "sources": {
         "sec": [
@@ -69709,7 +69709,7 @@
       }
     },
     "TXT": {
-      "updatedAt": "2026-11-07T13:14:26.442Z",
+      "updatedAt": "2026-11-07T19:04:25.196Z",
       "backfilledAt": "2026-11-05T15:31:10.969Z",
       "sources": {
         "sec": [
@@ -70003,14 +70003,14 @@
             "eps": null,
             "revenueEstimate": 4279370650,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057266.192,
+            "revenueEstimateCapturedAt": 1794078264.946,
             "expectedReportAt": 1801056600
           }
         ]
       }
     },
     "TKO": {
-      "updatedAt": "2026-11-07T13:14:27.049Z",
+      "updatedAt": "2026-11-07T19:04:25.781Z",
       "backfilledAt": "2026-11-05T15:31:15.924Z",
       "sources": {
         "sec": [
@@ -70304,7 +70304,7 @@
       }
     },
     "TDG": {
-      "updatedAt": "2026-11-07T13:14:27.661Z",
+      "updatedAt": "2026-11-07T19:04:26.356Z",
       "backfilledAt": "2026-11-05T15:31:19.617Z",
       "sources": {
         "sec": [
@@ -70591,14 +70591,14 @@
             "eps": null,
             "revenueEstimate": 2945467370,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057267.411,
+            "revenueEstimateCapturedAt": 1794078266.106,
             "expectedReportAt": 1794317400
           }
         ]
       }
     },
     "TRMB": {
-      "updatedAt": "2026-11-07T13:14:28.261Z",
+      "updatedAt": "2026-11-07T19:04:26.930Z",
       "backfilledAt": "2026-11-05T15:31:23.683Z",
       "sources": {
         "sec": [
@@ -70893,7 +70893,7 @@
       }
     },
     "TWLO": {
-      "updatedAt": "2026-11-07T13:14:28.868Z",
+      "updatedAt": "2026-11-07T19:04:27.503Z",
       "backfilledAt": "2026-11-05T15:31:27.841Z",
       "sources": {
         "sec": [
@@ -71181,7 +71181,7 @@
       }
     },
     "TSN": {
-      "updatedAt": "2026-11-07T13:14:29.471Z",
+      "updatedAt": "2026-11-07T19:04:28.080Z",
       "backfilledAt": "2026-11-05T15:31:32.228Z",
       "sources": {
         "sec": [
@@ -71468,14 +71468,14 @@
             "eps": null,
             "revenueEstimate": 14096286810,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057269.221,
+            "revenueEstimateCapturedAt": 1794078267.829,
             "expectedReportAt": 1794835800
           }
         ]
       }
     },
     "ULTA": {
-      "updatedAt": "2026-11-07T13:14:30.109Z",
+      "updatedAt": "2026-11-07T19:04:28.667Z",
       "backfilledAt": "2026-11-05T15:31:38.146Z",
       "sources": {
         "sec": [
@@ -71761,14 +71761,14 @@
             "eps": null,
             "revenueEstimate": 2985644560,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057269.859,
+            "revenueEstimateCapturedAt": 1794078268.416,
             "expectedReportAt": 1796331600
           }
         ]
       }
     },
     "UAL": {
-      "updatedAt": "2026-11-07T13:14:30.712Z",
+      "updatedAt": "2026-11-07T19:04:29.253Z",
       "backfilledAt": "2026-11-05T15:31:42.209Z",
       "sources": {
         "sec": [
@@ -72062,14 +72062,14 @@
             "eps": null,
             "revenueEstimate": 18608285490,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057270.461,
+            "revenueEstimateCapturedAt": 1794078269.003,
             "expectedReportAt": 1800997200
           }
         ]
       }
     },
     "VLTO": {
-      "updatedAt": "2026-11-07T13:14:31.316Z",
+      "updatedAt": "2026-11-07T19:04:29.832Z",
       "backfilledAt": "2026-11-05T15:31:52.268Z",
       "sources": {
         "sec": [
@@ -72357,7 +72357,7 @@
       }
     },
     "VRSN": {
-      "updatedAt": "2026-11-07T13:14:31.923Z",
+      "updatedAt": "2026-11-07T19:04:30.418Z",
       "backfilledAt": "2026-11-05T15:31:53.875Z",
       "sources": {
         "sec": [
@@ -72645,7 +72645,7 @@
       }
     },
     "VRT": {
-      "updatedAt": "2026-11-07T13:14:32.531Z",
+      "updatedAt": "2026-11-07T19:04:30.993Z",
       "backfilledAt": "2026-11-05T15:32:00.102Z",
       "sources": {
         "sec": [
@@ -72933,7 +72933,7 @@
       }
     },
     "VMC": {
-      "updatedAt": "2026-11-07T13:14:33.142Z",
+      "updatedAt": "2026-11-07T19:04:31.570Z",
       "backfilledAt": "2026-11-05T15:32:11.152Z",
       "sources": {
         "sec": [
@@ -73222,7 +73222,7 @@
       }
     },
     "GWW": {
-      "updatedAt": "2026-11-07T13:14:33.747Z",
+      "updatedAt": "2026-11-07T19:04:32.154Z",
       "backfilledAt": "2026-11-05T15:32:16.404Z",
       "sources": {
         "sec": [
@@ -73523,14 +73523,14 @@
             "eps": null,
             "revenueEstimate": 4967466420,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057273.496,
+            "revenueEstimateCapturedAt": 1794078271.904,
             "expectedReportAt": 1801575000
           }
         ]
       }
     },
     "WAB": {
-      "updatedAt": "2026-11-07T13:14:34.347Z",
+      "updatedAt": "2026-11-07T19:04:32.734Z",
       "backfilledAt": "2026-11-05T15:32:19.372Z",
       "sources": {
         "sec": [
@@ -73818,7 +73818,7 @@
       }
     },
     "WST": {
-      "updatedAt": "2026-11-07T13:14:34.951Z",
+      "updatedAt": "2026-11-07T19:04:33.345Z",
       "backfilledAt": "2026-11-05T15:32:28.165Z",
       "sources": {
         "sec": [
@@ -74106,7 +74106,7 @@
       }
     },
     "WDC": {
-      "updatedAt": "2026-11-07T13:14:35.558Z",
+      "updatedAt": "2026-11-07T19:04:33.927Z",
       "backfilledAt": "2026-11-05T15:32:29.536Z",
       "sources": {
         "sec": [
@@ -74400,14 +74400,14 @@
             "eps": null,
             "revenueEstimate": 5126915500,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057275.307,
+            "revenueEstimateCapturedAt": 1794078273.677,
             "expectedReportAt": 1801170000
           }
         ]
       }
     },
     "WSM": {
-      "updatedAt": "2026-11-07T13:14:36.165Z",
+      "updatedAt": "2026-11-07T19:04:34.511Z",
       "backfilledAt": "2026-11-05T15:32:31.228Z",
       "sources": {
         "sec": [
@@ -74693,14 +74693,14 @@
             "eps": null,
             "revenueEstimate": 1997051850,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057275.915,
+            "revenueEstimateCapturedAt": 1794078274.261,
             "expectedReportAt": 1795008600
           }
         ]
       }
     },
     "WTW": {
-      "updatedAt": "2026-11-07T13:14:36.773Z",
+      "updatedAt": "2026-11-07T19:04:35.086Z",
       "backfilledAt": "2026-11-05T15:32:35.714Z",
       "sources": {
         "sec": [
@@ -74983,7 +74983,7 @@
       }
     },
     "WDAY": {
-      "updatedAt": "2026-11-07T13:14:37.385Z",
+      "updatedAt": "2026-11-07T19:04:35.672Z",
       "backfilledAt": "2026-11-05T15:32:37.280Z",
       "sources": {
         "sec": [
@@ -75266,14 +75266,14 @@
             "eps": null,
             "revenueEstimate": 2691535090,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057277.134,
+            "revenueEstimateCapturedAt": 1794078275.422,
             "expectedReportAt": 1795554000
           }
         ]
       }
     },
     "WYNN": {
-      "updatedAt": "2026-11-07T13:14:37.987Z",
+      "updatedAt": "2026-11-07T19:04:36.245Z",
       "backfilledAt": "2026-11-05T15:32:39.170Z",
       "sources": {
         "sec": [
@@ -75573,7 +75573,7 @@
       }
     },
     "ZBRA": {
-      "updatedAt": "2026-11-07T13:14:38.588Z",
+      "updatedAt": "2026-11-07T19:04:36.823Z",
       "backfilledAt": "2026-11-05T15:32:43.921Z",
       "sources": {
         "sec": [
@@ -75861,7 +75861,7 @@
       }
     },
     "ZBH": {
-      "updatedAt": "2026-11-07T13:14:39.193Z",
+      "updatedAt": "2026-11-07T19:04:37.406Z",
       "backfilledAt": "2026-11-05T15:32:45.144Z",
       "sources": {
         "sec": [
@@ -76163,7 +76163,7 @@
       }
     },
     "AEP": {
-      "updatedAt": "2026-11-07T13:14:39.801Z",
+      "updatedAt": "2026-11-07T19:04:37.982Z",
       "backfilledAt": "2026-11-05T15:33:37.525Z",
       "sources": {
         "sec": [
@@ -76442,7 +76442,7 @@
       }
     },
     "AMP": {
-      "updatedAt": "2026-11-07T13:14:40.406Z",
+      "updatedAt": "2026-11-07T19:04:38.560Z",
       "backfilledAt": "2026-11-05T15:33:42.725Z",
       "sources": {
         "sec": [
@@ -76736,14 +76736,14 @@
             "eps": null,
             "revenueEstimate": 5190040570,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057280.156,
+            "revenueEstimateCapturedAt": 1794078278.309,
             "expectedReportAt": 1801143000
           }
         ]
       }
     },
     "BRO": {
-      "updatedAt": "2026-11-07T13:14:41.011Z",
+      "updatedAt": "2026-11-07T19:04:39.137Z",
       "backfilledAt": "2026-11-05T15:34:06.963Z",
       "sources": {
         "sec": [
@@ -77037,14 +77037,14 @@
             "eps": null,
             "revenueEstimate": 1592706820,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057280.76,
+            "revenueEstimateCapturedAt": 1794078278.887,
             "expectedReportAt": 1800910800
           }
         ]
       }
     },
     "CHRW": {
-      "updatedAt": "2026-11-07T13:14:41.615Z",
+      "updatedAt": "2026-11-07T19:04:39.732Z",
       "backfilledAt": "2026-11-05T15:34:10.402Z",
       "sources": {
         "sec": [
@@ -77345,14 +77345,14 @@
             "eps": null,
             "revenueEstimate": 4838425300,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057281.365,
+            "revenueEstimateCapturedAt": 1794078279.481,
             "expectedReportAt": 1801056600
           }
         ]
       }
     },
     "CNP": {
-      "updatedAt": "2026-11-07T13:14:42.219Z",
+      "updatedAt": "2026-11-07T19:04:40.332Z",
       "backfilledAt": "2026-11-05T15:34:18.965Z",
       "sources": {
         "sec": [
@@ -77631,7 +77631,7 @@
       }
     },
     "CLX": {
-      "updatedAt": "2026-11-07T13:14:42.828Z",
+      "updatedAt": "2026-11-07T19:04:40.913Z",
       "backfilledAt": "2026-11-05T15:34:33.469Z",
       "sources": {
         "sec": [
@@ -77925,7 +77925,7 @@
       }
     },
     "CMS": {
-      "updatedAt": "2026-11-07T13:14:43.435Z",
+      "updatedAt": "2026-11-07T19:04:41.486Z",
       "backfilledAt": "2026-11-05T15:34:35.039Z",
       "sources": {
         "sec": [
@@ -78205,7 +78205,7 @@
       }
     },
     "EIX": {
-      "updatedAt": "2026-11-07T13:14:44.039Z",
+      "updatedAt": "2026-11-07T19:04:42.057Z",
       "backfilledAt": "2026-11-05T15:35:09.650Z",
       "sources": {
         "sec": [
@@ -78492,7 +78492,7 @@
       }
     },
     "EOG": {
-      "updatedAt": "2026-11-07T13:14:44.647Z",
+      "updatedAt": "2026-11-07T19:04:42.632Z",
       "backfilledAt": "2026-11-05T15:35:17.672Z",
       "sources": {
         "sec": [
@@ -78802,7 +78802,7 @@
       }
     },
     "HUM": {
-      "updatedAt": "2026-11-07T13:14:45.253Z",
+      "updatedAt": "2026-11-07T19:04:43.211Z",
       "backfilledAt": "2026-11-05T15:36:18.418Z",
       "sources": {
         "sec": [
@@ -79093,7 +79093,7 @@
       }
     },
     "LHX": {
-      "updatedAt": "2026-11-07T13:14:45.866Z",
+      "updatedAt": "2026-11-07T19:04:43.783Z",
       "backfilledAt": "2026-11-05T15:36:44.760Z",
       "sources": {
         "sec": [
@@ -79386,14 +79386,14 @@
             "eps": null,
             "revenueEstimate": 5986227710,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057285.615,
+            "revenueEstimateCapturedAt": 1794078283.533,
             "expectedReportAt": 1801143000
           }
         ]
       }
     },
     "NTAP": {
-      "updatedAt": "2026-11-07T13:14:46.469Z",
+      "updatedAt": "2026-11-07T19:04:44.360Z",
       "backfilledAt": "2026-11-05T15:37:09.757Z",
       "sources": {
         "sec": [
@@ -79677,14 +79677,14 @@
             "eps": null,
             "revenueEstimate": 2102537450,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057286.218,
+            "revenueEstimateCapturedAt": 1794078284.11,
             "expectedReportAt": 1796158800
           }
         ]
       }
     },
     "URI": {
-      "updatedAt": "2026-11-07T13:14:47.071Z",
+      "updatedAt": "2026-11-07T19:04:44.931Z",
       "backfilledAt": "2026-11-05T15:38:35.687Z",
       "sources": {
         "sec": [
@@ -79969,14 +79969,14 @@
             "eps": null,
             "revenueEstimate": 4815716330,
             "revenueCurrency": "USD",
-            "revenueEstimateCapturedAt": 1794057286.821,
+            "revenueEstimateCapturedAt": 1794078284.681,
             "expectedReportAt": 1801083600
           }
         ]
       }
     },
     "WMB": {
-      "updatedAt": "2026-11-07T13:14:47.672Z",
+      "updatedAt": "2026-11-07T19:04:45.503Z",
       "backfilledAt": "2026-11-05T15:38:56.954Z",
       "sources": {
         "sec": [
